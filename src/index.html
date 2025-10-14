@@ -12,25 +12,83 @@
       min-height: 100vh;
     }
     
-    #app {
-      color: white;
+    #input {
+      width: 100%;
+      background-color: #fffc;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 100px;
     }
-    
+
+    .output {
+      display: inline-block;
+      width: 47%;
+      background-color: #fffc;
+      padding: 10px;
+      border-radius: 4px;
+      vertical-align: top;
+    }
+
+    .difference {
+      background-color: #eeff00be;
+    }
+
+    * {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button > b {
+      text-decoration: underline;
+    }
+
     button {
-      background: white;
-      color: #667eea;
+      background: #eee;
       border: none;
       border-radius: 5px;
-      transition: all 0.3s ease;
+      font-size: large;
     }
-    
     button:hover {
       transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
+    }    
   </style>
 </head>
 <body>
-  <!-- Content will be injected by TypeScript/jQuery -->
+  <div style="width: 900px; margin-left: auto; margin-right: auto;">
+    <div id="input">
+      Another view to the origin of the name is also related to the Czech word práh (with the meaning of a threshold) and a legendary etymology connects the name of the city with princess Libuše, prophetess and a wife of the mythical founder of the Přemyslid dynasty. She is said to have ordered the city "to be built where a man hews a threshold of his house".
+      The Czech práh might thus be understood to refer to rapids or fords in the river, the edge of which could have acted as a means of fording the river, thus providing a "threshold" to the castle.
+      Another derivation of the name Praha is suggested from na prazě, the original term for the shale hillside rock upon which the original castle was built.
+      At that time, the castle was surrounded by forests, covering the nine hills of the future city – the Old Town on the opposite side of the river, as well as the Lesser Town beneath the existing castle, appeared only later.
+    </div>
+    <br>
+    <br>
+  
+    <div class="output">
+      <span class="difference">Eine andere Ansicht</span> zum Ursprung des Namens <span class="difference">steht ebenfalls im Zusammenhang mit</span> dem tschechischen Wort práh (<span class="difference">mit der Bedeutung einer Schwelle</span>), und eine <span class="difference">legendäre</span> Etymologie verbindet den Namen der Stadt mit Prinzessin Libuše, Prophetin und <span class="difference">Ehefrau</span> des mythischen Gründers der Přemysliden-Dynastie. <span class="difference">Sie soll befohlen haben</span>, die Stadt <span class="difference">dort zu errichten</span>, „wo ein Mann die Schwelle seines Hauses <span class="difference">behaut</span>“.
+      Das tschechische práh <span class="difference">könnte daher so verstanden werden, dass es sich auf</span> Stromschnellen oder Furten im Fluss bezieht, deren <span class="difference">Rand</span> als <span class="difference">Mittel zur Durchquerung</span> des Flusses <span class="difference">gedient haben könnte</span> und somit eine „Schwelle“ zur Burg <span class="difference">bot</span>.
+      <span class="difference">Eine weitere Ableitung</span> des Namens Praha <span class="difference">wird von</span> na prazě <span class="difference">vorgeschlagen</span>, <span class="difference">dem ursprünglichen Begriff</span> für den <span class="difference">Schieferfelsen am Hang</span>, auf dem die <span class="difference">ursprüngliche</span> Burg erbaut wurde.
+      <span class="difference">Zu dieser Zeit</span> war die Burg von Wäldern <span class="difference">umgeben</span>, die die neun Hügel der <span class="difference">zukünftigen</span> Stadt bedeckten – die Altstadt <span class="difference">auf der gegenüberliegenden Seite des Flusses</span> sowie die Kleinseite unterhalb der <span class="difference">bestehenden</span> Burg entstanden erst später.
+    </div>  
+
+    <div class="output" style="margin-left: 25px; margin-right: -20px;">
+      <span class="difference">Ein anderer Ansatz</span> zum Ursprung des Namens <span class="difference">bezieht sich ebenfalls auf</span> das tschechische Wort práh (<span class="difference">was „Schwelle“ bedeutet</span>), und eine <span class="difference">sagenhafte</span> Etymologie <span class="difference">stellt eine Verbindung zwischen dem Namen der Stadt und</span> Prinzessin Libuše her, einer Prophetin und der <span class="difference">Gemahlin</span> des mythischen Gründers der Přemysliden-Dynastie. <span class="difference">Ihr wird nachgesagt, sie habe den Bau der Stadt</span> befohlen, „wo ein Mann die Schwelle seines Hauses <span class="difference">zimmert</span>“.
+      Das tschechische Wort práh <span class="difference">könnte sich somit auf</span> Stromschnellen oder Furten im Fluss beziehen, deren <span class="difference">Kante</span> als <span class="difference">Möglichkeit zur Überquerung</span> des Flusses <span class="difference">dienen konnte</span> und so eine „Schwelle“ zur Burg <span class="difference">darstellte</span>.
+      <span class="difference">Eine andere Herleitung</span> des Namens Praha <span class="difference">geht auf</span> na prazě <span class="difference">zurück</span>, <span class="difference">die ursprüngliche Bezeichnung</span> für den <span class="difference">schieferhaltigen Felsen</span>, auf dem die <span class="difference">erste</span> Burg errichtet wurde.
+      <span class="difference">Damals</span> war die Burg von Wäldern <span class="difference">umschlossen</span>, welche die neun Hügel der <span class="difference">künftigen</span> Stadt bedeckten – die Altstadt <span class="difference">auf der anderen Flussseite und auch</span> die Kleinseite unterhalb der <span class="difference">damaligen</span> Burg entstanden erst später.
+    </div>
+  </div>
+  
+  <br>
+  <br>
+
+  <div style="margin-left: auto; margin-right: auto; width: 500px; text-align: center;">
+    <button>left b<b>e</b>tter</button>
+    <div style="display: inline-block; width: 100px; position: relative; top: 15px;">
+      <button>both <b>f</b>ine</button>
+      <button style="margin-top: 10px;">both ba<b>d</b></button>
+    </div>
+    <button><b>r</b>ight better</button>
+  </div>
+
 </body>
 </html>
