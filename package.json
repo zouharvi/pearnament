@@ -1,7 +1,7 @@
 {
   "name": "pearnament",
-  "version": "1.0.0",
-  "description": "Basic TypeScript + Webpack + jQuery website setup",
+  "version": "0.0.1",
+  "description": "Frontend for pairwise evaluation with Pearnament.",
   "main": "dist/bundle.js",
   "scripts": {
     "build": "webpack --mode production",
