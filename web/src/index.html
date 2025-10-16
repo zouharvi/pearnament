@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%;">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,18 +11,13 @@
       margin: 0;
       padding: 0;
       background: linear-gradient(135deg, #b9e2a1 0%, #dbcfe7 100%);
-      min-height: 100vh;
-    }
-    
-    #input {
-      width: 100%;
-      background-color: #fffc;
-      padding: 10px;
-      border-radius: 4px;
-      margin-top: 100px;
     }
 
-    #output_div > div {
+    * {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .output {
       display: inline-block;
       width: 30%;
       background-color: #fffc;
@@ -36,27 +32,24 @@
       background-color: #e3e995;
     }
 
-    * {
-      font-family: Arial, Helvetica, sans-serif;
+    .button_panel {
+      text-align: center;
+      margin-top: 5px;
     }
 
-    button > b {
-      text-decoration: underline;
-    }
-
-    button {
-      background: #eee;
+    input[type="button"] {
+      background: #ffe;
       border: none;
       border-radius: 5px;
       font-size: large;
     }
-
+    
     .button_navigation.button_selected {
-      background: #8db3ec;
+      background: #8db3ec !important;
     }
-
-    button:hover:not(:disabled) {
-      transform: scale(1.05);
+    
+    input[type="button"]:hover:not(:disabled) {
+      background: #efe;
       cursor: pointer;
     }
 
@@ -65,6 +58,7 @@
     }
   </style>
 </head>
+
 <body>
   <div style="width: 1200px; margin-left: auto; margin-right: auto; margin-top: 20px;">
     <div>
@@ -81,17 +75,18 @@
 
     <br>
     <br>
-    
-    <div style="margin-left: auto; margin-right: auto; width: 500px; text-align: center;">
-      <button id="button_left" class="button_navigation">left b<b>e</b>tter</button>
-      <button id="button_bothbad" class="button_navigation">both ba<b>d</b></button>
-      <button id="button_bothgood" class="button_navigation">both <b>f</b>ine</button>
-      <button id="button_right" class="button_navigation"><b>r</b>ight better</button>
 
-      <button id="button_next" disabled style="margin-left: 20px;"><b>n</b>ext</button>
+    <div style="margin-left: auto; margin-right: auto; width: 500px; text-align: center;">
+      <!-- <button id="button_left" class="button_navigation">left better</button>
+      <button id="button_bothbad" class="button_navigation">both bad</button>
+      <button id="button_bothgood" class="button_navigation">both fine</button>
+      <button id="button_right" class="button_navigation">right better</button> -->
+
+      <input type="button" value="next" id="button_next" disabled style="margin-left: 20px;">
     </div>
-    
+
   </div>
 
 </body>
+
 </html>
