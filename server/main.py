@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import os
+os.makedirs("data", exist_ok=True)
 
 app = FastAPI()
 app.add_middleware(
@@ -97,8 +100,18 @@ FAKE_DATA = [
     }
 ]
 
-@app.get("/get-next")
-async def get_next():
+
+class UIDRequest(BaseModel):
+    uid: str
+
+@app.post("/get-next")
+async def get_next(request: UIDRequest):
+    print(request.uid)
     global FAKE_DATA
     FAKE_DATA = FAKE_DATA + [FAKE_DATA.pop(0)]
     return JSONResponse(content=FAKE_DATA[0])
+
+
+async def log_message(message: str):
+    with open("data/log.jsonl", "a") as log_file:
+        log_file.write(message + "\n")

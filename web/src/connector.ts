@@ -5,7 +5,7 @@ export type Item = { "src_id": string, "src": string[], "sys_a": string, "out_a"
 
 
 export async function get_next_pair(): Promise<Item> {
-    let uid = "GET_ID";
+    let uid = "TODOTODO";
 
 
     let delay = 1
@@ -14,7 +14,10 @@ export async function get_next_pair(): Promise<Item> {
             return await new Promise<Item>((resolve, reject) => {
               $.ajax({
                 url: "http://127.0.0.1:8001/get-next",
-                method: "GET",
+                method: "POST",
+                data: JSON.stringify({ "uid": uid }),
+                contentType: "application/json",
+                dataType: "json",
                 success: resolve,
                 error: (XMLHttpRequest, textStatus, errorThrown) => {
                     console.error("Error fetching data:", textStatus, errorThrown);
