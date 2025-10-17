@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { get_next_pair } from './connector';
+import { get_next_pair, Item } from './connector';
 let response_log: Array<string> = []
 
 $("#toggle_differences").on("change", function() {
@@ -16,7 +16,7 @@ function check_unlock() {
 
 
 async function load_next() {
-  let data = get_next_pair()
+  let data = await get_next_pair()
 
   response_log = data.src.map(_ => "")
 

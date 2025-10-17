@@ -15,3 +15,9 @@ npm run build  # will output in dist/ that can be statically served
 For the server run:
 
 TODO
+
+```bash
+cd server
+pip install fastapi uvicorn
+uvicorn main:app --reload --port 8001
+```
