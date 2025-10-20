@@ -42,6 +42,7 @@ async function load_next() {
 
   // make sure the event loop passes
   await new Promise(r => setTimeout(r, 0));
+  check_unlock()
 
   $(".button_left,.button_right,.button_bothbad,.button_bothgood").on("click", function() {
     $(this).parent().find(".button_navigation").removeClass("button_selected")

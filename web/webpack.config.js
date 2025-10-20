@@ -3,7 +3,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/main.ts',
+  entry: {
+    index: './src/index.ts',
+    dashboard: './src/dashboard.ts',
+  },
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true,
+  },
+  
   module: {
     rules: [
       {
@@ -16,15 +25,16 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    clean: true,
-  },
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
-      inject: 'body',
+      filename: 'index.html',
+      chunks: ['index'],
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/dashboard.html',
+      filename: 'dashboard.html',
+      chunks: ['dashboard'],
     }),
     new CopyWebpackPlugin({
       patterns: [
