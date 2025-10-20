@@ -1,7 +1,7 @@
 import { notify } from "./utils"
 import $ from 'jquery';
 
-export type Item = { "src_id": string, "src": string[], "sys_a": string, "out_a": string[], "sys_b": string, "out_b": string[] }
+export type Item = { "doc_id": string, "src": string[], "sys_a": string, "out_a": string[], "sys_b": string, "out_b": string[] }
 
 
 export async function get_next_pair(): Promise<Item> {
