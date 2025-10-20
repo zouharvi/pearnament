@@ -11,6 +11,7 @@
       margin: 0;
       padding: 0;
       background: linear-gradient(135deg, #b9e2a1 0%, #dbcfe7 100%);
+      background-attachment: fixed;
     }
 
     * {
@@ -43,11 +44,11 @@
       border-radius: 5px;
       font-size: large;
     }
-    
+
     .button_navigation.button_selected {
       background: #8db3ec !important;
     }
-    
+
     input[type="button"]:hover:not(:disabled) {
       background: #efe;
       cursor: pointer;
@@ -76,15 +77,10 @@
     <br>
     <br>
 
-    <div style="margin-left: auto; margin-right: auto; width: 500px; text-align: center;">
-      <!-- <button id="button_left" class="button_navigation">left better</button>
-      <button id="button_bothbad" class="button_navigation">both bad</button>
-      <button id="button_bothgood" class="button_navigation">both fine</button>
-      <button id="button_right" class="button_navigation">right better</button> -->
+    <input type="button" value="next" id="button_next" disabled
+      style="display: block; margin-left: auto; margin-right: auto; width: 100px;">
 
-      <input type="button" value="next" id="button_next" disabled style="margin-left: 20px;">
-    </div>
-
+    <br><br><br>
   </div>
 
 </body>
