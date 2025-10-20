@@ -15,7 +15,9 @@ for line in data_wmt:
 
 with open("../server/data/wmt25-genmt-bare.jsonl", "w") as f:
     for doc_id, segments in documents.items():
-        if "_#_speech_#_" in doc_id or "_#_social_#_" in doc_id:
+        if "_#_speech_#_" in doc_id or "_#_social_#_" in doc_id or "_#_literary_#_" in doc_id:
+            continue
+        if not doc_id.startswith("en-cs_CZ_#_"):
             continue
         segments.sort(key=lambda x: x[0])
 
