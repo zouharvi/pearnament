@@ -1,25 +1,11 @@
+"""
+See scripts/models.py for a list of possible competition models.
+"""
+
 import json
 import os
 
-
-class CompetitionModelTrueSkill():
-    def __init__(self):
-        # TODO: load
-        pass
-
-    def future_information(self, sys1, sys2):
-        pass
-
-    def record_result(self, sys1, sys2, result):
-        pass
-
-        self.save()
-
-    def save(self):
-        pass
-
-
-class CompetitionModelELO():
+class CompetitionModel():
     def __init__(self, systems):
         if os.path.exists("data/model_elo.json"):
             with open("data/model_elo.json", "r") as f:
