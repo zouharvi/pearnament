@@ -50,8 +50,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("data/wmt25-genmt-bare.jsonl", "r") as f:
-    data = [json.loads(line) for line in f.readlines()]
+with open("data/wmt25-genmt-batches.json", "r") as f:
+    data = json.load(f)[0]["data"]
     systems = list(data[0]["tgt_text"].keys())
 
 # just keep stored how much we evaluated
@@ -75,14 +75,14 @@ async def get_next(request: UIDRequest):
     line = data[segment_registry[(sys1, sys2)]]
 
     texts = [highlight_differences(a, b) for a, b in zip(
-        line["tgt_text"][sys1].split("\n\n"),
-        line["tgt_text"][sys2].split("\n\n"),
+        line["tgt_text"][sys1],
+        line["tgt_text"][sys2],
     )]
     
     return JSONResponse(content={
         "doc_id": line["doc_id"],
         # TODO: this is not good sentence splitting
-        "src": [line.replace(". ", ".<br><br>") for line in line["src_text"].split("\n\n")],
+        "src": [line.replace(". ", ".<br><br>") for line in line["src_text"]],
         "sys_a": sys1,
         "out_a": [line_a.replace(". ", ".<br><br>") for line_a, line_b in texts],
         "sys_b": sys2,
