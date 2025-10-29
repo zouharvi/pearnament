@@ -1,16 +1,16 @@
-import models
+import scripts.competition_models as competition_models
 import abc
 import itertools
 import numpy as np
 import scipy.stats
 from typing import Any
 
-class Waiter(abc.ABC):
+class CompetitionWaiter(abc.ABC):
     def __init__(
             self,
             data: list[dict],
-            competition_model_match: models.CompetitionModel,
-            competition_model_score: models.CompetitionModel,
+            competition_model_match: competition_models.CompetitionModel,
+            competition_model_score: competition_models.CompetitionModel,
         ):
         self.competition_model_match = competition_model_match
         self.competition_model_score = competition_model_score
@@ -41,12 +41,12 @@ class Waiter(abc.ABC):
         return scipy.stats.kendalltau(system_ranking, system_ranking_pred, variant="b").correlation
     
 
-    def record_result(self, sys1: str, sys2: str, result: models.Result):
+    def record_result(self, sys1: str, sys2: str, result: competition_models.Result):
         self.competition_model_match.record_result(sys1, sys2, result)
         self.competition_model_score.record_result(sys1, sys2, result)
 
 
-class WaiterBasic(Waiter):
+class CompetitionWaiterBasic(CompetitionWaiter):
     """
     Always select the match with the highest desireability.
     """
@@ -54,8 +54,8 @@ class WaiterBasic(Waiter):
     def __init__(
             self,
             data: list[dict],
-            competition_model_match: models.CompetitionModel,
-            competition_model_score: models.CompetitionModel,
+            competition_model_match: competition_models.CompetitionModel,
+            competition_model_score: competition_models.CompetitionModel,
         ):
         super().__init__(data, competition_model_match, competition_model_score)
         self.system_progress = {
