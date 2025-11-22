@@ -1,6 +1,35 @@
 # 🍐 Pearnament
 
-A tool for pairwise tournament of model outputs, such as for WMT.´
+A tool for pairwise tournament of model outputs, such as for WMT.
+
+## Starting a campaign
+
+A campaign is described in a single JSON file.
+The simplest one is:
+```json
+{
+    "server": "task-based",
+    "campaign_id": "my campaign 4",
+    "meta": {...},
+    "data": [...],
+}
+```
+
+However, we also support dynamic allocation of annotations:
+```json
+{
+    "server": "competition",
+    "campaign_id": "my campaign 6",
+    "meta": {...},
+    "data": [...],
+}
+```
+
+To load a campaign into the server, run the following.
+It will fail if an existing campaign with the same `campaign_id` already exists, unless you specify `-o/--overwrite`.
+```bash
+python3 server/start_campaign.py my_campaign_4.json
+```
 
 ## Development
 
@@ -13,8 +42,6 @@ npm run build  # will output in dist/ that can be statically served
 ```
 
 For the server run:
-
-TODO
 
 ```bash
 cd server
