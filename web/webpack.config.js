@@ -4,7 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    index: './src/index.ts',
+    ESA: './src/ESA.ts',
     dashboard: './src/dashboard.ts',
   },
   output: {
@@ -29,7 +29,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'index.html',
-      chunks: ['index'],
+      chunks: [],
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/ESA.html',
+      filename: 'ESA.html',
+      chunks: ['ESA'],
     }),
     new HtmlWebpackPlugin({
       template: './src/dashboard.html',

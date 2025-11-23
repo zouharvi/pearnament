@@ -1,8 +1,9 @@
 import argparse
 from .utils import ROOT
 import os
+import urllib
 
-os.makedirs(f"{ROOT}/data", exist_ok=True)
+os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 if not os.path.exists(f"{ROOT}/data/progress.json"):
     with open(f"{ROOT}/data/progress.json", "w") as f:
         f.write("{}")
@@ -74,11 +75,11 @@ def _add_campaign(args_unknown):
         for user_id, task in zip(user_ids, tasks)
     }
     user_progress = {
-        user_id: -1
+        user_id: 0
         for user_id in user_ids
     }
 
-    with open(f"{ROOT}/data/{campaign_data['campaign_id']}.json", "w") as f:
+    with open(f"{ROOT}/data/tasks/{campaign_data['campaign_id']}.json", "w") as f:
         json.dump(campaign_data, f, indent=2)
 
     progress_data[campaign_data['campaign_id']] = {
@@ -89,14 +90,22 @@ def _add_campaign(args_unknown):
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
 
-    base_url = campaign_data["info"].get(
-        "base_url",
+    frontend_url = campaign_data["info"].get(
+        "frontend_url",
         "https://vilda.net/s/pearnament/",  # by default can run on this public URL
+    ).removesuffix("/")
+    server_url = campaign_data["info"].get(
+        "server_url",
+        "127.0.0.1:8001",  # by default local server
     ).removesuffix("/")
     for user in user_progress:
         # point to the protocol URL
         print(
-            f"{base_url}/{campaign_data["info"]["protocol"]}.html?campaign_id={campaign_data['campaign_id']}&user_id={user}")
+            f"{frontend_url}/{campaign_data["info"]["protocol"]}.html"
+            f"?campaign_id={campaign_data['campaign_id']}"
+            f"&server_url={urllib.parse.quote_plus(server_url)}"
+            f"&user_id={user}"
+        )
 
 
 def main():

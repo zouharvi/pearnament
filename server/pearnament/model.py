@@ -1,9 +1,34 @@
+raise Exception("Deprecated")
 """
 See scripts/models.py for a list of possible competition models.
 """
 
 import json
 import os
+import random
+
+sys1, sys2 = random.sample(systems, 2)
+segment_registry[(sys1, sys2)] += 1
+# TODO: handle overflow better
+if segment_registry[(sys1, sys2)] >= len(data):
+    segment_registry[(sys1, sys2)] = 0
+
+line = data[segment_registry[(sys1, sys2)]]
+
+texts = [highlight_differences(a, b) for a, b in zip(
+    line["tgt_text"][sys1],
+    line["tgt_text"][sys2],
+)]
+
+return JSONResponse(content={
+    "doc_id": line["doc_id"],
+    # TODO: this is not good sentence splitting
+    "src": [line.replace(". ", ".<br><br>") for line in line["src_text"]],
+    "sys_a": sys1,
+    "out_a": [line_a.replace(". ", ".<br><br>") for line_a, line_b in texts],
+    "sys_b": sys2,
+    "out_b": [line_b.replace(". ", ".<br><br>") for line_a, line_b in texts],
+})
 
 class CompetitionModel():
     def __init__(self, systems):
