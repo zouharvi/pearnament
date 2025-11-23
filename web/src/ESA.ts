@@ -22,7 +22,9 @@ function check_unlock() {
 
 
 async function load_next() {
-  let data = await get_next_item()
+  let response = await get_next_item()
+  let data = response.payload
+  $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
 
   response_log = data.src.map(_ => null)
 

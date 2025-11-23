@@ -22,6 +22,10 @@ def get_next_item_taskbased(
     return JSONResponse(
         content={
             "status": "ok",
+            "progress": {
+                "completed": progress_data[campaign_id][user_id],
+                "total": len(data_all[campaign_id]["data"][user_id])
+            },
             "payload": data_all[campaign_id]["data"][user_id][progress_data[campaign_id][user_id]]},
             status_code=200
         )
