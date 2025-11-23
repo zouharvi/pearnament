@@ -88,5 +88,7 @@ For the server locally run:
 
 ```bash
 python3 install -e server/ # install editable
+# add existing data from WMT25, this generates annotation links that you should click
+pearnament add server/examples/wmt25_#_en-cs_CZ.json
 pearnament run
 ```
