@@ -8,7 +8,7 @@ A campaign is described in a single JSON file.
 The simplest one is:
 ```json
 {
-    "server": "task-based",
+    "protocol": "ESA",
     "campaign_id": "my campaign 4",
     "meta": {...},
     "data": [...],
@@ -18,7 +18,7 @@ The simplest one is:
 However, we also support dynamic allocation of annotations:
 ```json
 {
-    "server": "competition",
+    "protocol": "pear",
     "campaign_id": "my campaign 6",
     "meta": {...},
     "data": [...],
@@ -27,6 +27,7 @@ However, we also support dynamic allocation of annotations:
 
 To load a campaign into the server, run the following.
 It will fail if an existing campaign with the same `campaign_id` already exists, unless you specify `-o/--overwrite`.
+It will also output a secret management link.
 ```bash
 python3 server/start_campaign.py my_campaign_4.json
 ```
