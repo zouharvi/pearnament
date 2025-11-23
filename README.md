@@ -11,23 +11,50 @@ pip install pearnament          # NOTE: this will fail for now as package is not
 ```
 
 A campaign is described in a single JSON file.
-The simplest one is:
+The simplest one, where each user has a pre-defined list of tasks (`task-based`) is:
 ```python
 {
-    "protocol": "ESA",
+    "type": "task-based",
     "campaign_id": "my campaign 4",
-    "meta": {...},
-    "data": [...],
+    "meta": {
+        "protocol": "ESA",
+    },
+    "data": [
+        [...],  # tasks for first user
+        [...],  # tasks for second user
+        [...],  # tasks for third user
+        ...
+    ],
 }
 ```
+In general, the task item can be anything and is handled by the specific protocol template.
+For the standard ones (ESA, DA, MQM), we expect each item to be a list (i.e. document unit) that looks as follows:
+```python
+[
+    {
+        "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.",       # mandatory for ESA/MQM/DA
+        "tgt": "And suddenly all the water became full of other people and other people.",      # mandatory for ESA/MQM/DA
+        ...                            # any other keys that will be stored, useful for analysis andfurther identification
+    },
+    {
+        "src": "toto je pokračování stejného dokumentu",
+        "tgt": "this is a continuation of the same document",
+        ...
+    },
+    ...
+]
+```
 
-However, we also support dynamic allocation of annotations:
+We also support dynamic allocation of annotations, which is more complex and can be ignored for now:
 ```python
 {
-    "protocol": "PearTournament",
+    "type": "dynamic",
     "campaign_id": "my campaign 6",
-    "meta": {...},
-    "data": [...],
+    "meta": {
+        "protocol": "ESA",
+        "users": 50,
+    },
+    "data": [...], # list of all items
 }
 ```
 
@@ -60,7 +87,6 @@ npm run build  # will output in dist/ that can be statically served
 For the server locally run:
 
 ```bash
-cd server
-python3 install -e . # install editable
+python3 install -e server/ # install editable
 pearnament run
 ```

@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 import random
 import collections
 import json
@@ -27,12 +26,9 @@ with open("data/wmt25-genmt-batches.json", "r") as f:
 segment_registry = collections.defaultdict(lambda: -1)
 competition_model = CompetitionModel(systems)
 
-class UIDRequest(BaseModel):
-    uid: str
-
 @app.post("/get-next")
-async def get_next(request: UIDRequest):
-    print(request.uid)
+async def get_next(uid: str):
+    print(uid)
     global segment_registry
 
     sys1, sys2 = random.sample(systems, 2)
@@ -60,5 +56,6 @@ async def get_next(request: UIDRequest):
 
 
 async def log_message(message: str):
+    # TODO: log into some common directory
     with open("data/log.jsonl", "a") as log_file:
         log_file.write(message + "\n")

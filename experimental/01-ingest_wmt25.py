@@ -1,9 +1,9 @@
-# %%
-
+import os
 import json
 import collections
+os.chdir(os.path.dirname(os.path.abspath(__file__)) + "/../")
 
-with open("../../wmt25-general-mt/data/wmt25-genmt-humeval.jsonl", "r") as f:
+with open("../wmt25-general-mt/data/wmt25-genmt-humeval.jsonl", "r") as f:
     data_wmt = [json.loads(line) for line in f.readlines()]
 
 documents = collections.defaultdict(list)
@@ -18,27 +18,32 @@ for doc_id, segments in documents.items():
         continue
     lang = doc_id.split("_#_")[0]
     segments.sort(key=lambda x: x[0])
-    data_out[lang].append({
-        "doc_id": doc_id,
-        "src_text": [seg["src_text"] for _, seg in segments],
-        "tgt_text": {
-            sys: [seg["tgt_text"][sys] for _, seg in segments]
-            for sys in segments[0][1]["tgt_text"].keys()
-        },
-        "scores": {
-            sys: [
-                seg["scores"][sys]
-                for _, seg in segments
-            ]
-            for sys in segments[0][1]["scores"].keys()
-        },
-    })
+    for sys in segments[0][1]["tgt_text"].keys():
+        data_out[lang].append({
+            "doc_id": doc_id,
+            "sys_id": sys,
+            "src": [seg["src_text"] for _, seg in segments],
+            "tgt": [seg["tgt_text"][sys] for _, seg in segments],
+        })
 
-with open("../server/data/wmt25-genmt-batches.json", "w") as f:
-    json.dump([
-        {
-            "campaign": lang,
-            "data": data,
-        }
-        for lang, data in data_out.items()
-    ], f, ensure_ascii=False)
+for lang, data in data_out.items():
+    # chunk to 10 documents per task
+    data_new = []
+    for i in range(0, len(data), 10):
+        chunk = data[i:i + 10]
+        data_new.append(chunk)
+    
+    with open(f"server/examples/wmt25_#_{lang}.json", "w") as f:
+        json.dump(
+            {
+                "info": {
+                    "type": "task-based",
+                    "protocol": "ESA",
+                },
+                "campaign_id": f"wmt25_#_{lang}",
+                "data": data,
+            },
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
