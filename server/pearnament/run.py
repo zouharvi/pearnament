@@ -23,38 +23,45 @@ data_all = {}
 with open("data/progress.json", "r") as f:
     progress_data = json.load(f)
 
+
 class LogResponseRequest(BaseModel):
     campaign_id: str
     user_id: str
     payload: Any
 
+
 @app.post("/log-response")
-async def log_response(log_request: LogResponseRequest):
+async def log_response(request: LogResponseRequest):
     global progress_data
 
-    campaign_id = log_request.campaign_id
-    user_id = log_request.user_id
-    payload = json.dumps(log_request.payload, ensure_ascii=False)
+    campaign_id = request.campaign_id
+    user_id = request.user_id
+    payload = json.dumps(request.payload, ensure_ascii=False)
 
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
     if user_id not in progress_data[campaign_id]:
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
-    
+
     with open(f"{ROOT}/data/outputs/{campaign_id}.jsonl", "a") as log_file:
         log_file.write(payload + "\n")
-    
+
     progress_data[campaign_id][user_id] += 1
+    with open(f"{ROOT}/data/progress.json", "w") as f:
+        json.dump(progress_data, f, indent=2)
+
+    return JSONResponse(content={"status": "ok"}, status_code=200)
 
 
 class NextItemRequest(BaseModel):
     campaign_id: str
     user_id: str
 
+
 @app.post("/get-next-item")
-async def get_next_item(item_request: NextItemRequest):
-    campaign_id = item_request.campaign_id
-    user_id = item_request.user_id
+async def get_next_item(request: NextItemRequest):
+    campaign_id = request.campaign_id
+    user_id = request.user_id
 
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
@@ -72,3 +79,53 @@ async def get_next_item(item_request: NextItemRequest):
         return get_next_item_dynamic(campaign_id, user_id, data_all, progress_data)
     else:
         return JSONResponse(content={"error": "Unknown campaign type"}, status_code=400)
+
+
+class DashboardDataRequest(BaseModel):
+    campaign_id: str
+
+
+@app.post("/dashboard-data")
+async def dashboard_data(request: DashboardDataRequest):
+    campaign_id = request.campaign_id
+
+    if campaign_id not in progress_data:
+        return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+    
+    if campaign_id not in data_all:
+        # load campaign data if does not exist in cache
+        with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
+            data_all[campaign_id] = json.load(f)
+    
+    progress_new = {}
+    for user_id, val in progress_data[campaign_id].items():
+        progress_new[user_id] = {
+            "completed": val,
+            "total": len(data_all[campaign_id]["data"][user_id]),
+            "time_start": None,
+            "time_end": None,
+            "time": 0,
+        }
+
+    return JSONResponse(
+        content={
+            "status": "ok",
+            "data": progress_new
+        },
+        status_code=200
+    )
+
+
+class ResetTaskRequest(BaseModel):
+    campaign_id: str
+    user_id: str
+    token: str
+
+
+@app.post("/reset-task")
+async def reset_task(request: ResetTaskRequest):
+    campaign_id = request.campaign_id
+    user_id = request.user_id
+    token = request.token
+
+    return JSONResponse(content={"error": "Resetting tasks is not supported yet"}, status_code=400)

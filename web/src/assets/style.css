@@ -30,7 +30,7 @@ body {
 }
 
 input[type="button"] {
-    background: #ffe;
+    background: #fff;
     border: none;
     border-radius: 5px;
     font-size: large;
@@ -41,7 +41,7 @@ input[type="button"] {
 }
 
 input[type="button"]:hover:not(:disabled) {
-    background: #efe;
+    background: #ffe;
     cursor: pointer;
 }
 

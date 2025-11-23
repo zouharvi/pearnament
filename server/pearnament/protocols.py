@@ -8,12 +8,12 @@ def get_next_item_taskbased(
         progress_data: dict,
     ):
     if len(data_all[campaign_id]["data"][user_id]) == progress_data[campaign_id][user_id]:
-        # TODO: add check for completion
+        # TODO: add check for data quality
         is_ok = True
         return JSONResponse(
             content={
                 "status": "done",
-                # vendor can verify the token to ensure the integrity of the completion status
+                # vendor can verify the token
                 "token": hashlib.sha256(f"{campaign_id}|{user_id}|{is_ok}".encode()).hexdigest()[:10]
             },
             status_code=200
