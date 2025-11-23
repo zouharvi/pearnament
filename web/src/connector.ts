@@ -1,7 +1,7 @@
 import { notify } from "./utils"
 import $ from 'jquery';
 
-export type Data = {"payload": { "src": Array<string>, "tgt": Array<string> }, "progress": {"completed": number, "total": number}}
+export type Data = {"payload": { "src": Array<string>, "tgt": Array<string> }, "progress": {"completed": number, "total": number}, "time": number}
 let searchParams = new URLSearchParams(window.location.search)
 
 export async function get_next_item(): Promise<Data> {

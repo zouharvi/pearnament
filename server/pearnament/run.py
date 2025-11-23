@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import functools
 from .protocols import get_next_item_taskbased, get_next_item_dynamic
 import json
 from .utils import ROOT
@@ -46,7 +47,20 @@ async def log_response(request: LogResponseRequest):
     with open(f"{ROOT}/data/outputs/{campaign_id}.jsonl", "a") as log_file:
         log_file.write(payload + "\n")
 
-    progress_data[campaign_id][user_id] += 1
+    # if actions were submitted, we can log time data
+    if "actions" in request.payload:
+        times = [
+            x["time"] for x in request.payload["actions"]
+        ]
+        if progress_data[campaign_id][user_id]["time_start"] is None:
+            progress_data[campaign_id][user_id]["time_start"] = min(times)
+        progress_data[campaign_id][user_id]["time_end"] = max(times)
+        progress_data[campaign_id][user_id]["time"] += sum([
+            min(b - a, 60)
+            for a, b in zip(times, times[1:])
+        ])
+
+    progress_data[campaign_id][user_id]["progress"] += 1
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(progress_data, f, indent=2)
 
@@ -97,15 +111,13 @@ async def dashboard_data(request: DashboardDataRequest):
         with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
             data_all[campaign_id] = json.load(f)
     
-    progress_new = {}
-    for user_id, val in progress_data[campaign_id].items():
-        progress_new[user_id] = {
-            "completed": val,
+    progress_new = {
+        user_id: {
+            **user_val,
             "total": len(data_all[campaign_id]["data"][user_id]),
-            "time_start": None,
-            "time_end": None,
-            "time": 0,
         }
+        for user_id, user_val in progress_data[campaign_id].items()
+    }
 
     return JSONResponse(
         content={

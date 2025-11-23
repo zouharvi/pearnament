@@ -1,8 +1,9 @@
 import $ from 'jquery';
 import { get_next_item, log_response } from './connector';
 let response_log: Array<any> = []
+let action_log: Array<any> = []
 
-$("#toggle_differences").on("change", function() {
+$("#toggle_differences").on("change", function () {
   if ($(this).is(":checked")) {
     $(".difference").removeClass("hidden")
   } else {
@@ -12,12 +13,12 @@ $("#toggle_differences").on("change", function() {
 
 function check_unlock() {
   if (response_log.every(r => r != null)) {
-     $("#button_next").removeAttr("disabled") 
-     $("#button_next").val("Next ✅") 
-    } else {
-      $("#button_next").attr("disabled", "disabled")
-      $("#button_next").val("Next 🚧") 
-    }
+    $("#button_next").removeAttr("disabled")
+    $("#button_next").val("Next ✅")
+  } else {
+    $("#button_next").attr("disabled", "disabled")
+    $("#button_next").val("Next 🚧")
+  }
 }
 
 
@@ -25,8 +26,10 @@ async function load_next() {
   let response = await get_next_item()
   let data = response.payload
   $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
+  $("#time").text(`Annotation time: ${Math.round(response.time/60)}m`)
 
   response_log = data.src.map(_ => null)
+  action_log = [{ "time": Date.now()/1000, "action": "load" }]
 
   let html_new = ""
   for (let i = 0; i < data.src.length; i++) {
@@ -71,16 +74,17 @@ async function load_next() {
   $(".output_block").each((_, self) => {
     let slider = $(self).find("input[type='range']")
     let label = $(self).find(".output_number")
-    slider.on("input", function() {
-      let val = parseInt((<HTMLInputElement> this).value)
+    slider.on("input", function () {
+      let val = parseInt((<HTMLInputElement>this).value)
       label.text(val.toString())
       let i = parseInt(slider.attr("id")!.split("_")[1])
       response_log[i] = val
       check_unlock()
+      action_log.push({ "time": Date.now()/1000, "index": i, "value": val })
     })
   })
 
-  $(".button_left,.button_right,.button_bothbad,.button_bothgood").on("click", function() {
+  $(".button_left,.button_right,.button_bothbad,.button_bothgood").on("click", function () {
     $(this).parent().find(".button_navigation").removeClass("button_selected")
     $(this).addClass("button_selected")
 
@@ -101,11 +105,12 @@ async function load_next() {
   })
 }
 
-$("#button_next").on("click", async function() {
+$("#button_next").on("click", async function () {
   // disable while communicating with the server
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
-  await log_response(response_log)
+  action_log.push({ "time": Date.now()/1000, "action": "submit" })
+  await log_response({"annotations": response_log, "actions": action_log})
   await load_next()
 })
 
