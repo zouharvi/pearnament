@@ -58,7 +58,8 @@ def _add_campaign(args_unknown):
     elif campaign_data["info"]["type"] == "dynamic":
         amount = campaign_data["num_users"]
     else:
-        raise ValueError(f"Unknown campaign type: {campaign_data["info"]['type']}")
+        raise ValueError(
+            f"Unknown campaign type: {campaign_data["info"]['type']}")
 
     user_ids = []
     while len(user_ids) < amount:
@@ -70,12 +71,32 @@ def _add_campaign(args_unknown):
         for user_id in user_ids
     ]
 
+    frontend_url = campaign_data["info"].get(
+        "frontend_url",
+        "https://vilda.net/s/pearnament/",  # by default can run on this public URL
+    ).removesuffix("/")
+    server_url = campaign_data["info"].get(
+        "server_url",
+        "127.0.0.1:8001",  # by default local server
+    ).removesuffix("/")
+
     campaign_data["data"] = {
         user_id: task
         for user_id, task in zip(user_ids, tasks)
     }
     user_progress = {
-        user_id: 0
+        user_id: {
+            "progress": 0,
+            "time_start": None,
+            "time_end": None,
+            "time": 0,
+            "url": (
+                f"{frontend_url}/{campaign_data["info"]["protocol"]}.html"
+                f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
+                f"&server_url={urllib.parse.quote_plus(server_url)}"
+                f"&user_id={user_id}"
+            )
+        }
         for user_id in user_ids
     }
 
@@ -87,22 +108,16 @@ def _add_campaign(args_unknown):
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
 
-    frontend_url = campaign_data["info"].get(
-        "frontend_url",
-        "https://vilda.net/s/pearnament/",  # by default can run on this public URL
-    ).removesuffix("/")
-    server_url = campaign_data["info"].get(
-        "server_url",
-        "127.0.0.1:8001",  # by default local server
-    ).removesuffix("/")
-    for user in user_progress:
+    print(
+        f"{frontend_url}/dashboard.html"
+        f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
+        f"&server_url={urllib.parse.quote_plus(server_url)}"
+        f"&token=TODO"
+    )
+    print("-"*10)
+    for user_id, user_val in user_progress.items():
         # point to the protocol URL
-        print(
-            f"{frontend_url}/{campaign_data["info"]["protocol"]}.html"
-            f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
-            f"&server_url={urllib.parse.quote_plus(server_url)}"
-            f"&user_id={user}"
-        )
+        print(user_val["url"])
 
 
 def main():

@@ -79,6 +79,7 @@ NOTE: this will fail for now as website is not live yet.
 For the frontend locally run:
 
 ```bash
+cd web
 npm install
 npm run dev    # will automatically open your browser
 npm run build  # will output in dist/ that can be statically served
@@ -87,7 +88,7 @@ npm run build  # will output in dist/ that can be statically served
 For the server locally run:
 
 ```bash
-python3 install -e server/ # install editable
+pip3 install -e server/ # install editable
 # add existing data from WMT25, this generates annotation links that you should click
 pearnament add server/examples/wmt25_#_en-cs_CZ.json
 pearnament run

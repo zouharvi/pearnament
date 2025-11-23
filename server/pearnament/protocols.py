@@ -7,7 +7,7 @@ def get_next_item_taskbased(
         data_all: dict,
         progress_data: dict,
     ):
-    if len(data_all[campaign_id]["data"][user_id]) == progress_data[campaign_id][user_id]:
+    if len(data_all[campaign_id]["data"][user_id]) == progress_data[campaign_id][user_id]["progress"]:
         # TODO: add check for data quality
         is_ok = True
         return JSONResponse(
@@ -23,10 +23,11 @@ def get_next_item_taskbased(
         content={
             "status": "ok",
             "progress": {
-                "completed": progress_data[campaign_id][user_id],
+                "completed": progress_data[campaign_id][user_id]["progress"],
                 "total": len(data_all[campaign_id]["data"][user_id])
             },
-            "payload": data_all[campaign_id]["data"][user_id][progress_data[campaign_id][user_id]]},
+            "time": progress_data[campaign_id][user_id]["time"],
+            "payload": data_all[campaign_id]["data"][user_id][progress_data[campaign_id][user_id]["progress"]]},
             status_code=200
         )
 

@@ -12,6 +12,18 @@ if (tokens.length != 0 && tokens.length != campaign_ids.length) {
     throw new Error("Mismatched number of tokens and campaign IDs")
 }
 
+function delta_to_human(delta: number): string {
+    if (delta < 60) {
+        return `${Math.round(delta)}s`
+    } else if (delta < 60*60) {
+        return `${Math.round(delta/60)}m`
+    } else if (delta < 60*60*24) {
+        return `${Math.round(delta/60/60)}h`
+    } else  {
+        return `${Math.round(delta/60/60/24)}d`
+    }
+}
+
 campaign_ids.forEach(async (campaign_id, i) => {
     let token = tokens[i] || null
     try {
@@ -38,20 +50,29 @@ campaign_ids.forEach(async (campaign_id, i) => {
                     <tbody>`
                 for (let line in data) {
                     let status = ''
-                    if (data[line]["completed"] == 0)
+                    if (data[line]["progress"] == 0)
                         status = '💤'
-                    else if (data[line]["completed"] == data[line]["total"])
+                    else if (data[line]["progress"] == data[line]["total"])
                         status = '✅'
                     else 
                         status = '🚧'
 
                     html += '<tr>'
                     html += `<td>${status} ${line}</td>`
-                    html += `<td>${data[line]["completed"]}/${data[line]["total"]}</td>`
-                    html += `<td>${data[line]["time_start"]}</td>`
-                    html += `<td>${data[line]["time_end"]}</td>`
-                    html += `<td>${data[line]["time"]}</td>`
-                    html += `<td>📋 🗑️</td>`
+                    html += `<td>${data[line]["progress"]}/${data[line]["total"]}</td>`
+                    if (data[line]["time_start"] == null) {
+                        html += `<td title="N/A"></td>`
+                    } else {
+                        html += `<td title="${new Date(data[line]["time_start"]*1000).toLocaleString()}">${delta_to_human(Date.now()/1000 - data[line]["time_start"])} ago</td>`
+                    }
+                    if (data[line]["time_end"] == null) {
+                        html += `<td title="N/A"></td>`
+                    } else {
+                        html += `<td title="${new Date(data[line]["time_end"]*1000).toLocaleString()}">${delta_to_human(Date.now()/1000 - data[line]["time_end"])} ago</td>`
+                    }
+                    html += `<td>${Math.round(data[line]["time"]/60)}m</td>`
+                    // TODO: turn into actions
+                    html += `<td><a href="${data[line]["url"]}">🔗</a>&nbsp;&nbsp;🗑️</td>`
                     html += '</tr>'
                 }
                 html += '</tbody></table>'
