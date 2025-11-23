@@ -5,7 +5,7 @@ authors = [
     { name="Vilém Zouhar", email="vilem.zouhar@gmail.com" }
 ]
 version = "0.0.1"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi >= 0.110.0",
     "uvicorn >= 0.29.0",

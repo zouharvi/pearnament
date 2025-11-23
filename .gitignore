@@ -1,5 +1,7 @@
 # added manually
 data/
+# by default ignore, override with -.f
+server/examples
 
 __pycache__
 

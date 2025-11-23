@@ -1,4 +1,7 @@
 import difflib
+import contextlib
+
+ROOT = "."
 
 def highlight_differences(a, b):
     """
@@ -28,4 +31,5 @@ def highlight_differences(a, b):
                 res_b.append(f"{span_open}{b[j1:j2]}{span_close}")
     
     return "".join(res_a), "".join(res_b)
+
 
