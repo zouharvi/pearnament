@@ -23,10 +23,18 @@ data_all = {}
 with open("data/progress.json", "r") as f:
     progress_data = json.load(f)
 
+class LogResponseRequest(BaseModel):
+    campaign_id: str
+    user_id: str
+    payload: Any
 
 @app.post("/log-response")
-async def log_response(campaign_id: str, user_id: str, payload: Any):
+async def log_response(log_request: LogResponseRequest):
     global progress_data
+
+    campaign_id = log_request.campaign_id
+    user_id = log_request.user_id
+    payload = json.dumps(log_request.payload, ensure_ascii=False)
 
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
@@ -51,7 +59,6 @@ async def get_next_item(item_request: NextItemRequest):
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
     if user_id not in progress_data[campaign_id]:
-        print(progress_data[campaign_id])
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
 
     if campaign_id not in data_all:
