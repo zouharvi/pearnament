@@ -1,13 +1,12 @@
+from typing import Any
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-import random
-import collections
+from .protocols import get_next_item_taskbased, get_next_item_dynamic
 import json
-from .model import CompetitionModel
-from .utils import highlight_differences
+from .utils import ROOT
 import os
-os.makedirs("data", exist_ok=True)
+os.makedirs("data/outputs", exist_ok=True)
 
 app = FastAPI()
 app.add_middleware(
@@ -18,44 +17,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("data/wmt25-genmt-batches.json", "r") as f:
-    data = json.load(f)[0]["data"]
-    systems = list(data[0]["tgt_text"].keys())
+data_all = {}
 
-# just keep stored how much we evaluated
-segment_registry = collections.defaultdict(lambda: -1)
-competition_model = CompetitionModel(systems)
+with open("data/progress.json", "r") as f:
+    progress_data = json.load(f)
 
-@app.post("/get-next")
-async def get_next(uid: str):
-    print(uid)
-    global segment_registry
 
-    sys1, sys2 = random.sample(systems, 2)
-    segment_registry[(sys1, sys2)] += 1
-    # TODO: handle overflow better
-    if segment_registry[(sys1, sys2)] >= len(data):
-        segment_registry[(sys1, sys2)] = 0
-
-    line = data[segment_registry[(sys1, sys2)]]
-
-    texts = [highlight_differences(a, b) for a, b in zip(
-        line["tgt_text"][sys1],
-        line["tgt_text"][sys2],
-    )]
+@app.post("/log-response")
+async def log_response(campaign_id: str, user_id: str, payload: Any):
+    if campaign_id not in progress_data:
+        return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+    if user_id not in progress_data[campaign_id]:
+        return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
     
-    return JSONResponse(content={
-        "doc_id": line["doc_id"],
-        # TODO: this is not good sentence splitting
-        "src": [line.replace(". ", ".<br><br>") for line in line["src_text"]],
-        "sys_a": sys1,
-        "out_a": [line_a.replace(". ", ".<br><br>") for line_a, line_b in texts],
-        "sys_b": sys2,
-        "out_b": [line_b.replace(". ", ".<br><br>") for line_a, line_b in texts],
-    })
+    global progress_data
+
+    with open(f"{ROOT}/data/outputs/{campaign_id}.jsonl", "a") as log_file:
+        log_file.write(payload + "\n")
+    
+    progress_data[campaign_id][user_id] += 1
 
 
-async def log_message(message: str):
-    # TODO: log into some common directory
-    with open("data/log.jsonl", "a") as log_file:
-        log_file.write(message + "\n")
+@app.post("/get-next-item")
+async def get_next_item(campaign_id: str, user_id: str):
+    if campaign_id not in progress_data:
+        return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+    if user_id not in progress_data[campaign_id]:
+        return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
+
+    if campaign_id not in data_all:
+        # load campaign data if does not exist in cache
+        with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
+            data_all[campaign_id] = json.load(f)
+
+    if data_all[campaign_id]["info"]["type"] == "task-based":
+        return get_next_item_taskbased(campaign_id, user_id, data_all, progress_data)
+    elif data_all[campaign_id]["info"]["type"] == "dynamic":
+        return get_next_item_dynamic(campaign_id, user_id, data_all, progress_data)
+    else:
+        return JSONResponse(content={"error": "Unknown campaign type"}, status_code=400)

@@ -6,83 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pearnament Evaluation</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #b9e2a1 0%, #dbcfe7 100%);
-      background-attachment: fixed;
-    }
-
-    * {
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .output {
-      display: inline-block;
-      width: 30%;
-      background-color: #fffc;
-      padding: 10px;
-      border-radius: 4px;
-      vertical-align: top;
-      margin-left: 5px;
-    }
-
-
-    .difference:not(.hidden) {
-      background-color: #e3e995;
-    }
-
-    .button_panel {
-      text-align: center;
-      margin-top: 5px;
-    }
-
-    input[type="button"] {
-      background: #ffe;
-      border: none;
-      border-radius: 5px;
-      font-size: large;
-    }
-
-    .button_navigation.button_selected {
-      background: #8db3ec !important;
-    }
-
-    input[type="button"]:hover:not(:disabled) {
-      background: #efe;
-      cursor: pointer;
-    }
-
-    label {
-      user-select: none;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 
 <body>
-  <div style="width: 1200px; margin-left: auto; margin-right: auto; margin-top: 20px;">
-    <div>
-      <span>Annotated pairs: 0</span>
-      <span style="margin-left: 20px;">Annotated sources: 0</span>
-      <span style="margin-left: 20px;">Annotation time: 0s</span>
-      <label for="toggle_differences" style="margin-left: 20px;">Show differences</label>
-      <input type="checkbox" id="toggle_differences" checked autocomplete="off">
-      <label for="toggle_debug" style="margin-left: 20px;">Show debug</label>
-      <input type="checkbox" id="toggle_debug" checked autocomplete="off">
-    </div>
-
-    <div id="output_div" style="margin-top: 100px;"></div>
-
-    <br>
-    <br>
-
-    <input type="button" value="next" id="button_next" disabled
-      style="display: block; margin-left: auto; margin-right: auto; width: 100px;">
-
-    <br><br><br>
+  <div class="white-box" style="width: max-content; font-size: large; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    You have reached the 🍐Pearnament evaluation interface.
+    <ul>
+      <li>If you are an annotator, you should have received a specialized link that takes you to the annotations.</li>
+      <li>If you are annotation manager, then you should distribute these links.</li>
+    </ul>
+    
+    <br><br>
+    See the <a href="https://github.com/zouharvi/pearnament">Pearnament project on GitHub</a>. Made with 💚 by Vilém Zouhar and other in 2025-2026.
   </div>
-
 </body>
-
 </html>

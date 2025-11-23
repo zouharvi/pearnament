@@ -39,6 +39,8 @@ for lang, data in data_out.items():
                 "info": {
                     "type": "task-based",
                     "protocol": "ESA",
+                    "server_url": "http://localhost:8001",
+                    "frontend_url": "http://localhost:8000",
                 },
                 "campaign_id": f"wmt25_#_{lang}",
                 "data": data,
