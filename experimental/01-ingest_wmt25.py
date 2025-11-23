@@ -48,7 +48,8 @@ for lang, data in data_out.items():
                     "frontend_url": "http://localhost:8000",
                 },
                 "campaign_id": f"wmt25_#_{lang}",
-                "data": data_new,
+                # just first 5 users to keep the size small
+                "data": data_new[:5],
             },
             f,
             ensure_ascii=False,
