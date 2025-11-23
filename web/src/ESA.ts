@@ -16,7 +16,7 @@ function check_unlock() {
      $("#button_next").val("Next ✅") 
     } else {
       $("#button_next").attr("disabled", "disabled")
-      $("#button_next").val("Next 🛠️") 
+      $("#button_next").val("Next 🚧") 
     }
 }
 

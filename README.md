@@ -14,9 +14,9 @@ A campaign is described in a single JSON file.
 The simplest one, where each user has a pre-defined list of tasks (`task-based`) is:
 ```python
 {
-    "type": "task-based",
     "campaign_id": "my campaign 4",
-    "meta": {
+    "info": {
+        "type": "task-based",
         "protocol": "ESA",
     },
     "data": [
@@ -48,9 +48,9 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a list (i.e. doc
 We also support dynamic allocation of annotations, which is more complex and can be ignored for now:
 ```python
 {
-    "type": "dynamic",
     "campaign_id": "my campaign 6",
-    "meta": {
+    "info": {
+        "type": "dynamic",
         "protocol": "ESA",
         "users": 50,
     },
