@@ -1,7 +1,7 @@
 import argparse
 from .utils import ROOT
 import os
-import urllib
+import urllib.parse
 
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 if not os.path.exists(f"{ROOT}/data/progress.json"):
@@ -82,10 +82,7 @@ def _add_campaign(args_unknown):
     with open(f"{ROOT}/data/tasks/{campaign_data['campaign_id']}.json", "w") as f:
         json.dump(campaign_data, f, indent=2)
 
-    progress_data[campaign_data['campaign_id']] = {
-        "info": campaign_data["info"],
-        "progress": user_progress,
-    }
+    progress_data[campaign_data['campaign_id']] = user_progress
 
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
@@ -102,7 +99,7 @@ def _add_campaign(args_unknown):
         # point to the protocol URL
         print(
             f"{frontend_url}/{campaign_data["info"]["protocol"]}.html"
-            f"?campaign_id={campaign_data['campaign_id']}"
+            f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
             f"&server_url={urllib.parse.quote_plus(server_url)}"
             f"&user_id={user}"
         )

@@ -14,15 +14,16 @@ def get_next_item_taskbased(
             content={
                 "status": "done",
                 # vendor can verify the token to ensure the integrity of the completion status
-                "token": hashlib.sha256(f"{campaign_id}|{user_id}|{is_ok}".encode()).hexdigest()
+                "token": hashlib.sha256(f"{campaign_id}|{user_id}|{is_ok}".encode()).hexdigest()[:10]
             },
             status_code=200
         )
 
+    print(data_all[campaign_id]["data"][user_id])
     return JSONResponse(
         content={
             "status": "ok",
-            "payload": data_all[campaign_id][user_id][progress_data[campaign_id][user_id]+1]},
+            "payload": data_all[campaign_id]["data"][user_id][progress_data[campaign_id][user_id]]},
             status_code=200
         )
 
