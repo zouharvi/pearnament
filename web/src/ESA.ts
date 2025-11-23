@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { get_next_item, Item } from './connector';
-let response_log: Array<string> = []
+let response_log: Array<any> = []
 
 $("#toggle_differences").on("change", function() {
   if ($(this).is(":checked")) {
@@ -11,28 +11,46 @@ $("#toggle_differences").on("change", function() {
 })
 
 function check_unlock() {
-  response_log.every(r => r != "") ? $("#button_next").removeAttr("disabled") : $("#button_next").attr("disabled", "disabled")
+  response_log.every(r => r != null) ? $("#button_next").removeAttr("disabled") : $("#button_next").attr("disabled", "disabled")
 }
 
 
 async function load_next() {
   let data = await get_next_item()
 
-  // response_log = data.src.map(_ => "")
+  response_log = data.src.map(_ => null)
 
   let html_new = ""
   for (let i = 0; i < data.src.length; i++) {
     html_new += `
-    <div class="output_src">${data.src[i]}</div>
-    <div class="output_tgt">${data.tgt[i]}</div>
-    <div class="output_response">
-    <input type="button" i="${i}" class="button_left     button_navigation" value="left better">
-    <input type="button" i="${i}" class="button_bothbad  button_navigation" value="both bad">
-    <input type="button" i="${i}" class="button_bothgood button_navigation" value="both fine">
-    <input type="button" i="${i}" class="button_right    button_navigation" value="right better">
+    <div class="output_block">
+    <span class="language_indicator">??</span>
+    <div class="output_srctgt">
+      <div class="output_src">${data.src[i]}</div>
+      <div class="output_tgt">${data.tgt[i]}</div>
     </div>
-    <br>
-    <br>
+    <div class="output_response">
+      <input type="range" min="0" max="100" value="-1" id="response_${i}" orient="vertical">
+      <br>
+      <label class="output_number">?</label>
+    </div>
+    <div class="output_labels">
+      100: perfect
+      <br>
+      <br>
+      <br>
+      66: middling
+      <br>
+      <br>
+      <br>
+      33: broken
+      <br>
+      <br>
+      <br>
+      0: nonsense
+      
+    </div>
+    </div>
     `
   }
 
@@ -41,6 +59,18 @@ async function load_next() {
   // make sure the event loop passes
   await new Promise(r => setTimeout(r, 0));
   check_unlock()
+
+  $(".output_block").each((_, self) => {
+    let slider = $(self).find("input[type='range']")
+    let label = $(self).find(".output_number")
+    slider.on("input", function() {
+      let val = parseInt((<HTMLInputElement> this).value)
+      label.text(val.toString())
+      let i = parseInt(slider.attr("id")!.split("_")[1])
+      response_log[i] = val
+      check_unlock()
+    })
+  })
 
   $(".button_left,.button_right,.button_bothbad,.button_bothgood").on("click", function() {
     $(this).parent().find(".button_navigation").removeClass("button_selected")
