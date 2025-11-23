@@ -1,4 +1,5 @@
 from fastapi.responses import JSONResponse
+import hashlib
 
 def get_next_item_taskbased(
         campaign_id: str,
@@ -7,7 +8,16 @@ def get_next_item_taskbased(
         progress_data: dict,
     ):
     if len(data_all[campaign_id]["data"][user_id]) == progress_data[campaign_id][user_id]:
-        return JSONResponse(content={"status": "done", "key": "TODO"}, status_code=200)
+        # TODO: add check for completion
+        is_ok = True
+        return JSONResponse(
+            content={
+                "status": "done",
+                # vendor can verify the token to ensure the integrity of the completion status
+                "token": hashlib.sha256(f"{campaign_id}|{user_id}|{is_ok}".encode()).hexdigest()
+            },
+            status_code=200
+        )
 
     return JSONResponse(
         content={
