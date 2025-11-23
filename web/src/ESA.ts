@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { get_next_item, Item } from './connector';
+import { get_next_item, log_response } from './connector';
 let response_log: Array<any> = []
 
 $("#toggle_differences").on("change", function() {
@@ -11,7 +11,13 @@ $("#toggle_differences").on("change", function() {
 })
 
 function check_unlock() {
-  response_log.every(r => r != null) ? $("#button_next").removeAttr("disabled") : $("#button_next").attr("disabled", "disabled")
+  if (response_log.every(r => r != null)) {
+     $("#button_next").removeAttr("disabled") 
+     $("#button_next").val("Next ✅") 
+    } else {
+      $("#button_next").attr("disabled", "disabled")
+      $("#button_next").val("Next 🛠️") 
+    }
 }
 
 
@@ -93,10 +99,12 @@ async function load_next() {
   })
 }
 
-$("#button_next").attr("disabled", "disabled")
-
-$("#button_next").on("click", function() {
-  load_next()
+$("#button_next").on("click", async function() {
+  // disable while communicating with the server
+  $("#button_next").attr("disabled", "disabled")
+  $("#button_next").val("Next 📶")
+  await log_response(response_log)
+  await load_next()
 })
 
 load_next()

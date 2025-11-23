@@ -1,6 +1,7 @@
 import os
 import json
 import collections
+import random
 os.chdir(os.path.dirname(os.path.abspath(__file__)) + "/../")
 
 with open("../wmt25-general-mt/data/wmt25-genmt-humeval.jsonl", "r") as f:
@@ -27,9 +28,12 @@ for doc_id, segments in documents.items():
             "tgt": [seg["tgt_text"][sys].replace("< / i>", "</i>") for _, seg in segments],
         })
 
+r = random.Random(0)
+
 for lang, data in data_out.items():
     # chunk to 10 documents per task
     data_new = []
+    r.shuffle(data)
     for i in range(0, len(data), 10):
         chunk = data[i:i + 10]
         data_new.append(chunk)

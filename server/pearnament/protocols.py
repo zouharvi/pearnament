@@ -19,7 +19,6 @@ def get_next_item_taskbased(
             status_code=200
         )
 
-    print(data_all[campaign_id]["data"][user_id])
     return JSONResponse(
         content={
             "status": "ok",
@@ -28,4 +27,5 @@ def get_next_item_taskbased(
         )
 
 def get_next_item_dynamic(campaign_data: dict, user_id: str, progress_data: dict, data_all: dict):
+    raise NotImplementedError("Dynamic protocol is not implemented yet.")
     pass

@@ -56,8 +56,13 @@
       margin-left: -5px;
     }
 
+    .output_number {
+      display: inline-block;
+      width: 20px;
+    }
+
     /* on displays with less than 1100px */
-    @media (max-width: 1100px) {
+    @media (max-width: 1000px) {
       .output_srctgt {
         width: 80%;
         margin-right: 30px;
@@ -73,19 +78,19 @@
 </head>
 
 <body>
-  <div style="max-width: 1600px; min-width: 1000px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
+  <div style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
     <div>
       <span>Annotated: 0/0</span>
       <span style="margin-left: 20px;">Annotation time: 0s</span>
+
+    <input
+      type="button" value="Next 🛠️" id="button_next" disabled
+      style="float: right; width: 100px; margin-right: 20px;"
+      title="Finish annotating all examples first."
+    >
     </div>
 
     <div id="output_div" style="margin-top: 100px;"></div>
-
-    <br>
-    <br>
-
-    <input type="button" value="next" id="button_next" disabled
-      style="display: block; margin-left: auto; margin-right: auto; width: 100px;">
 
     <br><br><br>
   </div>
