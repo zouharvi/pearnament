@@ -7,6 +7,26 @@
   <title>Pearnament Evaluation</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .output_src, .output_tgt {
+      display: inline-block;
+      width: 30%;
+      background-color: #fffc;
+      padding: 10px;
+      border-radius: 4px;
+      vertical-align: top;
+      margin-left: 5px;
+    }
+    .output_response {
+      display: inline-block;
+      width: 30%;
+      background-color: #fff5;
+      padding: 10px;
+      border-radius: 4px;
+      vertical-align: top;
+      margin-left: 5px;
+    }
+  </style>
 </head>
 
 <body>
@@ -15,8 +35,6 @@
       <span>Annotated pairs: 0</span>
       <span style="margin-left: 20px;">Annotated sources: 0</span>
       <span style="margin-left: 20px;">Annotation time: 0s</span>
-      <label for="toggle_debug" style="margin-left: 20px;">Show debug</label>
-      <input type="checkbox" id="toggle_debug" checked autocomplete="off">
     </div>
 
     <div id="output_div" style="margin-top: 100px;"></div>

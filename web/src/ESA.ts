@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { get_next_pair, Item } from './connector';
+import { get_next_item, Item } from './connector';
 let response_log: Array<string> = []
 
 $("#toggle_differences").on("change", function() {
@@ -16,18 +16,16 @@ function check_unlock() {
 
 
 async function load_next() {
-  let data = await get_next_pair()
+  let data = await get_next_item()
 
-  response_log = data.src.map(_ => "")
+  // response_log = data.src.map(_ => "")
 
   let html_new = ""
   for (let i = 0; i < data.src.length; i++) {
     html_new += `
-    <div class="output">${data.out_a[i]}</div>
-    <div class="output">${data.src[i]}</div>
-    <div class="output">${data.out_b[i]}</div>
-    <br>
-    <div class="button_panel">
+    <div class="output_src">${data.src[i]}</div>
+    <div class="output_tgt">${data.tgt[i]}</div>
+    <div class="output_response">
     <input type="button" i="${i}" class="button_left     button_navigation" value="left better">
     <input type="button" i="${i}" class="button_bothbad  button_navigation" value="both bad">
     <input type="button" i="${i}" class="button_bothgood button_navigation" value="both fine">

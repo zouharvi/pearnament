@@ -2,6 +2,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from .protocols import get_next_item_taskbased, get_next_item_dynamic
 import json
 from .utils import ROOT
@@ -25,24 +26,32 @@ with open("data/progress.json", "r") as f:
 
 @app.post("/log-response")
 async def log_response(campaign_id: str, user_id: str, payload: Any):
+    global progress_data
+
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
     if user_id not in progress_data[campaign_id]:
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
     
-    global progress_data
-
     with open(f"{ROOT}/data/outputs/{campaign_id}.jsonl", "a") as log_file:
         log_file.write(payload + "\n")
     
     progress_data[campaign_id][user_id] += 1
 
 
+class NextItemRequest(BaseModel):
+    campaign_id: str
+    user_id: str
+
 @app.post("/get-next-item")
-async def get_next_item(campaign_id: str, user_id: str):
+async def get_next_item(item_request: NextItemRequest):
+    campaign_id = item_request.campaign_id
+    user_id = item_request.user_id
+
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
     if user_id not in progress_data[campaign_id]:
+        print(progress_data[campaign_id])
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
 
     if campaign_id not in data_all:

@@ -1,24 +1,25 @@
 import { notify } from "./utils"
 import $ from 'jquery';
 
-export type Item = { "doc_id": string, "src": string[], "sys_a": string, "out_a": string[], "sys_b": string, "out_b": string[] }
+export type Item = { "src": Array<string>, "tgt": Array<string> }
+let searchParams = new URLSearchParams(window.location.search)
 
-
-export async function get_next_pair(): Promise<Item> {
-    let uid = "TODOTODO";
-
+export async function get_next_item(): Promise<Item> {
+    let user_id = searchParams.get("user_id");
+    let campaign_id = searchParams.get("campaign_id");
 
     let delay = 1
     while (true) {
         try {
             return await new Promise<Item>((resolve, reject) => {
               $.ajax({
-                url: "http://127.0.0.1:8001/get-next",
+                url: "http://127.0.0.1:8001/get-next-item",
                 method: "POST",
-                data: JSON.stringify({ "uid": uid }),
+                data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id }),
                 contentType: "application/json",
                 dataType: "json",
-                success: resolve,
+                // TODO: handle being done
+                success: (x) => resolve(x["payload"]),
                 error: (XMLHttpRequest, textStatus, errorThrown) => {
                     console.error("Error fetching data:", textStatus, errorThrown);
                     reject(`Status: ${XMLHttpRequest.status} Error: ${XMLHttpRequest.responseText}`);
