@@ -32,49 +32,75 @@ async function display_next(response: DataPayload) {
   response_log = data.src.map(_ => null)
   action_log = [{ "time": Date.now()/1000, "action": "load" }]
 
-  let html_new = ""
+  $("#output_div").html("")
+
   for (let i = 0; i < data.src.length; i++) {
-    html_new += `
-    <div class="output_block">
-    <span class="language_indicator">??</span>
-    <div class="output_srctgt">
-      <div class="output_src">${data.src[i]}</div>
-      <div class="output_tgt">${data.tgt[i]}</div>
-    </div>
-    <div class="output_response">
-      <input type="range" min="0" max="100" value="-1" id="response_${i}" orient="vertical">
-      <br>
-      <label class="output_number">?</label>
-    </div>
-    <div class="output_labels">
-      100: perfect
-      <br>
-      <br>
-      <br>
-      66: middling
-      <br>
-      <br>
-      <br>
-      33: broken
-      <br>
-      <br>
-      <br>
-      0: nonsense
-      
-    </div>
-    </div>
-    `
-  }
+    let src_chars = data.src[i].split("").map(c => `<span class="src_char">${c}</span>`).join("")
+    let tgt_chars = data.tgt[i].split("").map(c => `<span class="tgt_char">${c}</span>`).join("")
+    let output_block = $(`
+      <div class="output_block">
+      <span class="language_indicator">??</span>
+      <div class="output_srctgt">
+        <div class="output_src">${src_chars}</div>
+        <div class="output_tgt">${tgt_chars}</div>
+      </div>
+      <div class="output_response">
+        <input type="range" min="0" max="100" value="-1" id="response_${i}" orient="vertical">
+        <br>
+        <label class="output_number">?</label>
+      </div>
+      <div class="output_labels">
+        100: perfect
+        <br>
+        <br>
+        <br>
+        66: middling
+        <br>
+        <br>
+        <br>
+        33: broken
+        <br>
+        <br>
+        <br>
+        0: nonsense
+      </div>
+      </div>
+    `)
 
-  $("#output_div").html(html_new)
+    // crude character alignment
+    let src_chars_els = output_block.find(".src_char").toArray()
+    let tgt_chars_els = output_block.find(".tgt_char").toArray()
+    tgt_chars_els.forEach((self, i) => {
+      $(self).on("mouseleave", function () {
+        $(".src_char").removeClass("highlighted")
+      })
 
-  // make sure the event loop passes
-  await new Promise(r => setTimeout(r, 0));
-  check_unlock()
+      $(self).on("mouseenter", function () {
+        $(".src_char").removeClass("highlighted")
+        let src_i = Math.round(i / tgt_chars_els.length * src_chars_els.length)
+        for(let j = Math.max(0, src_i-5); j <= Math.min(src_chars_els.length-1, src_i+5); j++) {
+          $(src_chars_els[j]).addClass("highlighted")
+        }
+      })
+    })
 
-  $(".output_block").each((_, self) => {
-    let slider = $(self).find("input[type='range']")
-    let label = $(self).find(".output_number")
+    src_chars_els.forEach((self, i) => {
+      $(self).on("mouseleave", function () {
+        $(".tgt_char").removeClass("highlighted")
+      })
+
+      $(self).on("mouseenter", function () {
+        $(".tgt_char").removeClass("highlighted")
+        let tgt_i = Math.round(i / src_chars_els.length * tgt_chars_els.length)
+        for(let j = Math.max(0, tgt_i-5); j <= Math.min(tgt_chars_els.length-1, tgt_i+5); j++) {
+          $(tgt_chars_els[j]).addClass("highlighted")
+        }
+      })
+    })
+    $("#output_div").append(output_block)
+
+    let slider = output_block.find("input[type='range']")
+    let label = output_block.find(".output_number")
     slider.on("input", function () {
       let val = parseInt((<HTMLInputElement>this).value)
       label.text(val.toString())
@@ -83,27 +109,9 @@ async function display_next(response: DataPayload) {
       check_unlock()
       action_log.push({ "time": Date.now()/1000, "index": i, "value": val })
     })
-  })
+  }
 
-  $(".button_left,.button_right,.button_bothbad,.button_bothgood").on("click", function () {
-    $(this).parent().find(".button_navigation").removeClass("button_selected")
-    $(this).addClass("button_selected")
-
-    let i = parseInt($(this).attr("i")!)
-    if ($(this).hasClass("button_left")) {
-      response_log[i] = "left"
-    } else if ($(this).hasClass("button_right")) {
-      response_log[i] = "right"
-    } else if ($(this).hasClass("button_bothbad")) {
-      response_log[i] = "bothbad"
-    } else if ($(this).hasClass("button_bothgood")) {
-      response_log[i] = "bothgood"
-    } else {
-      console.error("unknown button class")
-    }
-
-    check_unlock()
-  })
+  check_unlock()
 }
 
 
