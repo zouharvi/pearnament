@@ -1,10 +1,9 @@
 import { notify } from "./utils"
 import $ from 'jquery';
 
-export type Data = { "payload": { "src": Array<string>, "tgt": Array<string> }, "progress": { "completed": number, "total": number }, "time": number }
 let searchParams = new URLSearchParams(window.location.search)
 
-export async function get_next_item(): Promise<Data> {
+export async function get_next_item<T>(): Promise<T> {
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");
   let server_url = searchParams.get("server_url");
@@ -12,7 +11,7 @@ export async function get_next_item(): Promise<Data> {
   let delay = 1
   while (true) {
     try {
-      return await new Promise<Data>((resolve, reject) => {
+      return await new Promise<T>((resolve, reject) => {
         $.ajax({
           url: `${server_url}/get-next-item`,
           method: "POST",

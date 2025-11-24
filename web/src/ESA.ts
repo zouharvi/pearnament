@@ -21,13 +21,14 @@ function check_unlock() {
   }
 }
 
+export type DataPayload = { "status": string, "progress": { "completed": number, "total": number, "time": number }, "payload": { "src": Array<string>, "tgt": Array<string> }, }
+export type DataFinished = { "status": string, "progress": { "completed": number, "total": number, "time": number,  }, "token": string,  }
 
-async function load_next() {
-  let response = await get_next_item()
-  let data = response.payload
+async function display_next(response: DataPayload) {
   $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
-  $("#time").text(`Annotation time: ${Math.round(response.time/60)}m`)
+  $("#time").text(`Annotation time: ${Math.round(response.progress.time/60)}m`)
 
+  let data = response.payload
   response_log = data.src.map(_ => null)
   action_log = [{ "time": Date.now()/1000, "action": "load" }]
 
@@ -103,6 +104,32 @@ async function load_next() {
 
     check_unlock()
   })
+}
+
+
+async function load_next() {
+  let response = await get_next_item<DataPayload | DataFinished>()
+
+  if (response.status == "completed") {
+    let response_finished = response as DataFinished
+    $("#output_div").html(`
+    <div class='white-box' style='width: max-content'>
+    <h2>🎉 All done, thank you for your annotations!</h2>
+
+    If someone asks you for a token of completion, show them:
+    <span style="font-family: monospace; font-size: 11pt;">${response_finished.token}</span>
+    <br>
+    <br>
+    </div>
+    `)
+    $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
+    $("#time").text(`Total annotation time: ${Math.round(response_finished.progress.time/60)}m`)
+    $("#button_next").hide()
+  } else if (response.status == "ok") {
+    display_next(response as DataPayload)
+  } else {
+    console.error("Non-ok response", response)
+  }
 }
 
 $("#button_next").on("click", async function () {
