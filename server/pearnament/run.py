@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import functools
 from .protocols import get_next_item_taskbased, get_next_item_dynamic
 import json
 from .utils import ROOT
@@ -60,6 +59,7 @@ async def log_response(request: LogResponseRequest):
             for a, b in zip(times, times[1:])
         ])
 
+    # TODO: this should verify that the correct ID is being incremented, otherwise prevent incrementing
     progress_data[campaign_id][user_id]["progress"] += 1
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(progress_data, f, indent=2)
@@ -103,6 +103,9 @@ class DashboardDataRequest(BaseModel):
 async def dashboard_data(request: DashboardDataRequest):
     campaign_id = request.campaign_id
 
+    # TODO: manage dashboard tokens
+    is_privileged = True
+
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
     
@@ -115,7 +118,13 @@ async def dashboard_data(request: DashboardDataRequest):
         user_id: {
             **user_val,
             "total": len(data_all[campaign_id]["data"][user_id]),
-        }
+        } | (
+            # override if not privileged
+            {
+                "token_correct": None,
+                "token_incorrect": None,
+            } if not is_privileged else {}
+        )
         for user_id, user_val in progress_data[campaign_id].items()
     }
 

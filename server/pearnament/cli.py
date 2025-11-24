@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 from .utils import ROOT
 import os
 import urllib.parse
@@ -95,7 +96,9 @@ def _add_campaign(args_unknown):
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&server_url={urllib.parse.quote_plus(server_url)}"
                 f"&user_id={user_id}"
-            )
+            ),
+            "token_correct": hashlib.sha256(random.randbytes(16)).hexdigest()[:16],
+            "token_incorrect": hashlib.sha256(random.randbytes(16)).hexdigest()[:16],
         }
         for user_id in user_ids
     }
