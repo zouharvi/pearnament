@@ -21,16 +21,24 @@ function check_unlock() {
   }
 }
 
-export type DataPayload = { "status": string, "progress": { "completed": number, "total": number, "time": number }, "payload": { "src": Array<string>, "tgt": Array<string> }, }
+export type DataPayload = { "status": string, "progress": { "completed": number, "total": number, "time": number }, "payload": { "src": Array<string>, "tgt": Array<string> }, "info": Object  }
 export type DataFinished = { "status": string, "progress": { "completed": number, "total": number, "time": number,  }, "token": string,  }
 
-async function display_next(response: DataPayload) {
+async function display_next_payload(response: DataPayload) {
   $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
   $("#time").text(`Annotation time: ${Math.round(response.progress.time/60)}m`)
 
   let data = response.payload
   response_log = data.src.map(_ => null)
   action_log = [{ "time": Date.now()/1000, "action": "load" }]
+
+  // set status message if it exists
+  if(response.info.hasOwnProperty("status_message")) {
+    // @ts-ignore
+    $("#status_message").html(response.info.status_message)
+  } else { 
+    $("#status_message").html("")
+  }
 
   $("#output_div").html("")
 
@@ -39,7 +47,6 @@ async function display_next(response: DataPayload) {
     let tgt_chars = data.tgt[i].split("").map(c => `<span class="tgt_char">${c}</span>`).join("")
     let output_block = $(`
       <div class="output_block">
-      <span class="language_indicator">??</span>
       <div class="output_srctgt">
         <div class="output_src">${src_chars}</div>
         <div class="output_tgt">${tgt_chars}</div>
@@ -134,7 +141,7 @@ async function load_next() {
     $("#time").text(`Total annotation time: ${Math.round(response_finished.progress.time/60)}m`)
     $("#button_next").hide()
   } else if (response.status == "ok") {
-    display_next(response as DataPayload)
+    display_next_payload(response as DataPayload)
   } else {
     console.error("Non-ok response", response)
   }

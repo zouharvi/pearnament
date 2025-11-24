@@ -1,7 +1,9 @@
 {
   "info": {
     "type": "task-based",
+    "template": "pointwise",
     "protocol": "ESA",
+    "status_message": "Evaluate translation from en to cs_CZ",
     "server_url": "http://localhost:8001",
     "frontend_url": "http://localhost:8000"
   },
