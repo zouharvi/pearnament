@@ -32,6 +32,7 @@ def get_next_item_taskbased(
             },
             "info": {
                 "status_message": data_all[campaign_id]["info"].get("status_message", ""),
+                "protocol": data_all[campaign_id]["info"].get("protocol", ""),
             },
             "payload": data_all[campaign_id]["data"][user_id][progress_data[campaign_id][user_id]["progress"]]},
             status_code=200
