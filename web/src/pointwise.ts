@@ -21,8 +21,20 @@ function check_unlock() {
   }
 }
 
-export type DataPayload = { "status": string, "progress": { "completed": number, "total": number, "time": number }, "payload": { "src": Array<string>, "tgt": Array<string> }, "info": Object  }
-export type DataFinished = { "status": string, "progress": { "completed": number, "total": number, "time": number,  }, "token": string,  }
+export type DataPayload = {
+  "status": string,
+  "progress": { "completed": number, "total": number, "time": number },
+  "payload": { "src": Array<string>, "tgt": Array<string> },
+  "info": {
+    "status_message": string,
+    "protocol": string,
+  }
+}
+export type DataFinished = {
+  "status": string,
+  "progress": {"completed": number, "total": number, "time": number,  },
+  "token": string,
+}
 
 async function display_next_payload(response: DataPayload) {
   $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
@@ -32,13 +44,10 @@ async function display_next_payload(response: DataPayload) {
   response_log = data.src.map(_ => null)
   action_log = [{ "time": Date.now()/1000, "action": "load" }]
 
-  // set status message if it exists
-  if(response.info.hasOwnProperty("status_message")) {
-    // @ts-ignore
-    $("#status_message").html(response.info.status_message)
-  } else { 
-    $("#status_message").html("")
-  }
+  $("#status_message").html(response.info.status_message)
+
+  let protocol_error_spans = response.info.protocol == "ESA" || response.info.protocol == "MQM"
+  let protocol_error_categories = response.info.protocol == "MQM"
 
   $("#output_div").html("")
 
@@ -77,9 +86,12 @@ async function display_next_payload(response: DataPayload) {
     // crude character alignment
     let src_chars_els = output_block.find(".src_char").toArray()
     let tgt_chars_els = output_block.find(".tgt_char").toArray()
+    let state_i: null | number = null
+
     tgt_chars_els.forEach((self, i) => {
       $(self).on("mouseleave", function () {
         $(".src_char").removeClass("highlighted")
+        $(".tgt_char").removeClass("highlighted")
       })
 
       $(self).on("mouseenter", function () {
@@ -88,11 +100,39 @@ async function display_next_payload(response: DataPayload) {
         for(let j = Math.max(0, src_i-5); j <= Math.min(src_chars_els.length-1, src_i+5); j++) {
           $(src_chars_els[j]).addClass("highlighted")
         }
+
+        if (state_i != null) {
+          for(let j = Math.min(state_i, i); j <= Math.max(state_i, i); j++) {
+            $(tgt_chars_els[j]).addClass("highlighted")
+          }
+        }
       })
+
+      if(protocol_error_spans) {
+        $(self).on("click", function () {
+          // TODO: check if we are in existing span
+
+          if (state_i != null) {
+            // TODO: check if we're not overlapping
+            
+            $(".src_char").removeClass("highlighted")
+            $(".tgt_char").removeClass("highlighted")
+            console.log("TODO SAVE ANNOTATIONS")
+            for(let j = Math.min(state_i, i); j <= Math.max(state_i, i); j++) {
+              $(tgt_chars_els[j]).addClass("error_minor")
+            }
+            state_i = null
+          } else {
+            state_i = i
+          }
+          $(self).addClass("error_minor")
+        })
+      }
     })
 
     src_chars_els.forEach((self, i) => {
       $(self).on("mouseleave", function () {
+        $(".src_char").removeClass("highlighted")
         $(".tgt_char").removeClass("highlighted")
       })
 

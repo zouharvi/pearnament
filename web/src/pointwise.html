@@ -23,6 +23,7 @@
       vertical-align: top;
       margin-right: 2px;
       margin-left: 2px;
+      user-select: none;
     }
 
     .output_src {
@@ -76,6 +77,18 @@
     .tgt_char:hover {
       background-color: #ccc;
       cursor: pointer;;
+    }
+    
+    .src_char:hover {
+      background-color: #ccc;
+    }
+
+    .tgt_char.error_minor {
+      background-color: #fcc;
+    }
+
+    .tgt_char.error_major {
+      background-color: #e88;
     }
 
     .src_char.highlighted, .tgt_char.highlighted {
