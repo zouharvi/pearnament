@@ -17,6 +17,7 @@ The simplest one, where each user has a pre-defined list of tasks (`task-based`)
     "campaign_id": "my campaign 4",
     "info": {
         "type": "task-based",
+        "template": "pointwise",
         "protocol": "ESA",
     },
     "data": [
@@ -51,7 +52,8 @@ We also support dynamic allocation of annotations, which is more complex and can
     "campaign_id": "my campaign 6",
     "info": {
         "type": "dynamic",
-        "protocol": "ESA",
+        "template": "kway",
+        "protocol": "ESAK",
         "users": 50,
     },
     "data": [...], # list of all items

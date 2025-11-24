@@ -92,7 +92,7 @@ def _add_campaign(args_unknown):
             "time_end": None,
             "time": 0,
             "url": (
-                f"{frontend_url}/{campaign_data["info"]["protocol"]}.html"
+                f"{frontend_url}/{campaign_data["info"]["template"]}.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&server_url={urllib.parse.quote_plus(server_url)}"
                 f"&user_id={user_id}"

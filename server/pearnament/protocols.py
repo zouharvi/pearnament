@@ -30,6 +30,9 @@ def get_next_item_taskbased(
                 "time": progress_data[campaign_id][user_id]["time"],
                 "total": len(data_all[campaign_id]["data"][user_id]),
             },
+            "info": {
+                "status_message": data_all[campaign_id]["info"].get("status_message", ""),
+            },
             "payload": data_all[campaign_id]["data"][user_id][progress_data[campaign_id][user_id]["progress"]]},
             status_code=200
         )

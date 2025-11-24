@@ -39,11 +39,14 @@ for lang, data in data_out.items():
         data_new.append(chunk)
     
     with open(f"server/examples/wmt25_#_{lang}.json", "w") as f:
+        lang1, lang2 = lang.split("-")
         json.dump(
             {
                 "info": {
                     "type": "task-based",
+                    "template": "pointwise",
                     "protocol": "ESA",
+                    "status_message": f"Evaluate translation from {lang1} to {lang2}",
                     "server_url": "http://localhost:8001",
                     "frontend_url": "http://localhost:8000",
                 },

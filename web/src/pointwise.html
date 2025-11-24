@@ -25,6 +25,10 @@
       margin-left: 2px;
     }
 
+    .output_src {
+      background-color: #fff7;
+    }
+
     .output_response {
       display: inline-block;
       width: max-content;
@@ -41,12 +45,6 @@
       top: -5px;
     }
 
-    .language_indicator {
-      font-size: 9pt;
-      vertical-align: top;
-      color: "#555";
-    }
-    
     .output_labels {
       vertical-align: top;
       display: inline-block;
@@ -88,15 +86,16 @@
 
 <body>
   <div style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
-    <div>
-      <span id="progress">Annotated: 0/0</span>
-      <span id="time" style="margin-left: 20px;">Annotation time: 0m</span>
+    <div style="display: flex;">
+      <span id="progress" style="flex: 0 0 130px;">Annotated: 0/0</span>
+      <span id="time" style="flex: 0 0 170px;">Annotation time: 0m</span>
+      <span id="status_message" style="margin-left: 20px; flex-grow: 1; vertical-align: top;"></span>
 
-    <input
-      type="button" value="Next 🛠️" id="button_next" disabled
-      style="float: right; width: 100px; margin-right: 20px;"
-      title="Finish annotating all examples first."
-    >
+      <input
+        type="button" value="Next 🛠️" id="button_next" disabled
+        style="flex: 0 0 150px; margin-right: 20px; margin-left: 20px; height: 2.5em;"
+        title="Finish annotating all examples first."
+      >
     </div>
 
     <div id="output_div" style="margin-top: 100px;"></div>
