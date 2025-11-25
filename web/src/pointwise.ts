@@ -27,7 +27,9 @@ export type DataPayload = {
   "payload": { "src": Array<string>, "tgt": Array<string> },
   "info": {
     "status_message": string,
-    "protocol": string,
+    "protocol_score": boolean,
+    "protocol_error_spans": boolean,
+    "protocol_error_categories": boolean,
   }
 }
 export type DataFinished = {
@@ -36,30 +38,8 @@ export type DataFinished = {
   "token": string,
 }
 
-async function display_next_payload(response: DataPayload) {
-  $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
-  $("#time").text(`Annotation time: ${Math.round(response.progress.time/60)}m`)
-
-  let data = response.payload
-  response_log = data.src.map(_ => null)
-  action_log = [{ "time": Date.now()/1000, "action": "load" }]
-
-  $("#status_message").html(response.info.status_message)
-
-  let protocol_error_spans = response.info.protocol == "ESA" || response.info.protocol == "MQM"
-  let protocol_error_categories = response.info.protocol == "MQM"
-
-  $("#output_div").html("")
-
-  for (let i = 0; i < data.src.length; i++) {
-    let src_chars = data.src[i].split("").map(c => `<span class="src_char">${c}</span>`).join("")
-    let tgt_chars = data.tgt[i].split("").map(c => `<span class="tgt_char">${c}</span>`).join("")
-    let output_block = $(`
-      <div class="output_block">
-      <div class="output_srctgt">
-        <div class="output_src">${src_chars}</div>
-        <div class="output_tgt">${tgt_chars}</div>
-      </div>
+function _slider_html(i: number): string {
+  return `
       <div class="output_response">
         <input type="range" min="0" max="100" value="-1" id="response_${i}" orient="vertical">
         <br>
@@ -80,6 +60,35 @@ async function display_next_payload(response: DataPayload) {
         <br>
         0: nonsense
       </div>
+    `
+}
+
+async function display_next_payload(response: DataPayload) {
+  $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
+  $("#time").text(`Annotation time: ${Math.round(response.progress.time/60)}m`)
+
+  let data = response.payload
+  response_log = data.src.map(_ => null)
+  action_log = [{ "time": Date.now()/1000, "action": "load" }]
+
+  $("#status_message").html(response.info.status_message)
+
+  let protocol_score = response.info.protocol_score
+  let protocol_error_spans = response.info.protocol_error_spans
+  let protocol_error_categories = response.info.protocol_error_categories
+
+  $("#output_div").html("")
+
+  for (let i = 0; i < data.src.length; i++) {
+    let src_chars = data.src[i].split("").map(c => `<span class="src_char">${c}</span>`).join("")
+    let tgt_chars = data.tgt[i].split("").map(c => `<span class="tgt_char">${c}</span>`).join("")
+    let output_block = $(`
+      <div class="output_block">
+      <div class="output_srctgt">
+        <div class="output_src">${src_chars}</div>
+        <div class="output_tgt">${tgt_chars}</div>
+      </div>
+      ${protocol_score ? _slider_html(i) : ""}
       </div>
     `)
 
@@ -108,7 +117,7 @@ async function display_next_payload(response: DataPayload) {
         }
       })
 
-      if(protocol_error_spans) {
+      if(protocol_error_spans || protocol_error_categories) {
         $(self).on("click", function () {
           // TODO: check if we are in existing span
 
