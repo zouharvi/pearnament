@@ -18,7 +18,9 @@ The simplest one, where each user has a pre-defined list of tasks (`task-based`)
     "info": {
         "type": "task-based",
         "template": "pointwise",
-        "protocol": "ESA",
+        "protocol_score": True,                # collect scores
+        "protocol_error_spans": True,          # collect error spans
+        "protocol_error_categories": False,    # do not collect MQM categories, so ESA
     },
     "data": [
         [...],  # tasks for first user
@@ -53,7 +55,7 @@ We also support dynamic allocation of annotations, which is more complex and can
     "info": {
         "type": "dynamic",
         "template": "kway",
-        "protocol": "ESAK",
+        "protocol_k": 5,
         "users": 50,
     },
     "data": [...], # list of all items

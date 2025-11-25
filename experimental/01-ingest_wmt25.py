@@ -45,7 +45,9 @@ for lang, data in data_out.items():
                 "info": {
                     "type": "task-based",
                     "template": "pointwise",
-                    "protocol": "ESA",
+                    "protocol_score": True,
+                    "protocol_error_spans": True,
+                    "protocol_error_categories": False,
                     "status_message": f"Evaluate translation from {lang1} to {lang2}",
                     "server_url": "http://localhost:8001",
                     "frontend_url": "http://localhost:8000",
