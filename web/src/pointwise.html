@@ -83,16 +83,54 @@
       background-color: #ccc;
     }
 
-    .tgt_char.error_minor {
+    .error_unknown {
+      background-color: #ddf;
+    }
+
+    .error_minor {
       background-color: #fcc;
     }
 
-    .tgt_char.error_major {
+    .error_major {
       background-color: #e88;
     }
 
     .src_char.highlighted, .tgt_char.highlighted {
       background-color: #ccc;
+    }
+
+    #button_error_minor:hover, #button_error_major:hover {
+      opacity: 0.8;
+      cursor: pointer;
+    }
+
+    .highlighted_active {
+      background-color: #aaf !important;
+    }
+
+    /* span toolbox section */
+    .span_toolbox {
+      position: absolute;
+      background-color: #aaf;
+      padding: 5px;
+      border-radius: 5px;
+
+    }
+
+    input[type="button"].error_minor {
+      background-color: #fcc !important;
+    }
+
+    input[type="button"].error_minor:hover {
+      background-color: #daa !important;
+    }
+
+    input[type="button"].error_major {
+      background-color: #e88 !important;
+    }
+
+    input[type="button"].error_majo:hover {
+      background-color: #c66 !important;
     }
   </style>
 </head>
