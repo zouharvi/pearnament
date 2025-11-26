@@ -87,6 +87,10 @@
       background-color: #ddf;
     }
 
+    .error_neutral {
+      background-color: #edd;
+    }
+
     .error_minor {
       background-color: #fcc;
     }
@@ -120,6 +124,17 @@
       padding-left: 20px;
       padding-right: 20px;
       padding-top: 10px;
+    }
+
+    input[type="button"].error_neutral {
+      background-color: #fee !important;
+      width: 100%;
+      text-align: center;
+      border-radius: 5pt;
+    }
+
+    input[type="button"].error_neutral:hover {
+      background-color: #ecc !important;
     }
 
     input[type="button"].error_minor {
