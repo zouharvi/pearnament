@@ -10,12 +10,14 @@ dependencies = [
     "fastapi >= 0.110.0",
     "uvicorn >= 0.29.0",
     "wonderwords >= 3.0.0",
+    "pynpm >= 0.3.0",
 ]
 
 [project.scripts]
 pearnament = "pearnament.cli:main"
 
 [tool.setuptools]
+package-dir = {"pearnament" = "server"}
 packages = ["pearnament"]
 
 [build-system]

@@ -2,12 +2,19 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from .protocols import get_next_item_taskbased, get_next_item_dynamic
 import json
 from .utils import ROOT
+from pynpm import NPMPackage
 import os
 os.makedirs("data/outputs", exist_ok=True)
+
+# build frontend
+pkg = NPMPackage('src/web/package.json')
+pkg.install()
+pkg.run_script('build')
 
 app = FastAPI()
 app.add_middleware(
@@ -108,12 +115,12 @@ async def dashboard_data(request: DashboardDataRequest):
 
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
-    
+
     if campaign_id not in data_all:
         # load campaign data if does not exist in cache
         with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
             data_all[campaign_id] = json.load(f)
-    
+
     progress_new = {
         user_id: {
             **user_val,
@@ -150,3 +157,6 @@ async def reset_task(request: ResetTaskRequest):
     token = request.token
 
     return JSONResponse(content={"error": "Resetting tasks is not supported yet"}, status_code=400)
+
+
+app.mount("/", StaticFiles(directory="src/static", html=True), name="static")

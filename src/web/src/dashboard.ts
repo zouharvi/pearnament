@@ -3,7 +3,6 @@ import $ from 'jquery';
 
 let searchParams = new URLSearchParams(window.location.search)
 
-let server_url = searchParams.get("server_url")
 let campaign_ids = searchParams.getAll("campaign_id")
 let tokens = searchParams.getAll("token")
 
@@ -28,7 +27,7 @@ campaign_ids.forEach(async (campaign_id, i) => {
     let token = tokens[i] || null
     try {
         await $.ajax({
-            url: `${server_url}/dashboard-data`,
+            url: `/dashboard-data`,
             method: "POST",
             data: JSON.stringify({ "campaign_id": campaign_id, "token": token }),
             contentType: "application/json",

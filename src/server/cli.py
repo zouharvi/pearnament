@@ -72,12 +72,8 @@ def _add_campaign(args_unknown):
         for user_id in user_ids
     ]
 
-    frontend_url = campaign_data["info"].get(
-        "frontend_url",
-        "https://vilda.net/s/pearnament/",  # by default can run on this public URL
-    ).removesuffix("/")
     server_url = campaign_data["info"].get(
-        "server_url",
+        "url",
         "127.0.0.1:8001",  # by default local server
     ).removesuffix("/")
 
@@ -92,7 +88,7 @@ def _add_campaign(args_unknown):
             "time_end": None,
             "time": 0,
             "url": (
-                f"{frontend_url}/{campaign_data["info"]["template"]}.html"
+                f"{server_url}/{campaign_data["info"]["template"]}.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&server_url={urllib.parse.quote_plus(server_url)}"
                 f"&user_id={user_id}"
@@ -112,7 +108,7 @@ def _add_campaign(args_unknown):
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
 
     print(
-        f"{frontend_url}/dashboard.html"
+        f"{server_url}/dashboard.html"
         f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
         f"&server_url={urllib.parse.quote_plus(server_url)}"
         f"&token=TODO"
