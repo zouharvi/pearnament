@@ -77,27 +77,16 @@ Finally, you can launch the server with:
 pearnament run
 ```
 
-The frontend is detached from the server and only receives an address that it should use to communicate.
-For this reason, you can use https://vilda.net/s/pearnament/ while supplying your own server connection.
-NOTE: this will fail for now as website is not live yet.
+You can see examples in `data/examples/`.
 
 ## Development
 
-For the frontend locally run:
+For the server and frontend locally run:
 
 ```bash
-cd web
-npm install
-npm run dev    # will automatically open your browser
-npm run build  # will output in dist/ that can be statically served
-```
-
-For the server locally run:
-
-```bash
-pip3 install -e server/ # install editable
+pip3 install -e src # install editable
 # add existing data from WMT25, this generates annotation links that you should click
-pearnament add server/examples/wmt25_#_en-cs_CZ.json
+pearnament add data/examples/wmt25_#_en-cs_CZ.json
 pearnament run
 ```
 

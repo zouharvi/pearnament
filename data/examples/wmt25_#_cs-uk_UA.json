@@ -1,0 +1,626 @@
+{
+  "info": {
+    "type": "task-based",
+    "template": "pointwise",
+    "protocol_score": true,
+    "protocol_error_spans": true,
+    "protocol_error_categories": true,
+    "status_message": "Evaluate translation from cs to uk_UA",
+    "url": "http://localhost:8001"
+  },
+  "campaign_id": "wmt25_#_cs-uk_UA",
+  "data": [
+    [
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08602",
+        "sys_id": "refA",
+        "src": [
+          "Trojcípý šátek.\nPoužívá se k zavěšení, pokud se zlomenina nachází na horní končetině.\nPři zlomenině v oblasti pánve je nutné uložit zraněného do stabilizované polohy a co nejrychleji odvézt k lékaři.\nZlomeniny se dělí na zavřené a volné.\nDlaha musí jít vždy přes dva klouby, jeden nad a jeden pod zlomeným místem.\nÚlomek kosti vyčnívající z rány musí být sterilně zakryt.\nZavřená zlomenina je taková, kdy kůže nad zlomeninou není porušena.\nJako dlahu lze použít vše, co máme po ruce, např. opasek.\nPři zlomenině končetiny je potřeba nejprve vrátit končetinu do původní polohy.\nPokud dojde ke zlomenině v zimě, zásadně nesundáváme oděvy, boty či rukavice, aby oteklá tkáň neomrzla.\nV nouzovém případě je možné končetinu znehybnit tím, že ji přivážeme k druhé končetině."
+        ],
+        "tgt": [
+          "Трикутна хустка.\nВикористовується для підвішування, коли перелом знаходиться на верхній кінцівці.\nУ разі перелому в ділянці тазу потерпілого необхідно покласти в стабільне положення і якомога швидше доставити до лікаря.\nПереломи поділяються на закриті та вільні.\nШина має завжди проходити через два суглоби, один над і один під зламаним місцем.\nУламок кістки, що стирчить з рани, слід стерильно закрити.\nЗакритий перелом - це такий перелом, коли шкіра над місцем перелому не порушена.\nЯк шину можна використати все, що маємо під рукою, наприклад, ремінь.\nПри переломі кінцівки спочатку її потрібно повернути у вихідне положення.\nЯкщо перелом стався взимку, то ні в якому разі не знімаємо одяг, взуття чи рукавички, щоб запобігти обмерзанню набряклої тканини.\nВ екстрених випадках кінцівку можна знерухомити, прив'язавши її до іншої кінцівки."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu30538",
+        "sys_id": "ONLINE-W",
+        "src": [
+          "Vyřeším slovní úlohu a označím správnou odpověď.\nZmatlíkovi jeli na chalupu.\nPrvní den vyšli na Panskou skálu a ušli 5 km 700 m, druhý den navštívili Sklářské muzeum a ušli 3 km a třetí den zvládli okruh k Rumcajsově jeskyni 6 km 300 m. Kolik km ušli dohromady?\n14 km\n15 km\nTatínek má lať dlouhou 2 m. Potřebuje však délku 1 m 35 cm.\nO kolik cm musí 2 m lať zkrátit?\n65 cm\n75 cm\nDěti si uspořádaly závody ve skoku dalekém z místa.\nVilém skočil 1 m 32 cm, Bětka 1 m 23 cm, Manon 107 cm a Jeronýmek 137 cm.\nSeřaď děti od nejlepšího.\nJeronýmek, Bětka, Vilém, Manon\nManon, Bětka, Vilém, Jeronýmek\nJeronýmek, Vilém, Manon, Bětka\nJeronýmek, Vilém, Bětka, Manon"
+        ],
+        "tgt": [
+          "Я розв'язуватиму словесну задачу і відмічатиму правильну відповідь.\nЗаплутані люди поїхали на дачу.\nПершого дня вони піднялися на Панську скелю і пройшли 5 км 700 м, другого дня вони відвідали Музей скла і пройшли 3 км, а третього дня вони пройшли 6 км 300 м до печери Румчай. Скільки кілометрів вони пройшли разом?\n14 км\n15 км\nУ тата є планка довжиною 2 м. Але йому потрібно, щоб вона була довжиною 1 м 35 см.\nНа скільки см йому потрібно вкоротити 2-метрову планку?\n65 см\n75 см\nДіти влаштували змагання зі стрибків у довжину.\nВільгельм стрибнув на 1 м 32 см, Бет - на 1 м 23 см, Манон - на 107 см, а Жером - на 137 см.\nЗамовте дітей з найкращих.\nЖером, Бет, Вільям, Манон\nМанон, Бетка, Вілем, Єронімек\nЖером, Вільям, Манон, Бетсі\nДжером, Вільям, Бейб, Манон"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu14790",
+        "sys_id": "EuroLLM-22B",
+        "src": [
+          "Bedřich Hrozný (1879–1952) byl mezinárodně uznávaný jazykovědec, který rozluštil chetitské klínové písmo.\nFéničané žili ve východním Středomoří.\nŘekové přezdívali Féničanům purpuroví lidé.\nBohatli totiž prodejem purpuru, barvy získávané z mořských plžů.\nChetitům se říkávalo Punové.\nVe fénických městech se kvůli množství používaných jazyků zavedlo hláskové písmo a vznikla tzv. fénická abeceda, která se stala předchůdkyní abecedy řecké, latinské i naší abecedy.\nFéničané byli vyhlášení válečníci, Chetité vyhlášení obchodníci.\nO vyluštění chetitského písma se zasloužil československý jazykovědec Bedřich Hrozný.\nNa svých výpravách Féničané mířili i na pobřeží severní Afriky, kde založili Kartágo.\nChetité používali hieroglyfy.\nChetité žili na území dnešního Turecka.\nDějiny Fénicie končí zničením Kartága Řeky.\nFéničané uctívali boha Mota (bůh smrti a sucha) a obávali se Baala (bůh plodnosti a dárce deště)."
+        ],
+        "tgt": [
+          "Бедрих Грозний (1879–1952) був міжнародно визнаним мовознавцем, який розшифрував хеттське клинописне письмо.\nФінікійці жили у східному Середземномор'ї.\nГреки прозивали фінікійців пурпуровими людьми.\nВони розбагатіли завдяки продажу пурпуру, кольору, отриманого з морських молюсків.\nХеттів називали пунійцями.\nУ фінікійських містах через кількість використовуваних мов було впроваджено звукове письмо, і виникла так звана фінікійська абетка, яка стала попередницею грецької, латинської та нашої абетки.\nФінікійці були відомими воїнами, хетти — відомими торговцями.\nЧехословацький мовознавець Бедрих Грозний зробив внесок у розшифровку хеттського письма.\nПід час своїх подорожей фінікійці також досягали узбережжя Північної Африки, де заснували Карфаген.\nХетти використовували ієрогліфи.\nХетти жили на території сучасної Туреччини.\nІсторія Фінікії закінчується знищенням Карфагену греками.\nФінікійці шанували бога Мота (бог смерті і посухи) і боялися Ваала (бог плодючості і дарувальник дощу)."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_radio_praha-cs.18173",
+        "sys_id": "CommandR7B",
+        "src": [
+          "Vysokoškolská novela nezavede takzvané hlídačkovné, Sněmovna vyhověla Senátu",
+          "Vysokoškolská novela nezavede příspěvek matkám z řad studentek na hlídání jejich malých dětí. Sněmovna vyhověla námitkám Senátu, který takzvané hlídačkovné kvůli jeho koncepci odmítl. Novelu, která má má především reformovat doktorandské studium včetně financování a více osamostatnit Národní akreditační úřad, nyní dostane k podpisu prezident.",
+          "Proti hlídačkovnému se kromě Senátu postavili ministr školství Mikuláš Bek nebo Česká konference rektorů. Vytkli této poslanecké úpravě vládní předlohy nesystémovost, možné zneužívání a zvýšení výdajů vysokých škol, které by mohlo dosáhnout až čtvrt miliardy korun ročně. Podle dohod ministerstev školství a sociálních věcí by se příspěvek, který by podle poslanecké úpravy činil polovinu minimální mzdy, aktuálně zhruba 10.500 korun měsíčně, měl být začleněn do rodičovského příspěvku."
+        ],
+        "tgt": [
+          "Вища освіта: novela не запровадить так зване «доглядове плату», Палата депутатів задовольнила Сенат",
+          "Вища освіта: novela не запровадить доплату матерям-студенткам на догляд за малими дітьми. Палата депутатів задовольнила зауваження Сенату, який через концепцію відхилив так звану «доглядову плату». Novela, яка має, насамперед, реформувати докторантуру, включаючи фінансування та більшу незалежність Національного акредитаційного управління, тепер буде подана президенту для підписання.",
+          "Против «доглядової плати» виступили, окрім Сенату, також міністр освіти Mikuláš Bek та Česká konference rektorů. Вони вказали на не системність, можливе зловживання та підвищення видатків університетів, яке могло б досягти до чверті мільярда крон на рік. За домовленістю між міністерствами освіти та соціальної політики, доплата, яка за версією Палати депутатів становила половину мінімальної зарплати, близько 10 500 крон на місяць, мала б бути інтегрована до родичівського доплату."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08606",
+        "sys_id": "NLLB",
+        "src": [
+          "Dva páry hlodavých řezáků v horní čelisti mají…\nhmyzožravci\nzajíci\nhlodavci\nšelmy\nLenochodi žijí v…\nEvropě\nStřední a Jižní Americe\nAfrice\nZ uvedených druhů letounů nežije na území Česka…\nnetopýr ušatý\nvrápenec velký\nkaloň jedlý\nnetopýr velký\nMezi hlodavce patří…\nježek\ndikobraz\nzajíc\nrejsek\nVelryby dýchají…\nkosticemi\nMezi ploutvonožce nepatří…\nmrož\ntuleň\nrypouš\nKrční páteř žirafy je tvořena...\n5 obratly\n12 obratly\n7 obratly\n14 obratly\nPavián patří mezi…\núzkonosé opice\npoloopice\nlidoopy\nploskonosé opice\nNejdelší dobu březosti má samice...\nkrysy\nkoně\nslona\nmedvěda\nRohy na hlavě má…\nsrnec obecný\ntur domácí\njelen lesní\nlama guanaco"
+        ],
+        "tgt": [
+          "Дві пари гризунів у верхніх челюстях мають...\nінсектоїди\nзайці\nгризуни\nпташині\nЛенноходи живуть у...\nЄвросоюзу\nЦентральна і Південна Америка\nАфрика\nЗ зазначених видів літаків не живе на території Чехії...\nушейний кажан\nВеликий вороб'яний\nкальон їстівий\nВеликий кажан\nСеред гризунів є...\nїжак\nдикобраз\nкролик\nкруїз\nКити дихають...\nкістками\nКрістоноги не належать до...\nморська\nтюлен\nрипуша\nШейний хребет жирафа складається з...\n5 обертів\n12 обертів\n7 обертів\n14 обертів\nПавіан є одним з...\nтонкошерстяні мавпи\nпівмавпи\nлюдиноподібні\nплоскошерстні мавпи\nНайдовший період вагітності у самки...\nщури\nконі\nслон\nведмідь\nУ нього на голові роги...\nдикий олень\nвізит додому\nлісовий олень\nлама гуанако"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_ct24-cs.206310",
+        "sys_id": "Wenyiil",
+        "src": [
+          "Jak se stal hastrman v Rokytnici ševcem",
+          "V dnešní Pohádce pro pamětníky se můžete těšit na krkonošskou pohádku s písničkami, kterou v roce 1970 natočil P. Kraus.",
+          "V Rokytnici žije ševcovský tovaryš Franta (M. Vávra), který by si rád vzal za ženu Marjánku (C. Morávková). Jenže oba jsou chudí a mistrová ševcová (A. Kreuzmannová), vdova s živností, Frantovi za práci nic nezaplatí. Naopak si na něj ještě sama myslí. Když mu nabídne svou ruku a živnost k tomu, Franta odmítne a mistrová ho vyhodí z domu. Na bále se jí každý vysměje, a tak si jde ševcová pro pomoc k rybníku, kde žije hastrman (J. Skopeček) ..."
+        ],
+        "tgt": [
+          "Як водяник у Рокитниці став шевцем",
+          "У сьогоднішній «Казці для старшого покоління» на вас чекає карконоська казка з пісеньками, яку в 1970 році зняв П. Краус.",
+          "У Рокитниці живе шевський підмайстер Франта (М. Вавра), який хотів би одружитися з Мар'янкою (Ц. Моравкова). Проте обоє вони бідні, а майстриня-шевчиха (А. Кройцманнова), вдова з власною майстернею, нічого не платить Франті за працю. Навпаки, сама вона приглядає за ним. Коли вона пропонує йому свою руку та допомогу з роботою, Франта відмовляється, і майстриня виганяє його з дому. На балу все з неї насміхаються, тож шевчиха йде по допомогу до ставка, де живе водяник (Я. Скопечек)..."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu14790",
+        "sys_id": "TranssionMT",
+        "src": [
+          "Bedřich Hrozný (1879–1952) byl mezinárodně uznávaný jazykovědec, který rozluštil chetitské klínové písmo.\nFéničané žili ve východním Středomoří.\nŘekové přezdívali Féničanům purpuroví lidé.\nBohatli totiž prodejem purpuru, barvy získávané z mořských plžů.\nChetitům se říkávalo Punové.\nVe fénických městech se kvůli množství používaných jazyků zavedlo hláskové písmo a vznikla tzv. fénická abeceda, která se stala předchůdkyní abecedy řecké, latinské i naší abecedy.\nFéničané byli vyhlášení válečníci, Chetité vyhlášení obchodníci.\nO vyluštění chetitského písma se zasloužil československý jazykovědec Bedřich Hrozný.\nNa svých výpravách Féničané mířili i na pobřeží severní Afriky, kde založili Kartágo.\nChetité používali hieroglyfy.\nChetité žili na území dnešního Turecka.\nDějiny Fénicie končí zničením Kartága Řeky.\nFéničané uctívali boha Mota (bůh smrti a sucha) a obávali se Baala (bůh plodnosti a dárce deště)."
+        ],
+        "tgt": [
+          "Бедріх Грозний (1879 - 1952) був міжнародно визнаним лінгвістом, який розгадав хетський клиновий шрифт.\nФінікійці жили в східному Середземномор'ї.\nГреки називали фініканців фіолетовим народом.\nВони збагатили, продаючи фіолетову, колір, отриманий з морських пляжів.\nХеттів називали Пунами.\nУ фінікійських містах, через кількість використовуваних мов, було запроваджено звукове письмо, і виникло так зване.Фенікійський алфавіт, який став попередником грецького, латинського та нашого алфавіту.\nФінікійці були оголошеними воїнами, хеттяни оголошеними торговцями.\nВилучення хеттського письма заслужив чехословацький лінгвіст Бедріх Грозний.\nУ своїх експедиціях фінікійці також спрямовувалися на узбережжя Північної Африки, де вони заснували Карфаген.\nХеттяни використовували ієрогліфи.\nХетти жили на території сьогоднішньої Туреччини.\nІсторія Фенікії закінчується з руйнуванням Картага Греції.\nФінікійці поклонялися богу Мота (богу смерті та посухи) та боялися Баала (бога плодовитості та дощівника)."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu05908",
+        "sys_id": "GPT-4.1",
+        "src": [
+          "Přečti si tvrzení a vyber k němu obrázek krajiny, který jej nejlépe vystihuje.\nMísto záhonků se zeleninou a ovocných stromů mají lidé za domy bazény, posezení a posečené trávníky.\nLidé byli soběstační, dokázali si vypěstovat zásoby ovoce a zeleniny na celou zimu.\nPostupně došlo ke spojení malých políček ve velká pole.\nVelká pole byla opět rozdělena a vrácena původním majitelům.\nTi je ale většinou prodali a některá byla zastavěna novými domy.\nVznikala jednotná zemědělská družstva, kde lidé pracovali.\nBylo zvykem, že u každého rodinného domu byla zahrádka, na které lidé pěstovali zeleninu."
+        ],
+        "tgt": [
+          "Прочитай твердження та вибери до нього зображення ландшафту, яке його найкраще відображає.\nЗамість грядок із овочами та плодових дерев люди мають за будинками басейни, місця для відпочинку та підстрижені газони.\nЛюди були самодостатні, могли виростити запаси фруктів і овочів на всю зиму.\nПоступово відбулося об'єднання маленьких полів у великі поля.\nВеликі поля знову були розділені та повернуті колишнім власникам.\nАле більшість із них їх продали, а деякі були забудовані новими будинками.\nВиникали єдині сільськогосподарські кооперативи, де люди працювали.\nБуло звично, що біля кожного приватного будинку була ділянка, на якій люди вирощували овочі."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_ctk.cz.120672",
+        "sys_id": "DLUT_GTCOM",
+        "src": [
+          "Lesy ČR na 100 místech upraví hospodaření, pomohou vzácným druhům",
+          "Bernartice (Benešovsko) - Borové lesy u Želivky s výskytem kriticky ohrožené byliny kuřičky hadcové, Ždánický nebo Český les a další místa zařadily Lesy ČR do nového programu 100 ostrovů obnovy přírody. V těchto oblastech upraví způsob hospodaření tak, aby lépe vyhovoval přirozenému prostředí vzácných rostlinných nebo živočišných druhů. U Želivky je například potřeba strhávat humusovou vrstvu, aby se vzácná kuřička dostala k hornině hadec, na níž je závislá, řekl dnes novinářům generální ředitel Lesů ČR Dalibor Šafařík.",
+          "Opatření budou zahrnovat sanaci starých melioračních příkopů nebo vyhloubení tůní. Další možností je využití pastvy hospodářských zvířat nebo ponechávání takzvaných biotopových stromů, které mají za úkol podpořit rozvoj organismů na ně vázaných. \"Měníme obnovu porostů tak, aby byly ve prospěch vzácných endemických ohrožených druhů nebo i takových druhů, které chceme v rozvoji té oblasti podpořit,\" uvedl Šafařík. Náklady na opatření budou podle něj nízké, půjde o jednotky milionů korun. \"Je možné, že v určitých případech dojde ke snížení výnosů, ale může to být přechodná záležitost,\" dodal.",
+          "Lesy ČR chtějí během roku vybrat území s velkým biologickým potenciálem i ta, v nichž je třeba promyšlenými lesnickými zásahy a úpravou hospodaření tento potenciál nastartovat. Mezi vybranými oblastmi jsou kromě borových lesů u Želivky třeba Ždánický les s výskytem cikády viniční nebo Přimda v Českém lese, kde mají opatření pomoci datlíku tříprstému a kočce divoké. \"To není nějaká konzervace území ve smyslu bezzásahovosti, ale promyšlené zásahy, které mají vést k prosperitě a integraci zájmů v daném území,\" zdůraznil Šafařík.",
+          "Cílem je vytvořit krajinu, v níž se prolínají různé způsoby hospodaření a ochrany přírody. Ministr zemědělství Marek Výborný (KDU-ČSL) vyzdvihl, že Lesy ČR budou na programu spolupracovat nejen s orgány ochrany přírody, regionální státní správou a vědeckou komunitou, ale i občanskými organizacemi a veřejností. \"Společně tak pomůžeme dostát závazkům, které pro Česko plynou z nařízení Evropské unie o obnově přírody a adaptaci lesů na klimatickou změnu,\" dodal Výborný.",
+          "Prvním pomyslným ostrovem obnovy přírody je 45hektarová plocha v hospodářském lese nedaleko národní přírodní památky Hadce u Želivky, kde roste kuřička hadcová uvedená na seznamu kriticky ohrožených rostlin. Roste jen v Čechách, a to na dvou místech. Lesy v Bernarticích-Borovsku jsou jedním z nich. V minulosti se tam osvědčila lesní pastva, návratu ohrožených rostlin pomáhá stádo ovcí. Podle jednatele Českého svazu ochránců přírody Vlašim Karla Kříže se za posledních 15 let podařilo populaci kuřičky zvýšit třikrát, předtím byla téměř na vyhynutí.",
+          "\"Upravujeme v oblasti hospodaření, abychom podpořili a rozšířili populaci této ohrožené rostliny a dalších vázaných na horninu zvanou hadec jako kuřička Smejkalova nebo houba zvaná kuřátka něžná. Zásadní jsou opakovaná opatření, zejména kosení, lesní pastva, prosvětlování lesa a výsadba kuřičky, která provádí Český svaz ochránců přírody Vlašim,\" uvedl lesní správce z Ledče nad Sázavou Jaroslav Moravec."
+        ],
+        "tgt": [
+          "Ліси Чеської Республіки коригуватимуть управління у 100 місцях, допомагаючи рідкісним видам",
+          "Бернартице (Бенешівський край) — Соснові ліси поблизу Желівки, де трапляється критично зникаюча трава зміїнолапник, Жданицький або Богемський ліс та інші місця були включені Лісами Чехії до нової програми відновлення природи «100 островів». У цих районах вони адаптуватимуть методи управління так, щоб вони краще відповідали природному середовищу рідкісних видів рослин чи тварин. На Желівці, наприклад, потрібно зняти гумусовий шар, щоб рідкісна курка могла дістатися до зміїної скелі, від якої вона залежить, – сказав сьогодні журналістам генеральний директор Лісів Чеської Республіки Далібор Шафаржик.",
+          "Заходи включатимуть відновлення старих дренажних канав або розкопування ставків. Іншим варіантом є використання випасу худоби або залишення так званих біотопних дерев, які призначені для підтримки розвитку організмів, пов'язаних з ними. «Ми змінюємо відновлення рослинності таким чином, щоб це принесло користь рідкісним, ендемічним, зникаючим видам або видам, які ми хочемо підтримати в розвитку території», – сказав Шафаржик. За його словами, вартість заходів буде низькою, в мільйонах крон. «У деяких випадках спостерігається зниження врожайності, але це може бути тимчасовим явищем», – додав він.",
+          "Протягом року Ліси Чеської Республіки хочуть визначити території з великим біологічним потенціалом, а також ті, в яких цей потенціал потрібно активувати за допомогою продуманих лісогосподарських втручань та коригувань управління. Серед обраних територій, окрім соснових лісів поблизу Желівки, є Жданицький ліс із поширенням виноградної цикади або Примда в Чеському лісі, де вжито заходів для допомоги трипалому дятлу та дикому коту. «Це не якась консервація території в сенсі безлюдності, а продумані втручання, які мають на меті сприяти процванню та інтеграції інтересів на території», – наголосив Шафаржик.",
+          "Метою є створення ландшафту, в якому перетинаються різні методи ведення сільського господарства та охорони природи. Міністр сільського господарства Марек Виборний (KDU-ČSL) наголосив, що Ліси Чехії співпрацюватимуть над програмою не лише з органами охорони природи, регіональною державною адміністрацією та науковою спільнотою, а й з громадськими організаціями та громадськістю. «Разом ми допоможемо виконати зобов'язання, які Чеська Республіка має згідно з регламентом Європейського Союзу щодо відновлення природи та адаптації лісів до зміни клімату», – додав Виборний.",
+          "Перший уявний острів відновлення природи — це територія площею 45 гектарів у господарському лісі поблизу національного пам'ятника природи «Гадце у Желівка», де росте зміїнолапка, що занесена до списку рослин, що знаходяться під критичною загрозою зникнення. Він росте лише в Богемії, і то лише у двох місцях. Ліси в Бернартице-Боровові є одними з них. Лісовий випас виявився ефективним у минулому, і отара овець допомагає повертатися рослинам, що знаходяться під загрозою зникнення. За словами виконавчого директора Асоціації захисту природи Чехії «Влашим» Карла Крижа, населення куріпок було збільшено втричі за останні 15 років, тоді як раніше воно майже зникло.",
+          "«Ми коригуємо сферу управління, щоб підтримати та розширити популяцію цієї рослини, що знаходиться під загрозою зникнення, та інших, пов'язаних зі скелею під назвою змія, таких як курка Смейкалової або гриб під назвою ніжна курка. «Повторні заходи є ключовими, особливо скошування трави, випасання худоби в лісі, освітлення лісу та посадка курники, яку проводить Чеська асоціація охорони природи Влашим», – сказав Ярослав Моравець, лісовий управлінець з Ледеч-над-Сержавоу."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu33382",
+        "sys_id": "UvA-MT",
+        "src": [
+          "Rodina Michnových si šla do obchodu nakoupit nové oblečení a módní doplňky.\nKaždý si mohl vybrat zboží do 1 000 korun.\nOznač v tabulce fajfkou kombinace, které si mohla Simonka koupit, a křížkem ty kombinace, na které jí peníze nestačí.\ntílko 275Kčsukně 280Kčkalhoty 310Kčbunda 545Kčkorále 280Kčgumáky 420Kčkšiltovka 145Kč\nOznač v tabulce fajfkou dvojice, které si mohla maminka koupit, a křížkem ty kombinace, na které jí peníze nestačí.\nsvetr 350 Kčkalhoty 299 Kčšaty 615 Kčboty 699 Kčšátek 150 Kčkabelka 499 Kč\nOznač v tabulce fajfkou dvojice, které si mohl tatínek koupit, a křížkem ty kombinace, na které mu peníze nestačí.\nbunda 675 Kčkošile 555 Kčponožky 120 Kčkravata 249 Kčdeštník 329 Kčpásek 450 Kč"
+        ],
+        "tgt": [
+          "Родина Міхнових пішла до магазину, щоб купити новий одяг і модні аксесуари.\nКожен міг вибрати товари на суму до 1 000 крон.\nПозначте в таблиці галочкою комбінації, які могла купити Симонка, а хрестиком ті комбінації, на які їй грошей не вистачає.\nТільце 275 крон, спідниця 280 крон, штани 310 крон, куртка 545 крон, намисто 280 крон, гумові чоботи 420 крон, кепка 145 крон.\nПозначте в таблиці галочкою пари, які могла купити мама, а хрестиком ті комбінації, на які їй грошей не вистачає.\nСветр 350 крон, штани 299 крон, сукня 615 крон, взуття 699 крон, шарф 150 крон, сумка 499 крон.\nПозначте в таблиці галочкою пари, які міг купити тато, а хрестиком ті комбінації, на які йому грошей не вистачає.\nКуртка 675 крон, сорочка 555 крон, шкарпетки 120 крон, краватка 249 крон, парасолька 329 крон, ремінь 450 крон."
+        ]
+      }
+    ],
+    [
+      {
+        "doc_id": "cs-uk_UA_#_news_#_radio_praha-cs.18156",
+        "sys_id": "Llama-4-Maverick",
+        "src": [
+          "Ptákem roku 2025 vyhlásili ornitologové konipase horského. Pomyslnou korunu mu předal rehek domácí. Konipas horský má výrazné žlutou spodní část těla a dlouhý ocas, kterým téměř neustále kmitá. Proto se mu lidově říká třeba třasořitka. Titul pták roku uděluje Česká společnost ornitologická zpravidla známým druhům, které lze potkat na mnoha místech republiky. \"Konipas horský upřednostňuje především horské a kopcovité oblasti, které dávají vodním tokům potřebný spád a charakter řečišť, nevyhýbá se však ani nižším polohám, a tak na něj můžeme narazit téměř kdekoli. V Polabí a v Dolním Povltaví, stejně jako na jihu Moravy, existují hnízdiště v nadmořské výšce dokonce nižší než 200 metrů nad mořem,\" přiblížil ředitel České společnosti ornitologické Zdeněk Vermouzek. Právě necitlivé zásahy do vodních toků tak mohou konipase horského ohrožovat.",
+          "Konipas horský je již druhým ptákem z čeledi konipasovitých, který má v Česku titul ptáka roku. V roce 1999 ČSO vybrala konipasa bílého, který je známější a početnější než konipas horský."
+        ],
+        "tgt": [
+          "Птахом 2025 року орнітологи проголосили коніпasa гірського. Уявну корону йому передав горихвістка звичайна. Коніпас гірський має яскраву жовту нижню частину тіла та довгий хвіст, яким майже безперестанку смикає. Тому в народі його називають, наприклад, трясохвісткою. Титул птах року присуджує Чеське орнітологічне товариство зазвичай відомим видам, яких можна зустріти в багатьох місцях республіки. \"Коніпас гірський віддає перевагу насамперед гірським і пагорбовим районам, які надають водним потокам необхідний ухил і характер русел, однак не уникає й нижчих висот, і тому на нього можна натрапити майже скрізь. У Полаві та в Нижньому Повлтаві, а також на півдні Моравії існують гніздові колонії на висоті навіть нижче 200 метрів над морем\", - розповів директор Чеського орнітологічного товариства Зденек Вермозек. Саме нечутливі втручання у водні потоки можуть загрожувати коніпасу гірському.",
+          "Коніпас гірський є вже другим птахом із родини коніпасових, який має в Чехії титул птаха року. У 1999 році ЧОТ обрало коніпаса білого, який є відомішим і численнішим, ніж коніпас гірський."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu34346",
+        "sys_id": "DeepSeek-V3",
+        "src": [
+          "Pojď si připravit medovnicové koule.\nOčísluj (1–7) jednotlivé kroky v popisu postupu tak, jak za sebou následují.\n6 Po dvou hodinách vyndáme těsto z ledničky a vytvarujeme z něj kuličky, které obalujeme v odložených drobečcích.\n3 V době pečení si připravíme krém z kondenzovaného mléka a másla.\n5 V misce si smícháme krém a rozmixované drobky z placek, vypracujeme z nich hmotu, kterou dáme na dvě hodiny odpočinout do lednice.\n1 Uděláme těsto, z něj vytvoříme placky libovolného tvaru.\n4 Vychladlé placky rozdrtíme na jemné drobečky a ty rozmixujeme v mixéru, trochu drobečků si odložíme na obalovaní.\n2 Placky pečeme na 180 °C asi 10 minut a pak je necháme vychladnout.\n7 Kuličky naservírujeme na talíř a je hotovo.\nAť vám chutná!"
+        ],
+        "tgt": [
+          "Давай приготуємо медові кульки.\nПронумеруй (1–7) окремі кроки в описі послідовності так, як вони йдуть один за одним.\n6 Через дві години виймаємо тісто з холодильника та формуємо з нього кульки, які обвалюємо у відкладених крихтах.\n3 Під час випікання готуємо крем із згущеного молока та вершкового масла.\n5 У мисці змішуємо крем і подрібнені у блендері крихти з коржів, замішуємо масу та відправляємо на дві години в холодильник.\n1 Готуємо тісто, з нього формуємо коржі довільної форми.\n4 Охолоджені коржі подріблюємо на дрібні крихти та перемалюємо їх у блендері, трохи крихт відкладаємо для обвалювання.\n2 Випікаємо коржі при 180 °C близько 10 хвилин, потім даємо їм охолонути.\n7 Викладаємо кульки на тарілку — і готово!\nСмачного!"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08512",
+        "sys_id": "GPT-4.1",
+        "src": [
+          "Přetáhni základní znaky k nelétavým ptákům.\nPŠTROSI\nTUČŇÁCI\npotrava ryby, korýši, hlavonožci\nkřídla mají funkci ploutví\nsilné nohy\ntělo uzpůsobené k plavání\ntělo uzpůsobené k běhu\nvšežravec\nvejce zahřívají v záhybu kůže\nmalá hlava\ndlouhý krk\nmohutné tělo\nsilná vrstva podkožního tuku\ntorpédovitý tvar těla\nPřetáhni charakteristické znaky k jednotlivým ptákům.\nemu hnědý\nnandu pampový\ntučňák císařský\npštros dvouprstý\nvšežravý\ndokáže běžet rychlostí 70 km/h\nvýskyt: Afrika\nvýška až 250 cm\nvýška 150–190 cm\nvýskyt: Antarktida\nstepní pták\nmasožravý\nbýložravý\nžije ve velkých koloniích\nvýskyt: Jižní Amerika\nvýška 90–140 cm\nhustě opeřený krk\nvýška až 120 cm\nvýskyt: Austrálie"
+        ],
+        "tgt": [
+          "Перетягни основні ознаки до нелітаючих птахів.\nСТРАУСИ\nПІНГВІНИ\nїжа — риба, ракоподібні, головоногі\nкрила виконують функцію плавників\nсильні ноги\nтіло пристосоване до плавання\nтіло пристосоване до бігу\nвсеїдний\nяйця зігрівають у складці шкіри\nмала голова\nдовга шия\nмасивне тіло\nтовстий шар підшкірного жиру\nторпедоподібна форма тіла\nПеретягни характерні ознаки до окремих птахів.\nему бурий\nнанду пампасний\nпінгвін імператорський\nстраус двопалий\nвсеїдний\nможе бігти зі швидкістю 70 км/год\nпоширення: Африка\nзріст до 250 см\nзріст 150–190 см\nпоширення: Антарктида\nстеповий птах\nм’ясоїдний\nтравоїдний\nживе у великих колоніях\nпоширення: Південна Америка\nзріст 90–140 см\nгусто оперена шия\nзріст до 120 см\nпоширення: Австралія"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu31632",
+        "sys_id": "Qwen3-235B",
+        "src": [
+          "Děti měřily rostliny, které pěstovaly.\nAnička naměřila 202 mm, Klárka 5 cm a 5 mm.\nLukáš 153 mm, Martin 1 dm a 1 cm.\nKdo naměřil nejvíce?\nKdo nejméně?Na obrázku mám vyznačené naměřené délky.\nK nejdelší a nejkratší přiřadím správně jména dětí, které je naměřily.\nMartin\nKlárka\nLukáš\nAnička\nPetrova rostlina povyrostla za 3 dny o 80 mm.\nNyní měří 14 cm.\nKolik měřila před 3 dny?Vyberu správnou odpověď a přetáhnu ji do obrázku.\n11 cm\nPetr a Tomáš pořádali šnečí závody.\nPetrův šnek urazil 220 mm.\nTomášův o 19 cm více.\nJak dlouhou trasu ulezl Tomášův hlemýžď? Vyberu správnou odpověď a přetáhnu ji do obrázku.\n3 cm\n4 dm 1 cm",
+          "Děti se měřily.\nTomáš měří 15 dm, Simonka 134 cm , Kubík 1 m 57 cm, Barča 1 m 290 mm.\nKdo z dětí je nevyšší?\nKdo je nejnižší?K obrázku metru přiřadím správně jména dětí.\nNahoru přetáhnu, kdo je nejvyšší, a dolů, kdo je nejnižší.\nBarča\nTomáš\nSimonka\nKubík"
+        ],
+        "tgt": [
+          "Діти вимірювали рослини, які вони вирощували.\nАнічка виміряла 202 мм, Кларка 5 см і 5 мм.\nЛукаш 153 мм, Мартін 1 дм і 1 см.\nХто виміряв найбільше?\nХто найменше?На малюнку я позначив виміряні довжини.\nДо найдовшої і найкоротшої я призначив правильно імена дітей, які їх виміряли.\nМартін\nКларка\nЛукаш\nАнічка\nРослина Петра підростала за 3 дні на 80 мм.\nТепер вона має 14 см.\nСкільки вимірювала три дні тому?Виберу правильну відповідь і перетягну її на малюнок.\n11 см\nПетро і Томаш організовували черев'ячі перегони.\nПетрів черев'як подолав 220 мм.\nТомашів на 19 см більше.\nЯку відстань подолав Томашів черев'як? Виберу правильну відповідь і перетягну її на малюнок.\n3 см\n4 дм 1 см",
+          "Діти вимірювалися.\nТомаш має 15 дм, Сімонка 134 см, Кубік 1 м 57 см, Барча 1 м 290 мм.\nХто з дітей найвищий?\nХто найнижчий?До малюнка метра призначу правильно імена дітей.\nПеретягну нагору, хто найвищий, і додолу, хто найнижчий.\nБарча\nТомаш\nСімонка\nКубік"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08606",
+        "sys_id": "CommandR7B",
+        "src": [
+          "Dva páry hlodavých řezáků v horní čelisti mají…\nhmyzožravci\nzajíci\nhlodavci\nšelmy\nLenochodi žijí v…\nEvropě\nStřední a Jižní Americe\nAfrice\nZ uvedených druhů letounů nežije na území Česka…\nnetopýr ušatý\nvrápenec velký\nkaloň jedlý\nnetopýr velký\nMezi hlodavce patří…\nježek\ndikobraz\nzajíc\nrejsek\nVelryby dýchají…\nkosticemi\nMezi ploutvonožce nepatří…\nmrož\ntuleň\nrypouš\nKrční páteř žirafy je tvořena...\n5 obratly\n12 obratly\n7 obratly\n14 obratly\nPavián patří mezi…\núzkonosé opice\npoloopice\nlidoopy\nploskonosé opice\nNejdelší dobu březosti má samice...\nkrysy\nkoně\nslona\nmedvěda\nRohy na hlavě má…\nsrnec obecný\ntur domácí\njelen lesní\nlama guanaco"
+        ],
+        "tgt": [
+          "Дві пари кусальних incisiv в верхній щелепі мають…\nхижаки\nзайці\nхижаки\nшельми\nЛеночні живуть в…\nЄвропі\nСередній та Південній Америці\nАфріці\nЗ вказаних видів летючих хижаків не живе на території Чехії…\nвушний лис\nвеликий в'юрк\nкалоня смачна\nвеликий лис\nМіж хижаків належить…\nсухолоб\nдикий хижак\nзайчик\nсухолоб\nВелики дихають…\nкостями\nМіж плавникових не належить…\nморож\nтулень\nриба\nКривий хребець жирафи є складений…\n5 хребцями\n12 хребцями\n7 хребцями\n14 хребцями\nПавіан належить до…\nтісконосих мавп\nполумавп\nлюдових мавп\nплосконосих мавп\nНайдовше вагітність має самка…\nмишей\nконей\nслонів\nмедведя\nРоги на голові має…\nсрень звичайний\nтур domácí\nзайчик лісовий\nлама гуанако"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu03238",
+        "sys_id": "CUNI-EdUKate-v1",
+        "src": [
+          "Velkomoravská říše se rozprostírala na území Čech, Moravy a Slovenska.\nNaše dnešní písmo je latinka.\nVymysleli také písmo hlaholici, kterým píšeme dodnes.\nSlované zpočátku věřili v mnoho různých bohů.\nNaše dnešní písmo je hlaholice.\nVelkomoravští bojovníci lovili mamuty a nosorožce.\nKonstantin a Metoděj vymysleli jazyk staroslověnštinu.\nRastislav pozval na Velkou Moravu dva bratry – Konstantina a Metoděje.\nPrvním státem Slovanů u nás byla Velkomoravská říše.\nSlované žili v kmenovém zřízení, jedním z kmenů byli Čechové.\nSlované přišli na naše území při stěhování národů.\nPraotec Čech pozval na Velkou Moravu dva bratry – Konstantina a Metoděje.\nSlované nevěřili v žádného boha.\nKonstantin a Metoděj vymysleli jazyk češtinu.\nSlované pěstovali banány, pomeranče a citrony.\nSlované přišli na naše území v době kamenné.\nVelkomoravská říše vznikla v 9. století."
+        ],
+        "tgt": [
+          "Великоморавська імперія простягалася на територіях Чехії, Моравії та Словаччини. Наша сьогоднішня писемність — латинка. Вони також винайшли письмо глаголицю, яким ми пишемо й досі. Слов’яни спочатку вірили в багатьох різних богів. Наша сьогоднішня писемність — це глаголиця. Великоморавські воїни полювали на мамонтів і носорогів. Константин і Методій винайшли мову старослов’янську. Ратислав запросив на Велику Моравію двох братів – Константина та Мефодія. Першою державою слов’ян у нас була Велика Моравія. Слов’яни жили в племінному устрої, одним з племен були чехи. Слов’яни прийшли на нашу територію під час переселення народів. Праотець Чех запросив на Велику Моравію двох братів – Костянтина та Мефодія. Слов’яни не вірили в жодного бога. Константин і Методій винайшли мову чеську. Слов’яни вирощували банани, апельсини та лимони. Слов’яни прийшли на нашу територію в кам’яну добу. Великоморавська імперія виникла у IX столітті."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_respekt-cs.11394",
+        "sys_id": "IR-MultiagentMT",
+        "src": [
+          "Zvýšení koncesionářských poplatků se nejspíš posune do Senátu, ale děti cálovat nebudou • RESPEKT",
+          "Poslanci se ve středu mimořádně sejdou k závěrečnému schvalování sporné vládní novely, která počítá se zvýšením koncesionářských poplatků a rozšířením okruhu poplatníků. \"Ta minulá debata před koncem roku byla poměrně hodně určující a ukazující, co si opozice o ČT myslí. Viděli jsme i jakési odkrytí plánu, kdy Andrej Babiš otevřeně mluvil o tom, že by koncesionářské poplatky rád zrušil a financování veřejnoprávních institucí navázal na státní rozpočet. Tím by de facto dostal obě média pod přímou státní kontrolu, čímž by z nich udělal vydíratlená média. Mimořádná schůze určuje, že nebude možné měnit program a pravděpodobně by se to v případě, že se to nestihne odhlasovat ve středu, odložilo na pátek,\" říká ve Výtahu Respektu František Trojan, podle kterého se novela nejspíš posune do horní komory. Ve zpravodajském podcastu ale mluví i o dalším klíčovém momentu, který tento týden poslance čeká, a to hlasování o možném vydání šéfa SPD Tomia Okamury k trestnímu stíhání. Podle policie by se totiž kvůli loňské billboardové kampani mohl dopustit podněcování k nenávisti vůči skupině osob nebo omezování jejich práv a svobod. Jaká je šance, že poslanci Okamuru vydají? Jak jsou na tom vlastně jednotlivé strany a hnutí půl roku před sněmovními volbami? A jak se rýsuje volební spolupráce jednotlivých uskupení?"
+        ],
+        "tgt": [
+          "Збільшення концесійних зборів, ймовірно, буде перенесено до Сенату, але діти не будуть кальковані • RESPEKT",
+          "Депутати у середу позачергово зберуться для фінального голосування спірної урядової новели, яка передбачає підвищення концесійних зборів і розширення кола платників. \"Попередня дискусія наприкінці року була досить визначальною і показовою щодо того, що опозиція думає про ЧТ. Ми також стали свідками певного відкриття плану, коли Андрій Бабіш відкрито заявив, що хотів би скасувати концесійні збори та фінансування публічних установ пов’язати з державним бюджетом. Таким чином, він фактично підпорядкував би обидва медіа безпосередньому державному контролю, перетворивши їх на медіа, які можуть бути піддані шантажу. Позачергова сесія визначає, що не буде можливості змінювати програму, і ймовірно, якщо голосування не відбудеться у середу, це буде перенесено на п’ятницю,\" говорить у Витязі Респекту Франтішек Троян, за словами якого новела, ймовірно, буде перенесена до верхньої палати. У новинному подкасті він також говорить про ще один ключовий момент, який очікує депутатів цього тижня, а саме голосування про можливу видачу голови SPD Томіа Окамури для притягнення до кримінальної відповідальності. За даними поліції, через минулорічну білбордкову кампанію він міг вчинити підбурювання ненависті до групи осіб або обмеження їхніх прав і свобод. Які шанси, що депутати видадуть Окамуру? Як справи у різних партій та рухів за півроку до виборів до парламенту? І як виглядає виборча співпраця окремих об’єднань?"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_radio_praha-cs.18143",
+        "sys_id": "CommandA",
+        "src": [
+          "Na Šumavě loni klesla těžba kůrovcového lesa",
+          "Šumavský národní park loni vytěžil 130.000 krychlových metrů kůrovcového dřeva. Je to přibližně o 100.000 krychlových metrů méně než v roce 2023. Naznačuje to, že by mohla končit kůrovcová gradace, která na Šumavě začala v roce 2019. Loni park vytěžil celkem 205.000 krychlových metrů dřeva, meziročně o 70.000 méně. ČTK to řekl mluvčí NP Šumava Jan Dvořák. \"Objem kůrovcových těžeb začal narůstat v roce 2019, kdy jsme na celém území národního parku ve státem spravovaných lesích vytěžili skoro 210.000 krychlových metrů dříví napadeného kůrovcem. V roce 2022 to bylo 218.000 a v roce následujícím 237.000. Loni jsme zaznamenali razantní pokles, který může být signálem konečné fáze této kůrovcové gradace,\" uvedl náměstek ředitele NP Šumava Jan Kozel. Šumava zažila v novodobé historii největší kůrovcovou kalamitu po orkánu Kyrill, který Česko zasáhl v lednu 2007. Následkem rozsáhlých polomů lýkožrout zasáhl odhadem 2,6 milionu krychlových metrů stromů. Přibližně 1,1 milionu dal NP Šumava vykácet, zbytek zůstal stát nebo ležet v bezzásahových územích. Loni klesl také objem stromů napadených kůrovcem na bezzázahových územích. Jde o lokality, které se nechávají přirozenému vývoji."
+        ],
+        "tgt": [
+          "У Шумаві минулого року скоротилася вирубка лісу, ураженого короїдом",
+          "Шумавський національний парк минулого року вирубав 130 000 кубічних метрів деревини, ураженої короїдом. Це приблизно на 100 000 кубічних метрів менше, ніж у 2023 році. Це вказує на те, що може завершуватися градація короїда, яка розпочалася у Шумаві у 2019 році. Минулого року парк вирубав загалом 205 000 кубічних метрів деревини, що на 70 000 менше, ніж роком раніше. Про це ЧТК повідомив речник НП Шумава Ян Дворжак. \"Обсяг вирубки деревини, ураженої короїдом, почав зростати у 2019 році, коли ми на всій території національного парку у державних лісах вирубали майже 210 000 кубічних метрів деревини, ураженої короїдом. У 2022 році це було 218 000, а наступного року — 237 000. Минулого року ми зафіксували різке зниження, яке може бути сигналом заключної фази цієї градації короїда\", — зазначив заступник директора НП Шумава Ян Козел. Шумава зазнала найбільшої в новітній історії короїдної катастрофи після урагану Кірілла, який вразив Чехію у січні 2007 року. Унаслідок масштабних вітровалів лубоїд уразив приблизно 2,6 мільйона кубічних метрів дерев. Близько 1,1 мільйона НП Шумава вирубав, решта залишилася стояти або лежати на територіях без втручання. Минулого року також зменшився обсяг дерев, уражених короїдом, на територіях без втручання. Йдеться про місцевості, які залишають для природного розвитку."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_blesk.cz.112532",
+        "sys_id": "Claude-4",
+        "src": [
+          "Boj o poplatky pro ČT a Rozhlas znovu ve Sněmovně: Závěrečné kolo mohou znovu zhatit obstrukce",
+          "Poslední kolo sněmovního projednávání novely o poplatcích za Českou televizi (ČT) a za Český rozhlas (ČRo) blokovala opoziční hnutí ANO a SPD zatím čtyři jednací dny. K samotné předloze se poslanci dostali až ve středu na mimořádné schůzi, kterou k ní nechala koalice svolat. Při ní jsou možnosti obstrukcí o něco omezenější. Zatím ale nezačala obecná debata, kterou by mohl vládní tábor ukončit prosazením pevného termínu pro hlasování o podobě novely.",
+          "Předloha zvyšuje poplatek pro ČT o 15 korun na 150 korun měsíčně a pro ČRo o deset korun na 55 korun za měsíc. Poplatek se má nově vztahovat na zařízení schopná přijímat vysílání prostřednictvím internetu, nejen na televizní a na rozhlasové přijímače. Zachován ale bude princip jedné platby za domácnost. Novela obsahuje také pravidla pravidelné valorizace poplatku a změnu jeho úhrady pro podnikatele a právnické osoby.",
+          "Vláda změny v poplatcích zdůvodňuje potřebou finanční stabilizace veřejnoprávní televize a rozhlasu a dlouhodobé udržitelnosti jejich činnosti. Politici z ANO a SPD naopak mluví o korupci dvojice médií veřejné služby, o dalším zásahu do peněženek lidí či o výpalném s ohledem na nový způsob výběru poplatku od právnických osob. Česká televize a Český rozhlas by se podle nich měly spojit a financovat ze státního rozpočtu."
+        ],
+        "tgt": [
+          "Боротьба за збори для ЧТ та Радіо знову в Сеймі: Завершальний раунд можуть знову зірвати обструкції",
+          "Останній раунд сеймового розгляду новели про збори за Чеську телебачення (ЧТ) та за Чеське радіо (ЧРо) блокували опозиційні рухи АНО та СПД поки що чотири засідальні дні. До самого законопроекту депутати дісталися лише в середу на позачерговому засіданні, яке коаліція дозволила скликати для його розгляду. На ньому можливості обструкцій дещо обмеженіші. Поки що, однак, не розпочалася загальна дебата, яку урядовий табір міг би завершити просуванням твердого терміну для голосування щодо форми новели.",
+          "Законопроект підвищує збір для ЧТ на 15 крон до 150 крон на місяць та для ЧРо на десять крон до 55 крон за місяць. Збір має поширюватися на пристрої, здатні приймати мовлення через інтернет, не лише на телевізійні та радіоприймачі. Збережеться, однак, принцип однієї оплати за домогосподарство. Новела містить також правила регулярної валоризації збору та зміну його сплати для підприємців та юридичних осіб.",
+          "Уряд обґрунтовує зміни у зборах потребою фінансової стабілізації суспільного телебачення та радіо і довгострокової стійкості їхньої діяльності. Політики з АНО та СПД навпаки говорять про корупцію пари медіа суспільної служби, про черговий втручання в гаманці людей чи про данину з огляду на новий спосіб збирання збору від юридичних осіб. Чеське телебачення та Чеське радіо мали б, на їхню думку, об'єднатися та фінансуватися з державного бюджету."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu03620",
+        "sys_id": "DLUT_GTCOM",
+        "src": [
+          "Pracuj s turistickou mapou a rozhodni, zda tvrzení je nebo není pravdivé, případně doplň správně větu.\n(Mapu si můžeš zvětšit kliknutím.)\nVe výřezu mapy jsou vrstvenice znázorněné po 20 metrech.\nVe výřezu mapy jsou vrstvenice znázorněné po 10 metrech.\nNejvyšším bodem na výřezu mapy je Babí lom.\nLeží v nadmořské výšce 450 m n. m. NE\nVrchol Babí lom – rozhledna leží v nadmořské výšce 521 metrů.\nModrá turistická značka nevede ve vyšší nadmořské výšce než 400 m n. m. NE\nRozcestí U studánky leží v nadmořské výšce 480 metrů.\nModrá turistická značka vede přes vrstvenici označující nadmořskou výšku 500 m n. m. ANO\nVrcholem, označeným kótou 438 m n. m. prochází modrá turistická značka.\nCesta po modré turistické značce od rozcestí U Studánky k rozcestí Babí lom bude stoupat.\nCesta po modré turistické značce od rozcestí U Studánky k rozcestí Pod Babím lomem povede po rovině.\nklesat\ndo kopce\nz kopce"
+        ],
+        "tgt": [
+          "Попрацюйте з туристичною картою та визначте, чи є твердження правдивим чи хибним, або правильно доповніть речення.\n(Ви можете збільшити карту, клацнувши.)\nНа розрізі карти контурні лінії показані через кожні 20 метрів.\nНа розрізі карти контурні лінії показані через кожні 10 метрів.\nНайвища точка на ділянці карти — Бабин Лом.\nВін розташований на висоті 450 м над рівнем моря на північний схід\nВершина Бабин Лом – оглядова вежа розташована на висоті 521 метр.\nСиня туристична стежка не пролягає вище 400 м над рівнем моря на північний схід\nПерехрестя «У студанки» розташоване на висоті 480 метрів.\nСиня туристична стежка проходить по контурній лінії, що показує висоту 500 м над рівнем моря ТАК\nЧерез вершину проходить синя туристична стежка, позначена на висоті 438 м над рівнем моря.\nСтежка синьою туристичною стежкою від перехрестя «У Студанки» до перехрестя «Бабин Лом» буде йти вгору.\nСтежка синьою туристичною стежкою від перехрестя «У Студанки» до перехрестя «Під Бабиним ломом» пролягатиме рівниною.\nспад\nвгору\nспуск"
+        ]
+      }
+    ],
+    [
+      {
+        "doc_id": "cs-uk_UA_#_news_#_ct24-cs.206403",
+        "sys_id": "TranssionTranslate",
+        "src": [
+          "Vypravěčem spletitého příběhu, točícího se kolem ukradeného velkého diamantu, je neúspěšný boxerský promotér zvaný Turek, který se k divokému kolotoči událostí připletl se svým komplicem Tommym vlastně náhodou. Ukradený diamant má předat kurýr Franky Čtyřprsťák americkému šéfovi Avimu. O drahokam však mají zájem další gangsteři a zlodějíčci, mezi nimi především bezohledný ruský zabiják Boris Břitva, černošští provozovatelé zastavárny Vincent a Solomon a nakonec i nemilosrdný gangster a organizátor nelegálních boxerských zápasů Kruťák. V nepřehledné hře o drahocenný lup sehraje významnou roli také irsko-cikánský boxerský šampion Mickey, jehož podivnému dialektu jen málokdo rozumí. Není divu, že při tomto počtu účastníků v pomyslném ringu v tomhle zápase brzy nejde o vítězství, ale o holé přežití.",
+          "Autorská gangsterská komedie Guye Ritchieho s českým názvem Podfu (c) k nesporně těží z úspěchu tvůrcova předchozího snímku stejného žánru Sbal prachy a vypadni (1998). Scénář údajně vznikal již v průběhu natáčení zmíněného titulu a vychází z podobné zápletky a jejího rozvíjení."
+        ],
+        "tgt": [
+          "Оповідачем заплутаної історії, що обертається навколо викраденого великого діаманта, є невдалий боксерський промоутер на ім'я Турк, який разом зі своїм спільником Томмі випадково потрапив у дикий вир подій. Викрадений діамант має бути доставлений кур'єром Френкі Чотирипальці американському босу Аві. Однак, коштовним каменем зацікавлені інші гангстери та злодії, серед яких безжальний російський кілер Борис Рейзор, чорношкірі оператори ломбардів Вінсент і Соломон, і, нарешті, безжальний гангстер та організатор незаконних боксерських матчів Крутяк. У заплутаній грі за дорогоцінну здобич значну роль відіграє також ірландсько-циганський чемпіон з боксу Міккі, чию дивну говірку розуміють лише деякі. Не дивно, що з такою кількістю учасників на уявному рингу цей матч незабаром стає не про перемогу, а про голе виживання.",
+          "Авторська гангстерська комедія Гая Річі з чеською назвою «Подфу(к)к» безсумнівно, виграє від успіху попереднього фільму режисера в тому ж жанрі «Збирай гроші та йди геть» (1998).Сценарій нібито був створений під час зйомок вищезгаданого фільму та базується на схожому сюжеті та його розвитку."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08500",
+        "sys_id": "DLUT_GTCOM",
+        "src": [
+          "Mihule potoční je v Česku kriticky ohrožený druh.\nMalé tělní otvory za hlavou na boku těla mihule jsou žaberní otvory, které slouží k dýchání.\nRozhodni, zda se jedná o pravdivé, nebo nepravdivé tvrzení. Odpovíš-li na vše dobře, odkryje se obrázek.\nLarvy mihule se nazývají minohy.\nKruhoústí mají chrupavčitou kostru.\nPotravou mihule říční je plankton.\nMihule mají velké zuby v několika řadách.\nMihule říční žije v moři u severoevropských břehů.\nÚsta mihule jsou tvořena kruhovitou přísavkou.\nMihule mořská parazituje na rybách.\nMihule mořská žije v tropických oblastech.\nMihule mořská je menší než mihule říční.\nMihule říční žije v řekách a tře se v potocích.\nDospělci mihule potoční se živí planktonem.\nMihule dýchají celým povrchem těla.\nMihule má hadovitý tvar těla.\nMihule nemají čelisti."
+        ],
+        "tgt": [
+          "Річкова мінога — вид, що знаходиться під критичною загрозою зникнення, у Чеській Республіці.\nНевеликі отвори в тілі позаду голови збоку тіла міноги – це зяброві отвори, які використовуються для дихання.\nВизначте, чи це правдиве чи хибне твердження. Якщо ви відповісте на всі питання правильно, з'явиться зображення.\nЛичинок міног називають міногами.\nКруглороті мають хрящовий скелет.\nЇжа річкової міноги – планктон.\nМіноги мають великі зуби, розташовані в кілька рядів.\nРічкова мінога живе в морі біля узбережжя Північної Європи.\nРот міноги утворений круглою присоскою.\nМорська мінога є паразитом на рибі.\nМорська мінога мешкає в тропічних регіонах.\nМорська мінога менша за річкову.\nМінога живе в річках і нереститься в струмках.\nДорослі річкові міноги харчуються планктоном.\nМіноги дихають усією поверхнею свого тіла.\nМінога має змієподібну форму тіла.\nМіноги не мають щелеп."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu03628",
+        "sys_id": "CUNI-Transformer",
+        "src": [
+          "Přirozený přírůstek udává rozdíl mezi počtem narozených a počtem zemřelých.\nPrvní přesné sčítání obyvatel bylo provedeno za vlády panovnice Marie Terezie.\nLidé se stěhují za prací.\nNejmenší hustota obyvatel je v kraji hlavního města Prahy.\nNejvyšší hustota obyvatel je v Jihočeském kraji.\nHustota obyvatel nám říká, kolik lidí žije na jednom kilometru čtverečním.\nV Česku žije méně než 10 milionů obyvatel.\nSčítání obyvatelstva je nová záležitost a provádí se až od roku 1991.\nÚbytek populace znamená, že se narodilo více lidí než zemřelo.\nV Česku se lidé dožívají vyššího věku a rodí se méně dětí, proto mluvíme o stárnutí populace.\nV Česku se rodí hodně dětí, proto mluvíme o mládnutí populace.\nVěková pyramida znázorňuje údaje o věkovém složení obyvatelstva.\nMezi umělý pohyb obyvatel se počítá počet narozených dětí v obci.\nNová výstavba může přinést obci nové obyvatele.\nNarozené děti se zapisují do tzv. matrik.\nMezi umělý pohyb obyvatel se počítá, kolik lidí se z obce vystěhovalo."
+        ],
+        "tgt": [
+          "Природний приріст показує різницю між кількістю народжених і кількістю померлих.\nПерший точний перепис населення був проведений під час правління правительки Марії Терезії.\nЛюди переїжджають на роботу.\nНайменша щільність населення — у столичному окрузі Праги.\nНайвища щільність населення — в Південно-Східному регіоні.\nЩільність населення говорить нам, скільки людей живе на одному квадратному кілометрі.\nУ Чехії проживає менше 10 мільйонів людей.\nПерепис населення є новою справою і проводиться тільки з 1991 року.\nЗниження чисельності населення означає, що народилося більше людей, ніж померло.\nУ Чехії люди доживають до похилого віку і народжується менше дітей, тому ми говоримо про старіння населення.\nУ Чехії народжується багато дітей, тому ми говоримо про молодість населення.\nВікова піраміда показує дані про віковий склад населення.\nСеред штучного руху населення підраховується кількість народжених дітей в селі.\nНове будівництво може принести селу нових мешканців.\nНароджені діти записуються в так звані матриці.\nСеред штучних рухів населення підраховується, скільки людей виїхало з села."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_metro-cs.25658",
+        "sys_id": "DLUT_GTCOM",
+        "src": [
+          "Novou tvář areálu Křižanovy pily s novým nádražím i radnicí navrhnou architekti",
+          "\"Chceme získat komplexní návrh jednotlivıch objektů autobusového dopravního terminálu pro šestnáct autobusů včetně zastávek MHD před nádražní budovou, parkovacího domu s kapacitou minimálně 180 aut a nového městského úřadu pro 130 zaměstnanců, protože ten v ulici Zašovská už je na hranici životnosti,\" řekl starosta Robert Stržínek.",
+          "Valašské Meziříčí už připravilo napojení areálu na stávající silnici v ulici Palackého a ví, jak bude areál vypadat dopravně. Po požadavcích Zlínského kraje zde například vybuduje okružní křižovatku. Předběžné finanční náklady za proměnu Křižanovy pily nyní činí přes 700 milionů korun. Mohou se ale zvıšit. \"Po dokončení projektovıch prací budeme usilovat o získání vhodnıch dotací na jednotlivé stavby,\" naznačil Stržínek.",
+          "Stavba bude podle plánu radnice rozdělena do etap. Do budoucna je zde kapacita také pro vybudování dvou pětipodlažních městskıch bytovıch domů. V areálu rovněž vznikne Alej Emilie a Jana Křižanovıch, pojmenovaná podle původních majitelů. \"Věříme, že stejně jako v případě tělocvičny s parametry sportovní haly u ZŠ Křižná a bytového domu pro seniory na ulici J. K. Tyla obdržíme návrhy od špičkovıch architektů a studií z celého světa,\" dodal starosta Stržínek."
+        ],
+        "tgt": [
+          "Архітектори спроектують нове обличчя комплексу лісопилки «Кржижан» з новим заводом і ратушею",
+          "«Ми хочемо отримати комплексний проект окремих об'єктів автобусового транспортного терміналу для шістнадцяти автобусів, включаючи зупинки громадського транспорту перед будівлею вокзалу, паркінг місткістю щонайменше 180 автомобілів та нову будівлю міської ради для 130 співробітників, оскільки будівля на Зашовська вулиці вже на межі свого терміну служби», – сказав мер Роберт Стржинек.",
+          "Валашське Мезіржичі вже підготувало підключення території до існуючої дороги на вулиці Палацького та знає, як виглядатиме територія з точки зору транспортного сполучення. Наприклад, на прохання Злінського краю тут буде побудовано кільцеву розв'язку. Попередні фінансові витрати на перетворення пилорами Кріжан нині становлять понад 700 мільйонів крон. Але вони можуть збільшитися. «Після завершення проектних робіт ми прагнутимемо отримати відповідні субсидії на окремі будівельні роботи», – зазначив Стржинек.",
+          "Будівництво буде поділено на етапи згідно з планом міської ради. У майбутньому також є можливості для будівництва двох п'ятиповерхових міських багатоквартирних будинків. Також буде закладено Алею Емілії та Яна Кржижанових, названу на честь перших власників. «Ми вважаємо, що, як і у випадку зі спортзалом з параметрами спортивної зали у початковій школі «Кріжна» та багатоквартирним будинком для людей похилого віку на вулиці Й. К. «Потім ми отримаємо пропозиції від провідних архітекторів та студій з усього світу», – додав мер Стржинек."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu32842",
+        "sys_id": "Yolu",
+        "src": [
+          "Výška a délkaProhlédnu si obrázky a přiřadím k nim skutečnou výšku nebo délku (živočicha/rostliny/věci).(Obrázky jsou seřazené podle skutečné velikosti živočicha/rostliny/věci.)\n4 mm\n4 dm\nVýška a délkaProhlédnu si obrázky a přiřadím k nim skutečnou výšku nebo délku přírodniny.(Obrázky jsou seřazené podle skutečné velikosti přírodniny.)\n25 mm\n10 cm\nVýška a délkaProhlédnu si obrázky a přiřadím k nim skutečnou výšku nebo délku (živočicha/věci).(Obrázky jsou seřazené podle skutečné velikosti živočicha/věci.)\n24 cm\n2 mm\n2 dm\nVýškaProhlédnu si obrázky a přiřadím k nim skutečnou výšku stavby.(Obrázky jsou seřazené podle skutečné velikosti stavby.)\n55 dm\n8 dm"
+        ],
+        "tgt": [
+          "Висота і довжина   Я перегляну зображення та призначу їм реальну висоту або довжину (тварини/рослини/предмета). (Зображення впорядковані за реальною величиною тварини/рослини/предмета.)\n4 мм\n4 дм\nВисота і довжинаПерегляну зображення і відповідно до них визначу реальну висоту або довжину природного об'єкта. (Зображення впорядковані за реальною величиною природного об'єкта.)\n25 мм\n10 см\nВисота і довжинаПогляну на зображення та призначу їм реальну висоту або довжину (тварини/предмета). (Зображення впорядковані відповідно до реальної величини тварини/предмета.)\n24 см\n2 мм\n2 дм\nВисотаПерегляну зображення та прив'яжу до них фактичну висоту будівлі. (Зображення впорядковані за фактичною висотою будівлі.)\n55 дм\n8 дм"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_ct24-cs.205423",
+        "sys_id": "DLUT_GTCOM",
+        "src": [
+          "▶ \"Armáda bude potřebovat více domorodců v digitálním světě,\" zaznělo v pořadu Zkraje o obraně - ČT24 - Česká televize",
+          "Česká armáda dlouhodobě řeší nedostatek personálu, a to v období, kdy modernizuje svou techniku. Země se zároveň snaží o zlepšení civilní obrany, vláda před měsícem schválila novou koncepci. O výchově k vlastenectví, přípravě občanů k obraně státu a dalších tématech debatovali v pořadu Zkraje ministryně obrany Jana Černochová (ODS), senátorka Adéla Šípová (Piráti), investigativní novinář Respektu Jaroslav Spurný, režisér a někdejší člen aktivních záloh Václav Marhoul, plukovník ve výslužbě a místostarosta Chrudimi Zdeněk Kolář (ANO) a ředitel Agentury personalistiky AČR Vladimír Studený."
+        ],
+        "tgt": [
+          "▶ «Армії знадобиться більше місцевих жителів у цифровому світі», – йдеться у програмі «З чого починається оборона» – ČT24 – Чеське телебачення",
+          "Чеська армія тривалий час стикається з нестачею особового складу, модернізуючи свою техніку. Країна також намагається покращити цивільну оборону, і місяць тому уряд схвалив нову концепцію. У програмі «З початку» міністр оборони Яна Чернохова (ОДС), сенаторка Адела Шипова (Пірати), журналіст-розслідувач з «Респекту» Ярослав Спурний, режисер і колишній член активного резерву Вацлав Маргоул, полковник у відставці та віце-мер Хрудима Зденек Коларж (АНО) та директор Агентства кадрів ЗС Чехії Володимир Студений обговорили виховання в дусі патріотизму, підготовку громадян до захисту держави та інші теми."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu32842",
+        "sys_id": "CUNI-EdUKate-v1",
+        "src": [
+          "Výška a délkaProhlédnu si obrázky a přiřadím k nim skutečnou výšku nebo délku (živočicha/rostliny/věci).(Obrázky jsou seřazené podle skutečné velikosti živočicha/rostliny/věci.)\n4 mm\n4 dm\nVýška a délkaProhlédnu si obrázky a přiřadím k nim skutečnou výšku nebo délku přírodniny.(Obrázky jsou seřazené podle skutečné velikosti přírodniny.)\n25 mm\n10 cm\nVýška a délkaProhlédnu si obrázky a přiřadím k nim skutečnou výšku nebo délku (živočicha/věci).(Obrázky jsou seřazené podle skutečné velikosti živočicha/věci.)\n24 cm\n2 mm\n2 dm\nVýškaProhlédnu si obrázky a přiřadím k nim skutečnou výšku stavby.(Obrázky jsou seřazené podle skutečné velikosti stavby.)\n55 dm\n8 dm"
+        ],
+        "tgt": [
+          "Висота і довжинаЯ розглядаю зображення та приписую їм реальну висоту або довжину (тварини/рослини/речі).(Зображення розташовані в порядку реальних розмірів тварини/рослини/речі.) 4 мм 4 дм Висота і довжинаЯ розглядаю зображення та приписую їм реальну висоту або довжину природного об’єкта. (Зображення розташовані за реальними розмірами природного об’єкта.) 25 мм 10 см Висота і довжинаЯ розглядаю зображення та приписую їм реальну висоту або довжину (тварини/речі).(Зображення розташовані в порядку реальних розмірів тварини/речі.) 24 см 2 мм 2 дм ВисотаЯ розгляну зображення та приєднаю до них реальну висоту будівлі. (Зображення впорядковані за реальним розміром будівлі.) 55 дм 8 дм"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08478",
+        "sys_id": "TowerPlus-9B",
+        "src": [
+          "Doplň do textu správná slova o trepce velké.\nU některých odpovědí doplň dvě slova.\nTrepka velká patří mezi jednobuněčné živočichy.\nŽije ve špinavých vodách, je tedy ukazatelem znečištěného životního prostředí.\nNa povrchu těla má pružnou buněčnou blánu zvanou pelikula.\nPotravu přijímá buněčnými ústy.\nJejí potravou jsou mikroorganismy.\nPotravu zpracovává v potravních vakuolách a nestrávené zbytky vylučuje stažitelnými vakuolami.\nDýchání probíhá v organelách zvaných mitochondrie.\nRozmnožuje se pohlavně způsobem, kterému se říká spájení, nebo nepohlavně – příčným dělením.\nČinnost buňky (těla trepky) řídí velké jádro, na rozmnožování se podílí malé jádro.\nV nepříznivých podmínkách vytváří trepka klidový útvar, který nazýváme cysta.\nTrepka velká tvoří s ostatními organismy plankton, který je potravou ryb."
+        ],
+        "tgt": [
+          "Впиши у текст правильні слова про інфузорію тубуліфе.\nДо деяких відповідей допиши ще два слова.\nІнфузорія тубуліфе належить до одноклітинних тварин.\nВона живе у брудному середовищі, тому є індикатором забрудненого середовища.\nНа поверхні тіла має еластичну клітинну мембрану, яка називається пелікулою.\nХарчується через клітинні рот.\nЇї їжею є мікроорганізми.\nХарчові речовини перетравлюються у травних вакуолях, а неперетравлені залишки виводяться скорочувальними вакуолями.\nДихання відбувається в органелах, які називаються мітохондрії.\nРозмножується статевим шляхом, який називається злиттям, або нестатевим – поперековим поділом.\nДіяльність клітини (тіла інфузорії) керує велике ядро, а у розмноженні бере участь маленьке ядро.\nУ несприятливих умовах інфузорія утворює спокійну форму, яку називаємо цистою.\nІнфузорія тубуліфе разом з іншими організмами утворює планктон, який є їжею для риб."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08502",
+        "sys_id": "TowerPlus-9B",
+        "src": [
+          "Víš, jak vypadají rybí pásma?\nRoztřiď charakteristiky k jednotlivým pásmům.\npásmo lipanové\npásmo cejnové\npásmo pstruhové\npásmo parmové\nmálo kyslíku\nhodně planktonu\nhorské potoky a řeky\ndolní toky velkých řek\nmeandry\nmenší spád vody\nteplota vody 15–20 °C\nstudená voda\nhodně bezobratlých živočichů\nstřední toky\nteplota vody až 25 °C v létě\nhodně trav a řas\nhodně kyslíku\nteplejší voda, až 30 °C\npodhorské potoky\nRoztřiď ryby podle toho, ve kterém rybím pásmu se vyskytují.\ncejnové\nhrouzek\npstruh\nsumec\nstřevle\nkapr\nokoun\nkaras\nplotice\nhlavatka\nvranka\nmník\nperlín\nRoztřiď znaky dravých a nedravých ryb.\nryby dravé\nryby nedravé\nrychlý pohyb vpřed\npotrava drobné ryby či obratlovci\ntělo zploštělé ze stran\ndlouhé válcovité tělo\npomalý pohyb vlněním\njen požeráková kost\nrostlinná potrava, hmyz, plankton\nukrývá se mezi stonky vodních rostlin\ndrobné zuby směrem dozadu\nhřbetní ploutev posunutá dozadu",
+          "cejn\nštika\ncandát\nlín"
+        ],
+        "tgt": [
+          "Чи знаєш ти, як виглядають рибні зони?\nСортуй характеристики за окремими зонами.\nзона язя\nзона голавля\nзона форелі\nзона головня\nмало кисню\nбагато планктону\nгірські струмки та річки\nнижні течії великих річок\nмеандри\nменший перепад води\nтемпература води 15–20 °C\nхолодна вода\nбагато безхребетних тварин\nсередні течії\nтемпература води до 25 °C влітку\nбагато трав і водоростей\nбагато кисню\nтепліша вода, до 30 °C\nпідгірські струмки\nСортуй риб за тим, у якій рибній зоні вони зустрічаються.\nголавль\nголець\nфорель\nсудак\nгольян\nкороп\n окунь\nкарась\nплотва\nголовень\nвранка\nнянька\nперлянка\nСортуй ознаки хижих і нехижих риб.\nхижі риби\nнехижі риби\nшвидкий рух вперед\nхарчування дрібною рибою або хребетними\nтіло сплющене з боків\nдовге циліндричне тіло\nповільний рух хвилями\nтільки глоткова кістка\nрослинна їжа, комахи, планктон\nховається серед стебел водяних рослин\nдрібні зуби назад\nспинний плавник зміщений назад",
+          "язь\nщука\nокунь\nлящ"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08510",
+        "sys_id": "Qwen3-235B",
+        "src": [
+          "Vyber slova tak, aby vznikly správné věty.\nŠplhavci jsou přizpůsobeni životu v lese zobákem, který je silný dlátovitý.\nV dutině ústní je jazyk lepkavý vysunovatelný se zpětnými háčky.\nPotravou šplhavců jsou larvy dřevokazného hmyzu.\nUchycení ke stromu umožňuje šplhavcům klínovitý ocas a ostré drápy.\nPrsty na nohou mají 2 dopředu a 2 dozadu.\nŽlunu zelenou poznáme podle červeného peří na hlavě a zbytek těla je nazelenalý.\nDatel černý je náš největší šplhavec.\nStrakapoud má peří zbarvené černo-červeně-bíle.\nkrátký tenký\ndlouhý\nkrátký bez háčků\ndlouhý vidličnatý\nbobule\nlétající hmyz\nmávání křídly\nzobák\n3 dopředu a 1 dozadu\n4 dozadu\nčervených křídel\nčerveného bříška\nnejmenší šplhavec\nstřední šplhavec\nčerno-červeně-zeleně\nčerno-zeleno-hnědě"
+        ],
+        "tgt": [
+          "Обери слова так, щоб утворилися правильні речення.\nШпильги пристосовані до життя в лісі завдяки дзьобу, який є міцним, долотоподібним.\nУ порожнині рота є липкий висувний язик із зворотними гачками.\nЇжею шпильг є личинки деревоточного комаха.\nУтримання на дереві дозволяє шпильгам клиноподібний хвіст і гострі кігті.\nПальці на ногах мають 2 спереду і 2 ззаду.\nЗеленого дятла впізнати за червоним пір’ям на голові, а решта тіла має зеленкувате забарвлення.\nЧорний дятел є нашим найбільшим шпильгою.\nСтраус має пір’я пофарбоване чорно-червоно-біло.\nкороткий тонкий\nдовгий\nкороткий без гачків\nдовгий роздвоєний\nягоди\nлітаючі комахи\nмахання крил\nдзьоб\n3 спереду і 1 ззаду\n4 ззаду\nчервоних крил\nчеревця червоного\nнайменший шпильга\nсередній шпильга\nчорно-червонозелений\nчорно-зеленувато-буре"
+        ]
+      }
+    ],
+    [
+      {
+        "doc_id": "cs-uk_UA_#_news_#_aha-cs.32285",
+        "sys_id": "TowerPlus-9B",
+        "src": [
+          "Překvapení pro Václava Vydru v Prostřeno! BOUŠKOVOU STŘÍDÁ PAULOVÁ",
+          "Boušková se podrobila dalšímu zákroku na noze, kterou si v roce 2016 velmi špatně zlomila při lyžování. Odnesla to holenní kost a ještě koleno. Zranění se nehojilo, naopak jeden čas hrozila amputace nohy. Její muž letos v lednu potvrdil, že Jana podstupuje další operace. Zřejmě i kvůli tomu působila loni ve VIP Prostřeno! trochu zmateně a zpomaleně. \"Je vyčerpaná a není nám už dvacet,\" řekl k tomu Vydra. S Paulovou ho pojí silné pouto. Znají se a přátelí 55 let. Při natáčení lechtivých manželských scén v Troškových Kameňácích byl herec dokonce jednou zcela nahý!",
+          "Jana Paulová o návratu do StarDance: \"Měla jsem strach, jestli to moje tělo dá\"",
+          "\"Mockrát jsme vraceli záběr, protože mi byly vidět trenky. Tak jsem si je nakonec sundal a lehl si nahý na Janu s tím, aby mi prominula,\" přiznal představitel policejního šéfa Pepana. Svá těla znají navzájem taky z divadelní šatny Kalichu, kde už třetím rokem hrají úspěšnou komedii Nikdy není pozdě. I proto byla Paulová jasnou první volbou na nutný záskok. I ona má veselý a výrazný hlas, který oblíbenému pořadu prospěje. A když si diváci museli se začátkem roku zvyknout na jiný vysílací čas, jistě zvládnou i novou moderátorku. Její hlas z obrazovek neuslyší hned, ale až později. Pořad se totiž předtáčí s velkým předstihem...",
+          "\"Víme o sobě vše skrz naskrz,\" žertuje Jana. \"I když Vašek teda s tím převlékáním nadělá,\" napsala Paulová pod fotku, kde zachytila Vydru nahoře bez, jak se stydlivě snaží narychlo zakrýt tělo.\nPohádkových 7 pádů Honzy Dědka: Čím přiváděl Menzela k šílenství?"
+        ],
+        "tgt": [
+          "Сюрприз для Вацлава Видри в \"На обід готово\"! БОУШКОВУ замінює ПАУЛОВА",
+          "Боушкова перенесла ще одну операцію на нозі, яку дуже погано зламала під час катання на лижах у 2016 році. Від цього постраждали велика гомілкова кістка та коліно. Травма не заживала, навпаки, деякий час загрожувала ампутація ноги. Її чоловік підтвердив у січні цього року, що Яна проходить ще одні операції. Мабуть, через це вона виглядала трохи дезорієнтованою та повільною в VIP \"На обід готово!\" минулого року. \"Вона виснажена, і нам вже не двадцять\", – сказав про це Видра. Паулову з ним пов'язує сильний зв'язок. Вони знають один одного і дружать 55 років. Під час зйомок еротичних сцен подружжя у фільмі Трошка \"Каменярі\" актор навіть був одного разу повністю голий!",
+          "Яна Паулова про повернення в \"StarDance\": \"Я боялася, чи зможе моє тіло\"",
+          "\"Ми багато разів перезнімали кадри, тому що було видно мої труси. Тому я врешті-решт зняв їх і ліг голий на Яну, щоб вона вибачила мені\", – зізнався виконавець ролі начальника поліції Пепана. Свої тіла вони знають також із театральної гримерної Каліха, де вже третій рік грають успішну комедію \"Ніколи не пізно\". Саме тому Паулова була очевидним першим вибором для необхідного заміщення. Вона також має веселий і виразний голос, який принесе користь улюбленій програмі. І коли глядачі на початку року звикали до іншого часу трансляції, вони, безсумнівно, зможуть звикнути і до нової ведучої. Її голос з екранів почують не відразу, а пізніше. Програму ж записують заздалегідь...",
+          "\"Ми знаємо один одного досконально\", – жартує Яна. \"Хоча Вашек із цим переодяганням намучив\", – написала Паулова під фотографію, де зафіксувала Видру голим зверху, як він сором'язливо намагається швидко сховати тіло."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_ct24-cs.206310",
+        "sys_id": "CommandA-MT",
+        "src": [
+          "Jak se stal hastrman v Rokytnici ševcem",
+          "V dnešní Pohádce pro pamětníky se můžete těšit na krkonošskou pohádku s písničkami, kterou v roce 1970 natočil P. Kraus.",
+          "V Rokytnici žije ševcovský tovaryš Franta (M. Vávra), který by si rád vzal za ženu Marjánku (C. Morávková). Jenže oba jsou chudí a mistrová ševcová (A. Kreuzmannová), vdova s živností, Frantovi za práci nic nezaplatí. Naopak si na něj ještě sama myslí. Když mu nabídne svou ruku a živnost k tomu, Franta odmítne a mistrová ho vyhodí z domu. Na bále se jí každý vysměje, a tak si jde ševcová pro pomoc k rybníku, kde žije hastrman (J. Skopeček) ..."
+        ],
+        "tgt": [
+          "Як хастрман у Рокитниці став шевцем",
+          "У сьогоднішній «Казці для пам’ятників» ви зможете насолодитися казкою з Крконошських гір із піснями, яку у 1970 році зняв П. Краус.",
+          "У Рокитниці живе шевцевий учень Франта (М. Вавра), який мріє одружитися з Мар’янкою (Ц. Моравкова). Але обидва вони бідні, а майстриня-швець (А. Крейцманнова), вдова з власним бізнесом, не платить Франті за роботу нічого. Навпаки, вона сама зацікавлена в ньому. Коли вона пропонує йому свою руку і свій бізнес, Франта відмовляється, і майстриня виганяє його з дому. На балу всі над нею насміхаються, і тоді швець йде по допомогу до ставка, де живе хастрман (Й. Скопечек) ..."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_radio_praha-cs.18223",
+        "sys_id": "CUNI-SFT",
+        "src": [
+          "Konec ČSPL (Československé plavby labské)",
+          "Plavidla z válečných reparací byla základem vzniku jedné z nejznámějších českých dopravních firem - Československé plavby labské (ČSPL). Stát společnost s pomocí bank založil 13. června 1922 pod názvem Československá plavební akciová společnost labská. Firma se postupně propracovala mezi deset největších vnitrozemských lodních dopravců v Evropě. Po roce 1989 a následné privatizaci se však propadla do finančních problémů a skončila v konkurzu. Část firmy provozující říční nákladní dopravu ČSPL, a. s. poté koupila společnost ARGO Bohemia a v roce 2018 se společnost ČSPL, a.s. stala součástí skupiny Rhenus Group. Dnes Český rozhlas Sever oznámil, že Československá plavba Labská v Děčíně po téměř 103 letech končí."
+        ],
+        "tgt": [
+          "Кінець ЧСПЛ (Чехословацьких річкових плавань)",
+          "Судна, отримані в рамках репарацій, стали основою однієї з найвідоміших чеських транспортних компаній - Чехословацької річкової плавбази (ЧСПЛ). Держава заснувала компанію за допомогою банків 13 червня 1922 року під назвою Чехословацька річкова плавна акціонерна компанія. Компанія поступово стала однією з десяти найбільших річкових перевізників у Європі. Після 1989 року та подальшої приватизації, вона потрапила у фінансові проблеми і була оголошена банкрутом. Частина компанії, яка займалася річковими вантажними перевезеннями, була придбана компанією ARGO Bohemia, а в 2018 році компанія ЧСПЛ, а.с. стала частиною групи Rhenus Group. Сьогодні Чеське радіо Північ повідомило, що Чехословацька річкова плавна в Дрездені припиняє свою діяльність після майже 103 років.\n"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_blesk.cz.112532",
+        "sys_id": "DeepSeek-V3",
+        "src": [
+          "Boj o poplatky pro ČT a Rozhlas znovu ve Sněmovně: Závěrečné kolo mohou znovu zhatit obstrukce",
+          "Poslední kolo sněmovního projednávání novely o poplatcích za Českou televizi (ČT) a za Český rozhlas (ČRo) blokovala opoziční hnutí ANO a SPD zatím čtyři jednací dny. K samotné předloze se poslanci dostali až ve středu na mimořádné schůzi, kterou k ní nechala koalice svolat. Při ní jsou možnosti obstrukcí o něco omezenější. Zatím ale nezačala obecná debata, kterou by mohl vládní tábor ukončit prosazením pevného termínu pro hlasování o podobě novely.",
+          "Předloha zvyšuje poplatek pro ČT o 15 korun na 150 korun měsíčně a pro ČRo o deset korun na 55 korun za měsíc. Poplatek se má nově vztahovat na zařízení schopná přijímat vysílání prostřednictvím internetu, nejen na televizní a na rozhlasové přijímače. Zachován ale bude princip jedné platby za domácnost. Novela obsahuje také pravidla pravidelné valorizace poplatku a změnu jeho úhrady pro podnikatele a právnické osoby.",
+          "Vláda změny v poplatcích zdůvodňuje potřebou finanční stabilizace veřejnoprávní televize a rozhlasu a dlouhodobé udržitelnosti jejich činnosti. Politici z ANO a SPD naopak mluví o korupci dvojice médií veřejné služby, o dalším zásahu do peněženek lidí či o výpalném s ohledem na nový způsob výběru poplatku od právnických osob. Česká televize a Český rozhlas by se podle nich měly spojit a financovat ze státního rozpočtu."
+        ],
+        "tgt": [
+          "Боротьба за збори для ČT та Rozhlas знову у Парламенті: Фінальний раунд може зірвати обструкція  ",
+          "Останній етап розгляду законопроєкту про збори для Чеського телебачення (ČT) та Чеського радіо (ČRo) у парламенті вже чотири дні блокували опозиційні рухи ANO та SPD. До самого тексту законопроєкту депутати дійшли лише у середу на позачерговому засіданні, яке скликала коаліція. На такому засіданні можливості для обструкції дещо обмежені. Однак поки що не розпочалася загальна дискусія, яку урядовий табір міг би завершити, запровадивши чіткий термін для голосування щодо форми законопроєкту.  ",
+          "Законопроєкт передбачає підвищення збору для ČT на 15 крон — до 150 крон на місяць, а для ČRo — на 10 крон, до 55 крон на місяць. Збір тепер поширюватиметься на пристрої, здатні приймати сигнал через інтернет, а не лише на телевізори та радіоприймачі. Однак залишиться принцип єдиного платежу за домогосподарство. Законопроєкт також містить правила регулярної індексації збору та зміну його сплати для підприємців та юридичних осіб.  ",
+          "Уряд пояснює зміни в зборах необхідністю фінансової стабілізації громадського телебачення та радіо, а також забезпеченням довгострокової стійкості їхньої діяльності. Політики з ANO та SPD, навпаки, говорять про корупцію в цих ЗМІ громадської служби, про додатковий тиск на гаманці громадян або про \"вимагання\" через новий спосіб стягнення зборів з юридичних осіб. На їхню думку, Чеське телебачення та Чеське радіо мають об’єднатися та фінансуватися з державного бюджету."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_reflex.cz.16547",
+        "sys_id": "Laniqo",
+        "src": [
+          "Je hejtman Půta na vodítku a Černochová utržená ze řetězu? A lžou volební průzkumy?",
+          "Je to takový český folklór. Soudy v trestních kauzách politiků se táhnou dlouhé roky a často vyjdou do ztracena. V případě libereckého hejtmana Martina Půty to dopadlo tak napůl. V jedné větvi své kauzy byl zatím nepravomocně odsouzen, ale trestaný skutek se jeví banálně. Jak Půtův soud ovlivní hnutí STAN? Proč se soudy vlečou? A jak se mají politici k trestnímu stíhání správně postavit? I o tom je nová epizoda politického podcastu Reflexu Padni komu padni.",
+          "Jestli je něco skutečně trestuhodné, je to komunikační neumětelství ministryně obrany Jany Černochové. V partii na Primě si vzala na paškál koaliční partnery, vedení české armády i opoziční politiky. Jen asi trochu pozapomněla, že nikdo z nich zrovna nesedí s ní ve studiu. Možná by jí mohl plukovník Foltýn coby koordinátor strategické komunikace Úřadu vlády trochu proškolit. I když...",
+          "Nemine týden, aby se neobjevil nový průzkum volebních preferencí. A do voleb tomu zdá se nebude jinak. Jak si máme tyto průzkumy vykládat? Jak se dělají a skutečně jimi politici manipulují veřejné mínění, jak kdekdo tvrdí? Dozvíte se ve videu."
+        ],
+        "tgt": [
+          "Чи губернатор Пůта «на прив’язі», а Чрнохова «на волі»? І чи брешуть результати передвиборчих соціологічних опитувань?",
+          "Такі випадки увійшли до чеського фольклору. Судові процеси проти політиків тривають багато років, а їхні результати часто нічого не значать. У випадку ліберецького губернатора Мартіна Пути це закінчилося так. За однією частиною своєї справи його визнали винним, однак діяння, за яке його засудили, здається незначним. Як судовий розгляд Пути впливає на партію STAN? Чому судові процеси тягнуться так довго? Яка має бути позиція політиків щодо кримінального переслідування? Про це йдеться в новій епізоді політичного подкасту Reflex Padni komu padni.",
+          "Якщо щось дійсно заслуговує осуду, то це невміле управління комунікаціями з боку міністра оборони Яни Чернохової. У програмі на Першому каналі вона накинулася на партнерів із коаліції, керівництво армії Чеської Республіки і опозиційних політиків. Але вона, здається, забула, що жоден із них не сидить разом з нею в студії. Може, полковник Фолтын як координатор стратегічної комунікації Уряду міг би дати міністру кілька порад. Хоча...",
+          "Кожного тижня з'являються нові дослідження щодо виборчих уподобань. Очевидно, що до виборів ця тенденція не зміниться. Як же ми маємо розуміти ці дослідження? Як вони проводяться і як справді ними політики, як стверджує багато хто, маніпулюють громадською думкою? Про це ви дізнаєтеся з відео."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_ct24-cs.206403",
+        "sys_id": "Claude-4",
+        "src": [
+          "Vypravěčem spletitého příběhu, točícího se kolem ukradeného velkého diamantu, je neúspěšný boxerský promotér zvaný Turek, který se k divokému kolotoči událostí připletl se svým komplicem Tommym vlastně náhodou. Ukradený diamant má předat kurýr Franky Čtyřprsťák americkému šéfovi Avimu. O drahokam však mají zájem další gangsteři a zlodějíčci, mezi nimi především bezohledný ruský zabiják Boris Břitva, černošští provozovatelé zastavárny Vincent a Solomon a nakonec i nemilosrdný gangster a organizátor nelegálních boxerských zápasů Kruťák. V nepřehledné hře o drahocenný lup sehraje významnou roli také irsko-cikánský boxerský šampion Mickey, jehož podivnému dialektu jen málokdo rozumí. Není divu, že při tomto počtu účastníků v pomyslném ringu v tomhle zápase brzy nejde o vítězství, ale o holé přežití.",
+          "Autorská gangsterská komedie Guye Ritchieho s českým názvem Podfu (c) k nesporně těží z úspěchu tvůrcova předchozího snímku stejného žánru Sbal prachy a vypadni (1998). Scénář údajně vznikal již v průběhu natáčení zmíněného titulu a vychází z podobné zápletky a jejího rozvíjení."
+        ],
+        "tgt": [
+          "Оповідачем заплутаної історії, що обертається навколо вкраденого великого діаманта, є невдалий боксерський промоутер на прізвисько Турок, який потрапив у божевільну круговерть подій зі своїм спільником Томмі фактично випадково. Вкрадений діамант має передати кур'єр Френкі Чотирипалий американському босу Аві. Однак коштовним каменем зацікавлені й інші гангстери та злодюжки, серед них насамперед безжальний російський вбивця Борис Бритва, чорношкірі власники ломбарду Вінсент і Соломон і, нарешті, безжальний гангстер та організатор нелегальних боксерських поєдинків Крутяк. У заплутаній грі за дорогоцінну здобич значну роль відіграє також ірландсько-циганський боксерський чемпіон Міккі, чий дивний діалект мало хто розуміє. Не дивно, що при такій кількості учасників в уявному рингу в цьому поєдинку незабаром йдеться не про перемогу, а про виживання.",
+          "Авторська гангстерська комедія Гая Річі з чеською назвою \"Підфу(c)к\" безперечно користується успіхом попереднього фільму творця того ж жанру \"Збирай гроші та тікай\" (1998). Сценарій нібито створювався вже під час зйомок згаданої стрічки і виходить з подібної інтриги та її розвитку."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08606",
+        "sys_id": "GPT-4.1",
+        "src": [
+          "Dva páry hlodavých řezáků v horní čelisti mají…\nhmyzožravci\nzajíci\nhlodavci\nšelmy\nLenochodi žijí v…\nEvropě\nStřední a Jižní Americe\nAfrice\nZ uvedených druhů letounů nežije na území Česka…\nnetopýr ušatý\nvrápenec velký\nkaloň jedlý\nnetopýr velký\nMezi hlodavce patří…\nježek\ndikobraz\nzajíc\nrejsek\nVelryby dýchají…\nkosticemi\nMezi ploutvonožce nepatří…\nmrož\ntuleň\nrypouš\nKrční páteř žirafy je tvořena...\n5 obratly\n12 obratly\n7 obratly\n14 obratly\nPavián patří mezi…\núzkonosé opice\npoloopice\nlidoopy\nploskonosé opice\nNejdelší dobu březosti má samice...\nkrysy\nkoně\nslona\nmedvěda\nRohy na hlavě má…\nsrnec obecný\ntur domácí\njelen lesní\nlama guanaco"
+        ],
+        "tgt": [
+          "Два пари гризунових різців у верхній щелепі мають…\nкомахоїдні\nзайці\nгризуни\nхижі\nЛінивці живуть у…\nЄвропі\nЦентральній і Південній Америці\nАфриці\nЗ наведених видів рукокрилих не живе на території Чехії…\nвухань\nпідковоніс великий\nлетючий собака їстівний\nнетопир великий\nДо гризунів належить…\nїжак\nдикобраз\nзаєць\nземлерийка\nКити дихають…\nкитовими вусами\nДо ластоногих не належить…\nморж\nтюлень\nморський слон\nШийний відділ хребта жирафи складається з...\n5 хребців\n12 хребців\n7 хребців\n14 хребців\nПавіан належить до…\nвузьконосих мавп\nнапівмавп\nлюдиноподібних мавп\nшироконосих мавп\nНайдовший період вагітності має самка...\nщура\nконя\nслона\nведмедя\nРоги на голові має…\nкозуля європейська\nвелика рогата худоба\nолень благородний\nлама гуанако"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08492",
+        "sys_id": "Mistral-7B",
+        "src": [
+          "Doplněním správných slov do vět vytvoříš charakteristiku brouků a jejich zástupců.\nBrouci jsou důležitou skupinou hmyzu.\nJejich ústní ústrojí je kousací.\nPrvní pár křídel je přeměněn v krovky.\nDruhý pár křídel je blanitý.\nVývin brouků je nepřímý s proměnou dokonalou.\nBrouci mohou žít v různých prostředích.\nPotápník a vodomil žijí ve vodě.\nVelké škody v lese způsobuje lýkožrout smrkový.\nKovově lesklé tělo má zlatohlávek.\nJeho příbuzný z Afriky je vruboun posvátný neboli skarabeus (znáš z dějepisu).\nNáš největší brouk je roháč obecný.\nV noci vidíme světlo, které vytváří světluška menší.\nNať a listy brambor jsou potrava pro mandelinku bramborovou, která byla do Evropy dovezena z Ameriky.\nPotravou slunéček sedmitečných jsou mšice.\nNápadně dlouhými tykadly se vyznačují tesaříci."
+        ],
+        "tgt": [
+          "Доповненням правильних слів до речень створиш характеристику комах і їх представників.\nКомахи є важливою групою комах.\nЇхні ротові органи є кусальними.\nПерший пар крил перетворено на крилки.\nДругий пар крил є прозорим.\nРозвиток комах є непрямим з перетворенням досконалою.\nКомахи можу жити в різних середовищах.\nПотапник і водоміл живуть у воді.\nВеликі шкоди в лісі здійснює ликожеруть смерековий.\nКоваво-блискуче тіло має золотоловець.\nЙого родич з Африки є врубоун посвячений або скарabeus (знаєш з історії).\nНаш найбільший комах є рогач загальний.\nУ ночі бачимо світло, яке створює світлушка менша.\nНать і листки баклажанів є поживою для манделінки баклажанної, яка була до Європи довезена з Америки.\nПоживою сонцечко сім'ястих є мушки.\nНападливо довгими тикадлами визначаються тесарі."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_cesky_rozhlas-cs.187682",
+        "sys_id": "Gemma-3-27B",
+        "src": [
+          "Novinky v MHD, pleť v zimě, létání, vzdělávání i život v Hejnicích • mujRozhlas",
+          "Naladili jste si vysílání ČRo Liberec a před námi už je výběr hostů tohoto týdne. K tomu, abychom vypadali mladistvě a přirozeně v každém věku. Také záleží na tom, jak se staráme o svou pleť, jak o ní pečovat v různých životních obdobích, jak bychom měli vyživovat, platí v mrazivém zimním období? Nejen na to jsme se zaměřili s kosmetičkou Miloslavou Novákovou.",
+          "To citlivost a popraskané žilky a začervenání vidím. A to je základ. Která co se vlastně děje v zimě? Děje se to, že pleť se vysouší mrazem o to víc než v létě sluncem z červená je víc citlivá a ty žilky, který někdo má, někdo má prostě k tomu k tendenci, že má popraskané žilky v obličeji, což je kupec, tak to jde hned vidět a tak poznám to. Prostě je ihned znatelný, jestli potřebuje nějakou jinou péči než v létě nebo než na jaře. A dají se nějak od straně ty popraskané žilky, protože je to hodně nepříjemné, ani se to moc nedá překrýt.",
+          "Dají. Určitě existuje laserová terapie, ale to už teď to dělají lékaři a potom, ale k tomu je už i spousta opravdu fakt, spousta kosmetiky, která pomáhá proti začervenání, ona vlastně posílí ten cévní systém a kdy se používá pravidelně a dlouhodobě, tak i to zatáhne, zatáhne to začervenání. Takže jak kosmetika, a když to už je moc, což víme, že už tak neodstraníme normálně v kosmetice, tak k dermatologovi, kde to no a co je pravdy na tom, že v zimě by se moc neměli používat hydratační krémy? Že to zmrzne? Ne, těch žilkách se strašně líbí. A s tím furt. Ale já to v osmi a to, jestli si myslel ještě k každý rok, teď a už všude vám budou říkat, že to je nesmysl. Každý krémy hydratační, každý kraj má v sobě třeba kyselé nohy na novou nebo cokoliv jiného hydratačního. Údajů mě, co ta i ta teda zklidňuje. Ale ty krémy už jsou tak technologicky udělaný, že vám nikdy nic v obličeji nezmrzne."
+        ],
+        "tgt": [
+          "Новини громадського транспорту, догляд за шкірою взимку, авіація, освіта та життя в Гейніцях • mujRozhlas",
+          "Ви налаштувалися на мовлення ČRo Liberec, і перед нами – добірка гостей цього тижня. Про те, як виглядати молодо та природно в будь-якому віці. Також важливо, як ми піклуємося про свою шкіру, як доглядати за нею в різні періоди життя, як ми повинні її живити, особливо в морозну зимову пору? Саме на це ми зосередилися з косметологом Мілославою Новаковою.",
+          "Я бачу чутливість, пошкоджені капіляри та почервоніння. І це основа. Що саме відбувається взимку? Відбувається те, що шкіра висихає від морозу навіть більше, ніж від сонця влітку, вона стає більш чутливою, а капіляри, які є у когось, у когось просто є схильність до пошкоджених капілярів на обличчі, що є куперозом, одразу стають помітними. Так я це й визначаю. Одразу видно, чи потрібен їй інший догляд, ніж влітку або навесні. І чи можна якось усунути ці пошкоджені капіляри, адже це дуже неприємно, і їх важко приховати?",
+          "Можна. Звісно, існує лазерна терапія, але це вже роблять лікарі. Але зараз є багато, справді багато косметики, яка допомагає проти почервоніння, вона фактично зміцнює судинну систему, і при регулярному та тривалому використанні вона також зменшить почервоніння. Отже, як косметика, а якщо це вже занадто, що ми знаємо, що ми не можемо видалити це звичайною косметикою, то до дерматолога. І що правда в тому, що взимку не слід використовувати зволожуючі креми? Що вони замерзнуть? Ні, цим капілярам це дуже подобається. І з цим постійно. Але я кажу, чи думаєте ви ще щороку, зараз і всюди вам скажуть, що це нісенітниця. У будь-якому зволожуючому кремі є, наприклад, гіалуронова кислота або будь-що інше зволожуюче. Вони також заспокоюють. Але ці креми вже настільки технологічні, що вам ніколи нічого не замерзне на обличчі."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu03246",
+        "sys_id": "AyaExpanse-32B",
+        "src": [
+          "Přemyslovci dostali jméno podle:\nsvatého Přemysla\nPřemysla Kováře\nPřemysla Oráče\nPřemysl Oráč je podle legend zakladatel dynastie Přemyslovců.\nManžel kněžny Libuše, věštkyně a dcery vojvody Kroka.\nPříběh poprvé zmiňuje ve své kronice Kosmas ve 12. století.\nPrvní Přemyslovci měli titul:\nČeské knížectví trvalo v letech 870–1212.\nPřemyslovská dynastie vládla v Čechách 436 let.\nPocházelo z ní 32 knížat a 7 králů.\nJako první přijal křesťanství kníže:\nBořivoj\nKníže Bořivoj I. přijal na Velehradě křest z rukou velkomoravského biskupa Metoděje.\nVáclav\nVratislav\nKnížete Václava nechal zavraždit:\nbratr Břetislav\nbratranec Boleslav\nbratr Boleslav\nVáclav byl zavražděn ve (Staré) Boleslavi, sídle svého bratra Boleslava, který díky tomu převzal vládu.",
+          "Po smrti Václava na trůn usedl:\nBoleslav\nBoleslav I. je českými historiky i přes bratrovraždu hodnocen jako energický vládce a jako jeden z nejúspěšnějších českých panovníků.\nKarel\nPo smrti byl Václav prohlášen za:\nhrdinu\nmučedníka\nsvatého\nPo smrti začal být Václav uctíván jako svatý pro svou, v legendách mu připisovanou zbožnost."
+        ],
+        "tgt": [
+          "Премислиди отримали назву на честь:\nсвятого Премисла\nПремисла Коваля\nПремисла Орача\nПремисл Орач, згідно з легендами, є засновником династії Премислідів.\nЧоловік княжни Лібуше, провидиці та доньки воєводи Крока.\nЦю історію вперше згадує в своїй хроніці Косма у 12 столітті.\nПерші Премислиди мали титул:\nЧеське князівство існувало у 870–1212 роках.\nДинастія Премислідів правила у Чехії 436 років.\nВона дала початок 32 князям і 7 королям.\nПершим, хто прийняв християнство, був князь:\nБоривой\nКнязь Боривой I прийняв хрещення на Велеграді з рук великоморавського єпископа Методія.\nВацлав\nВратислав\nКнязя Вацлава вбив:\nбрат Бретислав\nкузен Болеслав\nбрат Болеслав\nВацлава було вбито у (Старій) Болеславі, резиденції його брата Болеслава, який завдяки цьому взяв владу.",
+          "Після смерті Вацлава на трон зійшов:\nБолеслав\nБолеслав I, незважаючи на братовбивство, оцінюється чеськими істориками як енергійний правитель і один з найуспішніших чеських правителів.\nКарол\nПісля смерті Вацлава було проголошено:\nгероїм\nмучеником\nсвятим\nПісля смерті Вацлава почали шанувати як святого за його, згідно з легендами, благочестя."
+        ]
+      }
+    ],
+    [
+      {
+        "doc_id": "cs-uk_UA_#_news_#_cesky_rozhlas-cs.187682",
+        "sys_id": "Laniqo",
+        "src": [
+          "Novinky v MHD, pleť v zimě, létání, vzdělávání i život v Hejnicích • mujRozhlas",
+          "Naladili jste si vysílání ČRo Liberec a před námi už je výběr hostů tohoto týdne. K tomu, abychom vypadali mladistvě a přirozeně v každém věku. Také záleží na tom, jak se staráme o svou pleť, jak o ní pečovat v různých životních obdobích, jak bychom měli vyživovat, platí v mrazivém zimním období? Nejen na to jsme se zaměřili s kosmetičkou Miloslavou Novákovou.",
+          "To citlivost a popraskané žilky a začervenání vidím. A to je základ. Která co se vlastně děje v zimě? Děje se to, že pleť se vysouší mrazem o to víc než v létě sluncem z červená je víc citlivá a ty žilky, který někdo má, někdo má prostě k tomu k tendenci, že má popraskané žilky v obličeji, což je kupec, tak to jde hned vidět a tak poznám to. Prostě je ihned znatelný, jestli potřebuje nějakou jinou péči než v létě nebo než na jaře. A dají se nějak od straně ty popraskané žilky, protože je to hodně nepříjemné, ani se to moc nedá překrýt.",
+          "Dají. Určitě existuje laserová terapie, ale to už teď to dělají lékaři a potom, ale k tomu je už i spousta opravdu fakt, spousta kosmetiky, která pomáhá proti začervenání, ona vlastně posílí ten cévní systém a kdy se používá pravidelně a dlouhodobě, tak i to zatáhne, zatáhne to začervenání. Takže jak kosmetika, a když to už je moc, což víme, že už tak neodstraníme normálně v kosmetice, tak k dermatologovi, kde to no a co je pravdy na tom, že v zimě by se moc neměli používat hydratační krémy? Že to zmrzne? Ne, těch žilkách se strašně líbí. A s tím furt. Ale já to v osmi a to, jestli si myslel ještě k každý rok, teď a už všude vám budou říkat, že to je nesmysl. Každý krémy hydratační, každý kraj má v sobě třeba kyselé nohy na novou nebo cokoliv jiného hydratačního. Údajů mě, co ta i ta teda zklidňuje. Ale ty krémy už jsou tak technologicky udělaný, že vám nikdy nic v obličeji nezmrzne."
+        ],
+        "tgt": [
+          "Новини в громадському транспорті, догляд за шкірою в зимовий час, політ на літаку, навчання та життя в Гейніцах. • mujRozhlas",
+          "Ви ввімкнули передачу ČRo Liberec, і перед нами вже вибір гостей цього тижня. Щоб виглядати молодо і природно в будь-якому віці. Важливо також те, як ми дбаємо про шкіру, як за нею доглядати в різні вікові періоди, як треба її живити, особливо в морозну зиму. Саме на це ми звернули увагу разом з косметологом Мирославою Новаковою.",
+          "Я бачу, що є певна чутливість, потріскані капіляри та почервоніння. А це лише початок. Що ж відбувається взимку? Узимку шкіра підсушується морозом ще більше, ніж влітку сонцем. Шкіра більше червоніє, більш чутлива, а в людей, які до цього мають схильність, на обличчі спостерігається тенденція до появи потрісканих капілярів, це одразу помітно, і я це бачу одразу. Я одразу помічаю, чи потрібен догляд, відмінний від літнього чи весняного. І чи можливо якимось чином позбутися потрісканих капілярів, адже це дуже некомфортно і важко це маскувати.",
+          "Так. Існує лазерна терапія, але зараз цим займаються лікарі, а є багато кремів, які допомагають боротися з почервонінням, вони зміцнюють судинну систему і навіть якщо використовувати їх регулярно протягом тривалого часу, можна позбутися почервоніння. Тому застосовуйте косметичні засоби, а якщо почервоніння занадто сильне, йдіть до дерматолога. А що стосується твердження, що взимку не можна використовувати зволожувальні креми, тому що вони замерзають? Ні, це подобається судинам. Продовжуйте це робити. Але я у вісім років подумала, що все це нісенітниця, а зараз мені це розповідають всюди. У кожному зволожувальному кремі є кислоти, які сприяють зволоженню або ще щось зволожувальне. Як мені відомо, креми знімають подразнення, але останні технології такі, що нічого в обличчі не замерзне."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_metro-cs.25658",
+        "sys_id": "Gemma-3-27B",
+        "src": [
+          "Novou tvář areálu Křižanovy pily s novým nádražím i radnicí navrhnou architekti",
+          "\"Chceme získat komplexní návrh jednotlivıch objektů autobusového dopravního terminálu pro šestnáct autobusů včetně zastávek MHD před nádražní budovou, parkovacího domu s kapacitou minimálně 180 aut a nového městského úřadu pro 130 zaměstnanců, protože ten v ulici Zašovská už je na hranici životnosti,\" řekl starosta Robert Stržínek.",
+          "Valašské Meziříčí už připravilo napojení areálu na stávající silnici v ulici Palackého a ví, jak bude areál vypadat dopravně. Po požadavcích Zlínského kraje zde například vybuduje okružní křižovatku. Předběžné finanční náklady za proměnu Křižanovy pily nyní činí přes 700 milionů korun. Mohou se ale zvıšit. \"Po dokončení projektovıch prací budeme usilovat o získání vhodnıch dotací na jednotlivé stavby,\" naznačil Stržínek.",
+          "Stavba bude podle plánu radnice rozdělena do etap. Do budoucna je zde kapacita také pro vybudování dvou pětipodlažních městskıch bytovıch domů. V areálu rovněž vznikne Alej Emilie a Jana Křižanovıch, pojmenovaná podle původních majitelů. \"Věříme, že stejně jako v případě tělocvičny s parametry sportovní haly u ZŠ Křižná a bytového domu pro seniory na ulici J. K. Tyla obdržíme návrhy od špičkovıch architektů a studií z celého světa,\" dodal starosta Stržínek."
+        ],
+        "tgt": [
+          "Архітектори розроблять новий вигляд території Кшижанової пили з новим вокзалом та міською радою",
+          "\"Ми хочемо отримати комплексний проєкт окремих об'єктів автобусного транспортного терміналу на шістнадцять автобусів, включно зі зупинками громадського транспорту перед вокзальною будівлею, паркінгу місткістю щонайменше 180 автомобілів та нової міської ради для 130 працівників, оскільки будівля на вулиці Зашовська вже на межі експлуатаційного терміну\", – сказав мер Роберт Стржінек.",
+          "Валашське Мезиржічі вже підготувало підключення території до існуючої дороги на вулиці Палацького та знає, як виглядатиме територія з точки зору транспорту. За вимогами Злінського краю тут, наприклад, буде збудовано кільцеву розв'язку. Попередні фінансові витрати на перетворення Кшижанової пили зараз становлять понад 700 мільйонів крон. Але вони можуть зрости. \"Після завершення проєктних робіт ми будемо прагнути отримати відповідні субсидії на окремі будівництва\", – зазначив Стржінек.",
+          "Будівництво, згідно з планом міської ради, буде розділено на етапи. У майбутньому тут є можливість для будівництва двох п'ятиповерхових міських житлових будинків. На території також виникне Алея Емілії та Яна Кшижановичів, названа на честь первісних власників. \"Ми віримо, що, як і у випадку з спортзалом з параметрами спортивної зали біля ЗШ Кшижна та житловим будинком для людей похилого віку на вулиці Я. К. Тила, ми отримаємо пропозиції від провідних архітекторів та студій з усього світу\", – додав мер Стржінек."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu03628",
+        "sys_id": "ONLINE-B",
+        "src": [
+          "Přirozený přírůstek udává rozdíl mezi počtem narozených a počtem zemřelých.\nPrvní přesné sčítání obyvatel bylo provedeno za vlády panovnice Marie Terezie.\nLidé se stěhují za prací.\nNejmenší hustota obyvatel je v kraji hlavního města Prahy.\nNejvyšší hustota obyvatel je v Jihočeském kraji.\nHustota obyvatel nám říká, kolik lidí žije na jednom kilometru čtverečním.\nV Česku žije méně než 10 milionů obyvatel.\nSčítání obyvatelstva je nová záležitost a provádí se až od roku 1991.\nÚbytek populace znamená, že se narodilo více lidí než zemřelo.\nV Česku se lidé dožívají vyššího věku a rodí se méně dětí, proto mluvíme o stárnutí populace.\nV Česku se rodí hodně dětí, proto mluvíme o mládnutí populace.\nVěková pyramida znázorňuje údaje o věkovém složení obyvatelstva.\nMezi umělý pohyb obyvatel se počítá počet narozených dětí v obci.\nNová výstavba může přinést obci nové obyvatele.\nNarozené děti se zapisují do tzv. matrik.\nMezi umělý pohyb obyvatel se počítá, kolik lidí se z obce vystěhovalo."
+        ],
+        "tgt": [
+          "Природний приріст показує різницю між кількістю народжень і кількістю смертей. Перший точний перепис населення було проведено за часів правління імператриці Марії Терезії. Люди переїжджають на роботу. Найнижча щільність населення у столиці Празі. Найвища щільність населення у Південночеському краї. Щільність населення показує, скільки людей проживає на квадратний кілометр. У Чеській Республіці проживає менше 10 мільйонів мешканців. Перепис населення – це нова справа, яка проводиться лише з 1991 року. Скорочення населення означає, що народилося більше людей, ніж померло. У Чеській Республіці люди живуть довше і народжується менше дітей, тому ми говоримо про старіння населення. У Чеській Республіці народжується багато дітей, тому ми говоримо про омолодження населення. Вікова піраміда показує дані про віковий склад населення. Кількість дітей, народжених у громаді, враховується як штучний рух населення. Нове будівництво може привести до громади нових мешканців. Народжені діти реєструються в так званих реєстрах. Штучний рух населення включає, скільки людей виїхало з громади."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu05908",
+        "sys_id": "CommandA-MT",
+        "src": [
+          "Přečti si tvrzení a vyber k němu obrázek krajiny, který jej nejlépe vystihuje.\nMísto záhonků se zeleninou a ovocných stromů mají lidé za domy bazény, posezení a posečené trávníky.\nLidé byli soběstační, dokázali si vypěstovat zásoby ovoce a zeleniny na celou zimu.\nPostupně došlo ke spojení malých políček ve velká pole.\nVelká pole byla opět rozdělena a vrácena původním majitelům.\nTi je ale většinou prodali a některá byla zastavěna novými domy.\nVznikala jednotná zemědělská družstva, kde lidé pracovali.\nBylo zvykem, že u každého rodinného domu byla zahrádka, na které lidé pěstovali zeleninu."
+        ],
+        "tgt": [
+          "Прочитай твердження та вибери до нього зображення пейзажу, який найкраще його ілюструє.\nЗамість грядок з овочами та фруктових дерев люди тепер мають біля будинків басейни, зони відпочинку та стрижені газони.\nЛюди були самодостатніми, адже могли вирощувати запаси фруктів та овочів на цілу зиму.\nПоступово невеликі поля об’єдналися у великі.\nВеликі поля знову були розділені та повернуті їхнім початковим власникам.\nОднак більшість з них продали ці землі, а на деяких ділянках побудували нові будинки.\nСтворювалися єдині сільськогосподарські кооперативи, де працювали люди.\nБуло звичаєм, що біля кожного сімейного будинку був город, на якому люди вирощували овочі."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08478",
+        "sys_id": "UvA-MT",
+        "src": [
+          "Doplň do textu správná slova o trepce velké.\nU některých odpovědí doplň dvě slova.\nTrepka velká patří mezi jednobuněčné živočichy.\nŽije ve špinavých vodách, je tedy ukazatelem znečištěného životního prostředí.\nNa povrchu těla má pružnou buněčnou blánu zvanou pelikula.\nPotravu přijímá buněčnými ústy.\nJejí potravou jsou mikroorganismy.\nPotravu zpracovává v potravních vakuolách a nestrávené zbytky vylučuje stažitelnými vakuolami.\nDýchání probíhá v organelách zvaných mitochondrie.\nRozmnožuje se pohlavně způsobem, kterému se říká spájení, nebo nepohlavně – příčným dělením.\nČinnost buňky (těla trepky) řídí velké jádro, na rozmnožování se podílí malé jádro.\nV nepříznivých podmínkách vytváří trepka klidový útvar, který nazýváme cysta.\nTrepka velká tvoří s ostatními organismy plankton, který je potravou ryb."
+        ],
+        "tgt": [
+          "Доповни до тексту правильні слова про трепку велику.\nУ деяких відповідях доповни два слова.\nТрепка велика належить до одноклітинних тварин.\nЖиве у брудних водах, тому є показником забрудненого середовища.\nНа поверхні тіла має гнучку клітинну мембрану, яка називається пелікула.\nЇжу приймає за допомогою клітинних ротових отворів.\nЇї їжею є мікроорганізми.\nЇжу обробляє в харчових вакуолях, а неперетравлені залишки виділяє за допомогою стислих вакуолей.\nДихання відбувається в органелах, які називаються мітохондріями.\nРозмножується статево способом, який називається сполученням, або безстатево – поперечним поділом.\nДіяльність клітини (тіла трепки) керує велике ядро, а на розмноженні бере участь мале ядро.\nУ несприятливих умовах трепка утворює спокійну форму, яку називаємо цистою.\nТрепка велика утворює з іншими організмами планктон, який є їжею для риб."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu03246",
+        "sys_id": "Qwen3-235B",
+        "src": [
+          "Přemyslovci dostali jméno podle:\nsvatého Přemysla\nPřemysla Kováře\nPřemysla Oráče\nPřemysl Oráč je podle legend zakladatel dynastie Přemyslovců.\nManžel kněžny Libuše, věštkyně a dcery vojvody Kroka.\nPříběh poprvé zmiňuje ve své kronice Kosmas ve 12. století.\nPrvní Přemyslovci měli titul:\nČeské knížectví trvalo v letech 870–1212.\nPřemyslovská dynastie vládla v Čechách 436 let.\nPocházelo z ní 32 knížat a 7 králů.\nJako první přijal křesťanství kníže:\nBořivoj\nKníže Bořivoj I. přijal na Velehradě křest z rukou velkomoravského biskupa Metoděje.\nVáclav\nVratislav\nKnížete Václava nechal zavraždit:\nbratr Břetislav\nbratranec Boleslav\nbratr Boleslav\nVáclav byl zavražděn ve (Staré) Boleslavi, sídle svého bratra Boleslava, který díky tomu převzal vládu.",
+          "Po smrti Václava na trůn usedl:\nBoleslav\nBoleslav I. je českými historiky i přes bratrovraždu hodnocen jako energický vládce a jako jeden z nejúspěšnějších českých panovníků.\nKarel\nPo smrti byl Václav prohlášen za:\nhrdinu\nmučedníka\nsvatého\nPo smrti začal být Václav uctíván jako svatý pro svou, v legendách mu připisovanou zbožnost."
+        ],
+        "tgt": [
+          "Премислиди отримали ім’я за:\nсвятого Пршемисла\nПршемисла Ковалі\nПржемисла Орлика\nПржемисл Орлик, за переказами, засновник династії Премислідів.\nЧоловік княгині Лібуші, віщі та дочки воєводи Крока.\nЦю історію вперше згадує в своїй хроніці Космас у XII столітті.\nПерші Премислиди мали титул:\nЧеське князівство існувало в роках 870–1212.\nДинастія Премислідів панувала в Чехії 436 років.\nЗ неї походило 32 князів і 7 королів.\nХристиянство як перший прийняв князь:\nБоривій\nКнязь Боривій I прийняв хрещення у Велехраді від рук великоморавського єпископа Методія.\nВацлав\nВратислав\nКнязя Вацлава змусив вбити:\nбрат Бретислав\nдвоюрідний брат Болеслав\nбрат Болеслав\nВацлава було вбито в (Старій) Болеславі, резиденції його брата Болеслава, завдяки чому той узяв владу.",
+          "Після смерті Вацлава на троні став:\nБолеслав\nБолеслав I, попри братовбивство, чеськими істориками вважається енергійним правителем і одним із найуспішніших чеських монархів.\nКарел\nПісля смерті Вацлава його проголосили:\nгероєм\nмучеником\nсвятим\nПісля смерті Вацлава почали вшановувати як святого за його, приписувану йому в легендах, благочестивість."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu08478",
+        "sys_id": "DeepSeek-V3",
+        "src": [
+          "Doplň do textu správná slova o trepce velké.\nU některých odpovědí doplň dvě slova.\nTrepka velká patří mezi jednobuněčné živočichy.\nŽije ve špinavých vodách, je tedy ukazatelem znečištěného životního prostředí.\nNa povrchu těla má pružnou buněčnou blánu zvanou pelikula.\nPotravu přijímá buněčnými ústy.\nJejí potravou jsou mikroorganismy.\nPotravu zpracovává v potravních vakuolách a nestrávené zbytky vylučuje stažitelnými vakuolami.\nDýchání probíhá v organelách zvaných mitochondrie.\nRozmnožuje se pohlavně způsobem, kterému se říká spájení, nebo nepohlavně – příčným dělením.\nČinnost buňky (těla trepky) řídí velké jádro, na rozmnožování se podílí malé jádro.\nV nepříznivých podmínkách vytváří trepka klidový útvar, který nazýváme cysta.\nTrepka velká tvoří s ostatními organismy plankton, který je potravou ryb."
+        ],
+        "tgt": [
+          "Вставте у текст правильні слова про туфельку велику.\nУ деяких відповідях вставте два слова.\nТуфелька велика належить до одноклітинних тварин.\nВона живе у брудній воді, тому є показником забрудненого довкілля.\nНа поверхні тіла має пружну клітинну оболонку, яка називається пелікула.\nЇжу споживає клітинним ротом.\nЇї їжею є мікроорганізми.\nЇжу переробляє у травних вакуолях, а неперетравлені залишки виводить скорочувальними вакуолями.\nДихання відбувається в органелах, які називаються мітохондрії.\nРозмножується статевим способом, який називається кон'югація, або безстатево – поперечним поділом.\nДіяльність клітини (тіла туфельки) керує велике ядро, а на розмноження впливає мале ядро.\nУ несприятливих умовах туфелька утворює сплячу форму, яку ми називаємо циста.\nТуфелька велика разом з іншими організмами утворює планктон, який є їжею для риб."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu03240",
+        "sys_id": "Llama-3.1-8B",
+        "src": [
+          "V čele Velkomoravské říše stál vládce s titulem:\nkníže\nVelká Morava byla knížectví.\nhrabě\nKteré druhy ovoce pěstovali naši předkové?\njablka\nJabloním daří se v našich podmínkách.\nhrušky\nHrušním daří se v našich podmínkách.\nmeruňky\nDaří se jim v našich podmínkách.\nKdo byl ve společnosti nejvýše postavený?\nšlechtic\nŠlechtici byli bohatí, bojovali za panovníka a bránili lid.\npastevec\nObyvatelé v počátku trvání Velkomoravské říše věřili:\nve více bohů\nByli pohané, uctívali mnoho bohů.\nVěřili jen v sebe.\nv jednoho boha\nNevěřili v žádného boha.\nKonstantina a Metoděje pozval kníže:\nBřetislav\nSvatopluk\nMojmír\nRastislav\nByl velkomoravským knížetem, který rozpoznal nebezpečný vliv sousední francké říše.",
+          "Písmo, které vzniklo na Velké Moravě, se jmenovalo:\nhlaholice\nnejstarší slovanské písmo\nazbuka\nlatinka\nstaroslověnština"
+        ],
+        "tgt": [
+          "В голові Великоморавської держави стояв правитель з титулом:\nкнязь\nВелика Морава була князівством.\nгерцог\nЯкі види фруктів вирощували наші попередники?\nяблука\nЯблуням вдається у наших умовах.\nгруші\nГрушам вдається у наших умовах.\nмеруни\nВдається їм у наших умовах.\nХто був у суспільстві найвищим?\nшляхтич\nШляхтичі були багатими, боролися за панів і захищали людину.\nпастух\nСеляни в початку існування Великоморавської держави вірили:\nв багатьох богів\nБули язичниками, увірували багато богів.\nВірили тільки в себе.\nв одного бога\nНевірили в жодного бога.\nКонстантина і Методія запрошував князь:\nБретислав\nСвятополк\nМоймир\nРастислав\nБув великоморавським князем, який визнав небезпечний вплив сусідньої франкської держави.",
+          "Писмо, яке виникло на Великій Мораві, називалося:\nглаголиця\nнайстаріше слов'янське письмо\nазбука\nлатинка\nстарослов'янська мова"
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_edu_#_edu32838",
+        "sys_id": "NLLB",
+        "src": [
+          "Obrázek jednoho představuje 10 kg jablek. Ke sloupkům v grafu doplním správné množství spotřebovaných jablek ve školní jídelně v jednotlivých dnech. \n40 kg\n50 kg\n20 kg\n30 kg\n10 kg\nŽáci 3. ročníku psali test z prvouky a dostali různé známky. K jednotlivým sloupkům přiřadím kartičky s počtem žáků, kteří dostali danou známku.\nObrázekpředstavuje 2 žáky.\nŽáci 3. ročníku psali test z prvouky.\nDiagram znázorňuje, kolik žáků 3.\nB z testu získalo jakou známku.\nSymbol představuje vždy 3 žáky. Ke sloupkům postupně přiřadím všechny kartičky s čísly tak, aby číslo 1 bylo u sloupku s nejvyšším počtem žáků a číslo 5 u sloupku s nejnižším počtem žáků."
+        ],
+        "tgt": [
+          "Один з них - це 10 кг яблук, і я додаю до графіку в колонках відповідну кількість яблук, які були вжиті в школьній їдальні в той чи інший день.\n40 кг\n50 кг\n20 кг\n30 кг\n10 кг\nУчні третього класу писали тест з початкової школи і отримували різні оцінки. Я прикріплюю до кожної колонки картки з кількістю учнів, які отримали дану оцінку.\nНа малюнку - двоє учнів.\nУчні третього класу писали тест з початкової школи.\nГрафік показує, скільки учнів 3.\n\"Б\" отримала якісну оцінку в тесті.\nСимвол завжди представляє 3 учнів. Я послідовно приставлю всі картки з цифрами до колонки так, щоб цифра 1 була в колонці з найбільшою кількістю учнів і цифра 5 в колонці з найменшою кількістю учнів."
+        ]
+      },
+      {
+        "doc_id": "cs-uk_UA_#_news_#_ceska_televize-cs.156247",
+        "sys_id": "Llama-4-Maverick",
+        "src": [
+          "Jak se stal hastrman v Rokytnici ševcem",
+          "V dnešní Pohádce pro pamětníky se můžete těšit na krkonošskou pohádku s písničkami, kterou v roce 1970 natočil P. Kraus.",
+          "V Rokytnici žije ševcovský tovaryš Franta (M. Vávra), který by si rád vzal za ženu Marjánku (C. Morávková). Jenže oba jsou chudí a mistrová ševcová (A. Kreuzmannová), vdova s živností, Frantovi za práci nic nezaplatí. Naopak si na něj ještě sama myslí. Když mu nabídne svou ruku a živnost k tomu, Franta odmítne a mistrová ho vyhodí z domu. Na bále se jí každý vysměje, a tak si jde ševcová pro pomoc k rybníku, kde žije hastrman (J. Skopeček) ..."
+        ],
+        "tgt": [
+          "Як хастрман у Рокитниці став шевцем",
+          "У сьогоднішній Казці для пам'ятливих ви можете насолодитися гірською казкою з піснями, яку в 1970 році зняв П. Краус.",
+          "У Рокитниці живе шевський підмайстер Франта (М. Вавра), який хотів би взяти за дружину Марьянку (Ц. Моравкова). Однак обидва бідні, і шевська майстриня (А. Кройцманнова), вдова з промислом, Франтові за роботу нічого не платить. Навпаки, вона ще й сама на нього зазіхає. Коли вона пропонує йому свою руку і промисел до того ж, Франта відмовляється, і майстриня виганяє його з дому. На балу всі сміються з неї, і тому шевчиха йде до ставка, де живе хастрман (Й. Скоречек), щоб отримати допомогу..."
+        ]
+      }
+    ]
+  ]
+}

@@ -38,7 +38,7 @@ for lang, data in data_out.items():
         chunk = data[i:i + 10]
         data_new.append(chunk)
     
-    with open(f"server/examples/wmt25_#_{lang}.json", "w") as f:
+    with open(f"data/examples/wmt25_#_{lang}.json", "w") as f:
         lang1, lang2 = lang.split("-")
         json.dump(
             {
@@ -47,10 +47,9 @@ for lang, data in data_out.items():
                     "template": "pointwise",
                     "protocol_score": True,
                     "protocol_error_spans": True,
-                    "protocol_error_categories": False,
+                    "protocol_error_categories": True,
                     "status_message": f"Evaluate translation from {lang1} to {lang2}",
-                    "server_url": "http://localhost:8001",
-                    "frontend_url": "http://localhost:8000",
+                    "url": "http://localhost:8001",
                 },
                 "campaign_id": f"wmt25_#_{lang}",
                 # just first 5 users to keep the size small

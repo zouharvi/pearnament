@@ -1,7 +1,8 @@
 # added manually
-data/
 # by default ignore, override with -.f
-server/examples
+data/
+src/static/
+
 
 __pycache__
 

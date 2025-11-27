@@ -6,14 +6,13 @@ let searchParams = new URLSearchParams(window.location.search)
 export async function get_next_item<T>(): Promise<T> {
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");
-  let server_url = searchParams.get("server_url");
 
   let delay = 1
   while (true) {
     try {
       return await new Promise<T>((resolve, reject) => {
         $.ajax({
-          url: `${server_url}/get-next-item`,
+          url: `/get-next-item`,
           method: "POST",
           data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id }),
           contentType: "application/json",
@@ -40,14 +39,13 @@ export async function get_next_item<T>(): Promise<T> {
 export async function log_response(payload: any): Promise<void> {
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");
-  let server_url = searchParams.get("server_url");
 
   let delay = 1
   while (true) {
     try {
       return await new Promise<void>((resolve, reject) => {
         $.ajax({
-          url: `${server_url}/log-response`,
+          url: `/log-response`,
           method: "POST",
           data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id, "payload": payload }),
           contentType: "application/json",
