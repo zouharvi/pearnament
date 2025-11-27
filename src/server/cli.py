@@ -1,8 +1,9 @@
 import argparse
 import hashlib
-from .utils import ROOT
 import os
 import urllib.parse
+
+from .utils import ROOT
 
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 if not os.path.exists(f"{ROOT}/data/progress.json"):
@@ -12,6 +13,7 @@ if not os.path.exists(f"{ROOT}/data/progress.json"):
 
 def _run():
     import uvicorn
+
     from .run import app
     uvicorn.run(
         app,
@@ -27,8 +29,9 @@ def _run():
 def _add_campaign(args_unknown):
     import argparse
     import json
-    import wonderwords
     import random
+
+    import wonderwords
 
     args = argparse.ArgumentParser()
     args.add_argument('data_file', type=str,

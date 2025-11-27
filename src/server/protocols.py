@@ -1,5 +1,6 @@
 from fastapi.responses import JSONResponse
 
+
 def get_next_item_taskbased(
         campaign_id: str,
         user_id: str,

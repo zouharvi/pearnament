@@ -1,3 +1,5 @@
+# ruff: noqa
+
 raise Exception("Deprecated")
 """
 See scripts/models.py for a list of possible competition models.

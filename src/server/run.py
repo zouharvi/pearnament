@@ -1,14 +1,17 @@
+import json
+import os
 from typing import Any
+
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from .protocols import get_next_item_taskbased, get_next_item_dynamic
-import json
-from .utils import ROOT
 from pynpm import NPMPackage
-import os
+
+from .protocols import get_next_item_dynamic, get_next_item_taskbased
+from .utils import ROOT
+
 os.makedirs("data/outputs", exist_ok=True)
 
 # build frontend
@@ -152,6 +155,7 @@ class ResetTaskRequest(BaseModel):
 
 @app.post("/reset-task")
 async def reset_task(request: ResetTaskRequest):
+    # ruff: noqa: F841
     campaign_id = request.campaign_id
     user_id = request.user_id
     token = request.token
