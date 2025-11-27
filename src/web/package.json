@@ -1,7 +1,7 @@
 {
-  "name": "pearnament-frontend",
+  "name": "hekmut-frontend",
   "version": "0.0.1",
-  "description": "Frontend for evaluation with Pearnament.",
+  "description": "Frontend for evaluation with Hekmut.",
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack serve --mode development",
