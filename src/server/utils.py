@@ -1,5 +1,4 @@
 import difflib
-import contextlib
 
 ROOT = "."
 

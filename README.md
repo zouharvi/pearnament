@@ -2,6 +2,8 @@
 
 A tool for evaluation of model outputs, primarily translation but also various other NLP tasks.
 Supports multimodality (text, video, audio, images) and a variety of annotation protocols (DA, ESA, MQM, paired ESA, etc).
+[![build status](https://github.com/zouharvi/pearnament/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearnament/actions/workflows/ci.yml)
+
 
 <img width="1334" height="614" alt="image" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
 

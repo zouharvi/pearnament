@@ -13,6 +13,9 @@ dependencies = [
     "pynpm >= 0.3.0",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.scripts]
 pearnament = "pearnament.cli:main"
 
