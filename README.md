@@ -1,8 +1,8 @@
-# 🍐 Pearnament
+# Hekmut 🍏🍐 Human Evaluation Interface for Multilingual Tasks
 
 A tool for evaluation of model outputs, primarily translation but also various other NLP tasks.
 Supports multimodality (text, video, audio, images) and a variety of annotation protocols (DA, ESA, MQM, paired ESA, etc).
-[![build status](https://github.com/zouharvi/pearnament/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearnament/actions/workflows/ci.yml)
+[![build status](https://github.com/zouharvi/hekmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/hekmut/actions/workflows/ci.yml)
 
 
 <img width="1334" height="614" alt="image" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
@@ -12,7 +12,7 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 
 First, install the server package:
 ```bash
-pip install pearnament          # NOTE: this will fail for now as package is not live yet
+pip install hekmut          # NOTE: this will fail for now as package is not live yet
 ```
 
 A campaign is described in a single JSON file.
@@ -71,12 +71,12 @@ To load a campaign into the server, run the following.
 It will fail if an existing campaign with the same `campaign_id` already exists, unless you specify `-o/--overwrite`.
 It will also output a secret management link.
 ```bash
-pearnament add my_campaign_4.json
+hekmut add my_campaign_4.json
 ```
 
 Finally, you can launch the server with:
 ```bash
-pearnament run
+hekmut run
 ```
 
 You can see examples in `data/examples/`.
@@ -88,8 +88,8 @@ For the server and frontend locally run:
 ```bash
 pip3 install -e src # install editable
 # add existing data from WMT25, this generates annotation links that you should click
-pearnament add data/examples/wmt25_#_en-cs_CZ.json
-pearnament run
+hekmut add data/examples/wmt25_#_en-cs_CZ.json
+hekmut run
 ```
 
 
@@ -97,9 +97,9 @@ pearnament run
 
 If you use this work in your paper, please cite as:
 ```bibtex
-@misc{pearnament,
+@misc{zouhar2025hekmut,
     author={Vilém Zouhar and others},
-    title={Pearnament: Annotating Multilinguality Pointwise and Pairwise},
-    url={https://github.com/zouharvi/pearnament/},
+    title={Hekmut: Human Evaluation Interface for Multilingual Tasks},
+    url={https://github.com/zouharvi/hekmut/},
     year={2025},
 }

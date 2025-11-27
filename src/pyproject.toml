@@ -1,5 +1,5 @@
 [project]
-name = "pearnament"
+name = "hekmut"
 description = "A tool for evaluation of model outputs, primarily MT."
 authors = [
     { name="Vilém Zouhar", email="vilem.zouhar@gmail.com" }
@@ -17,11 +17,11 @@ dependencies = [
 dev = ["pytest"]
 
 [project.scripts]
-pearnament = "pearnament.cli:main"
+hekmut = "hekmut.cli:main"
 
 [tool.setuptools]
-package-dir = {"pearnament" = "server"}
-packages = ["pearnament"]
+package-dir = {"hekmut" = "server"}
+packages = ["hekmut"]
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
