@@ -100,3 +100,15 @@ pip3 install -e server/ # install editable
 pearnament add server/examples/wmt25_#_en-cs_CZ.json
 pearnament run
 ```
+
+
+## Misc
+
+If you use this work in your paper, please cite as:
+```bibtex
+@misc{pearnament,
+    author={Vilém Zouhar and others},
+    title={Pearnament: Annotating Multilinguality Pointwise and Pairwise},
+    url={https://github.com/zouharvi/pearnament/},
+    year={2025},
+}
