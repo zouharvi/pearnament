@@ -1,8 +1,8 @@
-# Hekmut 🍏🍐 Human Evaluation Interface for Multilingual Tasks
+# Pearmut 🍐 Platform for Evaluation and Reviewing of Multilingual Tasks
 
 A tool for evaluation of model outputs, primarily translation but also various other NLP tasks.
 Supports multimodality (text, video, audio, images) and a variety of annotation protocols (DA, ESA, MQM, paired ESA, etc).
-[![build status](https://github.com/zouharvi/hekmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/hekmut/actions/workflows/ci.yml)
+[![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
 
 
 <img width="1334" height="614" alt="image" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
@@ -12,7 +12,7 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 
 First, install the server package:
 ```bash
-pip install hekmut          # NOTE: this will fail for now as package is not live yet
+pip install pearmut          # NOTE: this will fail for now as package is not live yet
 ```
 
 A campaign is described in a single JSON file.
@@ -71,12 +71,12 @@ To load a campaign into the server, run the following.
 It will fail if an existing campaign with the same `campaign_id` already exists, unless you specify `-o/--overwrite`.
 It will also output a secret management link.
 ```bash
-hekmut add my_campaign_4.json
+pearmut add my_campaign_4.json
 ```
 
 Finally, you can launch the server with:
 ```bash
-hekmut run
+pearmut run
 ```
 
 You can see examples in `data/examples/`.
@@ -88,8 +88,8 @@ For the server and frontend locally run:
 ```bash
 pip3 install -e src # install editable
 # add existing data from WMT25, this generates annotation links that you should click
-hekmut add data/examples/wmt25_#_en-cs_CZ.json
-hekmut run
+pearmut add data/examples/wmt25_#_en-cs_CZ.json
+pearmut run
 ```
 
 
@@ -97,9 +97,9 @@ hekmut run
 
 If you use this work in your paper, please cite as:
 ```bibtex
-@misc{zouhar2025hekmut,
+@misc{zouhar2025pearmut,
     author={Vilém Zouhar and others},
-    title={Hekmut: Human Evaluation Interface for Multilingual Tasks},
-    url={https://github.com/zouharvi/hekmut/},
+    title={Pearmut🍐 Platform for Evaluation and Reviewing of Multilingual Tasks},
+    url={https://github.com/zouharvi/pearmut/},
     year={2025},
 }
