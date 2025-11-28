@@ -1,6 +1,7 @@
-# Pearmut 🍐 Platform for Evaluation and Reviewing of Multilingual Tasks
+# Pearmut 🍐
 
-A tool for evaluation of model outputs, primarily translation but also various other NLP tasks.
+Pearmut is a **Platform for Evaluation and Reviewing of Multilingual Tasks**.
+It evaluates model outputs, primarily translation but also various other NLP tasks.
 Supports multimodality (text, video, audio, images) and a variety of annotation protocols (DA, ESA, MQM, paired ESA, etc).
 [![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
 
