@@ -93,7 +93,6 @@ def _add_campaign(args_unknown):
             "url": (
                 f"{server_url}/{campaign_data["info"]["template"]}.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
-                f"&server_url={urllib.parse.quote_plus(server_url)}"
                 f"&user_id={user_id}"
             ),
             "token_correct": hashlib.sha256(random.randbytes(16)).hexdigest()[:16],
