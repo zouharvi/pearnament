@@ -6,14 +6,14 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 [![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
 
 
-<img width="1334" height="614" alt="image" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
+<img width="1334" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
 
 
 ## Starting a campaign
 
-First, install the package (also requires NPM):
+First, install the package
 ```bash
-pip install pearmut   # NOTE: this will fail for now as package is not live yet
+pip install pearmut
 ```
 
 A campaign is described in a single JSON file.
@@ -103,9 +103,14 @@ You can see examples in `data/examples/`.
 For the server and frontend locally run:
 
 ```bash
-pip3 install -e src # install editable
-# add existing data from WMT25, this generates annotation links that you should click
-# as well as a management link for you
+# watch the frontend for changes (in a separate terminal)
+npm install web/ --prefix web/
+npm run watch --prefix web/
+
+# install local package as editable
+pip3 install -e .
+# add existing data from WMT25, this generates annotation links
+# sets up progress/log files in current working folder
 pearmut add data/examples/wmt25_#_en-cs_CZ.json
 pearmut add data/examples/wmt25_#_cs-de_DE.json
 # shows a management link for all loaded campaigns

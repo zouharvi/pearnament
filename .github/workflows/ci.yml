@@ -25,11 +25,11 @@ jobs:
 
       - name: Lint and static check src/server
         run: |
-          ruff check src/server
-          ruff check --select=I src/server  # import sorting
+          ruff check server
+          ruff check --select=I server
 
       - name: Run Python tests
-        run: pytest src/server/tests/*
+        run: pytest server/tests/*
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -38,10 +38,10 @@ jobs:
 
       - name: Install web dependencies
         run: |
-          cd src/web
+          cd web
           npm install
 
       - name: Build web
         run: |
-          cd src/web
+          cd web
           npm run build

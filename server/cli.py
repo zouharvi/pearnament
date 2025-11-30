@@ -10,8 +10,19 @@ os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 load_progress_data(warn=None)
 
 
-def _run():
+def _run(args_unknown):
     import uvicorn
+
+    args = argparse.ArgumentParser()
+    args.add_argument('--dev', action='store_true', help='Re-build frontend on start')
+    args = args.parse_args(args_unknown)
+
+    if args.dev:
+        # build frontend
+        from pynpm import NPMPackage
+        pkg = NPMPackage('web/package.json')
+        pkg.install()
+        pkg.run_script('build')
 
     from .run import app
     uvicorn.run(
@@ -26,7 +37,6 @@ def _run():
 
 
 def _add_campaign(args_unknown):
-    import argparse
     import random
 
     import wonderwords
@@ -131,7 +141,7 @@ def main():
     args, args_unknown = args.parse_known_args()
 
     if args.command == 'run':
-        _run()
+        _run(args_unknown)
     elif args.command == 'add':
         _add_campaign(args_unknown)
     elif args.command == 'purge':

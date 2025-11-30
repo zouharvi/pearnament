@@ -179,7 +179,6 @@ async function display_next_payload(response: DataPayload) {
         for (let j = Math.max(0, src_i - 5); j <= Math.min(src_chars_els.length - 1, src_i + 5); j++) {
           $(src_chars_els[j]).addClass("highlighted")
         }
-
         if (state_i != null) {
           for (let j = Math.min(state_i, i); j <= Math.max(state_i, i); j++) {
             $(tgt_chars_objs[j].el).addClass("highlighted")

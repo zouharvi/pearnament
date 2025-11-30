@@ -1,7 +1,7 @@
 # added manually
 # by default ignore, override with -.f
 data/
-src/static/
+server/static/
 
 
 __pycache__
