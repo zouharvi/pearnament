@@ -51,8 +51,10 @@
       display: inline-block;
       width: 100px;
       font-size: 9pt;
-      color: "#555";
+      color: #555;
       margin-left: -5px;
+      line-height: 60px;
+      margin-top: -20px;
     }
 
     .output_number {
@@ -169,6 +171,13 @@
 
     input[type="button"].error_delete:hover {
       background-color: #ccc !important;
+    }
+
+    input[type=range][orient=vertical] {
+      writing-mode: vertical-lr;
+      direction: rtl;
+      width: 16px;
+      height: 200px;
     }
   </style>
 </head>
