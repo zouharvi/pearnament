@@ -404,6 +404,7 @@ async function display_next_payload(response: DataPayload) {
 }
 
 
+let payload: DataPayload | null = null
 async function load_next() {
   let response = await get_next_item<DataPayload | DataFinished>()
 
@@ -423,6 +424,7 @@ async function load_next() {
     $("#time").text(`Total annotation time: ${Math.round(response_finished.progress.time / 60)}m`)
     $("#button_next").hide()
   } else if (response.status == "ok") {
+    payload = response as DataPayload
     display_next_payload(response as DataPayload)
   } else {
     console.error("Non-ok response", response)
@@ -442,7 +444,7 @@ $("#button_next").on("click", async function () {
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
   action_log.push({ "time": Date.now() / 1000, "action": "submit" })
-  await log_response({ "annotations": response_log, "actions": action_log })
+  await log_response({ "annotations": response_log, "actions": action_log, "item": payload})
   await load_next()
 })
 

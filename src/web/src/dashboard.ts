@@ -7,7 +7,11 @@ let campaign_ids = searchParams.getAll("campaign_id")
 let tokens = searchParams.getAll("token")
 
 if (tokens.length != 0 && tokens.length != campaign_ids.length) {
-    notify("Either no tokens should be provided or the same number as campaign IDs")
+    $("#main_div").html(`
+        <div class="white-box">
+            ERROR: Either no tokens should be provided or the same number as campaign IDs.
+        </div>
+    `)
     throw new Error("Mismatched number of tokens and campaign IDs")
 }
 
@@ -88,49 +92,6 @@ campaign_ids.forEach(async (campaign_id, i) => {
     }
 });
 
-// $("#download_progress").on("click", () => {
-//     // Data to send to the FastAPI endpoint
-//     const postData = {
-//         name: "short_request",
-//         value: 101
-//     };
 
-//     fetch('/download', { // Your FastAPI endpoint
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({ "target": "progress", "campaign_ids": campaign_ids, "tokens": tokens})
-//     })
-//         .then(response => {
-//             const contentDisposition = response.headers.get('Content-Disposition');
-//             let filename = 'download.json';
-//             if (contentDisposition) {
-//                 const matches = contentDisposition.match(/filename="?([^"]+)"?/);
-//                 if (matches) {
-//                     filename = matches[1];
-//                 }
-//             }
-
-//             // Crucial: Return the response body as a binary Blob
-//             return response.blob().then(blob => ({ blob, filename }));
-//         })
-//         .then(({ blob, filename }) => {
-//             // create a temporary URL for the Blob
-//             const url = URL.createObjectURL(blob);
-
-//             // programmatically create and click an anchor tag
-//             const a = document.createElement('a');
-//             a.href = url;
-//             a.download = filename;
-//             document.body.appendChild(a);
-//             a.click();
-
-//             // 3. Clean up
-//             document.body.removeChild(a);
-//             URL.revokeObjectURL(url);
-//         })
-//         .catch(error => {
-//             console.error('Download failed:', error);
-//         });
-// })
+$("#download_progress").attr("href", `/download-progress?${campaign_ids.map((id, i) => `campaign_id=${encodeURIComponent(id)}&${tokens[i] ? `token=${encodeURIComponent(tokens[i])}` : ''}`).join('&')}`)
+$("#download_annotations").attr("href", `/download-annotations?${campaign_ids.map((id, i) => `campaign_id=${encodeURIComponent(id)}&${tokens[i] ? `token=${encodeURIComponent(tokens[i])}` : ''}`).join('&')}`)
