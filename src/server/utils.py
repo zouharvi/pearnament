@@ -1,4 +1,5 @@
-import difflib
+import os
+import json
 
 ROOT = "."
 
@@ -13,6 +14,7 @@ def highlight_differences(a, b):
     Returns:
         A tuple containing the two strings with their differences highlighted.
     """
+    import difflib
     # TODO: maybe on the level of words?
     s = difflib.SequenceMatcher(None, a, b)
     res_a, res_b = [], []
@@ -32,3 +34,15 @@ def highlight_differences(a, b):
     return "".join(res_a), "".join(res_b)
 
 
+def load_progress_data(warn: str | None = None):
+    if not os.path.exists(f"{ROOT}/data/progress.json"):
+        if warn is not None:
+            print(warn)
+        with open(f"{ROOT}/data/progress.json", "w") as f:
+            f.write(json.dumps({}))
+    with open(f"{ROOT}/data/progress.json", "r") as f:
+        return json.load(f)
+
+def save_progress_data(data):
+    with open(f"{ROOT}/data/progress.json", "w") as f:
+        json.dump(data, f, indent=2)

@@ -8,9 +8,10 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pynpm import NPMPackage
+import urllib
 
 from .protocols import get_next_item_dynamic, get_next_item_taskbased
-from .utils import ROOT
+from .utils import ROOT, load_progress_data, save_progress_data
 
 os.makedirs("data/outputs", exist_ok=True)
 
@@ -28,16 +29,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-data_all = {}
+tasks_data = {}
+progress_data = load_progress_data(warn="No progress.json found. Running, but no campaign will be available.")
 
+# load all tasks into data_all
+for campaign_id in progress_data.keys():
+    with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
+        tasks_data[campaign_id] = json.load(f)
 
-if not os.path.exists("data/progress.json"):
-    print("No progress.json found. Running, but no campaign will be available.")
-    progress_data = {}
-else:
-    with open("data/progress.json", "r") as f:
-        progress_data = json.load(f)
-
+# print access dashboard URL for all campaigns
+print(
+    list(tasks_data.values())[0]["info"]["url"] + "/dashboard.html?" + "&".join([
+        f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
+        for campaign_id, campaign_data in tasks_data.items()
+    ])
+)
 
 class LogResponseRequest(BaseModel):
     campaign_id: str
@@ -76,8 +82,7 @@ async def log_response(request: LogResponseRequest):
 
     # TODO: this should verify that the correct ID is being incremented, otherwise prevent incrementing
     progress_data[campaign_id][user_id]["progress"] += 1
-    with open(f"{ROOT}/data/progress.json", "w") as f:
-        json.dump(progress_data, f, indent=2)
+    save_progress_data(progress_data)
 
     return JSONResponse(content={"status": "ok"}, status_code=200)
 
@@ -97,42 +102,31 @@ async def get_next_item(request: NextItemRequest):
     if user_id not in progress_data[campaign_id]:
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
 
-    if campaign_id not in data_all:
-        # load campaign data if does not exist in cache
-        with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
-            data_all[campaign_id] = json.load(f)
-
-    if data_all[campaign_id]["info"]["type"] == "task-based":
-        return get_next_item_taskbased(campaign_id, user_id, data_all, progress_data)
-    elif data_all[campaign_id]["info"]["type"] == "dynamic":
-        return get_next_item_dynamic(campaign_id, user_id, data_all, progress_data)
+    if tasks_data[campaign_id]["info"]["type"] == "task-based":
+        return get_next_item_taskbased(campaign_id, user_id, tasks_data, progress_data)
+    elif tasks_data[campaign_id]["info"]["type"] == "dynamic":
+        return get_next_item_dynamic(campaign_id, user_id, tasks_data, progress_data)
     else:
         return JSONResponse(content={"error": "Unknown campaign type"}, status_code=400)
 
 
 class DashboardDataRequest(BaseModel):
     campaign_id: str
-
+    token: str | None = None
 
 @app.post("/dashboard-data")
 async def dashboard_data(request: DashboardDataRequest):
     campaign_id = request.campaign_id
 
-    # TODO: manage dashboard tokens
-    is_privileged = True
+    is_privileged = (request.token == tasks_data[campaign_id]["token"])
 
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
 
-    if campaign_id not in data_all:
-        # load campaign data if does not exist in cache
-        with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
-            data_all[campaign_id] = json.load(f)
-
     progress_new = {
         user_id: {
             **user_val,
-            "total": len(data_all[campaign_id]["data"][user_id]),
+            "total": len(tasks_data[campaign_id]["data"][user_id]),
         } | (
             # override if not privileged
             {
@@ -165,17 +159,27 @@ async def reset_task(request: ResetTaskRequest):
     user_id = request.user_id
     token = request.token
 
-    return JSONResponse(content={"error": "Resetting tasks is not supported yet"}, status_code=400)
+    if campaign_id not in progress_data:
+        return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+    if token != tasks_data[campaign_id]["token"]:
+        return JSONResponse(content={"error": "Invalid token"}, status_code=400)
+    if user_id not in progress_data[campaign_id]:
+        return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
+    
+    # TODO: change this to something smartner in the future
+    progress_data[campaign_id][user_id]["progress"] = 0
+    progress_data[campaign_id][user_id]["time_start"] = None
+    progress_data[campaign_id][user_id]["time_end"] = None
+    progress_data[campaign_id][user_id]["time"] = 0
+    save_progress_data(progress_data)
 
 
 @app.get("/download-annotations")
 async def download_annotations(
         campaign_id: list[str] = Query(),
-        token: list[str] = Query()):
-    if len(campaign_id) != len(token):
-        return JSONResponse(content={"error": "Mismatched campaign_id and token count"}, status_code=400)
-
-    # TODO: handle token
+        # NOTE: currently not checking tokens for progress download as it is non-destructive
+        # token: list[str] = Query()
+    ):
 
     output = {}
     for campaign_id in campaign_id:
@@ -194,16 +198,18 @@ async def download_annotations(
 @app.get("/download-progress")
 async def download_progress(
         campaign_id: list[str] = Query(),
-        token: list[str] = Query()):
+        token: list[str] = Query()
+    ):
+    
     if len(campaign_id) != len(token):
         return JSONResponse(content={"error": "Mismatched campaign_id and token count"}, status_code=400)
 
-    # TODO: handle token
-
     output = {}
-    for campaign_id in campaign_id:
+    for campaign_id, campaign_id in enumerate(campaign_id):
         if campaign_id not in progress_data:
             return JSONResponse(content={"error": f"Unknown campaign ID {campaign_id}"}, status_code=400)
+        if token[campaign_id] != tasks_data[campaign_id]["token"]:
+            return JSONResponse(content={"error": f"Invalid token for campaign ID {campaign_id}"}, status_code=400)
         
         output[campaign_id] = progress_data[campaign_id]
 

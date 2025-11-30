@@ -9,7 +9,7 @@ let tokens = searchParams.getAll("token")
 if (tokens.length != 0 && tokens.length != campaign_ids.length) {
     $("#main_div").html(`
         <div class="white-box">
-            ERROR: Either no tokens should be provided or the same number as campaign IDs.
+        ⛔ Either no tokens should be provided or the same number as campaign IDs.
         </div>
     `)
     throw new Error("Mismatched number of tokens and campaign IDs")
@@ -41,50 +41,78 @@ campaign_ids.forEach(async (campaign_id, i) => {
 
                 let html = ""
                 html += `
-                <table class="table table-striped">
+                <table>
                     <thead><tr>
-                        <th>User ID</th>
-                        <th>Progress</th>
-                        <th>First</th>
-                        <th>Last</th>
-                        <th>Time</th>
-                        <th>Actions</th>
+                        <th style="min-width: 300px;">User ID</th>
+                        <th style="min-width: 50px;">Progress</th>
+                        <th style="min-width: 80px;">First</th>
+                        <th style="min-width: 80px;">Last</th>
+                        <th style="min-width: 80px;">Time</th>
+                        <th style="min-width: 50px;">Actions</th>
                     </tr></thead>
                     <tbody>`
-                for (let line in data) {
+                for (let user_id in data) {
                     let status = ''
-                    if (data[line]["progress"] == 0)
+                    if (data[user_id]["progress"] == 0)
                         status = '💤'
-                    else if (data[line]["progress"] == data[line]["total"])
+                    else if (data[user_id]["progress"] == data[user_id]["total"])
                         status = '✅'
                     else
                         status = '🚧'
 
                     html += '<tr>'
-                    html += `<td>${status} ${line}</td>`
-                    html += `<td>${data[line]["progress"]}/${data[line]["total"]}</td>`
-                    if (data[line]["time_start"] == null) {
+                    html += `<td>${status} ${user_id}</td>`
+                    html += `<td>${data[user_id]["progress"]}/${data[user_id]["total"]}</td>`
+                    if (data[user_id]["time_start"] == null) {
                         html += `<td title="N/A"></td>`
                     } else {
-                        html += `<td title="${new Date(data[line]["time_start"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[line]["time_start"])} ago</td>`
+                        html += `<td title="${new Date(data[user_id]["time_start"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_start"])} ago</td>`
                     }
-                    if (data[line]["time_end"] == null) {
+                    if (data[user_id]["time_end"] == null) {
                         html += `<td title="N/A"></td>`
                     } else {
-                        html += `<td title="${new Date(data[line]["time_end"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[line]["time_end"])} ago</td>`
+                        html += `<td title="${new Date(data[user_id]["time_end"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_end"])} ago</td>`
                     }
-                    html += `<td>${Math.round(data[line]["time"] / 60)}m</td>`
+                    html += `<td>${Math.round(data[user_id]["time"] / 60)}m</td>`
                     // TODO: turn into actions
-                    html += `<td><a href="${data[line]["url"]}">🔗</a>&nbsp;&nbsp;🗑️</td>`
+                    html += `<td>
+                        <a href="${data[user_id]["url"]}">🔗</a>
+                        &nbsp;&nbsp;
+                        <span class="reset-task" user_id="${user_id}" ${token == null ? "disabled" : ""}>🗑️</span>
+                    </td>`
                     html += '</tr>'
                 }
                 html += '</tbody></table>'
+                let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}`
+                let el = $(`
+                    <div class="white-box">
+                    <h3>${campaign_id} <a href="${dashboard_url}">🔗</a></h3>
+                    ${html}
+                    </div>`)
 
-                $("#dashboard_div").append(
-                    `<div class="white-box"><h3>${campaign_id}</h3> ${html} </div>`)
+                $("#dashboard_div").append(el)
+                if (token != null) {
+                    $(".reset-task").on("click", function () {
+                        let user_id = $(this).attr("user_id")
+                        $.ajax({
+                            url: `/reset-task`,
+                            method: "POST",
+                            data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id, "token": token }),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: (x) => {
+                                notify(`Task for user ${user_id} has been reset.`)
+                                location.reload()
+                            },
+                            error: (XMLHttpRequest, textStatus, errorThrown) => {
+                                notify("Error resetting task:" + JSON.stringify(textStatus) + JSON.stringify(errorThrown));
+                            },
+                        });
+                    })
+                }
             },
             error: (XMLHttpRequest, textStatus, errorThrown) => {
-                notify("Error fetching data:" + textStatus + errorThrown);
+                notify("Error fetching data:" + JSON.stringify(textStatus) + JSON.stringify(errorThrown));
             },
         });
     } catch (e) {
@@ -93,5 +121,10 @@ campaign_ids.forEach(async (campaign_id, i) => {
 });
 
 
-$("#download_progress").attr("href", `/download-progress?${campaign_ids.map((id, i) => `campaign_id=${encodeURIComponent(id)}&${tokens[i] ? `token=${encodeURIComponent(tokens[i])}` : ''}`).join('&')}`)
+// progress requries an access token
+if (tokens.length == 0) {
+    $("#download_progress").attr("disabled", "true")
+} else {
+    $("#download_progress").attr("href", `/download-progress?${campaign_ids.map((id, i) => `campaign_id=${encodeURIComponent(id)}}`).join('&')}`)
+}
 $("#download_annotations").attr("href", `/download-annotations?${campaign_ids.map((id, i) => `campaign_id=${encodeURIComponent(id)}&${tokens[i] ? `token=${encodeURIComponent(tokens[i])}` : ''}`).join('&')}`)

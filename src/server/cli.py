@@ -1,14 +1,13 @@
 import argparse
 import hashlib
+import json
 import os
 import urllib.parse
 
-from .utils import ROOT
+from .utils import ROOT, load_progress_data
 
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
-if not os.path.exists(f"{ROOT}/data/progress.json"):
-    with open(f"{ROOT}/data/progress.json", "w") as f:
-        f.write("{}")
+load_progress_data(warn=None)
 
 
 def _run():
@@ -28,7 +27,6 @@ def _run():
 
 def _add_campaign(args_unknown):
     import argparse
-    import json
     import random
 
     import wonderwords
@@ -84,6 +82,13 @@ def _add_campaign(args_unknown):
         user_id: task
         for user_id, task in zip(user_ids, tasks)
     }
+
+    # generate a token for dashboard access if not present
+    if "token" not in campaign_data:
+        campaign_data["token"] = (
+            hashlib.sha256(random.randbytes(16)).hexdigest()[:10]
+        )
+
     user_progress = {
         user_id: {
             "progress": 0,
@@ -95,14 +100,14 @@ def _add_campaign(args_unknown):
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),
-            "token_correct": hashlib.sha256(random.randbytes(16)).hexdigest()[:16],
-            "token_incorrect": hashlib.sha256(random.randbytes(16)).hexdigest()[:16],
+            "token_correct": hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
+            "token_incorrect": hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
         }
         for user_id in user_ids
     }
 
     with open(f"{ROOT}/data/tasks/{campaign_data['campaign_id']}.json", "w") as f:
-        json.dump(campaign_data, f, indent=2)
+        json.dump(campaign_data, f, indent=2, ensure_ascii=False)
 
     progress_data[campaign_data['campaign_id']] = user_progress
 
@@ -112,7 +117,7 @@ def _add_campaign(args_unknown):
     print(
         f"{server_url}/dashboard.html"
         f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
-        f"&token=TODO"
+        f"&token={campaign_data['token']}"
     )
     print("-"*10)
     for user_id, user_val in user_progress.items():
