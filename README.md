@@ -3,8 +3,14 @@
 Pearmut is a **Platform for Evaluation and Reviewing of Multilingual Tasks**.
 It evaluates model outputs, primarily translation but also various other NLP tasks.
 Supports multimodality (text, video, audio, images) and a variety of annotation protocols (DA, ESA, MQM, paired ESA, etc).
-[![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
 
+[![PyPi version](https://badgen.net/pypi/v/pearmut/)](https://pypi.org/project/pearmut)
+&nbsp;
+[![PyPI download/month](https://img.shields.io/pypi/dm/pearmut.svg)](https://pypi.python.org/pypi/pearmut/)
+&nbsp;
+[![PyPi license](https://badgen.net/pypi/license/pearmut/)](https://pypi.org/project/pearmut/)
+&nbsp;
+[![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
 
 <img width="1334" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
 
