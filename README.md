@@ -74,16 +74,14 @@ One of the simplest ones, where each user has a pre-defined list of tasks (`task
 }
 ```
 In general, the task item can be anything and is handled by the specific protocol template.
-For the standard ones (ESA, DA, MQM), we expect each item to be a list (i.e. document unit) that looks as follows:
+For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (corresponding to a single document unit) that looks as follows:
 ```python
-[
-    {   # single document definition
-        "src": ["A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", "toto je pokračování stejného dokumentu"],       # mandatory for ESA/MQM/DA
-        "tgt": ["And suddenly all the water became full of other people and other people.", "this is a continuation of the same document"],      # mandatory for ESA/MQM/DA
-        ...  # all other keys that will be stored, useful for your analysis
-    },
-    ... # definition of another item
-]
+{   # single document definition
+    "src": ["A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", "toto je pokračování stejného dokumentu"],       # mandatory for ESA/MQM/DA
+    "tgt": ["And suddenly all the water became full of other people and other people.", "this is a continuation of the same document"], # mandatory for ESA/MQM/DA
+    ...  # all other keys that will be stored, useful for your analysis
+},
+... # definition of another item
 ```
 
 We also support a super simple allocation of annotations (`task-single`, not yet ⚠️), where you simply pass a list of all examples to be evaluated and they are processed in parallel by all annotators:
@@ -125,7 +123,7 @@ pearmut add my_campaign_4.json
 pearmut run
 ```
 
-## Annotator management
+## Campaign management
 
 When adding new campaigns or launching pearmut, a management link is shown that gives an overview of annotator progress but also an easy access to the annotation links or resetting the task progress (no data will be lost).
 
