@@ -91,7 +91,7 @@ def _add_campaign(args_unknown):
 
     user_progress = {
         user_id: {
-            "progress": 0,
+            "progress": [False]*len(campaign_data["data"][user_id]) if campaign_data["info"]["type"] == "task-based" else [],
             "time_start": None,
             "time_end": None,
             "time": 0,
@@ -127,10 +127,24 @@ def _add_campaign(args_unknown):
 
 def main():
     args = argparse.ArgumentParser()
-    args.add_argument('command', type=str, choices=['run', 'add'])
+    args.add_argument('command', type=str, choices=['run', 'add', 'purge'])
     args, args_unknown = args.parse_known_args()
 
     if args.command == 'run':
         _run()
     elif args.command == 'add':
         _add_campaign(args_unknown)
+    elif args.command == 'purge':
+        import shutil
+
+        confirm = input(
+            "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n]"
+        )
+        if confirm.lower() == 'y':
+            shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)
+            shutil.rmtree(f"{ROOT}/data/outputs", ignore_errors=True)
+            if os.path.exists(f"{ROOT}/data/progress.json"):
+                os.remove(f"{ROOT}/data/progress.json")
+            print("All campaign data purged.")
+        else:
+            print("Cancelled.")

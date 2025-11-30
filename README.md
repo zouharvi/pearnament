@@ -11,9 +11,9 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 
 ## Starting a campaign
 
-First, install the server package:
+First, install the package (also requires NPM):
 ```bash
-pip install pearmut          # NOTE: this will fail for now as package is not live yet
+pip install pearmut   # NOTE: this will fail for now as package is not live yet
 ```
 
 A campaign is described in a single JSON file.
@@ -43,7 +43,7 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a list (i.e. doc
     {
         "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.",       # mandatory for ESA/MQM/DA
         "tgt": "And suddenly all the water became full of other people and other people.",      # mandatory for ESA/MQM/DA
-        ...                            # any other keys that will be stored, useful for analysis andfurther identification
+        ...  # all other keys that will be stored, useful for your analysis
     },
     {
         "src": "toto je pokračování stejného dokumentu",
@@ -54,7 +54,7 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a list (i.e. doc
 ]
 ```
 
-We also support dynamic allocation of annotations (not yet ⚠️), which is more complex and can be ignored for now:
+We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), which is more complex and can be ignored for now:
 ```python
 {
     "campaign_id": "my campaign 6",
@@ -68,7 +68,7 @@ We also support dynamic allocation of annotations (not yet ⚠️), which is mor
 }
 ```
 
-We also support a super simple allocation of annotations (not yet ⚠️), where you simply pass a list of all examples to be evaluated and they are processed in parallel by all annotators:
+We also support a super simple allocation of annotations (`task-single`, not yet ⚠️), where you simply pass a list of all examples to be evaluated and they are processed in parallel by all annotators:
 ```python
 {
     "campaign_id": "my campaign 6",
@@ -105,11 +105,12 @@ For the server and frontend locally run:
 ```bash
 pip3 install -e src # install editable
 # add existing data from WMT25, this generates annotation links that you should click
+# as well as a management link for you
 pearmut add data/examples/wmt25_#_en-cs_CZ.json
 pearmut add data/examples/wmt25_#_cs-de_DE.json
+# shows a management link for all loaded campaigns
 pearmut run
 ```
-
 
 ## Misc
 

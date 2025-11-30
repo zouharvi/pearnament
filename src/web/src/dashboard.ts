@@ -52,17 +52,19 @@ campaign_ids.forEach(async (campaign_id, i) => {
                     </tr></thead>
                     <tbody>`
                 for (let user_id in data) {
+                    // sum
+                    let progress_count = (data[user_id]["progress"] as Array<boolean>).reduce((a, b) => a + (b ? 1 : 0), 0)
                     let status = ''
-                    if (data[user_id]["progress"] == 0)
+                    if (progress_count == 0)
                         status = '💤'
-                    else if (data[user_id]["progress"] == data[user_id]["total"])
+                    else if (progress_count == data[user_id]["total"])
                         status = '✅'
                     else
                         status = '🚧'
 
                     html += '<tr>'
                     html += `<td>${status} ${user_id}</td>`
-                    html += `<td>${data[user_id]["progress"]}/${data[user_id]["total"]}</td>`
+                    html += `<td>${progress_count}/${data[user_id]["total"]}</td>`
                     if (data[user_id]["time_start"] == null) {
                         html += `<td title="N/A"></td>`
                     } else {

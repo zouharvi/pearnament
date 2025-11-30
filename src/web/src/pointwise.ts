@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { get_next_item, log_response } from './connector';
 import { notify } from './utils';
 type ErrorSpan = { "start_i": number, "end_i": number, "category": string | null, "severity": string | null, }
-type Response = { "done": boolean, "score": number | null, "error_spans": Array<ErrorSpan>, }
+type Response = { "done": boolean, "score": number | null, "error_spans": Array<ErrorSpan> }
 type CharData = { "el": JQuery<HTMLElement>, "toolbox": JQuery<HTMLElement> | null, "error_span": ErrorSpan | null, }
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
@@ -91,6 +91,7 @@ export type DataPayload = {
     "protocol_score": boolean,
     "protocol_error_spans": boolean,
     "protocol_error_categories": boolean,
+    "item_i": number,
   }
 }
 export type DataFinished = {
@@ -403,6 +404,11 @@ let payload: DataPayload | null = null
 async function load_next() {
   let response = await get_next_item<DataPayload | DataFinished>()
 
+  if (response == null) {
+    notify("Error fetching the next item. Please try again later.")
+    return
+  }
+
   if (response.status == "completed") {
     let response_finished = response as DataFinished
     $("#output_div").html(`
@@ -429,7 +435,6 @@ async function load_next() {
 $("#button_next").on("click", async function () {
   // check if all done
   for(let el of $(".span_toolbox_parent")) {
-    console.log(el, $(el).css("display"))
     if ($(el).css("display") != "none") {
       notify("Please finish annotating all error spans before proceeding.")
       return
@@ -439,7 +444,16 @@ $("#button_next").on("click", async function () {
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
   action_log.push({ "time": Date.now() / 1000, "action": "submit" })
-  await log_response({ "annotations": response_log, "actions": action_log, "item": payload})
+  let outcome = await log_response(
+    { "annotations": response_log, "actions": action_log, "item": payload},
+    payload!.info.item_i,
+  )
+  if (outcome == null || outcome == false) {
+    notify("Error submitting the annotations. Please try again.")
+    $("#button_next").removeAttr("disabled")
+    $("#button_next").val("Next ❓")
+    return
+  }
   await load_next()
 })
 
