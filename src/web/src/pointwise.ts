@@ -107,18 +107,9 @@ function _slider_html(i: number): string {
         <label class="output_number">?</label>
       </div>
       <div class="output_labels">
-        100: perfect
-        <br>
-        <br>
-        <br>
-        66: middling
-        <br>
-        <br>
-        <br>
-        33: broken
-        <br>
-        <br>
-        <br>
+        100: perfect <br>
+        66: middling <br>
+        33: broken <br>
         0: nonsense
       </div>
     `
@@ -390,6 +381,10 @@ async function display_next_payload(response: DataPayload) {
     let slider = output_block.find("input[type='range']")
     let label = output_block.find(".output_number")
     slider.on("input", function () {
+      let val = parseInt((<HTMLInputElement>this).value)
+      label.text(val.toString())
+    })
+    slider.on("change", function () {
       let val = parseInt((<HTMLInputElement>this).value)
       label.text(val.toString())
       let i = parseInt(slider.attr("id")!.split("_")[1])
