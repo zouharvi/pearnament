@@ -2,9 +2,9 @@ import json
 import os
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pynpm import NPMPackage
@@ -30,8 +30,13 @@ app.add_middleware(
 
 data_all = {}
 
-with open("data/progress.json", "r") as f:
-    progress_data = json.load(f)
+
+if not os.path.exists("data/progress.json"):
+    print("No progress.json found. Running, but no campaign will be available.")
+    progress_data = {}
+else:
+    with open("data/progress.json", "r") as f:
+        progress_data = json.load(f)
 
 
 class LogResponseRequest(BaseModel):
@@ -163,46 +168,45 @@ async def reset_task(request: ResetTaskRequest):
     return JSONResponse(content={"error": "Resetting tasks is not supported yet"}, status_code=400)
 
 
-class DownloadAnnotationsRequest(BaseModel):
-    campaign_ids: list[str]
-    tokens: list[str]
-    target: str
-
-
-@app.get("/download")
-async def download_annotations(request: DownloadAnnotationsRequest):
-    if len(request.campaign_ids) != len(request.tokens):
-        return JSONResponse(content={"error": "Mismatched campaign_id and token lengths"}, status_code=400)
+@app.get("/download-annotations")
+async def download_annotations(
+        campaign_id: list[str] = Query(),
+        token: list[str] = Query()):
+    if len(campaign_id) != len(token):
+        return JSONResponse(content={"error": "Mismatched campaign_id and token count"}, status_code=400)
 
     # TODO: handle token
 
-    if request.target == "annotations":
-        output = {}
-        for campaign_id in request.campaign_ids:
-            output_path = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
-            if not os.path.exists(output_path):
-                return JSONResponse(content={"error": "No annotations found"}, status_code=404)
-
+    output = {}
+    for campaign_id in campaign_id:
+        output_path = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
+        if campaign_id not in progress_data:
+            return JSONResponse(content={"error": f"Unknown campaign ID {campaign_id}"}, status_code=400)
+        if not os.path.exists(output_path):
+            output[campaign_id] = []
+        else:
             with open(output_path, "r") as f:
-                output[campaign_id] = f.read()
+                output[campaign_id] = [json.loads(x) for x in f.readlines()]
 
-        return JSONResponse(content=output, status_code=200)
-    elif request.target == "progress":
-        output = {}
-        for campaign_id in request.campaign_ids:
-            if campaign_id not in progress_data:
-                return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
-            output[campaign_id] = progress_data[campaign_id]
+    return JSONResponse(content=output, status_code=200)
 
-        return StreamingResponse(
-            content=[json.dumps(output).encode('utf-8')],
-            headers={
-                "Content-Disposition": "attachment; filename=\"progress.json\"",
-            },
-            media_type="application/json"
-        )
-    else:
-        return JSONResponse(content={"error": "Unknown target (annotations or progress)"}, status_code=400)
 
+@app.get("/download-progress")
+async def download_progress(
+        campaign_id: list[str] = Query(),
+        token: list[str] = Query()):
+    if len(campaign_id) != len(token):
+        return JSONResponse(content={"error": "Mismatched campaign_id and token count"}, status_code=400)
+
+    # TODO: handle token
+
+    output = {}
+    for campaign_id in campaign_id:
+        if campaign_id not in progress_data:
+            return JSONResponse(content={"error": f"Unknown campaign ID {campaign_id}"}, status_code=400)
+        
+        output[campaign_id] = progress_data[campaign_id]
+
+    return JSONResponse(content=output, status_code=200)
 
 app.mount("/", StaticFiles(directory="src/static", html=True), name="static")

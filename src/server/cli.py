@@ -112,7 +112,6 @@ def _add_campaign(args_unknown):
     print(
         f"{server_url}/dashboard.html"
         f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
-        f"&server_url={urllib.parse.quote_plus(server_url)}"
         f"&token=TODO"
     )
     print("-"*10)

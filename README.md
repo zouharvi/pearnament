@@ -54,7 +54,7 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a list (i.e. doc
 ]
 ```
 
-We also support dynamic allocation of annotations, which is more complex and can be ignored for now:
+We also support dynamic allocation of annotations (not yet ⚠️), which is more complex and can be ignored for now:
 ```python
 {
     "campaign_id": "my campaign 6",
@@ -62,6 +62,22 @@ We also support dynamic allocation of annotations, which is more complex and can
         "type": "dynamic",
         "template": "kway",
         "protocol_k": 5,
+        "users": 50,
+    },
+    "data": [...], # list of all items
+}
+```
+
+We also support a super simple allocation of annotations (not yet ⚠️), where you simply pass a list of all examples to be evaluated and they are processed in parallel by all annotators:
+```python
+{
+    "campaign_id": "my campaign 6",
+    "info": {
+        "type": "task-single",
+        "template": "pointwise",
+        "protocol_score": True,                # collect scores
+        "protocol_error_spans": True,          # collect error spans
+        "protocol_error_categories": False,    # do not collect MQM categories, so ESA
         "users": 50,
     },
     "data": [...], # list of all items
@@ -90,6 +106,7 @@ For the server and frontend locally run:
 pip3 install -e src # install editable
 # add existing data from WMT25, this generates annotation links that you should click
 pearmut add data/examples/wmt25_#_en-cs_CZ.json
+pearmut add data/examples/wmt25_#_cs-de_DE.json
 pearmut run
 ```
 
