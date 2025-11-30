@@ -185,15 +185,24 @@
 <body>
   <div style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
     <div style="display: flex;">
+      <input
+        type="button" value="⚙️" id="button_settings"
+        style="margin-right: 20px; height: 1.5em; margin-top: -5px;" 
+      >
       <span id="progress" style="flex: 0 0 140px;">Annotated: 0/0</span>
       <span id="time" style="flex: 0 0 190px;">Annotation time: 0m</span>
       <span id="status_message" style="margin-left: 20px; flex-grow: 1; vertical-align: top;"></span>
 
       <input
         type="button" value="Next 🛠️" id="button_next" disabled
-        style="flex: 0 0 150px; margin-right: 20px; margin-left: 20px; height: 2.5em;"
+        style="flex: 0 0 150px; margin-right: 20px; margin-left: 20px; margin-top: -10px; height: 2.5em;"
         title="Finish annotating all examples first."
       >
+    </div>
+
+    <div id="settings_div" class="white-box" style="margin-right: 20px; margin-top: 10px; display: none;">
+      <input type="checkbox" id="settings_approximate_alignment">
+      <label for="settings_approximate_alignment">Show approximate alignment</label>
     </div>
 
     <div id="output_div" style="margin-top: 100px;"></div>

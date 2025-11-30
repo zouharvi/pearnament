@@ -7,6 +7,7 @@ type Response = { "done": boolean, "score": number | null, "error_spans": Array<
 type CharData = { "el": JQuery<HTMLElement>, "toolbox": JQuery<HTMLElement> | null, "error_span": ErrorSpan | null, }
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
+let settings_show_alignment = true
 
 const MQM_ERROR_CATEGORIES = {
   "Terminology": [
@@ -175,9 +176,11 @@ async function display_next_payload(response: DataPayload) {
 
       $(obj.el).on("mouseenter", function () {
         $(".src_char").removeClass("highlighted")
-        let src_i = Math.round(i / tgt_chars_objs.length * src_chars_els.length)
-        for (let j = Math.max(0, src_i - 5); j <= Math.min(src_chars_els.length - 1, src_i + 5); j++) {
-          $(src_chars_els[j]).addClass("highlighted")
+        if (settings_show_alignment) {
+          let src_i = Math.round(i / tgt_chars_objs.length * src_chars_els.length)
+          for (let j = Math.max(0, src_i - 5); j <= Math.min(src_chars_els.length - 1, src_i + 5); j++) {
+            $(src_chars_els[j]).addClass("highlighted")
+          }
         }
         if (state_i != null) {
           for (let j = Math.min(state_i, i); j <= Math.max(state_i, i); j++) {
@@ -370,9 +373,11 @@ async function display_next_payload(response: DataPayload) {
 
       $(obj).on("mouseenter", function () {
         $(".tgt_char").removeClass("highlighted")
-        let tgt_i = Math.round(i / src_chars_els.length * tgt_chars_objs.length)
-        for (let j = Math.max(0, tgt_i - 5); j <= Math.min(tgt_chars_objs.length - 1, tgt_i + 5); j++) {
-          $(tgt_chars_objs[j].el).addClass("highlighted")
+        if (settings_show_alignment) {
+          let tgt_i = Math.round(i / src_chars_els.length * tgt_chars_objs.length)
+          for (let j = Math.max(0, tgt_i - 5); j <= Math.min(tgt_chars_objs.length - 1, tgt_i + 5); j++) {
+            $(tgt_chars_objs[j].el).addClass("highlighted")
+          }
         }
       })
     })
@@ -457,3 +462,19 @@ $("#button_next").on("click", async function () {
 })
 
 load_next()
+
+$("#button_settings").on("click", function () {
+  if ($("#settings_div").css("display") == "none") {
+    $("#settings_div").css("display", "block")
+  } else {
+    $("#settings_div").css("display", "none")
+  }
+})
+
+// set checked from settings
+$("#settings_approximate_alignment").on("change", function () {
+  settings_show_alignment = $("#settings_approximate_alignment").is(":checked")
+  localStorage.setItem("setting_approximate_alignment", settings_show_alignment.toString())
+})
+$("#settings_approximate_alignment").prop("checked", localStorage.getItem("setting_approximate_alignment") == "true")
+$("#settings_approximate_alignment").trigger("change")
