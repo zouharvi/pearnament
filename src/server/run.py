@@ -1,5 +1,6 @@
 import json
 import os
+import urllib
 from typing import Any
 
 from fastapi import FastAPI, Query
@@ -8,7 +9,6 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pynpm import NPMPackage
-import urllib
 
 from .protocols import get_next_item_dynamic, get_next_item_taskbased
 from .utils import ROOT, load_progress_data, save_progress_data
