@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,22 @@
         .white-box {
             margin-bottom: 20px;
         }
-
-        button {
-            background-color: white !important;
+        
+        .abutton {
+            background-color: white;
+            text-decoration: none;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 5px;
         }
 
-        th, td {
+        .abutton:hover {
+            background: #ffe;
+            cursor: pointer;
+        }
+
+        th,
+        td {
             text-align: left;
             padding-right: 20px;
         }
@@ -36,14 +47,10 @@
         </div>
 
         <br>
-        <input
-          type="button" value="Download all progress 💾" id="button_next"
-          style="width: 300px; margin-right: 20px;"
-        >
-        <input
-          type="button" value="Download all annotations 💾" id="button_next"
-          style="width: 300px; margin-right: 20px;"
-        >
+        
+        <a class="abutton" id="download_progress" style="width: 300px; margin-right: 20px;">Download progress metadata 💾</a>
+        <a class="abutton" id="download_annotations" style="width: 300px; margin-right: 20px;">Download all annotations 💾</a>
     </div>
 </body>
+
 </html>

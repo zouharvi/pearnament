@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pynpm import NPMPackage
@@ -161,6 +161,48 @@ async def reset_task(request: ResetTaskRequest):
     token = request.token
 
     return JSONResponse(content={"error": "Resetting tasks is not supported yet"}, status_code=400)
+
+
+class DownloadAnnotationsRequest(BaseModel):
+    campaign_ids: list[str]
+    tokens: list[str]
+    target: str
+
+
+@app.get("/download")
+async def download_annotations(request: DownloadAnnotationsRequest):
+    if len(request.campaign_ids) != len(request.tokens):
+        return JSONResponse(content={"error": "Mismatched campaign_id and token lengths"}, status_code=400)
+
+    # TODO: handle token
+
+    if request.target == "annotations":
+        output = {}
+        for campaign_id in request.campaign_ids:
+            output_path = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
+            if not os.path.exists(output_path):
+                return JSONResponse(content={"error": "No annotations found"}, status_code=404)
+
+            with open(output_path, "r") as f:
+                output[campaign_id] = f.read()
+
+        return JSONResponse(content=output, status_code=200)
+    elif request.target == "progress":
+        output = {}
+        for campaign_id in request.campaign_ids:
+            if campaign_id not in progress_data:
+                return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+            output[campaign_id] = progress_data[campaign_id]
+
+        return StreamingResponse(
+            content=[json.dumps(output).encode('utf-8')],
+            headers={
+                "Content-Disposition": "attachment; filename=\"progress.json\"",
+            },
+            media_type="application/json"
+        )
+    else:
+        return JSONResponse(content={"error": "Unknown target (annotations or progress)"}, status_code=400)
 
 
 app.mount("/", StaticFiles(directory="src/static", html=True), name="static")
