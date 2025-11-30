@@ -8,6 +8,19 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 
 <img width="1334" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
 
+## Getting started fast
+```bash
+# install the package
+pip install pearmut
+# download two campaign definitions
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/data/examples/wmt25_%23_en-cs_CZ.json
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/data/examples/wmt25_%23_cs-uk_UA.json
+# load them into pearmut
+pearmut add wmt25_#_en-cs_CZ.json
+pearmut add wmt25_#_cs-uk_UA.json
+# start pearmut (will show management links)
+pearmut run
+```
 
 ## Starting a campaign
 
@@ -16,56 +29,55 @@ First, install the package
 pip install pearmut
 ```
 
-A campaign is described in a single JSON file.
-The simplest one, where each user has a pre-defined list of tasks (`task-based`) is:
+A campaign is described in a single JSON file (see [data/examples/](data/examples/)!).
+One of the simplest ones, where each user has a pre-defined list of tasks (`task-based`), is:
 ```python
 {
-    "campaign_id": "my campaign 4",
-    "info": {
-        "type": "task-based",
-        "template": "pointwise",
-        "protocol_score": True,                # collect scores
-        "protocol_error_spans": True,          # collect error spans
-        "protocol_error_categories": False,    # do not collect MQM categories, so ESA
-    },
-    "data": [
-        [...],  # tasks for first user
-        [...],  # tasks for second user
-        [...],  # tasks for third user
+  "info": {
+    "type": "task-based",
+    "template": "pointwise",
+    "protocol_score": true,                 # we want scores [0...100] for each segment
+    "protocol_error_spans": true,           # we want error spans
+    "protocol_error_categories": false,     # we do not want error span categories
+    "status_message": "Evaluate translation from en to cs_CZ",  # message to show to users
+    "url": "http://localhost:8001"          # where the server will be accessible
+  },
+  "campaign_id": "wmt25_#_en-cs_CZ",
+  "data": [
+    # data for first task/user
+    [
+      {
+        # each evaluation item is a document
+        "src": [
+          "This will be the year that Guinness loses its cool. Cheers to that!",
+          "I'm not sure I can remember exactly when I sensed it. Maybe it was when some...",
+        ],
+        "tgt": [
+          "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!",
+          "Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ...",
+        ]
+      },
+      ...
+    ],
+    # data for second task/user
+    [
         ...
     ],
+    # arbitrary number of users (each corresponds to a single URL to be shared)
+  ]
 }
 ```
 In general, the task item can be anything and is handled by the specific protocol template.
 For the standard ones (ESA, DA, MQM), we expect each item to be a list (i.e. document unit) that looks as follows:
 ```python
 [
-    {
-        "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.",       # mandatory for ESA/MQM/DA
-        "tgt": "And suddenly all the water became full of other people and other people.",      # mandatory for ESA/MQM/DA
+    {   # single document definition
+        "src": ["A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", "toto je pokračování stejného dokumentu"],       # mandatory for ESA/MQM/DA
+        "tgt": ["And suddenly all the water became full of other people and other people.", "this is a continuation of the same document"],      # mandatory for ESA/MQM/DA
         ...  # all other keys that will be stored, useful for your analysis
     },
-    {
-        "src": "toto je pokračování stejného dokumentu",
-        "tgt": "this is a continuation of the same document",
-        ...
-    },
-    ...
+    ... # definition of another item
 ]
-```
-
-We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), which is more complex and can be ignored for now:
-```python
-{
-    "campaign_id": "my campaign 6",
-    "info": {
-        "type": "dynamic",
-        "template": "kway",
-        "protocol_k": 5,
-        "users": 50,
-    },
-    "data": [...], # list of all items
-}
 ```
 
 We also support a super simple allocation of annotations (`task-single`, not yet ⚠️), where you simply pass a list of all examples to be evaluated and they are processed in parallel by all annotators:
@@ -84,19 +96,28 @@ We also support a super simple allocation of annotations (`task-single`, not yet
 }
 ```
 
+
+We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), which is more complex and can be ignored for now:
+```python
+{
+    "campaign_id": "my campaign 6",
+    "info": {
+        "type": "dynamic",
+        "template": "kway",
+        "protocol_k": 5,
+        "users": 50,
+    },
+    "data": [...], # list of all items
+}
+```
+
 To load a campaign into the server, run the following.
 It will fail if an existing campaign with the same `campaign_id` already exists, unless you specify `-o/--overwrite`.
-It will also output a secret management link.
+It will also output a secret management link. Then, launch the server:
 ```bash
 pearmut add my_campaign_4.json
-```
-
-Finally, you can launch the server with:
-```bash
 pearmut run
 ```
-
-You can see examples in `data/examples/`.
 
 ## Development
 
