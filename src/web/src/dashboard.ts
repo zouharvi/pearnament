@@ -74,7 +74,6 @@ campaign_ids.forEach(async (campaign_id, i) => {
                         html += `<td title="${new Date(data[user_id]["time_end"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_end"])} ago</td>`
                     }
                     html += `<td>${Math.round(data[user_id]["time"] / 60)}m</td>`
-                    // TODO: turn into actions
                     html += `<td>
                         <a href="${data[user_id]["url"]}">🔗</a>
                         &nbsp;&nbsp;

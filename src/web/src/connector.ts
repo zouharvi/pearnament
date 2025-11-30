@@ -17,7 +17,6 @@ export async function get_next_item<T>(): Promise<T> {
           data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id }),
           contentType: "application/json",
           dataType: "json",
-          // TODO: handle being done
           success: (x) => resolve(x),
           error: (XMLHttpRequest, textStatus, errorThrown) => {
             console.error("Error fetching data:", textStatus, errorThrown);
@@ -50,7 +49,6 @@ export async function log_response(payload: any): Promise<void> {
           data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id, "payload": payload }),
           contentType: "application/json",
           dataType: "json",
-          // TODO: handle being done
           success: (x) => resolve(),
           error: (XMLHttpRequest, textStatus, errorThrown) => {
             console.error("Error storing data:", textStatus, errorThrown);
