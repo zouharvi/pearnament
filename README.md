@@ -123,12 +123,12 @@ pearmut run
 
 When adding new campaigns or launching pearmut, a management link is shown that gives an overview of annotator progress but also an easy access to the annotation links or resetting the task progress (no data will be lost).
 
-TODO: image
+<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/057899d7-2291-46c7-876f-407c4050a9cb" />
 
 Additionally, at the end of an annotation, a token of completion is shown which can be compared to the correct one that you can download in metadat from the dashboard.
 An intentionally incorrect token can be shown if the annotations don't pass quality control.
 
-TODO: image
+<img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/4b4d2aa9-7bab-44d6-894b-6c789cd3bc6e" />
 
 ## Development
 
