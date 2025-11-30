@@ -30,12 +30,34 @@
             padding-right: 20px;
         }
 
+        tr:hover {
+            background-color: #b9e2a1;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
         a {
             text-decoration: none;
         }
 
         h3 {
             margin-top: 0px;
+        }
+
+        a[disabled] {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .reset-task:hover {
+            cursor: pointer;
+        }
+
+        .reset-task[disabled] {
+            pointer-events: none;
+            opacity: 0.4;
         }
     </style>
 </head>
