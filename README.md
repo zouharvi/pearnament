@@ -13,11 +13,11 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 # install the package
 pip install pearmut
 # download two campaign definitions
-wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/data/examples/wmt25_%23_en-cs_CZ.json
-wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/data/examples/wmt25_%23_cs-uk_UA.json
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/wmt25_%23_en-cs_CZ.json
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/wmt25_%23_cs-de_DE.json
 # load them into pearmut
 pearmut add wmt25_#_en-cs_CZ.json
-pearmut add wmt25_#_cs-uk_UA.json
+pearmut add wmt25_#_cs-de_DE.json
 # start pearmut (will show management links)
 pearmut run
 ```
@@ -29,7 +29,7 @@ First, install the package
 pip install pearmut
 ```
 
-A campaign is described in a single JSON file (see [data/examples/](data/examples/)!).
+A campaign is described in a single JSON file (see [examples/](examples/)!).
 One of the simplest ones, where each user has a pre-defined list of tasks (`task-based`), is:
 ```python
 {
@@ -119,6 +119,17 @@ pearmut add my_campaign_4.json
 pearmut run
 ```
 
+## Annotator management
+
+When adding new campaigns or launching pearmut, a management link is shown that gives an overview of annotator progress but also an easy access to the annotation links or resetting the task progress (no data will be lost).
+
+TODO: image
+
+Additionally, at the end of an annotation, a token of completion is shown which can be compared to the correct one that you can download in metadat from the dashboard.
+An intentionally incorrect token can be shown if the annotations don't pass quality control.
+
+TODO: image
+
 ## Development
 
 For the server and frontend locally run:
@@ -132,13 +143,13 @@ npm run watch --prefix web/
 pip3 install -e .
 # add existing data from WMT25, this generates annotation links
 # sets up progress/log files in current working folder
-pearmut add data/examples/wmt25_#_en-cs_CZ.json
-pearmut add data/examples/wmt25_#_cs-de_DE.json
+pearmut add examples/wmt25_#_en-cs_CZ.json
+pearmut add examples/wmt25_#_cs-de_DE.json
 # shows a management link for all loaded campaigns
 pearmut run
 ```
 
-## Misc
+## Citation
 
 If you use this work in your paper, please cite as:
 ```bibtex

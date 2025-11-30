@@ -31,14 +31,14 @@ for doc_id, segments in documents.items():
 r = random.Random(0)
 
 for lang, data in data_out.items():
-    # chunk to 40 documents per task
+    # chunk to 10 documents per task
     data_new = []
     r.shuffle(data)
-    for i in range(0, len(data), 40):
+    for i in range(0, len(data), 10):
         chunk = data[i:i + 10]
         data_new.append(chunk)
     
-    with open(f"data/examples/wmt25_#_{lang}.json", "w") as f:
+    with open(f"examples/wmt25_#_{lang}.json", "w") as f:
         lang1, lang2 = lang.split("-")
         json.dump(
             {

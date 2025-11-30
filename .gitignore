@@ -2,7 +2,7 @@
 # by default ignore, override with -.f
 data/
 server/static/
-
+examples/
 
 __pycache__
 
