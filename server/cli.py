@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import urllib.parse
+import psutil
 
 from .utils import ROOT, load_progress_data
 
@@ -140,12 +141,20 @@ def main():
     args.add_argument('command', type=str, choices=['run', 'add', 'purge'])
     args, args_unknown = args.parse_known_args()
 
+    for p in psutil.process_iter():
+        if "pearmut" == p.name() and p.pid != os.getpid():
+            print("Exit all running pearmut processes before running more commands.")
+            print(p)
+            exit(1)
+
+
     if args.command == 'run':
         _run(args_unknown)
     elif args.command == 'add':
         _add_campaign(args_unknown)
     elif args.command == 'purge':
         import shutil
+
 
         confirm = input(
             "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n]"

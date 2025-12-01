@@ -3,7 +3,7 @@ name = "pearmut"
 version = "0.0.5"
 description = "A tool for evaluation of model outputs, primarily MT."
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "apache-2.0" }
 requires-python = ">=3.12"
 authors = [{ name = "Vilém Zouhar", email = "vilem.zouhar@gmail.com" }]
 keywords = [
