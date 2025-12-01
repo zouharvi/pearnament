@@ -46,7 +46,6 @@ One of the simplest ones, where each user has a pre-defined list of tasks (`task
     "protocol_error_spans": true,           # we want error spans
     "protocol_error_categories": false,     # we do not want error span categories
     "status_message": "Evaluate translation from en to cs_CZ",  # message to show to users
-    "url": "http://localhost:8001"          # where the server will be accessible
   },
   "campaign_id": "wmt25_#_en-cs_CZ",
   "data": [
