@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import urllib.parse
+
 import psutil
 
 from .utils import ROOT, load_progress_data
@@ -13,6 +14,7 @@ load_progress_data(warn=None)
 
 def _run(args_unknown):
     import uvicorn
+
     from .app import app, tasks_data
 
     args = argparse.ArgumentParser()

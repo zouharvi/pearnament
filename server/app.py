@@ -1,6 +1,5 @@
 import json
 import os
-import urllib
 from typing import Any
 
 from fastapi import FastAPI, Query
@@ -11,7 +10,6 @@ from pydantic import BaseModel
 
 from .protocols import get_next_item, log_response, reset_task
 from .utils import ROOT, load_progress_data, save_progress_data
-
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
