@@ -13,28 +13,36 @@ load_progress_data(warn=None)
 
 def _run(args_unknown):
     import uvicorn
+    from .app import app, tasks_data
 
     args = argparse.ArgumentParser()
-    args.add_argument('--dev', action='store_true', help='Re-build frontend on start')
+    args.add_argument(
+        "--port", type=int, default=8001,
+        help="Port to run the server on"
+    )
+    args.add_argument(
+        "--server", default="http://localhost:8001",
+        help="Prefix server URL for protocol links"
+    )
     args = args.parse_args(args_unknown)
 
-    if args.dev:
-        # build frontend
-        from pynpm import NPMPackage
-        pkg = NPMPackage('web/package.json')
-        pkg.install()
-        pkg.run_script('build')
+    # print access dashboard URL for all campaigns
+    if tasks_data:
+        print(
+            args.server + "/dashboard.html?" + "&".join([
+                f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
+                for campaign_id, campaign_data in tasks_data.items()
+            ])
+        )
 
-    from .run import app
     uvicorn.run(
         app,
         host="127.0.0.1",
-        port=8001,
-        # reload=reload_enabled,
+        port=args.port,
+        reload=False,
         # log_level="info",
-        # app_dir="src",
-        # factory=False # factory=False means it expects 'app' to be a variable
     )
+
 
 
 def _add_campaign(args_unknown):
@@ -43,10 +51,18 @@ def _add_campaign(args_unknown):
     import wonderwords
 
     args = argparse.ArgumentParser()
-    args.add_argument('data_file', type=str,
-                      help='Path to the campaign data file')
-    args.add_argument("-o", "--overwrite", action="store_true",
-                      help="Overwrite existing campaign if it exists")
+    args.add_argument(
+        'data_file', type=str,
+        help='Path to the campaign data file'
+    )
+    args.add_argument(
+        "-o", "--overwrite", action="store_true",
+        help="Overwrite existing campaign if it exists"
+    )
+    args.add_argument(
+        "--server", default="http://localhost:8001",
+        help="Prefix server URL for protocol links"
+    )
     args = args.parse_args(args_unknown)
 
     with open(args.data_file, 'r') as f:
@@ -84,11 +100,6 @@ def _add_campaign(args_unknown):
         for user_id in user_ids
     ]
 
-    server_url = campaign_data["info"].get(
-        "url",
-        "127.0.0.1:8001",  # by default local server
-    ).removesuffix("/")
-
     campaign_data["data"] = {
         user_id: task
         for user_id, task in zip(user_ids, tasks)
@@ -107,7 +118,7 @@ def _add_campaign(args_unknown):
             "time_end": None,
             "time": 0,
             "url": (
-                f"{server_url}/{campaign_data["info"]["template"]}.html"
+                f"{args.server}/{campaign_data["info"]["template"]}.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),
@@ -126,7 +137,7 @@ def _add_campaign(args_unknown):
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
 
     print(
-        f"{server_url}/dashboard.html"
+        f"{args.server}/dashboard.html"
         f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
         f"&token={campaign_data['token']}"
     )
@@ -141,12 +152,12 @@ def main():
     args.add_argument('command', type=str, choices=['run', 'add', 'purge'])
     args, args_unknown = args.parse_known_args()
 
+    # enforce that only one pearmut process is running
     for p in psutil.process_iter():
         if "pearmut" == p.name() and p.pid != os.getpid():
             print("Exit all running pearmut processes before running more commands.")
             print(p)
             exit(1)
-
 
     if args.command == 'run':
         _run(args_unknown)
@@ -154,7 +165,6 @@ def main():
         _add_campaign(args_unknown)
     elif args.command == 'purge':
         import shutil
-
 
         confirm = input(
             "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n]"

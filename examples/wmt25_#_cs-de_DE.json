@@ -5,8 +5,7 @@
     "protocol_score": true,
     "protocol_error_spans": true,
     "protocol_error_categories": true,
-    "status_message": "Evaluate translation from cs to de_DE",
-    "url": "http://localhost:8001"
+    "status_message": "Evaluate translation from cs to de_DE"
   },
   "campaign_id": "wmt25_#_cs-de_DE",
   "data": [

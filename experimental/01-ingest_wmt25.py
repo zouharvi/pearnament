@@ -49,7 +49,6 @@ for lang, data in data_out.items():
                     "protocol_error_spans": True,
                     "protocol_error_categories": True,
                     "status_message": f"Evaluate translation from {lang1} to {lang2}",
-                    "url": "http://localhost:8001",
                 },
                 "campaign_id": f"wmt25_#_{lang}",
                 # just first 5 users to keep the size small

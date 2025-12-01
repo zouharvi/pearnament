@@ -14,7 +14,7 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 
 <img width="1334" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/dde04b98-c724-4226-b926-011a89e9ce31" />
 
-## Getting started fast
+## Quick start
 ```bash
 # install the package
 pip install pearmut
@@ -149,9 +149,12 @@ pip3 install -e .
 # sets up progress/log files in current working folder
 pearmut add examples/wmt25_#_en-cs_CZ.json
 pearmut add examples/wmt25_#_cs-de_DE.json
-# shows a management link for all loaded campaigns
+# shows a management link for all loaded campaigns and reload on change
 pearmut run
 ```
+
+Optionally, you can specify `--server` in `pearmut add` and `pearmut run` to show correct URL prefixes.
+The `pearmut run` also accepts `--port` (default 8001). 
 
 ## Citation
 

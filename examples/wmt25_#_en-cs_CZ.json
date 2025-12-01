@@ -5,8 +5,7 @@
     "protocol_score": true,
     "protocol_error_spans": true,
     "protocol_error_categories": true,
-    "status_message": "Evaluate translation from en to cs_CZ",
-    "url": "http://localhost:8001"
+    "status_message": "Evaluate translation from en to cs_CZ"
   },
   "campaign_id": "wmt25_#_en-cs_CZ",
   "data": [

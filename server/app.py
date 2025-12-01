@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from .protocols import get_next_item, log_response, reset_task
 from .utils import ROOT, load_progress_data, save_progress_data
 
+
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
 app = FastAPI()
@@ -31,15 +32,6 @@ progress_data = load_progress_data(
 for campaign_id in progress_data.keys():
     with open(f"{ROOT}/data/tasks/{campaign_id}.json", "r") as f:
         tasks_data[campaign_id] = json.load(f)
-
-if tasks_data:
-    # print access dashboard URL for all campaigns
-    print(
-        list(tasks_data.values())[0]["info"]["url"] + "/dashboard.html?" + "&".join([
-            f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
-            for campaign_id, campaign_data in tasks_data.items()
-        ])
-    )
 
 
 class LogResponseRequest(BaseModel):
