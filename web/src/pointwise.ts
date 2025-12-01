@@ -197,9 +197,6 @@ async function display_next_payload(response: DataPayload) {
           }
 
           tgt_chars_objs[span.start_i].toolbox?.css("display", "block")
-
-          // TODO: change location of toolbox to follow span even after screen change
-          // TODO: make sure it's not getting out of screen
         }
       })
 
@@ -335,13 +332,21 @@ async function display_next_payload(response: DataPayload) {
               error_span.severity = "major"
             })
 
-            const topPosition = $(tgt_chars_objs[left_i].el).position()?.top - toolbox.outerHeight()!;
-            const leftPosition = $(tgt_chars_objs[left_i].el).position()?.left;
+            function reposition_toolbox() {
+              let topPosition = $(tgt_chars_objs[left_i].el).position()?.top - toolbox.innerHeight()!;
+              let leftPosition = $(tgt_chars_objs[left_i].el).position()?.left;
+              // make sure it's not getting out of screen
+              leftPosition = Math.min(leftPosition, Math.max($(window).width()!, 900) - toolbox.innerWidth()! + 10);
 
-            toolbox.css({
-              top: topPosition,
-              left: leftPosition - 25,
-            });
+              toolbox.css({
+                top: topPosition,
+                left: leftPosition - 25,
+              });
+            }
+            reposition_toolbox()
+
+            // set up callback to reposition toolbox on scroll/resize            
+            $(window).on('resize', reposition_toolbox)
 
 
             response_log[item_i].error_spans.push(error_span)
