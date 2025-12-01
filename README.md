@@ -141,6 +141,8 @@ This includes embedded YouTube videos, or even simple `<video ` tags that point 
 For an example, try [examples/mock_multimodal.json](examples/mock_multimodal.json).
 Tip: make sure the elements are already appropriately styled.
 
+<img width="800" alt="Preview of multimodal elements in Pearmut" src="https://github.com/user-attachments/assets/f34a1a3e-ad95-4114-95ee-8a49e8003faf" />
+
 ## Development
 
 For the server and frontend locally run:
