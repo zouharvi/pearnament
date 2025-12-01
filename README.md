@@ -134,6 +134,13 @@ An intentionally incorrect token can be shown if the annotations don't pass qual
 
 <img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/4b4d2aa9-7bab-44d6-894b-6c789cd3bc6e" />
 
+## Multimodal Annotations
+
+We also support anything HTML-compatible both on the input and on the output.
+This includes embedded YouTube videos, or even simple `<video ` tags that point to some resource somewhere.
+For an example, try [examples/mock_multimodal.json](examples/mock_multimodal.json).
+Tip: make sure the elements are already appropriately styled.
+
 ## Development
 
 For the server and frontend locally run:
