@@ -42,7 +42,7 @@ One of the simplest ones, where each user has a pre-defined list of tasks (`task
 ```python
 {
   "info": {
-    "type": "task-based",
+    "assignment": "task-based",
     "template": "pointwise",
     "protocol_score": true,                 # we want scores [0...100] for each segment
     "protocol_error_spans": true,           # we want error spans
@@ -94,19 +94,19 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 ... # definition of another item (document)
 ```
 
-We also support a super simple allocation of annotations (`task-single`, not yet ⚠️), where you simply pass a list of all examples to be evaluated and they are processed in parallel by all annotators:
+We also support a simple allocation where all annotators draw from the same pool (`single-stream`). Items are randomly assigned to annotators from the pool of unfinished items:
 ```python
 {
     "campaign_id": "my campaign 6",
     "info": {
-        "type": "task-single",
+        "assignment": "single-stream",
         "template": "pointwise",
         "protocol_score": True,                # collect scores
         "protocol_error_spans": True,          # collect error spans
         "protocol_error_categories": False,    # do not collect MQM categories, so ESA
-        "users": 50,
+        "num_users": 50,                       # number of annotators
     },
-    "data": [...], # list of all items
+    "data": [...], # list of all items (shared among all annotators)
 }
 ```
 
@@ -116,10 +116,10 @@ We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), w
 {
     "campaign_id": "my campaign 6",
     "info": {
-        "type": "dynamic",
+        "assignment": "dynamic",
         "template": "kway",
         "protocol_k": 5,
-        "users": 50,
+        "num_users": 50,
     },
     "data": [...], # list of all items
 }

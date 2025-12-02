@@ -1,6 +1,6 @@
 {
   "info": {
-    "type": "task-based",
+    "assignment": "task-based",
     "template": "pointwise",
     "protocol_score": true,
     "protocol_error_spans": true,

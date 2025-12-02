@@ -90,33 +90,41 @@ def _add_campaign(args_unknown):
         raise ValueError("Campaign data must contain 'info' field.")
     if "data" not in campaign_data:
         raise ValueError("Campaign data must contain 'data' field.")
-    if "type" not in campaign_data["info"]:
-        raise ValueError("Campaign 'info' must contain 'type' field.")
+    if "assignment" not in campaign_data["info"]:
+        raise ValueError("Campaign 'info' must contain 'assignment' field.")
     if "template" not in campaign_data["info"]:
         raise ValueError("Campaign 'info' must contain 'template' field.")
 
+    assignment = campaign_data["info"]["assignment"]
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
-    if campaign_data["info"]["type"] == "task-based":
+    if assignment == "task-based":
         tasks = campaign_data["data"]
         if not isinstance(tasks, list):
-            raise ValueError("Task-based campaign 'data' must be a list of tasks.")
+            raise ValueError(
+                "Task-based campaign 'data' must be a list of tasks.")
         if not all(isinstance(task, list) for task in tasks):
-            raise ValueError("Each task in task-based campaign 'data' must be a list of items.")
-        amount = len(tasks)
-    elif campaign_data["info"]["type"] == "dynamic":
-        if "num_users" not in campaign_data:
-            raise ValueError("Dynamic campaigns must specify 'num_users'.")
+            raise ValueError(
+                "Each task in task-based campaign 'data' must be a list of items.")
+        num_users = len(tasks)
+    elif assignment == "single-stream":
+        tasks = campaign_data["data"]
+        if "num_users" not in campaign_data["info"]:
+            raise ValueError(
+                "Single-stream campaigns must specify 'num_users' in info.")
         if not isinstance(campaign_data["data"], list):
-            raise ValueError("Dynamic campaign 'data' must be a list of items.")
-        amount = campaign_data["num_users"]
+            raise ValueError(
+                "Single-stream campaign 'data' must be a list of items.")
+        num_users = campaign_data["info"]["num_users"]
+    elif assignment == "dynamic":
+        raise NotImplementedError(
+            "Dynamic campaign assignment is not yet implemented.")
     else:
-        raise ValueError(
-            f"Unknown campaign type: {campaign_data["info"]['type']}")
+        raise ValueError(f"Unknown campaign assignment type: {assignment}")
 
     user_ids = []
-    while len(user_ids) < amount:
+    while len(user_ids) < num_users:
         # generate random user IDs
         new_id = f"{rword.random_words(amount=1, include_parts_of_speech=['adjective'])[0]}-{rword.random_words(amount=1, include_parts_of_speech=['noun'])[0]}"
         if new_id not in user_ids:
@@ -126,10 +134,15 @@ def _add_campaign(args_unknown):
         for user_id in user_ids
     ]
 
-    campaign_data["data"] = {
-        user_id: task
-        for user_id, task in zip(user_ids, tasks)
-    }
+    # For task-based, data is a dict mapping user_id -> tasks
+    # For single-stream, data is a flat list (shared among all users)
+    if assignment == "task-based":
+        campaign_data["data"] = {
+            user_id: task
+            for user_id, task in zip(user_ids, tasks)
+        }
+    elif assignment == "single-stream":
+        campaign_data["data"] = tasks
 
     # generate a token for dashboard access if not present
     if "token" not in campaign_data:
@@ -139,7 +152,12 @@ def _add_campaign(args_unknown):
 
     user_progress = {
         user_id: {
-            "progress": [False]*len(campaign_data["data"][user_id]) if campaign_data["info"]["type"] == "task-based" else [],
+            # TODO: progress tracking could be based on the assignment type
+            "progress": (
+                [False]*len(campaign_data["data"][user_id]) if assignment == "task-based"
+                else [False]*len(campaign_data["data"]) if assignment == "single-stream"
+                else []
+            ),
             "time_start": None,
             "time_end": None,
             "time": 0,

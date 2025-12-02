@@ -56,7 +56,7 @@ for langs, data in data_out.items():
         json.dump(
             {
                 "info": {
-                    "type": "task-based",
+                    "assignment": "task-based",
                     "template": "pointwise",
                     "protocol_score": True,
                     "protocol_error_spans": True,

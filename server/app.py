@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from .protocols import get_next_item, reset_task, update_progress
+from .assignment import get_next_item, reset_task, update_progress
 from .utils import ROOT, load_progress_data, save_progress_data
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
@@ -111,19 +111,20 @@ async def _dashboard_data(request: DashboardDataRequest):
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
 
-    progress_new = {
-        user_id: {
-            **user_val,
-            "total": len(tasks_data[campaign_id]["data"][user_id]),
-        } | (
-            # override if not privileged
-            {
-                "token_correct": None,
-                "token_incorrect": None,
-            } if not is_privileged else {}
-        )
-        for user_id, user_val in progress_data[campaign_id].items()
-    }
+    progress_new = {}
+    assignment = tasks_data[campaign_id]["info"]["assignment"]
+    if assignment not in ["task-based", "single-stream"]:
+        return JSONResponse(content={"error": "Unsupported campaign assignment type"}, status_code=400)
+
+    for user_id, user_val in progress_data[campaign_id].items():
+        # shallow copy
+        entry = dict(user_val)
+
+        if not is_privileged:
+            entry["token_correct"] = None
+            entry["token_incorrect"] = None
+
+        progress_new[user_id] = entry
 
     return JSONResponse(
         content={

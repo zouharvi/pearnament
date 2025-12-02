@@ -7,7 +7,8 @@ type Response = { score: number | null, error_spans: Array<ErrorSpan> }
 type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null, }
 type DataPayload = {
   status: string,
-  progress: { completed: number, total: number, time: number },
+  progress: Array<boolean>,
+  time: number,
   payload: Array<{
     src: string,
     tgt: string,
@@ -22,9 +23,10 @@ type DataPayload = {
   }
 }
 type DataFinished = {
-  "status": string,
-  "progress": { "completed": number, "total": number, "time": number, },
-  "token": string,
+  status: string,
+  progress: Array<boolean>,
+  time: number,
+  token: string,
 }
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
@@ -147,23 +149,22 @@ function _slider_html(i: number): string {
     `
 }
 
-function redraw_progress(completed: number, total: number) {
-  let html = ""
-  for (let i = 0; i < total; i++) {
-    if (i < completed) {
-      html += `<span class="progress_complete">${i + 1}</span>`
-    } else if (i == completed) {
-      html += `<span class="progress_current">${i + 1}</span>`
+function redraw_progress(current_i: number | null, progress: Array<boolean>) {
+  let html = progress.map((v, i) => {
+    if (v) {
+      return `<span class="progress_complete">${i + 1}</span>`
+    } else if (i === current_i) {
+      return `<span class="progress_current">${i + 1}</span>`
     } else {
-      html += `<span class="progress_incomplete">${i + 1}</span>`
+      return `<span class="progress_incomplete">${i + 1}</span>`
     }
-  }
+  }).join("")
   $("#progress").html(html)
 }
 
 async function display_next_payload(response: DataPayload) {
-  redraw_progress(response.progress.completed, response.progress.total)
-  $("#time").text(`Time: ${Math.round(response.progress.time / 60)}m`)
+  redraw_progress(response.info.item_i, response.progress)
+  $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
 
   let data = response.payload
   response_log = data.map(_ => ({
@@ -508,8 +509,8 @@ async function display_next_item() {
     <br>
     </div>
     `)
-    redraw_progress(response_finished.progress.completed, response_finished.progress.total)
-    $("#time").text(`Time: ${Math.round(response_finished.progress.time / 60)}m`)
+    redraw_progress(null, response_finished.progress)
+    $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
     // NOTE: re-enable if we want to allow going back
     $("#button_settings").hide()
     $("#button_next").hide()
