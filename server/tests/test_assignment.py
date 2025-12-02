@@ -1,6 +1,6 @@
 """Tests for protocol functions."""
 
-from pearmut.protocols import (
+from pearmut.assignment import (
     get_next_item,
     reset_task,
     update_progress,
@@ -37,7 +37,8 @@ class TestTaskBased:
                 }
             }
         }
-        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
         assert response.status_code == 200
         content = response.body.decode()
         assert '"item_i":1' in content
@@ -60,7 +61,8 @@ class TestTaskBased:
             }
         }
         update_progress("campaign1", "user1", tasks_data, progress_data, 1, {})
-        assert progress_data["campaign1"]["user1"]["progress"] == [False, True, False]
+        assert progress_data["campaign1"]["user1"]["progress"] == [
+            False, True, False]
 
     def test_reset_task_clears_progress(self):
         """Test that reset_task clears the progress."""
@@ -89,7 +91,8 @@ class TestTaskBased:
             }
         }
         reset_task("campaign1", "user1", tasks_data, progress_data)
-        assert progress_data["campaign1"]["user1"]["progress"] == [False, False]
+        assert progress_data["campaign1"]["user1"]["progress"] == [
+            False, False]
         assert progress_data["campaign1"]["user1"]["time"] == 0.0
 
 
@@ -113,44 +116,20 @@ class TestSingleStream:
         }
         progress_data = {
             "campaign1": {
-                "_shared": {
-                    "progress": [True, False, False],
-                },
                 "user1": {
+                    "progress": [True, False, False],
                     "time": 0,
                     "token_correct": "abc",
                     "token_incorrect": "xyz",
                 }
             }
         }
-        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
         assert response.status_code == 200
         content = response.body.decode()
         # Should return item 1 or 2 (incomplete items)
         assert '"item_i":1' in content or '"item_i":2' in content
-
-    def test_update_progress_marks_shared_item_complete(self):
-        """Test that update_progress marks the shared item as complete."""
-        tasks_data = {
-            "campaign1": {
-                "info": {
-                    "assignment": "single-stream",
-                    "template": "pointwise",
-                }
-            }
-        }
-        progress_data = {
-            "campaign1": {
-                "_shared": {
-                    "progress": [False, False, False],
-                },
-                "user1": {
-                    "progress": [],
-                }
-            }
-        }
-        update_progress("campaign1", "user1", tasks_data, progress_data, 1, {})
-        assert progress_data["campaign1"]["_shared"]["progress"] == [False, True, False]
 
     def test_single_stream_completed_returns_token(self):
         """Test that single-stream returns completion token when all items done."""
@@ -167,52 +146,17 @@ class TestSingleStream:
         }
         progress_data = {
             "campaign1": {
-                "_shared": {
-                    "progress": [True],
-                },
                 "user1": {
+                    "progress": [True],
                     "time": 100,
                     "token_correct": "correct_token",
                     "token_incorrect": "wrong_token",
                 }
             }
         }
-        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
         assert response.status_code == 200
         content = response.body.decode()
         assert '"status":"completed"' in content
         assert 'correct_token' in content
-
-
-class TestAssignmentMigration:
-    """Tests for migration from 'type' to 'assignment'."""
-
-    def test_type_still_works_for_backwards_compatibility(self):
-        """Test that old 'type' field still works."""
-        # Note: The migration happens in cli.py, not protocols.py
-        # This test verifies that the protocols work with the new 'assignment' field
-        tasks_data = {
-            "campaign1": {
-                "info": {
-                    "assignment": "task-based",
-                    "template": "pointwise",
-                },
-                "data": {
-                    "user1": [
-                        [{"src": "a", "tgt": "b"}],
-                    ]
-                }
-            }
-        }
-        progress_data = {
-            "campaign1": {
-                "user1": {
-                    "progress": [False],
-                    "time": 0,
-                    "token_correct": "abc",
-                    "token_incorrect": "xyz",
-                }
-            }
-        }
-        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
-        assert response.status_code == 200
