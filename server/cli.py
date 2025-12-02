@@ -1,3 +1,7 @@
+"""
+Command-line interface for managing and running the Pearmut server.
+"""
+
 import argparse
 import hashlib
 import json
@@ -47,6 +51,9 @@ def _run(args_unknown):
 
 
 def _add_campaign(args_unknown):
+    """
+    Add a new campaign from a JSON data file.
+    """
     import random
 
     import wonderwords
@@ -167,6 +174,9 @@ def _add_campaign(args_unknown):
 
 
 def main():
+    """
+    Main entry point for the CLI.
+    """
     args = argparse.ArgumentParser()
     args.add_argument('command', type=str, choices=['run', 'add', 'purge'])
     args, args_unknown = args.parse_known_args()

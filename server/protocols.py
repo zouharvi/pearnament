@@ -9,6 +9,9 @@ def get_next_item(
     tasks_data: dict,
     progress_data: dict,
 ) -> JSONResponse:
+    """
+    Get the next item for the user in the specified campaign.
+    """
     if tasks_data[campaign_id]["info"]["type"] == "task-based":
         return get_next_item_taskbased(campaign_id, user_id, tasks_data, progress_data)
     elif tasks_data[campaign_id]["info"]["type"] == "dynamic":
@@ -23,6 +26,9 @@ def get_next_item_taskbased(
     data_all: dict,
     progress_data: dict,
 ) -> JSONResponse:
+    """
+    Get the next item for task-based protocol.
+    """
     if all(progress_data[campaign_id][user_id]["progress"]):
         # all items completed
         # TODO: add check for data quality
@@ -74,6 +80,9 @@ def reset_task(
     tasks_data: dict,
     progress_data: dict,
 ) -> JSONResponse:
+    """
+    Reset the task progress for the user in the specified campaign.
+    """
     if tasks_data[campaign_id]["info"]["type"] == "task-based":
         progress_data[campaign_id][user_id]["progress"] = [False]*len(tasks_data[campaign_id]["data"][user_id])
         progress_data[campaign_id][user_id]["time"] = 0.0
@@ -89,7 +98,7 @@ def reset_task(
     
 
 
-def log_response(
+def update_progress(
     campaign_id: str,
     user_id: str,
     tasks_data: dict,
@@ -97,9 +106,13 @@ def log_response(
     item_i: int,
     payload: Any,
 ) -> JSONResponse:
+    """
+    Log the user's response for the specified item in the campaign.
+    """
     if tasks_data[campaign_id]["info"]["type"] == "task-based":
         # even if it's already set it should be fine
         progress_data[campaign_id][user_id]["progress"][item_i] = True
+        # TODO: log attention checks/quality?
         return JSONResponse(content={"status": "ok"}, status_code=200)
     elif tasks_data[campaign_id]["info"]["type"] == "dynamic":
         return JSONResponse(content={"status": "error", "message": "Dynamic protocol logging not implemented yet."}, status_code=400)

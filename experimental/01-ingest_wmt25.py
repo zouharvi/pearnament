@@ -25,7 +25,7 @@ for doc_id, segments in documents.items():
             "sys_id": sys,
             "src": [seg["src_text"] for _, seg in segments],
             # hotfix
-            "tgt": [seg["tgt_text"][sys].replace("< / i>", "</i>") for _, seg in segments],
+            "tgt": [seg["tgt_text"][sys] for _, seg in segments],
         })
 
 r = random.Random(0)

@@ -1,6 +1,11 @@
 import $ from 'jquery';
 
 export function notify(message: string): void {
+    /**
+     * Displays a temporary notification message at the top center of the webpage.
+     * The notification disappears after 4 seconds.
+     * @param message - The message to be displayed in the notification.
+     **/
     const notification = $('<div></div>')
         .html(message)
         .css({

@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from .protocols import get_next_item, log_response, reset_task
+from .protocols import get_next_item, reset_task, update_progress
 from .utils import ROOT, load_progress_data, save_progress_data
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
@@ -51,6 +51,7 @@ async def _log_response(request: LogResponseRequest):
     if user_id not in progress_data[campaign_id]:
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
 
+    # append response to the output log
     with open(f"{ROOT}/data/outputs/{campaign_id}.jsonl", "a") as log_file:
         log_file.write(json.dumps(request.payload, ensure_ascii=False) + "\n")
 
@@ -67,7 +68,7 @@ async def _log_response(request: LogResponseRequest):
             for a, b in zip(times, times[1:])
         ])
 
-    log_response(campaign_id, user_id, tasks_data, progress_data, request.item_i, request.payload)
+    update_progress(campaign_id, user_id, tasks_data, progress_data, request.item_i, request.payload)
     save_progress_data(progress_data)
 
     return JSONResponse(content={"status": "ok"}, status_code=200)

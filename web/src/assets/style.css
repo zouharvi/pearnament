@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #b9e2a1 0%, #dbcfe7 100%);
+    background: linear-gradient(135deg, #b9e2a1 0%, #e7e2cf 100%);
     background-attachment: fixed;
 }
 
@@ -39,8 +39,13 @@ input[type="button"] {
 
 
 input[type="button"]:hover:not(:disabled) {
-    background: #ffe;
+    background: #ffd;
     cursor: pointer;
+}
+
+input[type="button"]:disabled {
+    background: #eee;
+    cursor: not-allowed;
 }
 
 label {

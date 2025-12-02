@@ -15,6 +15,8 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 <img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/f14c91a5-44d7-4248-ada9-387e95ca59d0" />
 
 ## Quick start
+
+You do not need to clone this repository. Simply install with pip and run locally:
 ```bash
 # install the package
 pip install pearmut
@@ -35,7 +37,7 @@ First, install the package
 pip install pearmut
 ```
 
-A campaign is described in a single JSON file (see [examples/](examples/)!).
+A campaign is described in a single JSON file (see [examples/](examples/)).
 One of the simplest ones, where each user has a pre-defined list of tasks (`task-based`), is:
 ```python
 {
@@ -125,6 +127,7 @@ pearmut run
 ## Campaign management
 
 When adding new campaigns or launching pearmut, a management link is shown that gives an overview of annotator progress but also an easy access to the annotation links or resetting the task progress (no data will be lost).
+This is also the place where you can download all progress and collected annotations (these files exist also locally but this might be more convenient).
 
 <img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/057899d7-2291-46c7-876f-407c4050a9cb" />
 
@@ -144,9 +147,12 @@ Tip: make sure the elements are already appropriately styled.
 
 ## Development
 
-For the server and frontend locally run:
-
+Pearmut works by running a server that responds to requests from the frontend.
+These requests are not template-based but rather carry only data (which gives flexibility in designing new protocols and interfaces).
+By default, the frontend is served from `static/` which is pre-built when you `pip install pearmut`.
+To make changes locally, clone the repository and run the following, which will recompile the frontend on changes (server changes need server restart):
 ```bash
+cd pearmut
 # watch the frontend for changes (in a separate terminal)
 npm install web/ --prefix web/
 npm run watch --prefix web/
@@ -164,12 +170,15 @@ pearmut run
 Optionally, you can specify `--server` in `pearmut add` and `pearmut run` to show correct URL prefixes.
 The `pearmut run` also accepts `--port` (default 8001). 
 
+If you wish to create a new protocol (referenceable from `info->template`), simply create a new HTML and TS file in `web/src` and add a rule to `webpack.config.js` so that your template gets built.
+A template can call the server for data etc (see [web/src/pointwise.ts](web/src/pointwise.ts) as an exmple).
+
 ## Citation
 
 If you use this work in your paper, please cite as:
 ```bibtex
 @misc{zouhar2025pearmut,
-    author={Vilém Zouhar and others},
+    author={Vilém Zouhar},
     title={Pearmut🍐 Platform for Evaluation and Reviewing of Multilingual Tasks},
     url={https://github.com/zouharvi/pearmut/},
     year={2025},

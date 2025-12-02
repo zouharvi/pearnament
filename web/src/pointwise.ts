@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { get_next_item, log_response } from './connector';
 import { notify } from './utils';
 type ErrorSpan = { "start_i": number, "end_i": number, "category": string | null, "severity": string | null, }
-type Response = { "done": boolean, "score": number | null, "error_spans": Array<ErrorSpan> }
+type Response = { "score": number | null, "error_spans": Array<ErrorSpan> }
 type CharData = { "el": JQuery<HTMLElement>, "toolbox": JQuery<HTMLElement> | null, "error_span": ErrorSpan | null, }
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
@@ -11,11 +11,13 @@ let settings_show_alignment = true
 
 const MQM_ERROR_CATEGORIES = {
   "Terminology": [
+    "",
     "Inconsistent with terminology resource",
     "Inconsistent use of terminology",
     "Wrong term",
   ],
   "Accuracy": [
+    "",
     "Mistranslation",
     "Overtranslation",
     "Undertranslation",
@@ -25,6 +27,7 @@ const MQM_ERROR_CATEGORIES = {
     "Untranslated",
   ],
   "Linguistic conventions": [
+    "",
     "Grammar",
     "Punctuation",
     "Spelling",
@@ -33,6 +36,7 @@ const MQM_ERROR_CATEGORIES = {
     "Textual conventions",
   ],
   "Style": [
+    "",
     "Organization style",
     "Third-party style",
     "Inconsistent with external reference",
@@ -42,6 +46,7 @@ const MQM_ERROR_CATEGORIES = {
     "Inconsistent style",
   ],
   "Locale convention": [
+    "",
     "Number format",
     "Currency format",
     "Measurement format",
@@ -52,10 +57,12 @@ const MQM_ERROR_CATEGORIES = {
     "Shortcut key",
   ],
   "Audience appropriateness": [
+    "",
     "Culture-specific reference",
     "Offensive",
   ],
   "Design and markup": [
+    "",
     "Layout",
     "Markup tag",
     "Truncation/text expansion",
@@ -74,13 +81,24 @@ $("#toggle_differences").on("change", function () {
 })
 
 function check_unlock() {
-  if (response_log.every(r => r.done)) {
-    $("#button_next").removeAttr("disabled")
-    $("#button_next").val("Next ✅")
-  } else {
+  // check if all toolboxes are hidden
+  for (let el of $(".span_toolbox_parent")) {
+    if ($(el).css("display") != "none") {
+      $("#button_next").attr("disabled", "disabled")
+      $("#button_next").val("Next 🚧")
+      return
+    }
+  }
+
+  // check if all items are done
+  if (!response_log.every(r => r.score != null)) {
     $("#button_next").attr("disabled", "disabled")
     $("#button_next").val("Next 🚧")
+    return
   }
+
+  $("#button_next").removeAttr("disabled")
+  $("#button_next").val("Next ✅")
 }
 
 export type DataPayload = {
@@ -121,11 +139,11 @@ function redraw_progress(completed: number, total: number) {
   let html = ""
   for (let i = 0; i < total; i++) {
     if (i < completed) {
-      html += `<span class="progress_complete">${i+1}</span>`
+      html += `<span class="progress_complete">${i + 1}</span>`
     } else if (i == completed) {
-      html += `<span class="progress_current">${i+1}</span>`
+      html += `<span class="progress_current">${i + 1}</span>`
     } else {
-      html += `<span class="progress_incomplete">${i+1}</span>`
+      html += `<span class="progress_incomplete">${i + 1}</span>`
     }
   }
   $("#progress").html(html)
@@ -137,7 +155,6 @@ async function display_next_payload(response: DataPayload) {
 
   let data = response.payload
   response_log = data.src.map(_ => ({
-    "done": false,
     "score": null,
     "error_spans": [],
   }))
@@ -152,6 +169,7 @@ async function display_next_payload(response: DataPayload) {
   $("#output_div").html("")
 
   for (let item_i = 0; item_i < data.src.length; item_i++) {
+    // character-level stuff won't work on media tags
     let no_src_char = (data.src[item_i].startsWith("<audio ") || data.src[item_i].startsWith("<video ") || data.src[item_i].startsWith("<img ") || data.src[item_i].startsWith("<iframe "))
     let no_tgt_char = (data.tgt[item_i].startsWith("<audio ") || data.tgt[item_i].startsWith("<video ") || data.tgt[item_i].startsWith("<img ") || data.tgt[item_i].startsWith("<iframe "))
 
@@ -178,12 +196,11 @@ async function display_next_payload(response: DataPayload) {
 
     if (!no_tgt_char) {
       tgt_chars_objs.forEach((obj, i) => {
+        // leaving target character
         $(obj.el).on("mouseleave", function () {
           $(".src_char").removeClass("highlighted")
           $(".tgt_char").removeClass("highlighted")
           $(".tgt_char").removeClass("highlighted_active")
-
-          // gracefully hide toolbox if toolbox itself is not being hovered and severity is set
 
           // highlight corresponding toolbox if error severity is set
           if (obj.error_span != null && obj.error_span.severity != null && (!protocol_error_categories || (obj.error_span.category != null && obj.error_span.category?.includes("/")))) {
@@ -191,6 +208,7 @@ async function display_next_payload(response: DataPayload) {
           }
         })
 
+        // entering target character
         $(obj.el).on("mouseenter", function () {
           $(".src_char").removeClass("highlighted")
           if (settings_show_alignment) {
@@ -247,21 +265,21 @@ async function display_next_payload(response: DataPayload) {
 
               // create a new toolbox at the top of the first character
               let toolbox = $(`
-            <div class='span_toolbox_parent'>
-            <div class='span_toolbox'>
-              <div class="span_toolbox_esa" style="display: inline-block; width: 70px; padding-right: 5px;">
-                <input type="button" class="error_delete" style="border-radius: 8px;" value="Remove">
-                <input type="button" class="error_neutral" style="margin-top: 3px;" value="Neutral">
-                <input type="button" class="error_minor" style="margin-top: 3px;" value="Minor">
-                <input type="button" class="error_major" style="margin-top: 3px;" value="Major">
+              <div class='span_toolbox_parent'>
+              <div class='span_toolbox'>
+                <div class="span_toolbox_esa" style="display: inline-block; width: 70px; padding-right: 5px;">
+                  <input type="button" class="error_delete" style="border-radius: 8px;" value="Remove">
+                  <input type="button" class="error_neutral" style="margin-top: 3px;" value="Neutral">
+                  <input type="button" class="error_minor" style="margin-top: 3px;" value="Minor">
+                  <input type="button" class="error_major" style="margin-top: 3px;" value="Major">
+                </div>
+                <div class="span_toolbox_mqm" style="display: inline-block; width: 140px; vertical-align: top;">
+                  <select style="height: 2em; width: 100%;"></select><br>
+                  <select style="height: 2em; width: 100%; margin-top: 3px;" disabled></select>
+                </div>
               </div>
-              <div class="span_toolbox_mqm" style="display: inline-block; width: 140px; vertical-align: top;">
-                <select style="height: 2em; width: 100%;"></select><br>
-                <select style="height: 2em; width: 100%; margin-top: 3px;" disabled></select>
               </div>
-            </div>
-            </div>
-            `)
+              `)
               for (let category1 of Object.keys(MQM_ERROR_CATEGORIES)) {
                 toolbox.find("select").eq(0).append(`<option value="${category1}">${category1}</option>`)
               }
@@ -277,14 +295,23 @@ async function display_next_payload(response: DataPayload) {
                 for (let subcat of subcats) {
                   subcat_select.append(`<option value="${subcat}">${subcat}</option>`)
                 }
-                error_span.category = `${cat1}`
+                if (cat1 == "Other") {
+                  subcat_select.prop("disabled", true)
+                  error_span.category = "Other/Other"
+                } else {
+                  error_span.category = `${cat1}`
+                }
               })
               toolbox.find("select").eq(1).on("change", function () {
                 let cat1 = toolbox.find("select").eq(0).val() as string
                 let cat2 = (<HTMLSelectElement>this).value
-                error_span.category = `${cat1}/${cat2}`
+                // enfore both category and subcategory
+                if (cat2 == "" && cat1 != "Other") {
+                  error_span.category = `${cat1}`
+                } else {
+                  error_span.category = `${cat1}/${cat2}`
+                }
               })
-
               if (!protocol_error_categories) {
                 // only MQM has neutral severity
                 toolbox.find(".error_neutral").remove()
@@ -293,17 +320,22 @@ async function display_next_payload(response: DataPayload) {
                 toolbox.find(".span_toolbox_esa").css("margin-right", "-5px")
               }
               $("body").append(toolbox)
+              check_unlock()
 
-              // handle hover
+              // handle hover on toolbox
               toolbox.on("mouseenter", function () {
                 toolbox.css("display", "block")
+                check_unlock()
               })
+              // handle hover on toolbox
               toolbox.on("mouseleave", function () {
-                // hide if severity is set
+                // hide if severity is set for ESA or both severity and category are set for MQM
                 if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
                   toolbox.css("display", "none")
+                  check_unlock()
                 }
               })
+              // handle delete button
               toolbox.find(".error_delete").on("click", () => {
                 // remove toolbox
                 toolbox.remove()
@@ -349,7 +381,8 @@ async function display_next_payload(response: DataPayload) {
                 error_span.severity = "major"
               })
 
-              function reposition_toolbox() {
+              // set up callback to reposition toolbox on resize         
+              $(window).on('resize', function () {
                 let topPosition = $(tgt_chars_objs[left_i].el).position()?.top - toolbox.innerHeight()!;
                 let leftPosition = $(tgt_chars_objs[left_i].el).position()?.left;
                 // make sure it's not getting out of screen
@@ -359,13 +392,10 @@ async function display_next_payload(response: DataPayload) {
                   top: topPosition,
                   left: leftPosition - 25,
                 });
-              }
-              reposition_toolbox()
+              })
+              $(window).trigger('resize');
 
-              // set up callback to reposition toolbox on scroll/resize            
-              $(window).on('resize', reposition_toolbox)
-
-
+              // store error span
               response_log[item_i].error_spans.push(error_span)
               for (let j = left_i; j <= right_i; j++) {
                 $(tgt_chars_objs[j].el).addClass("error_unknown")
@@ -419,7 +449,6 @@ async function display_next_payload(response: DataPayload) {
       label.text(val.toString())
       let i = parseInt(slider.attr("id")!.split("_")[1])
       response_log[i].score = val
-      response_log[i].done = true
       check_unlock()
       action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
     })
@@ -430,7 +459,7 @@ async function display_next_payload(response: DataPayload) {
 
 
 let payload: DataPayload | null = null
-async function load_next() {
+async function display_next_item() {
   let response = await get_next_item<DataPayload | DataFinished>()
 
   if (response == null) {
@@ -444,14 +473,16 @@ async function load_next() {
     <div class='white-box' style='width: max-content'>
     <h2>🎉 All done, thank you for your annotations!</h2>
 
-    If someone asks you for a token of completion, show them:
-    <span style="font-family: monospace; font-size: 11pt;">${response_finished.token}</span>
+    If someone asks you for a token of completion, show them
+    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response_finished.token}</span>
     <br>
     <br>
     </div>
     `)
     redraw_progress(response_finished.progress.completed, response_finished.progress.total)
-    $("#time").text(`Total annotation time: ${Math.round(response_finished.progress.time / 60)}m`)
+    $("#time").text(`Time: ${Math.round(response_finished.progress.time / 60)}m`)
+    // NOTE: re-enable if we want to allow going back
+    $("#button_settings").hide()
     $("#button_next").hide()
   } else if (response.status == "ok") {
     payload = response as DataPayload
@@ -462,13 +493,6 @@ async function load_next() {
 }
 
 $("#button_next").on("click", async function () {
-  // check if all done
-  for (let el of $(".span_toolbox_parent")) {
-    if ($(el).css("display") != "none") {
-      notify("Please finish annotating all error spans before proceeding.")
-      return
-    }
-  }
   // disable while communicating with the server
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
@@ -483,20 +507,17 @@ $("#button_next").on("click", async function () {
     $("#button_next").val("Next ❓")
     return
   }
-  await load_next()
+  await display_next_item()
 })
 
-load_next()
+display_next_item()
 
+// toggle settings display
 $("#button_settings").on("click", function () {
-  if ($("#settings_div").css("display") == "none") {
-    $("#settings_div").css("display", "block")
-  } else {
-    $("#settings_div").css("display", "none")
-  }
+  $("#settings_div").toggle()
 })
 
-// set checked from settings
+// load settings from localStorage
 $("#settings_approximate_alignment").on("change", function () {
   settings_show_alignment = $("#settings_approximate_alignment").is(":checked")
   localStorage.setItem("setting_approximate_alignment", settings_show_alignment.toString())

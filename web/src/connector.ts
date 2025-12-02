@@ -4,6 +4,7 @@ import $ from 'jquery';
 let searchParams = new URLSearchParams(window.location.search)
 
 export async function get_next_item<T>(): Promise<T | null> {
+  /* Fetch the next item for the user from the server. */
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");
 
@@ -38,6 +39,7 @@ export async function get_next_item<T>(): Promise<T | null> {
 
 
 export async function log_response(payload: any, item_i: number | null): Promise<boolean | null> {
+  /* Log the user's response to the server. */
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");
 
@@ -48,7 +50,7 @@ export async function log_response(payload: any, item_i: number | null): Promise
         $.ajax({
           url: `/log-response`,
           method: "POST",
-          data: JSON.stringify({"campaign_id": campaign_id, "user_id": user_id, "payload": payload, "item_i": item_i}),
+          data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id, "payload": payload, "item_i": item_i }),
           contentType: "application/json",
           dataType: "json",
           success: (x) => resolve(),

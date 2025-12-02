@@ -14,7 +14,8 @@
       vertical-align: top;
     }
 
-    .output_src, .output_tgt {
+    .output_src,
+    .output_tgt {
       display: inline-block;
       width: calc(50% - 30px);
       background-color: #fffc;
@@ -64,7 +65,8 @@
         margin-right: 30px;
       }
 
-      .output_src, .output_tgt {
+      .output_src,
+      .output_tgt {
         width: 100%;
         margin-bottom: 5px;
         margin-right: 10px;
@@ -73,9 +75,10 @@
 
     .tgt_char:hover {
       background-color: #ccc;
-      cursor: pointer;;
+      cursor: pointer;
+      ;
     }
-    
+
     .src_char:hover {
       background-color: #ccc;
     }
@@ -96,11 +99,13 @@
       background-color: #e88;
     }
 
-    .src_char.highlighted, .tgt_char.highlighted {
+    .src_char.highlighted,
+    .tgt_char.highlighted {
       background-color: #ccc;
     }
 
-    #button_error_minor:hover, #button_error_major:hover {
+    #button_error_minor:hover,
+    #button_error_major:hover {
       opacity: 0.8;
       cursor: pointer;
     }
@@ -127,7 +132,7 @@
     }
 
     input[type="button"].error_neutral {
-      background-color: #fee !important;
+      background-color: #ecc9 !important;
       width: 100%;
       text-align: center;
       border-radius: 8px;
@@ -160,7 +165,7 @@
     }
 
     input[type="button"].error_delete {
-      background-color: #eee !important;
+      background-color: #ddd !important;
       font-size: 10pt;
       width: 100%;
       text-align: center;
@@ -192,8 +197,10 @@
       width: 10px;
       height: 10px;
     }
-    
-    #progress span:hover, #progress span.progress_current, #progress span:last-child {
+
+    #progress span:hover,
+    #progress span.progress_current,
+    #progress span.progress_incomplete:last-child {
       cursor: pointer;
       user-select: none;
       position: relative;
@@ -240,22 +247,19 @@
 </head>
 
 <body>
-  <div style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
+  <div
+    style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
     <div style="display: flex;">
-      
+
       <span id="status_message" style="flex-grow: 1; vertical-align: top;"></span>
-      
+
       <span id="progress" style="width: max-content; text-align: right; margin-top: -10px;"></span>
-      <span id="time" style="flex: 0 0 120px; text-align: right;" title="Approximation of total annotation time.">Time: 0m</span>
-      <input
-      type="button" value="Next 🛠️" id="button_next" disabled
-      style="flex: 0 0 150px; margin-right: 20px; margin-left: 20px; margin-top: -10px; height: 2.5em;"
-      title="Finish annotating all examples first."
-      >
-      <input
-        type="button" value="⚙️" id="button_settings"
-        style="margin-right: 20px; height: 1.5em; margin-top: -5px;" 
-      >
+      <span id="time" style="flex: 0 0 120px; text-align: right;" title="Approximation of total annotation time.">Time:
+        0m</span>
+      <input type="button" value="Next 🛠️" id="button_next" disabled
+        style="flex: 0 0 150px; margin-right: 20px; margin-left: 20px; margin-top: -10px; height: 2.5em;"
+        title="Finish annotating all examples first.">
+      <input type="button" value="⚙️" id="button_settings" style="margin-right: 20px; height: 1.5em; margin-top: -5px;">
     </div>
 
     <div id="settings_div" class="white-box" style="margin-right: 20px; margin-top: 10px; display: none;">
