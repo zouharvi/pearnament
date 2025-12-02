@@ -46,7 +46,6 @@ def _run(args_unknown):
     )
 
 
-
 def _add_campaign(args_unknown):
     import random
 
@@ -80,13 +79,30 @@ def _add_campaign(args_unknown):
         )
         exit(1)
 
+    if "info" not in campaign_data:
+        raise ValueError("Campaign data must contain 'info' field.")
+    if "data" not in campaign_data:
+        raise ValueError("Campaign data must contain 'data' field.")
+    if "type" not in campaign_data["info"]:
+        raise ValueError("Campaign 'info' must contain 'type' field.")
+    if "template" not in campaign_data["info"]:
+        raise ValueError("Campaign 'info' must contain 'template' field.")
+
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
     if campaign_data["info"]["type"] == "task-based":
         tasks = campaign_data["data"]
+        if not isinstance(tasks, list):
+            raise ValueError("Task-based campaign 'data' must be a list of tasks.")
+        if not all(isinstance(task, list) for task in tasks):
+            raise ValueError("Each task in task-based campaign 'data' must be a list of items.")
         amount = len(tasks)
     elif campaign_data["info"]["type"] == "dynamic":
+        if "num_users" not in campaign_data:
+            raise ValueError("Dynamic campaigns must specify 'num_users'.")
+        if not isinstance(campaign_data["data"], list):
+            raise ValueError("Dynamic campaign 'data' must be a list of items.")
         amount = campaign_data["num_users"]
     else:
         raise ValueError(
@@ -94,6 +110,7 @@ def _add_campaign(args_unknown):
 
     user_ids = []
     while len(user_ids) < amount:
+        # generate random user IDs
         new_id = f"{rword.random_words(amount=1, include_parts_of_speech=['adjective'])[0]}-{rword.random_words(amount=1, include_parts_of_speech=['noun'])[0]}"
         if new_id not in user_ids:
             user_ids.append(new_id)
