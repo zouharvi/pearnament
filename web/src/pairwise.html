@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pearmut Pairwise Evaluation</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .output_srctgt {
+      display: block;
+      width: 100%;
+      vertical-align: top;
+    }
+
+    .output_src {
+      display: block;
+      width: calc(100% - 20px);
+      background-color: #fff7;
+      padding: 10px;
+      border-radius: 8px;
+      vertical-align: top;
+      margin-bottom: 10px;
+      user-select: none;
+      box-shadow: 0 4px 6px #0005;
+    }
+
+    .output_candidates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .output_candidate {
+      flex: 1;
+      min-width: 300px;
+      max-width: calc(50% - 10px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output_tgt {
+      display: block;
+      width: calc(100% - 20px);
+      background-color: #fffc;
+      padding: 10px;
+      border-radius: 8px;
+      user-select: none;
+      box-shadow: 0 4px 6px #0005;
+      flex-grow: 1;
+    }
+
+    .output_response {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .output_block {
+      margin-bottom: 30pt;
+    }
+
+    /* on displays with less than 1000px */
+    @media (max-width: 1000px) {
+      .output_candidate {
+        max-width: 100%;
+        min-width: 100%;
+      }
+    }
+
+    .tgt_char:hover {
+      background-color: #ccc;
+      cursor: pointer;
+    }
+
+    .src_char:hover {
+      background-color: #ccc;
+    }
+
+    .error_unknown {
+      background-color: #ddf;
+    }
+
+    .error_neutral {
+      background-color: #edd;
+    }
+
+    .error_minor {
+      background-color: #fcc;
+    }
+
+    .error_major {
+      background-color: #e88;
+    }
+
+    .src_char.highlighted,
+    .tgt_char.highlighted {
+      background-color: #ccc;
+    }
+
+    #button_error_minor:hover,
+    #button_error_major:hover {
+      opacity: 0.8;
+      cursor: pointer;
+    }
+
+    .highlighted_active {
+      background-color: #aaf !important;
+    }
+
+    /* span toolbox section */
+    .span_toolbox {
+      background-color: white;
+      padding: 5px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px #0005;
+    }
+
+    .span_toolbox_parent {
+      position: absolute;
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-top: 10px;
+      min-width: max-content;
+    }
+
+    input[type="button"].error_neutral {
+      background-color: #ecc9 !important;
+      width: 100%;
+      text-align: center;
+      border-radius: 8px;
+    }
+
+    input[type="button"].error_neutral:hover {
+      background-color: #ecc !important;
+    }
+
+    input[type="button"].error_minor {
+      background-color: #fcc !important;
+      width: 100%;
+      text-align: center;
+      border-radius: 8px;
+    }
+
+    input[type="button"].error_minor:hover {
+      background-color: #daa !important;
+    }
+
+    input[type="button"].error_major {
+      background-color: #e88 !important;
+      width: 100%;
+      text-align: center;
+      border-radius: 8px;
+    }
+
+    input[type="button"].error_major:hover {
+      background-color: #c66 !important;
+    }
+
+    input[type="button"].error_delete {
+      background-color: #ddd !important;
+      font-size: 10pt;
+      width: 100%;
+      text-align: center;
+      border-radius: 8px;
+    }
+
+    input[type="button"].error_delete:hover {
+      background-color: #ccc !important;
+    }
+
+    /* Horizontal slider for pairwise */
+    input[type=range] {
+      width: 100%;
+      height: 16px;
+    }
+
+    .slider_label {
+      font-size: 10pt;
+      color: #555;
+      text-align: center;
+      margin-top: 3px;
+    }
+
+    /* progress bar */
+    #progress span {
+      font-size: 0pt;
+      display: inline-block;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 2em;
+      margin-left: 2px;
+      box-shadow: 0 1px 1px #0002;
+      width: 10px;
+      height: 10px;
+    }
+
+    #progress span:hover,
+    #progress span.progress_current,
+    #progress span.progress_incomplete:last-child {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      top: 7.5px;
+      width: 22px;
+      height: 22px;
+      font-size: 8pt;
+      margin-left: -5px;
+      margin-right: -5px;
+      box-shadow: 0 1px 3px #0002;
+    }
+
+    #progress span:hover {
+      z-index: 100;
+    }
+
+    #progress span.progress_complete {
+      color: white;
+      background: #3b5238;
+    }
+
+
+    #progress span.progress_complete:hover {
+      background: #2e3e2b;
+    }
+
+    #progress span.progress_current {
+      background: #91b08d;
+    }
+
+    #progress span.progress_current:hover {
+      background: #739c6f;
+    }
+
+    #progress span.progress_incomplete {
+      background: #bbb;
+      color: #555;
+    }
+
+    #progress span.progress_incomplete:hover {
+      background: #aaa;
+    }
+
+    .candidate_label {
+      font-weight: bold;
+      font-size: 10pt;
+      color: #666;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div
+    style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
+    <div class="white-box" style="margin-right: 30px; background-color: #e7e2cf; padding: 5px 15px 5px 5px;">
+
+      <span id="instructions_global" style="display: inline-block; font-size: 11pt; width: calc(100% - 170px);">
+        <ul id="instructions_spans">
+          <li>Error spans:
+            <ul>
+              <li><strong>Select</strong> the part of translation where you have identified a <strong>translation
+                  error</strong> (drag or click start & end).</li>
+              <li><strong>Click</strong> on the highlight to change error severity (minor/major) or remove the
+                highlight.</li>
+            </ul>
+            Choose error severity:
+            <ul>
+              <li><span class="instruction_sev" id="instruction_sev_minor">Minor errors:</span> Style, grammar, word
+                choice could be better or more natural. </li>
+              <li><span class="instruction_sev" id="instruction_sev_major">Major errors:</span>: The meaning is changed
+                significantly and/or the part is really hard to understand. </li>
+            </ul>
+            <strong>Tip</strong>: Highlight the word or general area of the error (it doesn't need to be exact). Use
+            separate highlights for different errors.<br>
+          <li id="instructions_score">Score each translation: Please use the slider and set an overall
+            score based on meaning preservation and general quality:</li>
+          <ul>
+            <li>0: <strong>No meaning preserved</strong>: most information is lost.</li>
+            <li>33%: <strong>Some meaning preserved</strong>: major gaps and narrative issues.</li>
+            <li>66%: <strong>Most meaning preserved</strong>: minor issues with grammar or consistency.</li>
+            <li>100%: <strong>Perfect</strong>: meaning and grammar align completely with the source.</li>
+          </ul>
+          </li>
+          <li id="instructions_categories">
+            Error types:
+            After highlighting an error fragment, you will be asked to select the specific error type (main category and
+            subcategory).
+            If you are unsure about which errors fall under which categories, please consult the <a
+              href="https://themqm.org/the-mqm-typology/"
+              style="font-weight: bold; text-decoration: none; color: black;">typology
+              definitions</a>.
+          </li>
+        </ul>
+
+      </span>
+
+      <div style="width: 170px; display: inline-block; vertical-align: top; text-align: right; padding-top: 5px;">
+
+        <span id="time" style="width: 135px; text-align: left; display: inline-block; font-size: 11pt;"
+          title="Approximation of total annotation time.">Time:
+          0m</span>
+        <input type="button" value="⚙️" id="button_settings" style="height: 1.5em; width: 30px;">
+
+        <br>
+        <br>
+
+        <div id="progress" style="text-align: center;"></div>
+
+        <br>
+        <br>
+
+        <input type="button" value="Next 🛠️" id="button_next" disabled style="width: 170px; height: 2.5em;"
+          title="Finish annotating all examples first.">
+
+        <input type="button" value="skip tutorial" id="button_skip_tutorial"
+          style="width: 170px; font-size: 11pt; height: 30px; margin-top: 10px; display: none;"
+          title="Skip tutorial only if you completed it already.">
+      </div>
+    </div>
+
+    <div id="settings_div" class="white-box"
+      style="margin-right: 20px; margin-top: 10px; display: none; background-color: #e7e2cf; font-size: 11pt;">
+      <input type="checkbox" id="settings_approximate_alignment">
+      <label for="settings_approximate_alignment">Show approximate alignment</label>
+    </div>
+
+    <div id="output_div" style="margin-top: 100px;"></div>
+
+    <br><br><br>
+  </div>
+
+</body>
+
+</html>

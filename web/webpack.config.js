@@ -8,6 +8,7 @@ module.exports = (env, argv) => {
   return {
     entry: {
       pointwise: './src/pointwise.ts',
+      pairwise: './src/pairwise.ts',
       dashboard: './src/dashboard.ts',
     },
     output: {
@@ -51,6 +52,11 @@ module.exports = (env, argv) => {
         template: './src/pointwise.html',
         filename: 'pointwise.html',
         chunks: ['pointwise'],
+      }),
+      new HtmlWebpackPlugin({
+        template: './src/pairwise.html',
+        filename: 'pairwise.html',
+        chunks: ['pairwise'],
       }),
       new HtmlWebpackPlugin({
         template: './src/dashboard.html',
