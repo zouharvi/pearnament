@@ -111,19 +111,34 @@ async def _dashboard_data(request: DashboardDataRequest):
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
 
-    progress_new = {
-        user_id: {
+    assignment = tasks_data[campaign_id]["info"]["assignment"]
+    progress_new = {}
+
+    for user_id, user_val in progress_data[campaign_id].items():
+        # Skip the shared progress entry
+        if user_id == "_shared":
+            continue
+
+        if assignment == "task-based":
+            total = len(tasks_data[campaign_id]["data"][user_id])
+        elif assignment == "single-stream":
+            total = len(tasks_data[campaign_id]["data"])
+        else:
+            total = 0
+
+        entry = {
             **user_val,
-            "total": len(tasks_data[campaign_id]["data"][user_id]),
-        } | (
-            # override if not privileged
-            {
-                "token_correct": None,
-                "token_incorrect": None,
-            } if not is_privileged else {}
-        )
-        for user_id, user_val in progress_data[campaign_id].items()
-    }
+            "total": total,
+        }
+        # For single-stream, use shared progress for display
+        if assignment == "single-stream":
+            entry["progress"] = progress_data[campaign_id]["_shared"]["progress"]
+
+        if not is_privileged:
+            entry["token_correct"] = None
+            entry["token_incorrect"] = None
+
+        progress_new[user_id] = entry
 
     return JSONResponse(
         content={
