@@ -191,13 +191,13 @@ async def _download_progress(
         return JSONResponse(content={"error": "Mismatched campaign_id and token count"}, status_code=400)
 
     output = {}
-    for campaign_id, campaign_id in enumerate(campaign_id):
-        if campaign_id not in progress_data:
-            return JSONResponse(content={"error": f"Unknown campaign ID {campaign_id}"}, status_code=400)
-        if token[campaign_id] != tasks_data[campaign_id]["token"]:
-            return JSONResponse(content={"error": f"Invalid token for campaign ID {campaign_id}"}, status_code=400)
+    for i, cid in enumerate(campaign_id):
+        if cid not in progress_data:
+            return JSONResponse(content={"error": f"Unknown campaign ID {cid}"}, status_code=400)
+        if token[i] != tasks_data[cid]["token"]:
+            return JSONResponse(content={"error": f"Invalid token for campaign ID {cid}"}, status_code=400)
 
-        output[campaign_id] = progress_data[campaign_id]
+        output[cid] = progress_data[cid]
 
     return JSONResponse(content=output, status_code=200)
 

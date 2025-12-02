@@ -4,6 +4,26 @@ from typing import Any
 from fastapi.responses import JSONResponse
 
 
+def _completed_response(
+    progress_data: dict,
+    campaign_id: str,
+    user_id: str,
+) -> JSONResponse:
+    """Build a completed response with progress, time, and token."""
+    user_progress = progress_data[campaign_id][user_id]
+    # TODO: add check for data quality
+    is_ok = True
+    return JSONResponse(
+        content={
+            "status": "completed",
+            "progress": user_progress["progress"],
+            "time": user_progress["time"],
+            "token": user_progress["token_correct" if is_ok else "token_incorrect"],
+        },
+        status_code=200
+    )
+
+
 def get_next_item(
     campaign_id: str,
     user_id: str,
@@ -33,28 +53,17 @@ def get_next_item_taskbased(
     """
     Get the next item for task-based protocol.
     """
-    if all(progress_data[campaign_id][user_id]["progress"]):
-        # all items completed
-        # TODO: add check for data quality
-        is_ok = True
-        return JSONResponse(
-            content={
-                "status": "completed",
-                "progress": progress_data[campaign_id][user_id]["progress"],
-                "time": progress_data[campaign_id][user_id]["time"],
-                "token":  progress_data[campaign_id][user_id]["token_correct" if is_ok else "token_incorrect"],
-            },
-            status_code=200
-        )
+    user_progress = progress_data[campaign_id][user_id]
+    if all(user_progress["progress"]):
+        return _completed_response(progress_data, campaign_id, user_id)
 
     # find first incomplete item
-    item_i = min([i for i, v in enumerate(
-        progress_data[campaign_id][user_id]["progress"]) if not v])
+    item_i = min([i for i, v in enumerate(user_progress["progress"]) if not v])
     return JSONResponse(
         content={
             "status": "ok",
-            "progress": progress_data[campaign_id][user_id]["progress"],
-            "time": progress_data[campaign_id][user_id]["time"],
+            "progress": user_progress["progress"],
+            "time": user_progress["time"],
             "info": {
                 "item_i": item_i,
             } | {
@@ -85,22 +94,11 @@ def get_next_item_single_stream(
     Note: There is a potential race condition where multiple users could
     receive the same item simultaneously. This is fine since we store all responses.
     """
-    # all users have duplicate progress
-    progress = progress_data[campaign_id][user_id]["progress"]
+    user_progress = progress_data[campaign_id][user_id]
+    progress = user_progress["progress"]
 
     if all(progress):
-        # all items completed
-        # TODO: add check for data quality
-        is_ok = True
-        return JSONResponse(
-            content={
-                "status": "completed",
-                "time": progress_data[campaign_id][user_id]["time"],
-                "progress": progress,
-                "token": progress_data[campaign_id][user_id]["token_correct" if is_ok else "token_incorrect"],
-            },
-            status_code=200
-        )
+        return _completed_response(progress_data, campaign_id, user_id)
 
     # find a random incomplete item
     incomplete_indices = [i for i, v in enumerate(progress) if not v]
@@ -109,7 +107,7 @@ def get_next_item_single_stream(
     return JSONResponse(
         content={
             "status": "ok",
-            "time": progress_data[campaign_id][user_id]["time"],
+            "time": user_progress["time"],
             "progress": progress,
             "info": {
                 "item_i": item_i,
@@ -121,6 +119,13 @@ def get_next_item_single_stream(
             "payload": data_all[campaign_id]["data"][item_i]},
         status_code=200
     )
+
+
+def _reset_user_time(progress_data: dict, campaign_id: str, user_id: str) -> None:
+    """Reset time tracking fields for a user."""
+    progress_data[campaign_id][user_id]["time"] = 0.0
+    progress_data[campaign_id][user_id]["time_start"] = None
+    progress_data[campaign_id][user_id]["time_end"] = None
 
 
 def reset_task(
@@ -137,19 +142,15 @@ def reset_task(
         progress_data[campaign_id][user_id]["progress"] = (
             [False]*len(tasks_data[campaign_id]["data"][user_id])
         )
-        progress_data[campaign_id][user_id]["time"] = 0.0
-        progress_data[campaign_id][user_id]["time_start"] = None
-        progress_data[campaign_id][user_id]["time_end"] = None
+        _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content={"status": "ok"}, status_code=200)
     elif assignment == "single-stream":
         # for single-stream reset all progress
         for uid in progress_data[campaign_id]:
             progress_data[campaign_id][uid]["progress"] = (
-                [False]*len(tasks_data[campaign_id]["data"][user_id])
+                [False]*len(tasks_data[campaign_id]["data"])
             )
-        progress_data[campaign_id][user_id]["time"] = 0.0
-        progress_data[campaign_id][user_id]["time_start"] = None
-        progress_data[campaign_id][user_id]["time_end"] = None
+        _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content={"status": "ok"}, status_code=200)
     else:
         return JSONResponse(content={"status": "error", "message": "Reset not supported for this assignment type"}, status_code=400)

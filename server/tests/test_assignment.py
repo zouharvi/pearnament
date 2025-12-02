@@ -43,6 +43,38 @@ class TestTaskBased:
         content = response.body.decode()
         assert '"item_i":1' in content
 
+    def test_get_next_item_completed_returns_token(self):
+        """Test that task-based returns completion token when all items done."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": "b"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True],
+                    "time": 100,
+                    "token_correct": "correct_token",
+                    "token_incorrect": "wrong_token",
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"completed"' in content
+        assert 'correct_token' in content
+
     def test_update_progress_marks_item_complete(self):
         """Test that update_progress marks the item as complete."""
         tasks_data = {
@@ -94,6 +126,8 @@ class TestTaskBased:
         assert progress_data["campaign1"]["user1"]["progress"] == [
             False, False]
         assert progress_data["campaign1"]["user1"]["time"] == 0.0
+        assert progress_data["campaign1"]["user1"]["time_start"] is None
+        assert progress_data["campaign1"]["user1"]["time_end"] is None
 
 
 class TestSingleStream:
@@ -160,3 +194,146 @@ class TestSingleStream:
         content = response.body.decode()
         assert '"status":"completed"' in content
         assert 'correct_token' in content
+
+    def test_reset_task_resets_all_users(self):
+        """Test that single-stream reset_task resets progress for all users."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "single-stream",
+                    "template": "pointwise",
+                },
+                "data": [
+                    [{"src": "a", "tgt": "b"}],
+                    [{"src": "c", "tgt": "d"}],
+                    [{"src": "e", "tgt": "f"}],
+                ]
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True, True, False],
+                    "time": 50.0,
+                    "time_start": 1000,
+                    "time_end": 2000,
+                },
+                "user2": {
+                    "progress": [True, True, False],
+                    "time": 75.0,
+                    "time_start": 1100,
+                    "time_end": 2100,
+                }
+            }
+        }
+        reset_task("campaign1", "user1", tasks_data, progress_data)
+        # Both users' progress should be reset
+        assert progress_data["campaign1"]["user1"]["progress"] == [
+            False, False, False]
+        assert progress_data["campaign1"]["user2"]["progress"] == [
+            False, False, False]
+        # Only user1's time should be reset
+        assert progress_data["campaign1"]["user1"]["time"] == 0.0
+        assert progress_data["campaign1"]["user1"]["time_start"] is None
+        assert progress_data["campaign1"]["user2"]["time"] == 75.0
+
+    def test_update_progress_updates_all_users(self):
+        """Test that single-stream update_progress updates all users."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "single-stream",
+                    "template": "pointwise",
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False, False, False],
+                },
+                "user2": {
+                    "progress": [False, False, False],
+                }
+            }
+        }
+        update_progress("campaign1", "user1", tasks_data, progress_data, 1, {})
+        # Both users should have item 1 marked as complete
+        assert progress_data["campaign1"]["user1"]["progress"] == [
+            False, True, False]
+        assert progress_data["campaign1"]["user2"]["progress"] == [
+            False, True, False]
+
+
+class TestUnknownAssignment:
+    """Tests for unknown assignment types."""
+
+    def test_get_next_item_unknown_assignment(self):
+        """Test that unknown assignment type returns an error."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "unknown-type",
+                    "template": "pointwise",
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False],
+                    "time": 0,
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 400
+        content = response.body.decode()
+        assert "Unknown campaign assignment type" in content
+
+    def test_reset_task_unsupported_assignment(self):
+        """Test that unsupported assignment type returns an error on reset."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "unknown-type",
+                    "template": "pointwise",
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True],
+                    "time": 50.0,
+                }
+            }
+        }
+        response = reset_task("campaign1", "user1", tasks_data, progress_data)
+        assert response.status_code == 400
+        content = response.body.decode()
+        assert "Reset not supported" in content
+
+    def test_update_progress_unknown_assignment(self):
+        """Test that unknown assignment type returns an error on update."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "unknown-type",
+                    "template": "pointwise",
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False],
+                }
+            }
+        }
+        response = update_progress("campaign1", "user1",
+                                   tasks_data, progress_data, 0, {})
+        assert response.status_code == 400
+        content = response.body.decode()
+        assert "Unknown campaign assignment type" in content
