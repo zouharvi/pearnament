@@ -29,6 +29,14 @@ type DataFinished = {
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
 let settings_show_alignment = true
+let has_unsaved_work = false
+
+// Prevent accidental refresh/navigation when there is ongoing work
+window.addEventListener('beforeunload', (event) => {
+  if (has_unsaved_work) {
+    event.preventDefault()
+  }
+})
 
 const MQM_ERROR_CATEGORIES = {
   "Terminology": [
@@ -162,6 +170,7 @@ async function display_next_payload(response: DataPayload) {
     "error_spans": [],
   }))
   action_log = [{ "time": Date.now() / 1000, "action": "load" }]
+  has_unsaved_work = true
 
 
   let protocol_score = response.info.protocol_score
@@ -482,6 +491,7 @@ async function display_next_item() {
 
   if (response.status == "completed") {
     let response_finished = response as DataFinished
+    has_unsaved_work = false
     $("#output_div").html(`
     <div class='white-box' style='width: max-content'>
     <h2>🎉 All done, thank you for your annotations!</h2>
@@ -520,6 +530,7 @@ $("#button_next").on("click", async function () {
     $("#button_next").val("Next ❓")
     return
   }
+  has_unsaved_work = false
   await display_next_item()
 })
 
