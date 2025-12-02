@@ -2,9 +2,26 @@ import $ from 'jquery';
 
 import { get_next_item, log_response } from './connector';
 import { notify } from './utils';
-type ErrorSpan = { "start_i": number, "end_i": number, "category": string | null, "severity": string | null, }
-type Response = { "score": number | null, "error_spans": Array<ErrorSpan> }
-type CharData = { "el": JQuery<HTMLElement>, "toolbox": JQuery<HTMLElement> | null, "error_span": ErrorSpan | null, }
+type ErrorSpan = { start_i: number, end_i: number, category: string | null, severity: string | null, }
+type Response = { score: number | null, error_spans: Array<ErrorSpan> }
+type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null, }
+type DataPayload = {
+  status: string,
+  progress: { completed: number, total: number, time: number },
+  payload: Array<{ src: string, tgt: string, checks?: any }>,
+  info: {
+    status_message: string,
+    protocol_score: boolean,
+    protocol_error_spans: boolean,
+    protocol_error_categories: boolean,
+    item_i: number,
+  }
+}
+type DataFinished = {
+  "status": string,
+  "progress": { "completed": number, "total": number, "time": number, },
+  "token": string,
+}
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
 let settings_show_alignment = true
@@ -101,24 +118,6 @@ function check_unlock() {
   $("#button_next").val("Next ✅")
 }
 
-export type DataPayload = {
-  "status": string,
-  "progress": { "completed": number, "total": number, "time": number },
-  "payload": { "src": Array<string>, "tgt": Array<string> },
-  "info": {
-    "status_message": string,
-    "protocol_score": boolean,
-    "protocol_error_spans": boolean,
-    "protocol_error_categories": boolean,
-    "item_i": number,
-  }
-}
-export type DataFinished = {
-  "status": string,
-  "progress": { "completed": number, "total": number, "time": number, },
-  "token": string,
-}
-
 function _slider_html(i: number): string {
   return `
       <div class="output_response">
@@ -154,7 +153,8 @@ async function display_next_payload(response: DataPayload) {
   $("#time").text(`Time: ${Math.round(response.progress.time / 60)}m`)
 
   let data = response.payload
-  response_log = data.src.map(_ => ({
+  console.log(response)
+  response_log = data.map(_ => ({
     "score": null,
     "error_spans": [],
   }))
@@ -168,13 +168,14 @@ async function display_next_payload(response: DataPayload) {
 
   $("#output_div").html("")
 
-  for (let item_i = 0; item_i < data.src.length; item_i++) {
+  for (let item_i = 0; item_i < data.length; item_i++) {
+    let item = data[item_i]
     // character-level stuff won't work on media tags
-    let no_src_char = (data.src[item_i].startsWith("<audio ") || data.src[item_i].startsWith("<video ") || data.src[item_i].startsWith("<img ") || data.src[item_i].startsWith("<iframe "))
-    let no_tgt_char = (data.tgt[item_i].startsWith("<audio ") || data.tgt[item_i].startsWith("<video ") || data.tgt[item_i].startsWith("<img ") || data.tgt[item_i].startsWith("<iframe "))
+    let no_src_char = (item.src.startsWith("<audio ") || item.src.startsWith("<video ") || item.src.startsWith("<img ") || item.src.startsWith("<iframe "))
+    let no_tgt_char = (item.tgt.startsWith("<audio ") || item.tgt.startsWith("<video ") || item.tgt.startsWith("<img ") || item.tgt.startsWith("<iframe "))
 
-    let src_chars = no_src_char ? data.src[item_i] : data.src[item_i].split("").map(c => `<span class="src_char">${c}</span>`).join("")
-    let tgt_chars = no_tgt_char ? data.tgt[item_i] : data.tgt[item_i].split("").map(c => `<span class="tgt_char">${c}</span>`).join("")
+    let src_chars = no_src_char ? item.src : item.src.split("").map(c => c == "\n" ? "<br>" : `<span class="src_char">${c}</span>`).join("")
+    let tgt_chars = no_tgt_char ? item.tgt : item.tgt.split("").map(c => c == "\n" ? "<br>" : `<span class="tgt_char">${c}</span>`).join("")
     let output_block = $(`
       <div class="output_block">
       <div class="output_srctgt">

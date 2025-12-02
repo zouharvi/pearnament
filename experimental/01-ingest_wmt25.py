@@ -20,15 +20,23 @@ for doc_id, segments in documents.items():
     lang = doc_id.split("_#_")[0]
     segments.sort(key=lambda x: x[0])
     for sys in segments[0][1]["tgt_text"].keys():
-        data_out[lang].append({
-            "doc_id": doc_id,
-            "sys_id": sys,
-            "src": [seg["src_text"] for _, seg in segments],
-            # hotfix
-            "tgt": [seg["tgt_text"][sys] for _, seg in segments],
-        })
+        document_task = []
+        for seg_i, seg in segments:
+            document_task.append({
+                "doc_id": f"{doc_id}_#_{seg_i}",
+                "sys_id": sys,
+                "src": seg["src_text"],
+                "tgt": seg["tgt_text"][sys],
+            })
+        data_out[lang].append(document_task)
 
 r = random.Random(0)
+
+LANG_TO_NAME = {
+    "en": "English",
+    "cs_CZ": "Czech",
+    "de_DE": "German",
+}
 
 for lang, data in data_out.items():
     # chunk to 10 documents per task
@@ -48,7 +56,7 @@ for lang, data in data_out.items():
                     "protocol_score": True,
                     "protocol_error_spans": True,
                     "protocol_error_categories": True,
-                    "status_message": f"Evaluate translation from {lang1} to {lang2}",
+                    "status_message": f"Evaluate translation from {LANG_TO_NAME.get(lang1, lang1)} to {LANG_TO_NAME.get(lang2, lang2)}.",
                 },
                 "campaign_id": f"wmt25_#_{lang}",
                 # just first 5 users to keep the size small
