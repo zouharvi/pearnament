@@ -41,9 +41,10 @@ def get_next_item_taskbased(
             content={
                 "status": "completed",
                 "progress": {
+                    # TODO: return the whole binary array
                     "completed": sum(progress_data[campaign_id][user_id]["progress"]),
-                    "time": progress_data[campaign_id][user_id]["time"],
                     "total": len(data_all[campaign_id]["data"][user_id]),
+                    "time": progress_data[campaign_id][user_id]["time"],
                     "array": progress_data[campaign_id][user_id]["progress"],
                 },
                 "token":  progress_data[campaign_id][user_id]["token_correct" if is_ok else "token_incorrect"],
@@ -57,13 +58,13 @@ def get_next_item_taskbased(
         content={
             "status": "ok",
             "progress": {
+                # TODO: return the whole binary array
                 "completed": sum(progress_data[campaign_id][user_id]["progress"]),
-                "time": progress_data[campaign_id][user_id]["time"],
                 "total": len(data_all[campaign_id]["data"][user_id]),
+                "time": progress_data[campaign_id][user_id]["time"],
                 "array": progress_data[campaign_id][user_id]["progress"],
             },
             "info": {
-                "instructions": data_all[campaign_id]["info"].get("instructions", ""),
                 "item_i": item_i,
             } | {
                 k: v
@@ -91,11 +92,10 @@ def get_next_item_single_stream(
     Items are randomly selected from unfinished items.
     
     Note: There is a potential race condition where multiple users could
-    receive the same item simultaneously. This is acceptable for this simple
-    assignment type - the random selection minimizes collision probability.
+    receive the same item simultaneously. This is fine since we store all responses.
     """
     # Get the shared progress array (stored at campaign level)
-    shared_progress = progress_data[campaign_id]["_shared"]["progress"]
+    shared_progress = progress_data[campaign_id][user_id]["progress"]
     total = len(shared_progress)
     completed = sum(shared_progress)
 
@@ -107,9 +107,10 @@ def get_next_item_single_stream(
             content={
                 "status": "completed",
                 "progress": {
+                    # TODO: return the whole binary array
                     "completed": completed,
-                    "time": progress_data[campaign_id][user_id]["time"],
                     "total": total,
+                    "time": progress_data[campaign_id][user_id]["time"],
                     "array": shared_progress,
                 },
                 "token": progress_data[campaign_id][user_id]["token_correct" if is_ok else "token_incorrect"],
@@ -125,13 +126,13 @@ def get_next_item_single_stream(
         content={
             "status": "ok",
             "progress": {
+                # TODO: return the whole binary array
                 "completed": completed,
-                "time": progress_data[campaign_id][user_id]["time"],
                 "total": total,
+                "time": progress_data[campaign_id][user_id]["time"],
                 "array": shared_progress,
             },
             "info": {
-                "instructions": data_all[campaign_id]["info"].get("instructions", ""),
                 "item_i": item_i,
             } | {
                 k: v
@@ -166,11 +167,7 @@ def reset_task(
         progress_data[campaign_id][user_id]["time_end"] = None
         return JSONResponse(content={"status": "ok"}, status_code=200)
     else:
-        progress_data[campaign_id][user_id]["progress"] = []
-        progress_data[campaign_id][user_id]["time"] = 0.0
-        progress_data[campaign_id][user_id]["time_start"] = None
-        progress_data[campaign_id][user_id]["time_end"] = None
-        return JSONResponse(content={"status": "ok"}, status_code=200)
+        return JSONResponse(content={"status": "error", "message": "Reset not supported for this assignment type"}, status_code=400)
     
 
 
@@ -192,8 +189,9 @@ def update_progress(
         # TODO: log attention checks/quality?
         return JSONResponse(content={"status": "ok"}, status_code=200)
     elif assignment == "single-stream":
-        # Mark item as done in shared progress
-        progress_data[campaign_id]["_shared"]["progress"][item_i] = True
+        # progress all users
+        for uid in progress_data[campaign_id]:
+            progress_data[campaign_id][uid]["progress"][item_i] = True
         return JSONResponse(content={"status": "ok"}, status_code=200)
     elif assignment == "dynamic":
         return JSONResponse(content={"status": "error", "message": "Dynamic protocol logging not implemented yet."}, status_code=400)
