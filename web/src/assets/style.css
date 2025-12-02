@@ -14,7 +14,7 @@ body {
     width: 30%;
     background-color: #fffc;
     padding: 10px;
-    border-radius: 4px;
+    border-radius: 8px;
     vertical-align: top;
     margin-left: 5px;
 }
@@ -32,13 +32,11 @@ body {
 input[type="button"] {
     background: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: large;
+    box-shadow: 0 2px 4px #0001;
 }
 
-.button_navigation.button_selected {
-    background: #8db3ec !important;
-}
 
 input[type="button"]:hover:not(:disabled) {
     background: #ffe;
@@ -50,7 +48,8 @@ label {
 }
 
 .white-box {
-    border-radius: 5pt;
+    border-radius: 8px;
     background: #fff;
     padding: 15pt;
+    box-shadow: 0 4px 6px #0000001a
 }

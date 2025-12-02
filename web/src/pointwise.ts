@@ -249,8 +249,8 @@ async function display_next_payload(response: DataPayload) {
               let toolbox = $(`
             <div class='span_toolbox_parent'>
             <div class='span_toolbox'>
-              <div class="span_toolbox_esa" style="display: inline-block; width: 70px; padding-right: 5px; border-right: 2px solid white;">
-                <input type="button" class="error_delete" style="border-radius: 5px;" value="Remove">
+              <div class="span_toolbox_esa" style="display: inline-block; width: 70px; padding-right: 5px;">
+                <input type="button" class="error_delete" style="border-radius: 8px;" value="Remove">
                 <input type="button" class="error_neutral" style="margin-top: 3px;" value="Neutral">
                 <input type="button" class="error_minor" style="margin-top: 3px;" value="Minor">
                 <input type="button" class="error_major" style="margin-top: 3px;" value="Major">
