@@ -23,7 +23,7 @@ type DataPayload = {
     time: number,
     payload: Array<{
         src: string,
-        tgt: Array<string>,  // Multiple translation candidates
+        tgt: string | Array<string>,  // Single or multiple translation candidates
         checks?: any,
         instructions?: string,
     }>,
@@ -39,6 +39,13 @@ type DataFinished = {
     progress: Array<boolean>,
     time: number,
     token: string,
+}
+
+/**
+ * Ensures tgt is always an array of candidates
+ */
+function ensureCandidateArray(tgt: string | Array<string>): Array<string> {
+    return Array.isArray(tgt) ? tgt : [tgt]
 }
 
 let response_log: Array<DocumentResponse> = []
@@ -102,7 +109,7 @@ async function display_next_payload(response: DataPayload) {
     let data = response.payload
     // Initialize response log for each document with responses for each candidate
     response_log = data.map(item => 
-        (Array.isArray(item.tgt) ? item.tgt : [item.tgt]).map(_ => ({
+        ensureCandidateArray(item.tgt).map(_ => ({
             "score": null,
             "error_spans": [],
         }))
@@ -123,7 +130,7 @@ async function display_next_payload(response: DataPayload) {
     for (let item_i = 0; item_i < data.length; item_i++) {
         let item = data[item_i]
         // Ensure tgt is an array of candidates
-        let candidates = Array.isArray(item.tgt) ? item.tgt : [item.tgt]
+        let candidates = ensureCandidateArray(item.tgt)
         
         // character-level stuff won't work on media tags
         let no_src_char = (item.src.startsWith("<audio ") || item.src.startsWith("<video ") || item.src.startsWith("<img ") || item.src.startsWith("<iframe "))

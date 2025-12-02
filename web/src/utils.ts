@@ -233,10 +233,17 @@ export function createSpanToolbox(
  * Updates toolbox position based on character element position
  */
 export function updateToolboxPosition(toolbox: JQuery<HTMLElement>, charEl: JQuery<HTMLElement>): void {
-    let topPosition = charEl.position()?.top - toolbox.innerHeight()!;
-    let leftPosition = charEl.position()?.left;
+    const position = charEl.position();
+    if (!position) return;
+    
+    const toolboxHeight = toolbox.innerHeight() || 0;
+    const toolboxWidth = toolbox.innerWidth() || 0;
+    const windowWidth = $(window).width() || 900;
+    
+    let topPosition = position.top - toolboxHeight;
+    let leftPosition = position.left;
     // make sure it's not getting out of screen
-    leftPosition = Math.min(leftPosition, Math.max($(window).width()!, 900) - toolbox.innerWidth()! + 10);
+    leftPosition = Math.min(leftPosition, Math.max(windowWidth, 900) - toolboxWidth + 10);
 
     toolbox.css({
         top: topPosition,
