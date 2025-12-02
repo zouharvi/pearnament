@@ -53,17 +53,19 @@ One of the simplest ones, where each user has a pre-defined list of tasks (`task
   "data": [
     # data for first task/user
     [
-      {
+      [
         # each evaluation item is a document
-        "src": [
-          "This will be the year that Guinness loses its cool. Cheers to that!",
-          "I'm not sure I can remember exactly when I sensed it. Maybe it was when some...",
-        ],
-        "tgt": [
-          "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!",
-          "Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ...",
-        ]
-      },
+        {
+          "src": "This will be the year that Guinness loses its cool. Cheers to that!",
+          "tgt": "Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ..."
+        },
+        {
+          "src": "I'm not sure I can remember exactly when I sensed it. Maybe it was when some...",
+          "tgt": "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!"
+        }
+        ...
+      ],
+      # more document
       ...
     ],
     # data for second task/user
@@ -77,12 +79,19 @@ One of the simplest ones, where each user has a pre-defined list of tasks (`task
 In general, the task item can be anything and is handled by the specific protocol template.
 For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (corresponding to a single document unit) that looks as follows:
 ```python
-{   # single document definition
-    "src": ["A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", "toto je pokračování stejného dokumentu"],       # mandatory for ESA/MQM/DA
-    "tgt": ["And suddenly all the water became full of other people and other people.", "this is a continuation of the same document"], # mandatory for ESA/MQM/DA
+# single document definition
+[
+  {
+    "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", # mandatory for ESA/MQM/DA
+    "tgt": "And suddenly all the water became full of other people and other people." # mandatory for ESA/MQM/DA
+  },
+  {
+    "src": "toto je pokračování stejného dokumentu",
+    "tgt": "this is a continuation of the same document",
     ...  # all other keys that will be stored, useful for your analysis
-},
-... # definition of another item
+  }
+],
+... # definition of another item (document)
 ```
 
 We also support a super simple allocation of annotations (`task-single`, not yet ⚠️), where you simply pass a list of all examples to be evaluated and they are processed in parallel by all annotators:
