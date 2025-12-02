@@ -40,30 +40,21 @@ def get_next_item_taskbased(
         return JSONResponse(
             content={
                 "status": "completed",
-                "progress": {
-                    # TODO: return the whole binary array
-                    "completed": sum(progress_data[campaign_id][user_id]["progress"]),
-                    "total": len(data_all[campaign_id]["data"][user_id]),
-                    "time": progress_data[campaign_id][user_id]["time"],
-                    "array": progress_data[campaign_id][user_id]["progress"],
-                },
+                "progress": progress_data[campaign_id][user_id]["progress"],
+                "time": progress_data[campaign_id][user_id]["time"],
                 "token":  progress_data[campaign_id][user_id]["token_correct" if is_ok else "token_incorrect"],
             },
             status_code=200
         )
 
     # find first incomplete item
-    item_i = min([i for i, v in enumerate(progress_data[campaign_id][user_id]["progress"]) if not v])
+    item_i = min([i for i, v in enumerate(
+        progress_data[campaign_id][user_id]["progress"]) if not v])
     return JSONResponse(
         content={
             "status": "ok",
-            "progress": {
-                # TODO: return the whole binary array
-                "completed": sum(progress_data[campaign_id][user_id]["progress"]),
-                "total": len(data_all[campaign_id]["data"][user_id]),
-                "time": progress_data[campaign_id][user_id]["time"],
-                "array": progress_data[campaign_id][user_id]["progress"],
-            },
+            "progress": progress_data[campaign_id][user_id]["progress"],
+            "time": progress_data[campaign_id][user_id]["time"],
             "info": {
                 "item_i": item_i,
             } | {
@@ -90,48 +81,36 @@ def get_next_item_single_stream(
     Get the next item for single-stream protocol.
     In this mode, all users share the same pool of items.
     Items are randomly selected from unfinished items.
-    
+
     Note: There is a potential race condition where multiple users could
     receive the same item simultaneously. This is fine since we store all responses.
     """
-    # Get the shared progress array (stored at campaign level)
-    shared_progress = progress_data[campaign_id][user_id]["progress"]
-    total = len(shared_progress)
-    completed = sum(shared_progress)
+    # all users have duplicate progress
+    progress = progress_data[campaign_id][user_id]["progress"]
 
-    if all(shared_progress):
+    if all(progress):
         # all items completed
         # TODO: add check for data quality
         is_ok = True
         return JSONResponse(
             content={
                 "status": "completed",
-                "progress": {
-                    # TODO: return the whole binary array
-                    "completed": completed,
-                    "total": total,
-                    "time": progress_data[campaign_id][user_id]["time"],
-                    "array": shared_progress,
-                },
+                "time": progress_data[campaign_id][user_id]["time"],
+                "progress": progress,
                 "token": progress_data[campaign_id][user_id]["token_correct" if is_ok else "token_incorrect"],
             },
             status_code=200
         )
 
     # find a random incomplete item
-    incomplete_indices = [i for i, v in enumerate(shared_progress) if not v]
+    incomplete_indices = [i for i, v in enumerate(progress) if not v]
     item_i = random.choice(incomplete_indices)
 
     return JSONResponse(
         content={
             "status": "ok",
-            "progress": {
-                # TODO: return the whole binary array
-                "completed": completed,
-                "total": total,
-                "time": progress_data[campaign_id][user_id]["time"],
-                "array": shared_progress,
-            },
+            "time": progress_data[campaign_id][user_id]["time"],
+            "progress": progress,
             "info": {
                 "item_i": item_i,
             } | {
@@ -155,20 +134,25 @@ def reset_task(
     """
     assignment = tasks_data[campaign_id]["info"]["assignment"]
     if assignment == "task-based":
-        progress_data[campaign_id][user_id]["progress"] = [False]*len(tasks_data[campaign_id]["data"][user_id])
+        progress_data[campaign_id][user_id]["progress"] = (
+            [False]*len(tasks_data[campaign_id]["data"][user_id])
+        )
         progress_data[campaign_id][user_id]["time"] = 0.0
         progress_data[campaign_id][user_id]["time_start"] = None
         progress_data[campaign_id][user_id]["time_end"] = None
         return JSONResponse(content={"status": "ok"}, status_code=200)
     elif assignment == "single-stream":
-        # For single-stream, only reset user's time (shared progress stays)
+        # for single-stream reset all progress
+        for uid in progress_data[campaign_id]:
+            progress_data[campaign_id][uid]["progress"] = (
+                [False]*len(tasks_data[campaign_id]["data"][user_id])
+            )
         progress_data[campaign_id][user_id]["time"] = 0.0
         progress_data[campaign_id][user_id]["time_start"] = None
         progress_data[campaign_id][user_id]["time_end"] = None
         return JSONResponse(content={"status": "ok"}, status_code=200)
     else:
         return JSONResponse(content={"status": "error", "message": "Reset not supported for this assignment type"}, status_code=400)
-    
 
 
 def update_progress(

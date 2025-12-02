@@ -2,8 +2,8 @@
 
 from pearmut.protocols import (
     get_next_item,
-    update_progress,
     reset_task,
+    update_progress,
 )
 
 

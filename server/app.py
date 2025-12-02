@@ -117,14 +117,8 @@ async def _dashboard_data(request: DashboardDataRequest):
         return JSONResponse(content={"error": "Unsupported campaign assignment type"}, status_code=400)
 
     for user_id, user_val in progress_data[campaign_id].items():
-        entry = {
-            **user_val,
-            "total": (
-                len(tasks_data[campaign_id]["data"][user_id]) if assignment == "task-based"
-                else len(tasks_data[campaign_id]["data"]) if assignment == "single-stream"
-                else 0
-            ),
-        }
+        # shallow copy
+        entry = dict(user_val)
 
         if not is_privileged:
             entry["token_correct"] = None
