@@ -57,7 +57,7 @@ def get_next_item_taskbased(
                 "total": len(data_all[campaign_id]["data"][user_id]),
             },
             "info": {
-                "status_message": data_all[campaign_id]["info"].get("status_message", ""),
+                "instructions": data_all[campaign_id]["info"].get("instructions", ""),
                 "item_i": item_i,
             } | {
                 k: v

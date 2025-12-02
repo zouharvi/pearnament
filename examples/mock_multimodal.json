@@ -5,7 +5,7 @@
     "protocol_score": true,
     "protocol_error_spans": true,
     "protocol_error_categories": false,
-    "status_message": "Evaluate translation from English audio, video, or image sources or even outputs."
+    "instructions": "Evaluate translation from English audio, video, or image sources or even outputs."
   },
   "campaign_id": "mock_multimodal",
   "data": [

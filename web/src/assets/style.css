@@ -44,7 +44,7 @@ input[type="button"]:hover:not(:disabled) {
 }
 
 input[type="button"]:disabled {
-    background: #eee;
+    background: #bbb;
     cursor: not-allowed;
 }
 

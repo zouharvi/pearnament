@@ -47,7 +47,7 @@ One of the simplest ones, where each user has a pre-defined list of tasks (`task
     "protocol_score": true,                 # we want scores [0...100] for each segment
     "protocol_error_spans": true,           # we want error spans
     "protocol_error_categories": false,     # we do not want error span categories
-    "status_message": "Evaluate translation from en to cs_CZ",  # message to show to users
+    "instructions": "Evaluate translation from en to cs_CZ",  # message to show to users
   },
   "campaign_id": "wmt25_#_en-cs_CZ",
   "data": [

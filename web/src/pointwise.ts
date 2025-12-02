@@ -8,9 +8,13 @@ type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, 
 type DataPayload = {
   status: string,
   progress: { completed: number, total: number, time: number },
-  payload: Array<{ src: string, tgt: string, checks?: any }>,
+  payload: Array<{
+    src: string,
+    tgt: string,
+    checks?: any,
+    instructions?: string,
+  }>,
   info: {
-    status_message: string,
     protocol_score: boolean,
     protocol_error_spans: boolean,
     protocol_error_categories: boolean,
@@ -153,18 +157,20 @@ async function display_next_payload(response: DataPayload) {
   $("#time").text(`Time: ${Math.round(response.progress.time / 60)}m`)
 
   let data = response.payload
-  console.log(response)
   response_log = data.map(_ => ({
     "score": null,
     "error_spans": [],
   }))
   action_log = [{ "time": Date.now() / 1000, "action": "load" }]
 
-  $("#status_message").html(response.info.status_message)
 
   let protocol_score = response.info.protocol_score
   let protocol_error_spans = response.info.protocol_error_spans
   let protocol_error_categories = response.info.protocol_error_categories
+
+  if (!protocol_score) $("#instructions_score").hide()
+  if (!protocol_error_spans) $("#instructions_spans").hide()
+  if (!protocol_error_categories) $("#instructions_categories").hide()
 
   $("#output_div").html("")
 
@@ -178,6 +184,7 @@ async function display_next_payload(response: DataPayload) {
     let tgt_chars = no_tgt_char ? item.tgt : item.tgt.split("").map(c => c == "\n" ? "<br>" : `<span class="tgt_char">${c}</span>`).join("")
     let output_block = $(`
       <div class="output_block">
+      <span id="instructions_message"></span>
       <div class="output_srctgt">
         <div class="output_src">${src_chars}</div>
         <div class="output_tgt">${tgt_chars}</div>
@@ -185,6 +192,11 @@ async function display_next_payload(response: DataPayload) {
       ${protocol_score ? _slider_html(item_i) : ""}
       </div>
     `)
+
+    console.log("AAA", item.instructions)
+    if (item.instructions) {
+      output_block.find("#instructions_message").html(item.instructions)
+    }
 
     // crude character alignment
     let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()

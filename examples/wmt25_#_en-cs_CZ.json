@@ -4,8 +4,7 @@
     "template": "pointwise",
     "protocol_score": true,
     "protocol_error_spans": true,
-    "protocol_error_categories": true,
-    "status_message": "Evaluate translation from English to Czech."
+    "protocol_error_categories": true
   },
   "campaign_id": "wmt25_#_en-cs_CZ",
   "data": [
@@ -15,7 +14,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_0",
           "sys_id": "DeepSeek-V3",
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",
-          "tgt": "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!"
+          "tgt": "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_1",
@@ -71,7 +71,8 @@
           "doc_id": "en-cs_CZ_#_news_#_nytimes.153341_#_0",
           "sys_id": "Gemini-2.5-Pro",
           "src": "When Remaking a Masterpiece Is Worth the Risk",
-          "tgt": "Kdy stojí za to riskovat s remakem mistrovského díla"
+          "tgt": "Kdy stojí za to riskovat s remakem mistrovského díla",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_nytimes.153341_#_1",
@@ -103,7 +104,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_SNG0991_#_0",
           "sys_id": "NLLB",
           "src": "You are looking for a <i>place to stay</i>. The hotel should <i>include free parking</i> and should be in the type of <i>guesthouse</i>\nThe hotel should be in the <i>expensive</i> price range and should <i>include free wifi</i>\nIf there is no such hotel, how about one that is in the <i>cheap</i> price range\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>4 nights</i> starting from <i>friday</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Hledáte místo k pobytu. Hotel by měl zahrnovat parkování zdarma a měl by být typu penzionu.\nHotel by měl být v cenové kategorii a měl by obsahovat bezplatné Wi-Fi.\nPokud takový hotel neexistuje, co tak jeden v levném cenovém rozmezí?\nJakmile najdete hotel, chcete si ho rezervovat na 8 osob a 4 noci, počínaje pátkem.\nUjistěte se, že máte referenční číslo."
+          "tgt": "Hledáte místo k pobytu. Hotel by měl zahrnovat parkování zdarma a měl by být typu penzionu.\nHotel by měl být v cenové kategorii a měl by obsahovat bezplatné Wi-Fi.\nPokud takový hotel neexistuje, co tak jeden v levném cenovém rozmezí?\nJakmile najdete hotel, chcete si ho rezervovat na 8 osob a 4 noci, počínaje pátkem.\nUjistěte se, že máte referenční číslo.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_SNG0991_#_1",
@@ -117,7 +119,8 @@
           "doc_id": "en-cs_CZ_#_news_#_nytimes.153341_#_0",
           "sys_id": "Claude-4",
           "src": "When Remaking a Masterpiece Is Worth the Risk",
-          "tgt": "Když se remake mistrovského díla vyplatí riskovat"
+          "tgt": "Když se remake mistrovského díla vyplatí riskovat",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_nytimes.153341_#_1",
@@ -149,7 +152,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.230737_#_0",
           "sys_id": "ONLINE-B",
           "src": "Meghan's rebranded herself - and it's another valiant attempt to flog poshness to the little people",
-          "tgt": "Meghan se přejmenovala – a je to další statečný pokus vštípit nóbl lidem."
+          "tgt": "Meghan se přejmenovala – a je to další statečný pokus vštípit nóbl lidem.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.230737_#_1",
@@ -199,7 +203,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL2755_#_0",
           "sys_id": "EuroLLM-22B",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>place to stay</i>. The hotel should have <i>a star of 4</i> and should be in the <i>east</i>\nThe hotel should be in the type of <i>guesthouse</i>\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>5 nights</i> starting from <i>wednesday</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i> and should be in the type of <i>museum</i>\nMake sure you get <i>postcode</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>12:30</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Jíždíte do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte <i>ubytování</i>. Hotel by měl mít <i>4 hvězdičky</i> a měl by být <i>na východě</i>\nHotel by měl být typu <i>penzion</i>\nJakmile najdete <i>hotel</i>, který chcete, zarezervujte ho pro <i>8 osob</i> na <i>5 nocí</i> od <i>středy</i>\nUjistěte se, že dostanete <i>referenční číslo</i>\nHledáte také <i>místo k návštěvě</i> ve městě. Atrakce by měla být <i>v centru</i> a měla by být typu <i>muzeum</i>\nUjistěte se, že dostanete <i>PSČ</i>\nRovněž chcete zarezervovat <i>taxi</i> pro dopravu mezi těmito dvěma místy\nChcete opustit <i>atrakci</i> do <i>12:30</i>\nUjistěte se, že dostanete <i>kontaktní číslo</i> a <i>typ vozu</i>"
+          "tgt": "Jíždíte do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte <i>ubytování</i>. Hotel by měl mít <i>4 hvězdičky</i> a měl by být <i>na východě</i>\nHotel by měl být typu <i>penzion</i>\nJakmile najdete <i>hotel</i>, který chcete, zarezervujte ho pro <i>8 osob</i> na <i>5 nocí</i> od <i>středy</i>\nUjistěte se, že dostanete <i>referenční číslo</i>\nHledáte také <i>místo k návštěvě</i> ve městě. Atrakce by měla být <i>v centru</i> a měla by být typu <i>muzeum</i>\nUjistěte se, že dostanete <i>PSČ</i>\nRovněž chcete zarezervovat <i>taxi</i> pro dopravu mezi těmito dvěma místy\nChcete opustit <i>atrakci</i> do <i>12:30</i>\nUjistěte se, že dostanete <i>kontaktní číslo</i> a <i>typ vozu</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL2755_#_1",
@@ -213,7 +218,8 @@
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_0",
           "sys_id": "Algharb",
           "src": "South African opener Matthew Breetzke etched his name into the record books by becoming the first batter to score 150 runs on ODI debut in second match of the ongoing tri-series against New Zealand at the Gaddafi Stadium on Monday. His stunning knock of 150 off 148 balls, laced with 11 fours and five sixes, surpassed the previous record held by the legendary West Indies' batter Desmond Haynes, who scored 148 in his maiden ODI innings against Australia back in 1978. Before Breetzke's innings, the highest score on ODI debut for South Africa was 124 by Colin Ingram against Zimbabwe in 2010. Now, Breetzke stands alone at the top, delivering a performance that showcased patience, aggression, and remarkable shot selection as South Africa posted a mammoth 304/6.",
-          "tgt": "Jihoafrický pálkař Matthew Breetzke se v pondělí na stadionu Gaddafi zapsal do historických tabulek, když se ve druhém zápase probíhající série tří zemí proti Novému Zélandu stal prvním pálkařem, který při svém debutu v ODI zaznamenal 150 runů. Svým úžasným výkonem 150 runů ze 148 míčků, který zahrnoval 11 čtyřek a pět šestek, překonal předchozí rekord legendárního západoindického pálkaře Desmonda Haynese, jenž v roce 1978 při svém prvním ODI startu proti Austrálii nasbíral 148 runů. Před Breetzkeho výkonem držel jihoafrický rekord v počtu runů při debutu v ODI Colin Ingram se 124 runy proti Zimbabwe z roku 2010. Nyní Breetzke stojí sám na vrcholu díky výkonu, který ukázal trpělivost, agresivitu a pozoruhodný výběr úderů a pomohl Jihoafrické republice dosáhnout ohromného skóre 304/6."
+          "tgt": "Jihoafrický pálkař Matthew Breetzke se v pondělí na stadionu Gaddafi zapsal do historických tabulek, když se ve druhém zápase probíhající série tří zemí proti Novému Zélandu stal prvním pálkařem, který při svém debutu v ODI zaznamenal 150 runů. Svým úžasným výkonem 150 runů ze 148 míčků, který zahrnoval 11 čtyřek a pět šestek, překonal předchozí rekord legendárního západoindického pálkaře Desmonda Haynese, jenž v roce 1978 při svém prvním ODI startu proti Austrálii nasbíral 148 runů. Před Breetzkeho výkonem držel jihoafrický rekord v počtu runů při debutu v ODI Colin Ingram se 124 runy proti Zimbabwe z roku 2010. Nyní Breetzke stojí sám na vrcholu díky výkonu, který ukázal trpělivost, agresivitu a pozoruhodný výběr úderů a pomohl Jihoafrické republice dosáhnout ohromného skóre 304/6.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_1",
@@ -233,7 +239,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4134_#_0",
           "sys_id": "UvA-MT",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>particular attraction</i>. Its name is called <i>queens' college</i>\nMake sure you get <i>entrance fee</i>\nYou are also looking for a <i>train</i>. The train should leave on <i>tuesday</i> and should depart from <i>cambridge</i>\nThe train should go to <i>leicester</i> and should <i>leave after 09:45</i>\nOnce you find the train you want to make a booking for <i>1 people</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Plánujete svou cestu do Cambridge.\nHledáte <i>konkrétní atrakci</i>. Její název je <i>Queens' College</i>.\nUjistěte se, že máte <i>vstupné</i>.\nHledáte také <i>vlak</i>. Vlak by měl odjíždět <i>v úterý</i> a měl by vyjíždět z <i>Cambridge</i>.\nVlak by měl jet do <i>Leicesteru</i> a měl by <i>odjíždět po 09:45</i>.\nJakmile najdete vlak, který chcete, udělejte rezervaci pro <i>1 osobu</i>.\nUjistěte se, že získáte <i>referenční číslo</i>."
+          "tgt": "Plánujete svou cestu do Cambridge.\nHledáte <i>konkrétní atrakci</i>. Její název je <i>Queens' College</i>.\nUjistěte se, že máte <i>vstupné</i>.\nHledáte také <i>vlak</i>. Vlak by měl odjíždět <i>v úterý</i> a měl by vyjíždět z <i>Cambridge</i>.\nVlak by měl jet do <i>Leicesteru</i> a měl by <i>odjíždět po 09:45</i>.\nJakmile najdete vlak, který chcete, udělejte rezervaci pro <i>1 osobu</i>.\nUjistěte se, že získáte <i>referenční číslo</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4134_#_1",
@@ -247,7 +254,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.231311_#_0",
           "sys_id": "TowerPlus-72B",
           "src": "I am a tweakment holdout. When will wrinkles, bad teeth and big pores be back in fashion?\nTotally neutral question, no right or wrong answer: how do you feel about salmon sperm?",
-          "tgt": "Jsem odpůrcem drobných kosmetických úprav. Kdy se vrásky, špatné zuby a velké póry opět stanou módními?\nÚplně neutrální otázka, bez správné nebo špatné odpovědi: jak se cítíte vůči lososím spermiím?"
+          "tgt": "Jsem odpůrcem drobných kosmetických úprav. Kdy se vrásky, špatné zuby a velké póry opět stanou módními?\nÚplně neutrální otázka, bez správné nebo špatné odpovědi: jak se cítíte vůči lososím spermiím?",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.231311_#_1",
@@ -303,7 +311,8 @@
           "doc_id": "en-cs_CZ_#_news_#_nytimes.153341_#_0",
           "sys_id": "AyaExpanse-8B",
           "src": "When Remaking a Masterpiece Is Worth the Risk",
-          "tgt": "Když přetvářet mistrovské dílo: Je to risk hodný úsilí?"
+          "tgt": "Když přetvářet mistrovské dílo: Je to risk hodný úsilí?",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_nytimes.153341_#_1",
@@ -337,7 +346,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1066_#_0",
           "sys_id": "AyaExpanse-32B",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>particular hotel</i>. Its name is called <i>warkworth house</i>\nOnce you find the <i>hotel</i> you want to book it for <i>1 people</i> and <i>3 nights</i> starting from <i>tuesday</i>\nIf the booking fails how about <i>2 nights</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i>\nMake sure you get <i>entrance fee</i>, <i>attraction type</i>, and <i>address</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>02:45</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte <i>konkrétní hotel</i>. Jmenuje se <i>Warkworth House</i>.\nJakmile najdete <i>hotel</i>, chcete ho rezervovat pro <i>1 osobu</i> na <i>3 noci</i> od <i>úterý</i>.\nPokud rezervace selže, jak o <i>2 noci</i>?\nUjistěte se, že dostanete <i>referenční číslo</i>.\nTaké hledáte <i>místa k návštěvě</i> ve městě. Atrakce by měla být v <i>centru</i>.\nUjistěte se, že dostanete <i>vstupné</i>, <i>typ atrakce</i> a <i>adresu</i>.\nChcete také rezervovat <i>taxi</i> pro dopravu mezi těmito dvěma místy.\nChcete opustit <i>atrakci</i> do <i>02:45</i>.\nUjistěte se, že dostanete <i>kontaktní číslo</i> a <i>typ vozu</i>."
+          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte <i>konkrétní hotel</i>. Jmenuje se <i>Warkworth House</i>.\nJakmile najdete <i>hotel</i>, chcete ho rezervovat pro <i>1 osobu</i> na <i>3 noci</i> od <i>úterý</i>.\nPokud rezervace selže, jak o <i>2 noci</i>?\nUjistěte se, že dostanete <i>referenční číslo</i>.\nTaké hledáte <i>místa k návštěvě</i> ve městě. Atrakce by měla být v <i>centru</i>.\nUjistěte se, že dostanete <i>vstupné</i>, <i>typ atrakce</i> a <i>adresu</i>.\nChcete také rezervovat <i>taxi</i> pro dopravu mezi těmito dvěma místy.\nChcete opustit <i>atrakci</i> do <i>02:45</i>.\nUjistěte se, že dostanete <i>kontaktní číslo</i> a <i>typ vozu</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1066_#_1",
@@ -351,7 +361,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1139_#_0",
           "sys_id": "NLLB",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>place to stay</i>. The hotel should <i>include free parking</i> and should be in the <i>expensive</i> price range\nThe hotel should <i>include free wifi</i> and should be in the type of <i>hotel</i>\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>3 nights</i> starting from <i>tuesday</i>\nIf the booking fails how about <i>2 nights</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i> and should be in the type of <i>college</i>\nMake sure you get <i>entrance fee</i> and <i>postcode</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>24:30</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Cestujete do Cambridge a jste nadšeni, že uvidíte místní turistické atrakce.\nHledáte místo k pobytu. Hotel by měl zahrnovat parkování zdarma a měl by být v cenovém rozmezí.\nHotel by měl obsahovat bezplatné Wi-Fi a měl by být typu hotelu.\nJakmile najdete hotel, chcete si ho rezervovat na 8 osob a 3 noci, počínaje úterým.\nPokud rezervace selže, co třeba 2 noci?\nUjistěte se, že máte referenční číslo.\nTyto atrakce by měly být v centru města a měly by vypadat jako vysoká škola.\nUjistěte se, že máte vstupné a poštovní kód.\nChcete si také objednat taxík, abyste mohli dojíždět mezi těmito dvěma místy\nChcete opustit <i>atrakci</i> do <i>24:30</i>\nUjistěte se, že máte <i>kontaktní číslo</i> a <i>typ vozu</i>"
+          "tgt": "Cestujete do Cambridge a jste nadšeni, že uvidíte místní turistické atrakce.\nHledáte místo k pobytu. Hotel by měl zahrnovat parkování zdarma a měl by být v cenovém rozmezí.\nHotel by měl obsahovat bezplatné Wi-Fi a měl by být typu hotelu.\nJakmile najdete hotel, chcete si ho rezervovat na 8 osob a 3 noci, počínaje úterým.\nPokud rezervace selže, co třeba 2 noci?\nUjistěte se, že máte referenční číslo.\nTyto atrakce by měly být v centru města a měly by vypadat jako vysoká škola.\nUjistěte se, že máte vstupné a poštovní kód.\nChcete si také objednat taxík, abyste mohli dojíždět mezi těmito dvěma místy\nChcete opustit <i>atrakci</i> do <i>24:30</i>\nUjistěte se, že máte <i>kontaktní číslo</i> a <i>typ vozu</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1139_#_1",
@@ -365,7 +376,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_0",
           "sys_id": "ONLINE-W",
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",
-          "tgt": "Tohle bude rok, kdy Guinness ztratí svou chladnou hlavu. Na zdraví!"
+          "tgt": "Tohle bude rok, kdy Guinness ztratí svou chladnou hlavu. Na zdraví!",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_1",
@@ -421,7 +433,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_0",
           "sys_id": "ONLINE-W",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>place to stay</i>. The hotel should be in the <i>expensive</i> price range and should be in the type of <i>hotel</i>\nThe hotel should <i>include free wifi</i>\nMake sure you get <i>whether they have free parking</i> and <i>postcode</i>\nYou are also looking for a <i>train</i>. The train should leave on <i>saturday</i> and should go to <i>london kings cross</i>\nThe train should <i>leave after 18:30</i> and should depart from <i>cambridge</i>\nOnce you find the train you want to make a booking for <i>1 people</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Plánujete cestu do Cambridge\nHledáte <i>místo k pobytu</i>. Hotel by měl být v <i>drahé</i> cenové relaci a měl by být typu <i>hotel</i>.\nHotel by měl <i>zahrnovat bezplatné wifi připojení</i>\nZjistěte si, <i>zda mají parkování zdarma</i> a <i>předčíslí pošty</i>.\nHledáte také <i>vlak</i>. Vlak by měl odjíždět v <i>sobotu</i> a měl by jet do <i>londýnského křižovatky Kings Cross</i>.\nVlak by měl <i>odjíždět po 18:30</i> a měl by odjíždět z <i>cambridge</i>.\nJakmile najdete požadovaný vlak, proveďte rezervaci pro <i>1 osobu</i>.\nUjistěte se, že máte <i>referenční číslo</i>."
+          "tgt": "Plánujete cestu do Cambridge\nHledáte <i>místo k pobytu</i>. Hotel by měl být v <i>drahé</i> cenové relaci a měl by být typu <i>hotel</i>.\nHotel by měl <i>zahrnovat bezplatné wifi připojení</i>\nZjistěte si, <i>zda mají parkování zdarma</i> a <i>předčíslí pošty</i>.\nHledáte také <i>vlak</i>. Vlak by měl odjíždět v <i>sobotu</i> a měl by jet do <i>londýnského křižovatky Kings Cross</i>.\nVlak by měl <i>odjíždět po 18:30</i> a měl by odjíždět z <i>cambridge</i>.\nJakmile najdete požadovaný vlak, proveďte rezervaci pro <i>1 osobu</i>.\nUjistěte se, že máte <i>referenční číslo</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_1",
@@ -435,7 +448,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL2755_#_0",
           "sys_id": "Llama-3.1-8B",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>place to stay</i>. The hotel should have <i>a star of 4</i> and should be in the <i>east</i>\nThe hotel should be in the type of <i>guesthouse</i>\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>5 nights</i> starting from <i>wednesday</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i> and should be in the type of <i>museum</i>\nMake sure you get <i>postcode</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>12:30</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Jste cestující do Cambridge a máte rádi místní turistické atrakce.\nJste hledáte <i>místo ubytování</i>. Hotel by měl mít <i>4 hvězdiček</i> a měl by být v <i>západě</i>.\nHotel by měl být typu <i>penzion</i>.\nJakmile najdete <i>hotel</i>, který chcete, chcete jej zarezervovat pro <i>8 lidí</i> a <i>5 nocí</i> od <i>středy</i>.\nUjistěte se, že dostanete <i>číslo reference</i>.\nJste také hledáte <i>místa, kam se můžete vydat</i> v městě. Atrakce by měla být v <i>centru</i> a měla by být typu <i>muzeum</i>.\nUjistěte se, že dostanete <i>psč</i>.\nChcete také zarezervovat <i>taxi</i> pro dopravu mezi dvěma místy.\nChcete opustit <i>atrakci</i> ve <i>12:30</i>.\nUjistěte se, že dostanete <i>kontaktní číslo</i> a <i>typ vozidla</i>."
+          "tgt": "Jste cestující do Cambridge a máte rádi místní turistické atrakce.\nJste hledáte <i>místo ubytování</i>. Hotel by měl mít <i>4 hvězdiček</i> a měl by být v <i>západě</i>.\nHotel by měl být typu <i>penzion</i>.\nJakmile najdete <i>hotel</i>, který chcete, chcete jej zarezervovat pro <i>8 lidí</i> a <i>5 nocí</i> od <i>středy</i>.\nUjistěte se, že dostanete <i>číslo reference</i>.\nJste také hledáte <i>místa, kam se můžete vydat</i> v městě. Atrakce by měla být v <i>centru</i> a měla by být typu <i>muzeum</i>.\nUjistěte se, že dostanete <i>psč</i>.\nChcete také zarezervovat <i>taxi</i> pro dopravu mezi dvěma místy.\nChcete opustit <i>atrakci</i> ve <i>12:30</i>.\nUjistěte se, že dostanete <i>kontaktní číslo</i> a <i>typ vozidla</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL2755_#_1",
@@ -449,7 +463,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_0",
           "sys_id": "Qwen2.5-7B",
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",
-          "tgt": "Tento bude rok, kdy Guinness ztratí svůj chlad. Na to zdravím!"
+          "tgt": "Tento bude rok, kdy Guinness ztratí svůj chlad. Na to zdravím!",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_1",
@@ -505,7 +520,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL0845_#_0",
           "sys_id": "TranssionMT",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>place to dine</i>. The restaurant should be in the <i>centre</i> and should be in the <i>cheap</i> price range\nThe restaurant should serve <i>singaporean</i> food\nIf there is no such restaurant, how about one that serves <i>italian</i> food\nMake sure you get <i>postcode</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be <i>in the same area as the restaurant</i>\nMake sure you get <i>attraction type</i> and <i>postcode</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>restaurant</i> by <i>22:15</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Plánujete výlet do Cambridge\nHledáte místo k jídlu <i>.Restaurace by měla být v <i>centre</i> a měla by být v <i>cheapi> cenovém rozsahu\nRestaurace by měla sloužit <i>singaporean</i> jídlo\nPokud neexistuje taková restaurace, co taková, která slouží <i>italian</i> jídlo\nUjistěte se, že získáte <i> poštovní kód</i>\nTaké hledáte <i>místa, kam můžete jít</i> ve městě.Přitažlivost by měla být <i> ve stejné oblasti jako restaurace</i>\nUjistěte se, že získáte <i> typ přitažlivosti</i> a <i> poštovní kód</i>\nChcete si také zarezervovat <i>taxi</i> pro komunikaci mezi oběma místy\nChcete opustit <i>restaurant</i> od <i>22:15</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i> typ vozu</i>"
+          "tgt": "Plánujete výlet do Cambridge\nHledáte místo k jídlu <i>.Restaurace by měla být v <i>centre</i> a měla by být v <i>cheapi> cenovém rozsahu\nRestaurace by měla sloužit <i>singaporean</i> jídlo\nPokud neexistuje taková restaurace, co taková, která slouží <i>italian</i> jídlo\nUjistěte se, že získáte <i> poštovní kód</i>\nTaké hledáte <i>místa, kam můžete jít</i> ve městě.Přitažlivost by měla být <i> ve stejné oblasti jako restaurace</i>\nUjistěte se, že získáte <i> typ přitažlivosti</i> a <i> poštovní kód</i>\nChcete si také zarezervovat <i>taxi</i> pro komunikaci mezi oběma místy\nChcete opustit <i>restaurant</i> od <i>22:15</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i> typ vozu</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL0845_#_1",
@@ -519,7 +535,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_0",
           "sys_id": "CommandA-MT",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>place to stay</i>. The hotel should be in the <i>expensive</i> price range and should be in the type of <i>hotel</i>\nThe hotel should <i>include free wifi</i>\nMake sure you get <i>whether they have free parking</i> and <i>postcode</i>\nYou are also looking for a <i>train</i>. The train should leave on <i>saturday</i> and should go to <i>london kings cross</i>\nThe train should <i>leave after 18:30</i> and should depart from <i>cambridge</i>\nOnce you find the train you want to make a booking for <i>1 people</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Plánujete svou cestu do Cambridge.\nHledáte <i>ubytování</i>. Hotel by měl být v <i>dražší</i> cenové kategorii a měl by to být klasický <i>hotel</i>.\nHotel by měl <i>zahrnovat bezplatné Wi-Fi</i>.\nUjistěte se, že zjistíte, <i>zda mají k dispozici bezplatné parkování</i> a <i>PSČ</i>.\nHledáte také <i>vlak</i>. Vlak by měl odjíždět v <i>sobotu</i> a měl by jet do <i>londýnského nádraží Kings Cross</i>.\nVlak by měl <i>odjíždět po 18:30</i> a měl by vyjíždět z <i>Cambridge</i>.\nJakmile najdete vhodný vlak, chcete provést rezervaci pro <i>1 osobu</i>.\nUjistěte se, že získáte <i>referenční číslo</i>."
+          "tgt": "Plánujete svou cestu do Cambridge.\nHledáte <i>ubytování</i>. Hotel by měl být v <i>dražší</i> cenové kategorii a měl by to být klasický <i>hotel</i>.\nHotel by měl <i>zahrnovat bezplatné Wi-Fi</i>.\nUjistěte se, že zjistíte, <i>zda mají k dispozici bezplatné parkování</i> a <i>PSČ</i>.\nHledáte také <i>vlak</i>. Vlak by měl odjíždět v <i>sobotu</i> a měl by jet do <i>londýnského nádraží Kings Cross</i>.\nVlak by měl <i>odjíždět po 18:30</i> a měl by vyjíždět z <i>Cambridge</i>.\nJakmile najdete vhodný vlak, chcete provést rezervaci pro <i>1 osobu</i>.\nUjistěte se, že získáte <i>referenční číslo</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_1",
@@ -533,7 +550,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.231311_#_0",
           "sys_id": "EuroLLM-9B",
           "src": "I am a tweakment holdout. When will wrinkles, bad teeth and big pores be back in fashion?\nTotally neutral question, no right or wrong answer: how do you feel about salmon sperm?",
-          "tgt": "Jsem odpůrcem tweakmentů. Kdy se vrásky, špatné zuby a velké póry vrátí do módy?\nZcela neutrální otázka, na kterou neexistuje správná ani špatná odpověď: jak se cítíte k lososímu spermatu?"
+          "tgt": "Jsem odpůrcem tweakmentů. Kdy se vrásky, špatné zuby a velké póry vrátí do módy?\nZcela neutrální otázka, na kterou neexistuje správná ani špatná odpověď: jak se cítíte k lososímu spermatu?",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.231311_#_1",
@@ -589,7 +607,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2305_#_0",
           "sys_id": "TranssionMT",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for <i>places to go</i> in town. The attraction should be in the type of <i>entertainment</i>\nMake sure you get <i>postcode</i>, <i>address</i>, and <i>area</i>\nYou are also looking for a <i>restaurant</i>. The restaurant should serve <i>british</i> food and should be in the <i>moderate</i> price range\nOnce you find the <i>restaurant</i> you want to book a table for <i>7 people</i> at <i>19:30</i> on <i>friday</i>\nMake sure you get the <i>reference number</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to make sure it arrives the restaurant <i>by the booked time</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Cestujete do Cambridge a jste nadšeni, že vidíte místní turistické atrakce\nHledáte <i>místa, kam jít</i> ve městě.Přitažlivost by měla být v typu <i>zábava</i>\nUjistěte se, že získáte <i> poštovní kód</i>, <i> adresu</i> a <i>area</i>\nTaké hledáte \"I>restaurant</i>Restaurace by měla sloužit <i>british</i> jídlo a měla by být v <i>moderate</i> cenové řadě\nJakmile najdete <i>restaurant</i> chcete si rezervovat stůl pro <i>7 lidí</i> na <i>>19:30</i> na <i>fridayi>\nUjistěte se, že získáte <i>referenční číslo</i>\nChcete si také zarezervovat <i>taxi</i> pro komunikaci mezi oběma místy\nChcete se ujistit, že dorazí do restaurace <i> podle rezervovaného času</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i> typ vozu</i>"
+          "tgt": "Cestujete do Cambridge a jste nadšeni, že vidíte místní turistické atrakce\nHledáte <i>místa, kam jít</i> ve městě.Přitažlivost by měla být v typu <i>zábava</i>\nUjistěte se, že získáte <i> poštovní kód</i>, <i> adresu</i> a <i>area</i>\nTaké hledáte \"I>restaurant</i>Restaurace by měla sloužit <i>british</i> jídlo a měla by být v <i>moderate</i> cenové řadě\nJakmile najdete <i>restaurant</i> chcete si rezervovat stůl pro <i>7 lidí</i> na <i>>19:30</i> na <i>fridayi>\nUjistěte se, že získáte <i>referenční číslo</i>\nChcete si také zarezervovat <i>taxi</i> pro komunikaci mezi oběma místy\nChcete se ujistit, že dorazí do restaurace <i> podle rezervovaného času</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i> typ vozu</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2305_#_1",
@@ -605,7 +624,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1060_#_0",
           "sys_id": "ONLINE-W",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>place to stay</i>. The hotel should be in the <i>centre</i> and should <i>include free parking</i>\nThe hotel should <i>include free wifi</i>\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>3 nights</i> starting from <i>wednesday</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be <i>in the same area as the hotel</i> and should be in the type of <i>college</i>\nMake sure you get <i>phone number</i>, <i>postcode</i>, and <i>entrance fee</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte <i>místo k pobytu</i>. Hotel by měl být v <i>centru města</i> a měl by <i>zahrnovat bezplatné parkování</i>.\nHotel by měl <i>zahrnovat bezplatné wifi připojení</i>\nJakmile najdete <i>hotel</i>, který chcete rezervovat pro <i>8 osob</i> a <i>3 noci</i> od <i>středy</i>.\nUjistěte se, že máte <i>referenční číslo</i>.\nHledáte také <i>místa, kam se dá jít</i> ve městě. Atrakce by se měla nacházet <i>ve stejné oblasti jako hotel</i> a měla by být typu <i>koleje</i>.\nUjistěte se, že máte k dispozici <i>telefonní číslo</i>, <i>písmeno popisné</i> a <i>vstupní poplatek</i>."
+          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte <i>místo k pobytu</i>. Hotel by měl být v <i>centru města</i> a měl by <i>zahrnovat bezplatné parkování</i>.\nHotel by měl <i>zahrnovat bezplatné wifi připojení</i>\nJakmile najdete <i>hotel</i>, který chcete rezervovat pro <i>8 osob</i> a <i>3 noci</i> od <i>středy</i>.\nUjistěte se, že máte <i>referenční číslo</i>.\nHledáte také <i>místa, kam se dá jít</i> ve městě. Atrakce by se měla nacházet <i>ve stejné oblasti jako hotel</i> a měla by být typu <i>koleje</i>.\nUjistěte se, že máte k dispozici <i>telefonní číslo</i>, <i>písmeno popisné</i> a <i>vstupní poplatek</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1060_#_1",
@@ -619,7 +639,8 @@
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_0",
           "sys_id": "Qwen2.5-7B",
           "src": "Musk's Threats Darken as MAGA Rages at Fresh Legal Losses",
-          "tgt": "Muskovy hrozby stíhají, zatímco MAGA růží se rozšíří po dalších právních prohřešcích"
+          "tgt": "Muskovy hrozby stíhají, zatímco MAGA růží se rozšíří po dalších právních prohřešcích",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_1",
@@ -645,7 +666,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_0",
           "sys_id": "ONLINE-G",
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",
-          "tgt": "Bude to rok, kdy Guinness ztratí chlad. Na zdraví!"
+          "tgt": "Bude to rok, kdy Guinness ztratí chlad. Na zdraví!",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_1",
@@ -701,7 +723,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL0845_#_0",
           "sys_id": "GemTrans",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>place to dine</i>. The restaurant should be in the <i>centre</i> and should be in the <i>cheap</i> price range\nThe restaurant should serve <i>singaporean</i> food\nIf there is no such restaurant, how about one that serves <i>italian</i> food\nMake sure you get <i>postcode</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be <i>in the same area as the restaurant</i>\nMake sure you get <i>attraction type</i> and <i>postcode</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>restaurant</i> by <i>22:15</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Plánujete výlet do Cambridge a hledáte <i>místo, kde se najíst</i>. Restaurace by měla být <i>v centru</i> a měla by být <i>cenově dostupná</i>.\nRestaurace by měla nabízet <i>jídla singapurské kuchyně</i>.\nPokud taková restaurace neexistuje, co takhle restaurace s <i>italskou kuchyní</i>?\nNezapomeňte si zjistit <i>poštovní směrovací číslo</i>.\nTaké hledáte <i>místa, která stojí za návštěvu</i> v okolí. Tato místa by měla být <i>v blízkosti restaurace</i>.\nNezapomeňte si zjistit <i>typ atrakce</i> a <i>poštovní směrovací číslo</i>.\nChcete si také objednat <i>taxi</i>, abyste se mezi těmito dvěma místy mohli snadno přepravit.\nChcete <i>restauraci</i> opustit kolem <i>22:15</i>.\nNezapomeňte si zjistit <i>telefonní číslo</i> a <i>typ vozidla</i>."
+          "tgt": "Plánujete výlet do Cambridge a hledáte <i>místo, kde se najíst</i>. Restaurace by měla být <i>v centru</i> a měla by být <i>cenově dostupná</i>.\nRestaurace by měla nabízet <i>jídla singapurské kuchyně</i>.\nPokud taková restaurace neexistuje, co takhle restaurace s <i>italskou kuchyní</i>?\nNezapomeňte si zjistit <i>poštovní směrovací číslo</i>.\nTaké hledáte <i>místa, která stojí za návštěvu</i> v okolí. Tato místa by měla být <i>v blízkosti restaurace</i>.\nNezapomeňte si zjistit <i>typ atrakce</i> a <i>poštovní směrovací číslo</i>.\nChcete si také objednat <i>taxi</i>, abyste se mezi těmito dvěma místy mohli snadno přepravit.\nChcete <i>restauraci</i> opustit kolem <i>22:15</i>.\nNezapomeňte si zjistit <i>telefonní číslo</i> a <i>typ vozidla</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL0845_#_1",
@@ -715,7 +738,8 @@
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_0",
           "sys_id": "Shy",
           "src": "Musk's Threats Darken as MAGA Rages at Fresh Legal Losses",
-          "tgt": "Muskovy hrozby se zostřují, zatímco MAGA zuří kvůli novým právním porážkám"
+          "tgt": "Muskovy hrozby se zostřují, zatímco MAGA zuří kvůli novým právním porážkám",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_1",
@@ -741,7 +765,8 @@
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_0",
           "sys_id": "CommandA-MT",
           "src": "Musk's Threats Darken as MAGA Rages at Fresh Legal Losses",
-          "tgt": "Hrozby Muska se stupňují, zatímco MAGA zuří kvůli novým právním prohrám"
+          "tgt": "Hrozby Muska se stupňují, zatímco MAGA zuří kvůli novým právním prohrám",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_1",
@@ -767,7 +792,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4134_#_0",
           "sys_id": "SalamandraTA",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>particular attraction</i>. Its name is called <i>queens' college</i>\nMake sure you get <i>entrance fee</i>\nYou are also looking for a <i>train</i>. The train should leave on <i>tuesday</i> and should depart from <i>cambridge</i>\nThe train should go to <i>leicester</i> and should <i>leave after 09:45</i>\nOnce you find the train you want to make a booking for <i>1 people</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Plníte si svůj sen o cestě do Cambridgu\nHledáte konkrétní atrakci. Jmenuje se <i>queens' college</i>.\nZkontrolujte, že máte <i>vstupné</i>\nTaké hledáte <i>vlak</i>. Vlak by měl odjet v <i>úterý</i> a měl by vyjet z <i>Cambridge</i>.\nVlak by měl směřovat do <i>Leicesteru</i> a měl by <i>odejít po 9:45</i>\nPoté, co najdete vlak, na který si chcete udělat rezervaci, vyberte počet cestujících: <i>1</i>.\nZajistěte, abyste obdrželi <i>referenční číslo</i>."
+          "tgt": "Plníte si svůj sen o cestě do Cambridgu\nHledáte konkrétní atrakci. Jmenuje se <i>queens' college</i>.\nZkontrolujte, že máte <i>vstupné</i>\nTaké hledáte <i>vlak</i>. Vlak by měl odjet v <i>úterý</i> a měl by vyjet z <i>Cambridge</i>.\nVlak by měl směřovat do <i>Leicesteru</i> a měl by <i>odejít po 9:45</i>\nPoté, co najdete vlak, na který si chcete udělat rezervaci, vyberte počet cestujících: <i>1</i>.\nZajistěte, abyste obdrželi <i>referenční číslo</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4134_#_1",
@@ -781,7 +807,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2305_#_0",
           "sys_id": "CommandA-MT",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for <i>places to go</i> in town. The attraction should be in the type of <i>entertainment</i>\nMake sure you get <i>postcode</i>, <i>address</i>, and <i>area</i>\nYou are also looking for a <i>restaurant</i>. The restaurant should serve <i>british</i> food and should be in the <i>moderate</i> price range\nOnce you find the <i>restaurant</i> you want to book a table for <i>7 people</i> at <i>19:30</i> on <i>friday</i>\nMake sure you get the <i>reference number</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to make sure it arrives the restaurant <i>by the booked time</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Chystáte se do Cambridge a těšíte se na místní turistické atrakce.\nHledáte <i>místa, kam byste mohli jít</i> ve městě. Atrakce by měla být zábavního typu.\nUjistěte se, že získáte <i>PSČ</i>, <i>adresu</i> a <i>lokalitu</i>.\nHledáte také <i>restauraci</i>, která by podávala <i>britskou</i> kuchyni a nacházela se v <i>střední</i> cenové kategorii.\nJakmile najdete <i>restauraci</i>, budete chtít rezervovat stůl pro <i>7 osob</i> na <i>19:30</i> v <i>pátek</i>.\nUjistěte se, že získáte <i>referenční číslo</i>.\nChcete si také objednat <i>taxi</i>, abyste se mohli přepravovat mezi oběma místy.\nChcete se ujistit, že taxi dorazí do restaurace <i>do rezervovaného času</i>.\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ vozidla</i>."
+          "tgt": "Chystáte se do Cambridge a těšíte se na místní turistické atrakce.\nHledáte <i>místa, kam byste mohli jít</i> ve městě. Atrakce by měla být zábavního typu.\nUjistěte se, že získáte <i>PSČ</i>, <i>adresu</i> a <i>lokalitu</i>.\nHledáte také <i>restauraci</i>, která by podávala <i>britskou</i> kuchyni a nacházela se v <i>střední</i> cenové kategorii.\nJakmile najdete <i>restauraci</i>, budete chtít rezervovat stůl pro <i>7 osob</i> na <i>19:30</i> v <i>pátek</i>.\nUjistěte se, že získáte <i>referenční číslo</i>.\nChcete si také objednat <i>taxi</i>, abyste se mohli přepravovat mezi oběma místy.\nChcete se ujistit, že taxi dorazí do restaurace <i>do rezervovaného času</i>.\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ vozidla</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2305_#_1",
@@ -795,7 +822,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_0",
           "sys_id": "Laniqo",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>place to stay</i>. The hotel should be in the <i>expensive</i> price range and should be in the type of <i>hotel</i>\nThe hotel should <i>include free wifi</i>\nMake sure you get <i>whether they have free parking</i> and <i>postcode</i>\nYou are also looking for a <i>train</i>. The train should leave on <i>saturday</i> and should go to <i>london kings cross</i>\nThe train should <i>leave after 18:30</i> and should depart from <i>cambridge</i>\nOnce you find the train you want to make a booking for <i>1 people</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Plánujete si výlet do Cambridge.\nHledáte místo k ubytování. Hotel by měl být v dražší cenové kategorii a také by měl patřit do typu <i>hotel</i>.\nHotel by měl nabízet bezplatnou Wi-Fi.\nUjistěte se, zda máte k dispozici tyto informace: zda mají parkování zdarma a PSČ.\nVy také hledáte vlak. Vlak by měl odjíždět v sobotu a měl by jet do stanice London Kings Cross.\nVlak by měl odjet po 18:30 a jeho výchozí stanicí by měla být Cambridge.\nPo nalezení požadovaného vlaku proveďte rezervaci <i>pro 1 osobu</i>.\nUjistěte se, že jste obdrželi referenční číslo."
+          "tgt": "Plánujete si výlet do Cambridge.\nHledáte místo k ubytování. Hotel by měl být v dražší cenové kategorii a také by měl patřit do typu <i>hotel</i>.\nHotel by měl nabízet bezplatnou Wi-Fi.\nUjistěte se, zda máte k dispozici tyto informace: zda mají parkování zdarma a PSČ.\nVy také hledáte vlak. Vlak by měl odjíždět v sobotu a měl by jet do stanice London Kings Cross.\nVlak by měl odjet po 18:30 a jeho výchozí stanicí by měla být Cambridge.\nPo nalezení požadovaného vlaku proveďte rezervaci <i>pro 1 osobu</i>.\nUjistěte se, že jste obdrželi referenční číslo.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_1",
@@ -809,7 +837,8 @@
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12623_#_0",
           "sys_id": "CUNI-DocTransformer",
           "src": "Musk's Threats Suddenly Darken as Trump Legal Losses Trigger MAGA Fury",
-          "tgt": "Muskovy hrozby náhle zatemní jako Trump Legal Losses Trigger MAGA Fury"
+          "tgt": "Muskovy hrozby náhle zatemní jako Trump Legal Losses Trigger MAGA Fury",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12623_#_1",
@@ -825,7 +854,8 @@
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_0",
           "sys_id": "CUNI-MH-v2",
           "src": "South African opener Matthew Breetzke etched his name into the record books by becoming the first batter to score 150 runs on ODI debut in second match of the ongoing tri-series against New Zealand at the Gaddafi Stadium on Monday. His stunning knock of 150 off 148 balls, laced with 11 fours and five sixes, surpassed the previous record held by the legendary West Indies' batter Desmond Haynes, who scored 148 in his maiden ODI innings against Australia back in 1978. Before Breetzke's innings, the highest score on ODI debut for South Africa was 124 by Colin Ingram against Zimbabwe in 2010. Now, Breetzke stands alone at the top, delivering a performance that showcased patience, aggression, and remarkable shot selection as South Africa posted a mammoth 304/6.",
-          "tgt": "Jako první hráč v historii dosáhl jihoafrický útočník Matthew Breetzke na 150 bodů v prvním zápase tri-series proti Novému Zélandu v Gaddafi Stadium v pondělí. Jeho úžasný výkon 150 bodů za 148 nadhozů, s 11 čtyřmi a pěti šestkami, překonal předchozí rekord legendárního hráče z Karibiku Desmonda Haynese, který v roce 1978 dosáhl 148 bodů ve svém prvním zápase proti Austrálii. Před Breetzkeho výkonem byl nejvyšší bodový zisk na debutu Jihoafrické republiky 124 bodů, které dosáhl Colin Ingram proti Zimbabwe v roce 2010. Nyní je Breetzke na vrcholu, když předvedl výkon, který ukázal trpělivost, agresivitu a výjimečnou volbu úderů, když Jihoafrická republika dosáhla ohromujícího skóre 304/6."
+          "tgt": "Jako první hráč v historii dosáhl jihoafrický útočník Matthew Breetzke na 150 bodů v prvním zápase tri-series proti Novému Zélandu v Gaddafi Stadium v pondělí. Jeho úžasný výkon 150 bodů za 148 nadhozů, s 11 čtyřmi a pěti šestkami, překonal předchozí rekord legendárního hráče z Karibiku Desmonda Haynese, který v roce 1978 dosáhl 148 bodů ve svém prvním zápase proti Austrálii. Před Breetzkeho výkonem byl nejvyšší bodový zisk na debutu Jihoafrické republiky 124 bodů, které dosáhl Colin Ingram proti Zimbabwe v roce 2010. Nyní je Breetzke na vrcholu, když předvedl výkon, který ukázal trpělivost, agresivitu a výjimečnou volbu úderů, když Jihoafrická republika dosáhla ohromujícího skóre 304/6.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_1",
@@ -845,7 +875,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4134_#_0",
           "sys_id": "Gemma-3-27B",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>particular attraction</i>. Its name is called <i>queens' college</i>\nMake sure you get <i>entrance fee</i>\nYou are also looking for a <i>train</i>. The train should leave on <i>tuesday</i> and should depart from <i>cambridge</i>\nThe train should go to <i>leicester</i> and should <i>leave after 09:45</i>\nOnce you find the train you want to make a booking for <i>1 people</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Plánujete svou cestu do Cambridge\nHledáte <i>konkrétní atrakci</i>. Jmenuje se <i>Queens' College</i>\nUjistěte se, že zjistíte <i>vstupné</i>\nTaké hledáte <i>vlak</i>. Vlak by měl vyjet v <i>úterý</i> a měl by odjíždět z <i>Cambridge</i>\nVlak by měl jet do <i>Leicesteru</i> a měl by <i>odjet po 09:45</i>\nJakmile najdete vlak, který chcete, proveďte rezervaci pro <i>1 osobu</i>\nUjistěte se, že získáte <i>referenční číslo</i>"
+          "tgt": "Plánujete svou cestu do Cambridge\nHledáte <i>konkrétní atrakci</i>. Jmenuje se <i>Queens' College</i>\nUjistěte se, že zjistíte <i>vstupné</i>\nTaké hledáte <i>vlak</i>. Vlak by měl vyjet v <i>úterý</i> a měl by odjíždět z <i>Cambridge</i>\nVlak by měl jet do <i>Leicesteru</i> a měl by <i>odjet po 09:45</i>\nJakmile najdete vlak, který chcete, proveďte rezervaci pro <i>1 osobu</i>\nUjistěte se, že získáte <i>referenční číslo</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4134_#_1",
@@ -859,7 +890,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1060_#_0",
           "sys_id": "Yolu",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>place to stay</i>. The hotel should be in the <i>centre</i> and should <i>include free parking</i>\nThe hotel should <i>include free wifi</i>\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>3 nights</i> starting from <i>wednesday</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be <i>in the same area as the hotel</i> and should be in the type of <i>college</i>\nMake sure you get <i>phone number</i>, <i>postcode</i>, and <i>entrance fee</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se na návštěvu místních turistických atrakcí.\nHledáte <i>ubytování</i>. Hotel by měl být v <i>centru</i> a měl by <i>zahrnovat bezplatné parkování</i>.\nHotel by měl <i>poskytovat bezplatné Wi-Fi</i>\nJakmile najdete <i>hotel</i>, který chcete rezervovat, zarezervujte ho pro <i>8 osob</i> na <i>3 noci</i> počínaje <i>středou</i>.\nUjistěte se, že máte <i>referenční číslo</i>.\nHledáte také <i>zajímavá místa</i> ve městě. Toto zařízení by mělo být <i>ve stejné oblasti jako hotel</i> a mělo by se jednat o typ <i>univerzitního zařízení</i>.\nUjistěte se, že máte k dispozici <i>telefonní číslo</i>, <i>poštovní směrovací číslo</i> a <i>vstupní poplatek</i>."
+          "tgt": "Cestujete do Cambridge a těšíte se na návštěvu místních turistických atrakcí.\nHledáte <i>ubytování</i>. Hotel by měl být v <i>centru</i> a měl by <i>zahrnovat bezplatné parkování</i>.\nHotel by měl <i>poskytovat bezplatné Wi-Fi</i>\nJakmile najdete <i>hotel</i>, který chcete rezervovat, zarezervujte ho pro <i>8 osob</i> na <i>3 noci</i> počínaje <i>středou</i>.\nUjistěte se, že máte <i>referenční číslo</i>.\nHledáte také <i>zajímavá místa</i> ve městě. Toto zařízení by mělo být <i>ve stejné oblasti jako hotel</i> a mělo by se jednat o typ <i>univerzitního zařízení</i>.\nUjistěte se, že máte k dispozici <i>telefonní číslo</i>, <i>poštovní směrovací číslo</i> a <i>vstupní poplatek</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1060_#_1",
@@ -873,7 +905,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1066_#_0",
           "sys_id": "Algharb",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>particular hotel</i>. Its name is called <i>warkworth house</i>\nOnce you find the <i>hotel</i> you want to book it for <i>1 people</i> and <i>3 nights</i> starting from <i>tuesday</i>\nIf the booking fails how about <i>2 nights</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i>\nMake sure you get <i>entrance fee</i>, <i>attraction type</i>, and <i>address</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>02:45</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se, až uvidíte místní turistické atrakce.\nHledáte <i>konkrétní hotel</i>. Jmenuje se <i>warkworth house</i>.\nJakmile najdete <i>hotel</i>, chcete si ho rezervovat pro <i>1 osobu</i> na <i>3 noci</i> od <i>úterý</i>.\nPokud se rezervace nezdaří, co takhle <i>2 noci</i>?\nUjistěte se, že získáte <i>referenční číslo</i>.\nHledáte také <i>místa, kam jít</i> ve městě. Atrakce by měla být v <i>centru</i>.\nUjistěte se, že získáte <i>vstupné</i>, <i>typ atrakce</i> a <i>adresu</i>.\nPro přesun mezi oběma místy si také chcete objednat <i>taxi</i>.\nChcete odjet z <i>atrakce</i> do <i>02:45</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ vozu</i>."
+          "tgt": "Cestujete do Cambridge a těšíte se, až uvidíte místní turistické atrakce.\nHledáte <i>konkrétní hotel</i>. Jmenuje se <i>warkworth house</i>.\nJakmile najdete <i>hotel</i>, chcete si ho rezervovat pro <i>1 osobu</i> na <i>3 noci</i> od <i>úterý</i>.\nPokud se rezervace nezdaří, co takhle <i>2 noci</i>?\nUjistěte se, že získáte <i>referenční číslo</i>.\nHledáte také <i>místa, kam jít</i> ve městě. Atrakce by měla být v <i>centru</i>.\nUjistěte se, že získáte <i>vstupné</i>, <i>typ atrakce</i> a <i>adresu</i>.\nPro přesun mezi oběma místy si také chcete objednat <i>taxi</i>.\nChcete odjet z <i>atrakce</i> do <i>02:45</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ vozu</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1066_#_1",
@@ -887,7 +920,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2405_#_0",
           "sys_id": "TranssionTranslate",
           "src": "You are traveling to Cambridge and looking forward to try local restaurants\nYou are looking for a <i>particular restaurant</i>. Its name is called <i>prezzo</i>\nMake sure you get <i>address</i> and <i>price range</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i>\nMake sure you get <i>address</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se na ochutnání místních restaurací\nHledáte <i>konkrétní restauraci</i> . Jmenuje se <i>Prezzo.</i>\nUjistěte se, že máte <i>adresu</i> a <i>cenové rozpětí</i>\nTaké hledáte <i>místa, kam se ve městě vydat</i> .Atrakce by měla být v <i>centru</i>\nUjistěte se, že máte <i>adresu</i>"
+          "tgt": "Cestujete do Cambridge a těšíte se na ochutnání místních restaurací\nHledáte <i>konkrétní restauraci</i> . Jmenuje se <i>Prezzo.</i>\nUjistěte se, že máte <i>adresu</i> a <i>cenové rozpětí</i>\nTaké hledáte <i>místa, kam se ve městě vydat</i> .Atrakce by měla být v <i>centru</i>\nUjistěte se, že máte <i>adresu</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2405_#_1",
@@ -901,7 +935,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_0",
           "sys_id": "Shy",
           "src": "You are planning your trip in Cambridge\nYou are looking for a <i>place to stay</i>. The hotel should be in the <i>expensive</i> price range and should be in the type of <i>hotel</i>\nThe hotel should <i>include free wifi</i>\nMake sure you get <i>whether they have free parking</i> and <i>postcode</i>\nYou are also looking for a <i>train</i>. The train should leave on <i>saturday</i> and should go to <i>london kings cross</i>\nThe train should <i>leave after 18:30</i> and should depart from <i>cambridge</i>\nOnce you find the train you want to make a booking for <i>1 people</i>\nMake sure you get the <i>reference number</i>",
-          "tgt": "Plánujete svůj výlet do Cambridge.  \nHledáte <i>ubytování</i>. Hotel by měl být v <i>drahé</i> cenové kategorii a měl by být typu <i>hotel</i>.  \nHotel by měl <i>nabízet bezplatné Wi-Fi</i>.  \nUjistěte se, že zjistíte, <i>jestli mají parkování zdarma</i>, a také jejich <i>poštovní směrovací číslo</i>.  \nTaké hledáte <i>vlak</i>. Vlak by měl odjíždět v <i>sobotu</i> a měl by jet do stanice <i>London Kings Cross</i>.  \nVlak by měl <i>odjíždět po 18:30</i> a měl by vyjíždět z <i>Cambridge</i>.  \nJakmile najdete vhodný vlak, chcete provést rezervaci pro <i>1 osobu</i>.  \nUjistěte se, že získáte <i>referenční číslo</i>."
+          "tgt": "Plánujete svůj výlet do Cambridge.  \nHledáte <i>ubytování</i>. Hotel by měl být v <i>drahé</i> cenové kategorii a měl by být typu <i>hotel</i>.  \nHotel by měl <i>nabízet bezplatné Wi-Fi</i>.  \nUjistěte se, že zjistíte, <i>jestli mají parkování zdarma</i>, a také jejich <i>poštovní směrovací číslo</i>.  \nTaké hledáte <i>vlak</i>. Vlak by měl odjíždět v <i>sobotu</i> a měl by jet do stanice <i>London Kings Cross</i>.  \nVlak by měl <i>odjíždět po 18:30</i> a měl by vyjíždět z <i>Cambridge</i>.  \nJakmile najdete vhodný vlak, chcete provést rezervaci pro <i>1 osobu</i>.  \nUjistěte se, že získáte <i>referenční číslo</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2294_#_1",
@@ -915,7 +950,8 @@
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_0",
           "sys_id": "CommandA",
           "src": "South African opener Matthew Breetzke etched his name into the record books by becoming the first batter to score 150 runs on ODI debut in second match of the ongoing tri-series against New Zealand at the Gaddafi Stadium on Monday. His stunning knock of 150 off 148 balls, laced with 11 fours and five sixes, surpassed the previous record held by the legendary West Indies' batter Desmond Haynes, who scored 148 in his maiden ODI innings against Australia back in 1978. Before Breetzke's innings, the highest score on ODI debut for South Africa was 124 by Colin Ingram against Zimbabwe in 2010. Now, Breetzke stands alone at the top, delivering a performance that showcased patience, aggression, and remarkable shot selection as South Africa posted a mammoth 304/6.",
-          "tgt": "Jihoafrický otvírák Matthew Breetzke se zapsal do historických tabulek, když se v pondělí na stadionu Gaddafi stal prvním pálkařem, který při svém debutu v ODI zápasech dosáhl 150 runů ve druhém utkání probíhajícího trojzápasu proti Novému Zélandu. Jeho úchvatný výkon 150 runů z 148 míčků, včetně 11 čtyřek a pěti šestek, překonal předchozí rekord legendárního pálkaře Západních Indických ostrovů Desmonda Haynese, který v roce 1978 při svém prvním ODI utkání proti Austrálii dosáhl 148 runů. Před Breetzkeho výkonem byl nejvyšší skóre při debutu v ODI zápasech za Jihoafrickou republiku 124 runů Colina Ingrama proti Zimbabwe v roce 2010. Nyní je Breetzke na vrcholu sám, když předvedl výkon, který ukázal trpělivost, agresivitu a vynikající výběr úderů, díky čemuž Jihoafričané dosáhli obřího skóre 304/6."
+          "tgt": "Jihoafrický otvírák Matthew Breetzke se zapsal do historických tabulek, když se v pondělí na stadionu Gaddafi stal prvním pálkařem, který při svém debutu v ODI zápasech dosáhl 150 runů ve druhém utkání probíhajícího trojzápasu proti Novému Zélandu. Jeho úchvatný výkon 150 runů z 148 míčků, včetně 11 čtyřek a pěti šestek, překonal předchozí rekord legendárního pálkaře Západních Indických ostrovů Desmonda Haynese, který v roce 1978 při svém prvním ODI utkání proti Austrálii dosáhl 148 runů. Před Breetzkeho výkonem byl nejvyšší skóre při debutu v ODI zápasech za Jihoafrickou republiku 124 runů Colina Ingrama proti Zimbabwe v roce 2010. Nyní je Breetzke na vrcholu sám, když předvedl výkon, který ukázal trpělivost, agresivitu a vynikající výběr úderů, díky čemuž Jihoafričané dosáhli obřího skóre 304/6.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_1",
@@ -935,7 +971,8 @@
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_0",
           "sys_id": "UvA-MT",
           "src": "South African opener Matthew Breetzke etched his name into the record books by becoming the first batter to score 150 runs on ODI debut in second match of the ongoing tri-series against New Zealand at the Gaddafi Stadium on Monday. His stunning knock of 150 off 148 balls, laced with 11 fours and five sixes, surpassed the previous record held by the legendary West Indies' batter Desmond Haynes, who scored 148 in his maiden ODI innings against Australia back in 1978. Before Breetzke's innings, the highest score on ODI debut for South Africa was 124 by Colin Ingram against Zimbabwe in 2010. Now, Breetzke stands alone at the top, delivering a performance that showcased patience, aggression, and remarkable shot selection as South Africa posted a mammoth 304/6.",
-          "tgt": "Jihoafrický otevírací hráč Matthew Breetzke se zapsal do historie tím, že se stal prvním hráčem, který dosáhl 150 bodů při svém debutu v ODI v druhém zápase probíhajícího třístranného turnaje proti Novému Zélandu v Gaddafi Stadiumu v pondělí. Jeho úžasný výkon 150 bodů z 148 míčků, s 11 čtyřkami a pěti šestkami, překonal předchozí rekord, který držel legendární hráč Západních Indie Desmond Haynes, který v roce 1978 dosáhl 148 bodů ve svém prvním ODI zápase proti Austrálii. Před Breetzkovým výkonem byl nejvyšší skóre v ODI debutu pro Jihoafrickou republiku 124 bodů od Colina Ingrama proti Zimbabwe v roce 2010. Nyní stojí Breetzke na vrcholu sám a předvádí výkon, který demonstruje trpělivost, agresivitu a pozoruhodný výběr úderů, zatímco Jihoafrická republika dosáhla obrovského skóre 304/6."
+          "tgt": "Jihoafrický otevírací hráč Matthew Breetzke se zapsal do historie tím, že se stal prvním hráčem, který dosáhl 150 bodů při svém debutu v ODI v druhém zápase probíhajícího třístranného turnaje proti Novému Zélandu v Gaddafi Stadiumu v pondělí. Jeho úžasný výkon 150 bodů z 148 míčků, s 11 čtyřkami a pěti šestkami, překonal předchozí rekord, který držel legendární hráč Západních Indie Desmond Haynes, který v roce 1978 dosáhl 148 bodů ve svém prvním ODI zápase proti Austrálii. Před Breetzkovým výkonem byl nejvyšší skóre v ODI debutu pro Jihoafrickou republiku 124 bodů od Colina Ingrama proti Zimbabwe v roce 2010. Nyní stojí Breetzke na vrcholu sám a předvádí výkon, který demonstruje trpělivost, agresivitu a pozoruhodný výběr úderů, zatímco Jihoafrická republika dosáhla obrovského skóre 304/6.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_en.ndtv.com.357237_#_1",
@@ -955,7 +992,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4140_#_0",
           "sys_id": "Qwen3-235B",
           "src": "You are looking for information in Cambridge\nYou are looking for <i>places to go</i> in town. The attraction should be in the <i>west</i>\nMake sure you get <i>phone number</i> and <i>postcode</i>\nYou are also looking for a <i>place to stay</i>. The hotel should <i>include free parking</i> and should be in the type of <i>hotel</i>\nThe hotel should have <i>a star of 4</i> and should be in the <i>moderate</i> price range\nIf there is no such hotel, how about one that is in the <i>expensive</i> price range\nOnce you find the <i>hotel</i> you want to book it for <i>6 people</i> and <i>2 nights</i> starting from <i>wednesday</i>\nIf the booking fails how about <i>sunday</i>\nMake sure you get the <i>reference number</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>05:30</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Hledáte informace v Cambridge\nHledáte <i>místa, kam jít</i> ve městě. Atrakce má být na <i>západě</i>\nUjistěte se, že získáte <i>telefonní číslo</i> a <i>poštovní směrovací číslo</i>\nTaké hledáte <i>ubytování</i>. Hotel má <i>zahrnovat bezplatné parkování</i> a má jít o <i>hotel</i>\nHotel má mít <i>4 hvězdičky</i> a měl by být v <i>střední cenové kategorii</i>\nPokud takový hotel neexistuje, jak je to s hotelem v <i>dražší cenové kategorii</i>\nJakmile najdete <i>hotel</i>, chcete si ho rezervovat pro <i>6 lidí</i> a <i>2 noci</i>, počínaje <i>středou</i>\nPokud rezervace selže, jak je to s <i>nedělí</i>\nUjistěte se, že získáte <i>referenční číslo</i>\nChcete také rezervovat <i>taxi</i> pro cestování mezi těmito dvěma místy\nChcete opustit <i>atrakci</i> do <i>05:30</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ auta</i>"
+          "tgt": "Hledáte informace v Cambridge\nHledáte <i>místa, kam jít</i> ve městě. Atrakce má být na <i>západě</i>\nUjistěte se, že získáte <i>telefonní číslo</i> a <i>poštovní směrovací číslo</i>\nTaké hledáte <i>ubytování</i>. Hotel má <i>zahrnovat bezplatné parkování</i> a má jít o <i>hotel</i>\nHotel má mít <i>4 hvězdičky</i> a měl by být v <i>střední cenové kategorii</i>\nPokud takový hotel neexistuje, jak je to s hotelem v <i>dražší cenové kategorii</i>\nJakmile najdete <i>hotel</i>, chcete si ho rezervovat pro <i>6 lidí</i> a <i>2 noci</i>, počínaje <i>středou</i>\nPokud rezervace selže, jak je to s <i>nedělí</i>\nUjistěte se, že získáte <i>referenční číslo</i>\nChcete také rezervovat <i>taxi</i> pro cestování mezi těmito dvěma místy\nChcete opustit <i>atrakci</i> do <i>05:30</i>\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ auta</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4140_#_1",
@@ -969,7 +1007,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1066_#_0",
           "sys_id": "IRB-MT",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>particular hotel</i>. Its name is called <i>warkworth house</i>\nOnce you find the <i>hotel</i> you want to book it for <i>1 people</i> and <i>3 nights</i> starting from <i>tuesday</i>\nIf the booking fails how about <i>2 nights</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i>\nMake sure you get <i>entrance fee</i>, <i>attraction type</i>, and <i>address</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>02:45</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte *konkrétní hotel*. Jmenuje se *Warkworth House*.\nJakmile najdete *hotel*, který si chcete zarezervovat, zarezervujte si ho pro *1 osobu* na *3 noci* počínaje *úterým*.\nPokud rezervace selže, nebo na *2 noci*?\nNezapomeňte si poznačit *rezervační číslo*.\nHledáte také *co stojí za to vidět* ve městě. Atrakce by měla být v *centru*.\nNezapomeňte si poznačit *vstupné*, *typ atrakce* a *adresu*.\nChcete si také objednat *taxi* na přepravu mezi těmito dvěma místy.\nChcete odjet z *atrakce* v *02:45*.\nNezapomeňte si poznačit *telefonní číslo* a *typ vozidla*.\nX: Dobrý den. Cestuji do Cambridge a chtěl bych si zarezervovat hotel.\nY: Dobrý den. Jaký hotel si přejete zarezervovat?\nX: Hledám *Warkworth House*.\nY: Ano, *Warkworth House*. Na kolik osob a na kolik nocí?\nX: Na jednu osobu na tři noci, počínaje úterým.\nY: Dobře, zkontroluji dostupnost. … Rezervace je potvrzena. Vaše rezervační číslo je 789456.\nX: Skvělé, děkuji. A chtěl bych se také zeptat na nějaké atrakce v centru města.\nY: Samozřejmě. Co vás zajímá?\nX: Něco, co je blízko centra a rádi bychom věděli vstupné, typ atrakce a adresu.\nY: Doporučuji Fitzwilliam Museum. Vstupné je zdarma, je to muzeum a adresa je Trumpington Street, Cambridge.\nX: Výborně. A ještě bych si chtěl objednat taxi, abych se tam dostal. Chci odjet z muzea v 02:45.\nY: Dobře, objednám vám taxi. Potřebujete nějaký konkrétní typ vozidla?\nX: Ne, stačí standardní. A mohl bych prosím dostat telefonní číslo dispečinku?\nY: Samozřejmě, telefonní číslo je 555-123-456. Taxi bude u vás v 02:30.\nX: Děkuji.\nY: Rádi jsme vám pomohli. Přeji vám hezký pobyt v Cambridge."
+          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.\nHledáte *konkrétní hotel*. Jmenuje se *Warkworth House*.\nJakmile najdete *hotel*, který si chcete zarezervovat, zarezervujte si ho pro *1 osobu* na *3 noci* počínaje *úterým*.\nPokud rezervace selže, nebo na *2 noci*?\nNezapomeňte si poznačit *rezervační číslo*.\nHledáte také *co stojí za to vidět* ve městě. Atrakce by měla být v *centru*.\nNezapomeňte si poznačit *vstupné*, *typ atrakce* a *adresu*.\nChcete si také objednat *taxi* na přepravu mezi těmito dvěma místy.\nChcete odjet z *atrakce* v *02:45*.\nNezapomeňte si poznačit *telefonní číslo* a *typ vozidla*.\nX: Dobrý den. Cestuji do Cambridge a chtěl bych si zarezervovat hotel.\nY: Dobrý den. Jaký hotel si přejete zarezervovat?\nX: Hledám *Warkworth House*.\nY: Ano, *Warkworth House*. Na kolik osob a na kolik nocí?\nX: Na jednu osobu na tři noci, počínaje úterým.\nY: Dobře, zkontroluji dostupnost. … Rezervace je potvrzena. Vaše rezervační číslo je 789456.\nX: Skvělé, děkuji. A chtěl bych se také zeptat na nějaké atrakce v centru města.\nY: Samozřejmě. Co vás zajímá?\nX: Něco, co je blízko centra a rádi bychom věděli vstupné, typ atrakce a adresu.\nY: Doporučuji Fitzwilliam Museum. Vstupné je zdarma, je to muzeum a adresa je Trumpington Street, Cambridge.\nX: Výborně. A ještě bych si chtěl objednat taxi, abych se tam dostal. Chci odjet z muzea v 02:45.\nY: Dobře, objednám vám taxi. Potřebujete nějaký konkrétní typ vozidla?\nX: Ne, stačí standardní. A mohl bych prosím dostat telefonní číslo dispečinku?\nY: Samozřejmě, telefonní číslo je 555-123-456. Taxi bude u vás v 02:30.\nX: Děkuji.\nY: Rádi jsme vám pomohli. Přeji vám hezký pobyt v Cambridge.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1066_#_1",
@@ -985,7 +1024,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.229338_#_0",
           "sys_id": "CUNI-MH-v2",
           "src": "Pig Heart Boy review - lively staging of Malorie Blackman's stimulating novel",
-          "tgt": "Recenze Pig Heart Boy – živé ztvárnění podnětného románu Malorie Blackmanové"
+          "tgt": "Recenze Pig Heart Boy – živé ztvárnění podnětného románu Malorie Blackmanové",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.229338_#_1",
@@ -1029,7 +1069,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2405_#_0",
           "sys_id": "ctpc_nlp",
           "src": "You are traveling to Cambridge and looking forward to try local restaurants\nYou are looking for a <i>particular restaurant</i>. Its name is called <i>prezzo</i>\nMake sure you get <i>address</i> and <i>price range</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i>\nMake sure you get <i>address</i>",
-          "tgt": "\" Jde o cestu do Cambridgu a zájem o ochutnání místních restaurací\n Hledáte <i>konkrétní restauraci</i>.  Jmenuje se <i>prezzo</i>\n Ujistěte se, že jste si zajistili <i>adresu</i> a <i>cenovou nabídku</i>\n Také hledáte <i>place to go</i> ve městě.  Attraction by měla být v <i>centru</i>.\n Ujistěte se, že máte <i>adresu</i>"
+          "tgt": "\" Jde o cestu do Cambridgu a zájem o ochutnání místních restaurací\n Hledáte <i>konkrétní restauraci</i>.  Jmenuje se <i>prezzo</i>\n Ujistěte se, že jste si zajistili <i>adresu</i> a <i>cenovou nabídku</i>\n Také hledáte <i>place to go</i> ve městě.  Attraction by měla být v <i>centru</i>.\n Ujistěte se, že máte <i>adresu</i>",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2405_#_1",
@@ -1043,7 +1084,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.230238_#_0",
           "sys_id": "ONLINE-W",
           "src": "A tale of two suckers: Donald Trump's plastic straws and Keir Starmer",
-          "tgt": "Příběh dvou cucáků: Plastová brčka Donalda Trumpa a Keir Starmer"
+          "tgt": "Příběh dvou cucáků: Plastová brčka Donalda Trumpa a Keir Starmer",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.230238_#_1",
@@ -1117,7 +1159,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1139_#_0",
           "sys_id": "Mistral-Medium",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>place to stay</i>. The hotel should <i>include free parking</i> and should be in the <i>expensive</i> price range\nThe hotel should <i>include free wifi</i> and should be in the type of <i>hotel</i>\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>3 nights</i> starting from <i>tuesday</i>\nIf the booking fails how about <i>2 nights</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be in the <i>centre</i> and should be in the type of <i>college</i>\nMake sure you get <i>entrance fee</i> and <i>postcode</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>24:30</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se na místní turistické atrakce.\nHledáte <i>ubytování</i>. Hotel by měl mít <i>zdarma parkování</i> a měl by být v <i>dražší</i> cenové kategorii.\nHotel by měl mít <i>zdarma wifi</i> a měl by být typu <i>hotel</i>.\nJakmile najdete <i>hotel</i>, chcete ho rezervovat pro <i>8 osob</i> na <i>3 noci</i> od <i>úterý</i>.\nPokud se rezervace nezdaří, co takhle <i>2 noci</i>?\nUjistěte se, že získáte <i>referenční číslo</i>.\nHledáte také <i>místa k návštěvě</i> ve městě. Atrakce by měla být v <i>centru</i> a měla by být typu <i>kolej</i>.\nUjistěte se, že získáte <i>vstupné</i> a <i>poštovní směrovací číslo</i>.\nChcete také rezervovat <i>taxi</i> pro cestování mezi těmito místy.\nChcete opustit <i>atrakci</i> do <i>24:30</i>.\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ auta</i>."
+          "tgt": "Cestujete do Cambridge a těšíte se na místní turistické atrakce.\nHledáte <i>ubytování</i>. Hotel by měl mít <i>zdarma parkování</i> a měl by být v <i>dražší</i> cenové kategorii.\nHotel by měl mít <i>zdarma wifi</i> a měl by být typu <i>hotel</i>.\nJakmile najdete <i>hotel</i>, chcete ho rezervovat pro <i>8 osob</i> na <i>3 noci</i> od <i>úterý</i>.\nPokud se rezervace nezdaří, co takhle <i>2 noci</i>?\nUjistěte se, že získáte <i>referenční číslo</i>.\nHledáte také <i>místa k návštěvě</i> ve městě. Atrakce by měla být v <i>centru</i> a měla by být typu <i>kolej</i>.\nUjistěte se, že získáte <i>vstupné</i> a <i>poštovní směrovací číslo</i>.\nChcete také rezervovat <i>taxi</i> pro cestování mezi těmito místy.\nChcete opustit <i>atrakci</i> do <i>24:30</i>.\nUjistěte se, že získáte <i>kontaktní číslo</i> a <i>typ auta</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1139_#_1",
@@ -1131,7 +1174,8 @@
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_0",
           "sys_id": "Wenyiil",
           "src": "Musk's Threats Darken as MAGA Rages at Fresh Legal Losses",
-          "tgt": "Muskovy hrozby se zostřují, zatímco MAGA zuří kvůli novým právním prohrám."
+          "tgt": "Muskovy hrozby se zostřují, zatímco MAGA zuří kvůli novým právním prohrám.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_newrepublic.com.12619_#_1",
@@ -1157,7 +1201,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4140_#_0",
           "sys_id": "Gemma-3-12B",
           "src": "You are looking for information in Cambridge\nYou are looking for <i>places to go</i> in town. The attraction should be in the <i>west</i>\nMake sure you get <i>phone number</i> and <i>postcode</i>\nYou are also looking for a <i>place to stay</i>. The hotel should <i>include free parking</i> and should be in the type of <i>hotel</i>\nThe hotel should have <i>a star of 4</i> and should be in the <i>moderate</i> price range\nIf there is no such hotel, how about one that is in the <i>expensive</i> price range\nOnce you find the <i>hotel</i> you want to book it for <i>6 people</i> and <i>2 nights</i> starting from <i>wednesday</i>\nIf the booking fails how about <i>sunday</i>\nMake sure you get the <i>reference number</i>\nYou also want to book a <i>taxi</i> to commute between the two places\nYou want to leave the <i>attraction</i> by <i>05:30</i>\nMake sure you get <i>contact number</i> and <i>car type</i>",
-          "tgt": "Hledáte informace v Cambridge\nHledáte *místa, kam se jít* ve městě. Atrakce by měla být na *západě*\nUjistěte se, že získáte *telefonní číslo* a *PSČ*\nHledáte také *ubytování*. Hotel by měl *zahrnovat bezplatné parkování* a být typu *hotel*\nHotel by měl mít *4 hvězdy* a být v cenové kategorii *střední*\nPokud takový hotel není, co takhle jeden v *dražší* cenové kategorii?\nJakmile najdete *hotel*, který chcete zarezervovat, zarezervujte ho na *6 osob* na *2 noci* od *středy*\nPokud rezervace selže, co takhle *neděli*?\nUjistěte se, že získáte *rezervační číslo*\nChcete také zarezervovat *taxi* na přepravu mezi oběma místy\nChcete opustit *atrakci* v *05:30*\nUjistěte se, že získáte *kontaktní číslo* a *typ vozidla*"
+          "tgt": "Hledáte informace v Cambridge\nHledáte *místa, kam se jít* ve městě. Atrakce by měla být na *západě*\nUjistěte se, že získáte *telefonní číslo* a *PSČ*\nHledáte také *ubytování*. Hotel by měl *zahrnovat bezplatné parkování* a být typu *hotel*\nHotel by měl mít *4 hvězdy* a být v cenové kategorii *střední*\nPokud takový hotel není, co takhle jeden v *dražší* cenové kategorii?\nJakmile najdete *hotel*, který chcete zarezervovat, zarezervujte ho na *6 osob* na *2 noci* od *středy*\nPokud rezervace selže, co takhle *neděli*?\nUjistěte se, že získáte *rezervační číslo*\nChcete také zarezervovat *taxi* na přepravu mezi oběma místy\nChcete opustit *atrakci* v *05:30*\nUjistěte se, že získáte *kontaktní číslo* a *typ vozidla*",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_PMUL4140_#_1",
@@ -1171,7 +1216,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.230238_#_0",
           "sys_id": "Gemma-3-27B",
           "src": "A tale of two suckers: Donald Trump's plastic straws and Keir Starmer",
-          "tgt": "Příběh dvou naivců: Donald Trump a plastové brčka a Keir Starmer"
+          "tgt": "Příběh dvou naivců: Donald Trump a plastové brčka a Keir Starmer",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.230238_#_1",
@@ -1245,7 +1291,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2290_#_0",
           "sys_id": "IRB-MT",
           "src": "You are looking for information in Cambridge\nYou are looking for a <i>train</i>. The train should leave on <i>thursday</i> and should <i>leave after 12:15</i>\nThe train should depart from <i>cambridge</i> and should go to <i>peterborough</i>\nMake sure you get <i>price</i> and <i>arrival time</i>\nYou are also looking for a <i>place to stay</i>. The hotel should have <i>a star of 2</i> and should <i>include free parking</i>\nThe hotel should be in the type of <i>hotel</i>\nMake sure you get <i>postcode</i> and <i>price range</i>",
-          "tgt": "Hledáte informace ohledně dopravy do Cambridge.\nHledáte <i>vlak</i>. Vlak by měl odjet ve <i>čtvrtek</i> a měl by odjet <i>po 12:15</i>.\nVlak by měl vyjet z <i>Cambridge</i> a jet do <i>Peterborough</i>.\nUjistěte se, že získáte <i>cenu</i> a <i>čas příjezdu</i>.\nHledáte také <i>ubytování</i>. Hotel by měl mít <i>2 hvězdy</i> a měl by <i>zahrnovat bezplatné parkování</i>.\nUbytování by mělo být <i>hotel</i>.\nUjistěte se, že získáte <i>PSČ</i> a <i>cenové rozpětí</i>.\nX: Dobrý den.\nY: Dobrý den. Jak vám mohu pomoci?\nX: *I am looking for a train to Peterborough.*\nY: Dobře. A kdy byste chtěl/a odjet?\nX: *I need a train that leaves after 12:15 on Thursday.*\nY: Dobře, hledejme. A odkud byste chtěl/a odjet?\nX: *From Cambridge.*\nY: Takže, vlak z Cambridge do Peterborough, odjezd po 12:15 ve čtvrtek. Máte nějaké preference ohledně ceny?\nX: *Yes, could you please tell me the price?*\nY: Ano, samozřejmě. Nejdlevnější spoj stojí 15 liber.\nX: *And what is the arrival time?*\nY: Příjezd do Peterborough je v 13:30.\nX: *Okay, that sounds good. And I'm also looking for a hotel in Peterborough.*\nY: Dobře. Jaké jsou vaše požadavky na hotel?\nX: *I'd like a 2-star hotel with free parking.*\nY: Rozumím. Hledám 2-hvězdičkový hotel s bezplatným parkováním v Peterborough. Máte nějaké preferované cenové rozpětí?\nX: *Yes, ideally under 80 pounds.*\nY: Dobře. Našel jsem několik možností. Jeden hotel stojí od 65 liber za noc a má PSČ PE1 1XX.\nX: *Could you please give me the postcode?*\nY: Ano, PSČ je PE1 1XX.\nX: *Thank you very much.*\nY: Rádi jsme vám pomohli. Přejeme vám hezký den!"
+          "tgt": "Hledáte informace ohledně dopravy do Cambridge.\nHledáte <i>vlak</i>. Vlak by měl odjet ve <i>čtvrtek</i> a měl by odjet <i>po 12:15</i>.\nVlak by měl vyjet z <i>Cambridge</i> a jet do <i>Peterborough</i>.\nUjistěte se, že získáte <i>cenu</i> a <i>čas příjezdu</i>.\nHledáte také <i>ubytování</i>. Hotel by měl mít <i>2 hvězdy</i> a měl by <i>zahrnovat bezplatné parkování</i>.\nUbytování by mělo být <i>hotel</i>.\nUjistěte se, že získáte <i>PSČ</i> a <i>cenové rozpětí</i>.\nX: Dobrý den.\nY: Dobrý den. Jak vám mohu pomoci?\nX: *I am looking for a train to Peterborough.*\nY: Dobře. A kdy byste chtěl/a odjet?\nX: *I need a train that leaves after 12:15 on Thursday.*\nY: Dobře, hledejme. A odkud byste chtěl/a odjet?\nX: *From Cambridge.*\nY: Takže, vlak z Cambridge do Peterborough, odjezd po 12:15 ve čtvrtek. Máte nějaké preference ohledně ceny?\nX: *Yes, could you please tell me the price?*\nY: Ano, samozřejmě. Nejdlevnější spoj stojí 15 liber.\nX: *And what is the arrival time?*\nY: Příjezd do Peterborough je v 13:30.\nX: *Okay, that sounds good. And I'm also looking for a hotel in Peterborough.*\nY: Dobře. Jaké jsou vaše požadavky na hotel?\nX: *I'd like a 2-star hotel with free parking.*\nY: Rozumím. Hledám 2-hvězdičkový hotel s bezplatným parkováním v Peterborough. Máte nějaké preferované cenové rozpětí?\nX: *Yes, ideally under 80 pounds.*\nY: Dobře. Našel jsem několik možností. Jeden hotel stojí od 65 liber za noc a má PSČ PE1 1XX.\nX: *Could you please give me the postcode?*\nY: Ano, PSČ je PE1 1XX.\nX: *Thank you very much.*\nY: Rádi jsme vám pomohli. Přejeme vám hezký den!",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL2290_#_1",
@@ -1259,7 +1306,8 @@
           "doc_id": "en-cs_CZ_#_news_#_guardian.230737_#_0",
           "sys_id": "Wenyiil",
           "src": "Meghan's rebranded herself - and it's another valiant attempt to flog poshness to the little people",
-          "tgt": "Meghan změnila svou image – a je to další statečný pokus vnutit nóbl styl obyčejným lidem."
+          "tgt": "Meghan změnila svou image – a je to další statečný pokus vnutit nóbl styl obyčejným lidem.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_news_#_guardian.230737_#_1",
@@ -1309,7 +1357,8 @@
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1060_#_0",
           "sys_id": "Shy",
           "src": "You are traveling to Cambridge and excited about seeing local tourist attractions\nYou are looking for a <i>place to stay</i>. The hotel should be in the <i>centre</i> and should <i>include free parking</i>\nThe hotel should <i>include free wifi</i>\nOnce you find the <i>hotel</i> you want to book it for <i>8 people</i> and <i>3 nights</i> starting from <i>wednesday</i>\nMake sure you get the <i>reference number</i>\nYou are also looking for <i>places to go</i> in town. The attraction should be <i>in the same area as the hotel</i> and should be in the type of <i>college</i>\nMake sure you get <i>phone number</i>, <i>postcode</i>, and <i>entrance fee</i>",
-          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.  \nHledáte <i>ubytování</i>. Hotel by měl být v <i>centru</i> a měl by <i>nabízet bezplatné parkování</i>.  \nHotel by také měl <i>poskytovat zdarma připojení k internetu (Wi-Fi)</i>.  \nJakmile najdete <i>hotel</i>, který vám vyhovuje, chcete si jej rezervovat pro <i>8 osob</i> na <i>3 noci</i>, počínaje <i>středou</i>.  \nNezapomeňte si zjistit <i>referenční číslo</i> rezervace.  \nZároveň hledáte <i>místa k návštěvě</i> ve městě. Atrakce by měla být <i>v blízkosti hotelu</i> a měla by patřit do kategorie <i>college</i> (vysoká škola nebo kolej).  \nZajistěte si <i>telefonní číslo</i>, <i>poštovní směrovací číslo</i> a informace o <i>vstupném</i>."
+          "tgt": "Cestujete do Cambridge a těšíte se na prohlídku místních turistických atrakcí.  \nHledáte <i>ubytování</i>. Hotel by měl být v <i>centru</i> a měl by <i>nabízet bezplatné parkování</i>.  \nHotel by také měl <i>poskytovat zdarma připojení k internetu (Wi-Fi)</i>.  \nJakmile najdete <i>hotel</i>, který vám vyhovuje, chcete si jej rezervovat pro <i>8 osob</i> na <i>3 noci</i>, počínaje <i>středou</i>.  \nNezapomeňte si zjistit <i>referenční číslo</i> rezervace.  \nZároveň hledáte <i>místa k návštěvě</i> ve městě. Atrakce by měla být <i>v blízkosti hotelu</i> a měla by patřit do kategorie <i>college</i> (vysoká škola nebo kolej).  \nZajistěte si <i>telefonní číslo</i>, <i>poštovní směrovací číslo</i> a informace o <i>vstupném</i>.",
+          "instructions": "Evaluate translation from English to Czech."
         },
         {
           "doc_id": "en-cs_CZ_#_dialogue_#_MUL1060_#_1",
