@@ -117,10 +117,23 @@ function _slider_html(i: number): string {
     `
 }
 
+function redraw_progress(completed: number, total: number) {
+  let html = ""
+  for (let i = 0; i < total; i++) {
+    if (i < completed) {
+      html += `<span class="progress_complete">${i+1}</span>`
+    } else if (i == completed) {
+      html += `<span class="progress_current">${i+1}</span>`
+    } else {
+      html += `<span class="progress_incomplete">${i+1}</span>`
+    }
+  }
+  $("#progress").html(html)
+}
 
 async function display_next_payload(response: DataPayload) {
-  $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
-  $("#time").text(`Annotation time: ${Math.round(response.progress.time / 60)}m`)
+  redraw_progress(response.progress.completed, response.progress.total)
+  $("#time").text(`Time: ${Math.round(response.progress.time / 60)}m`)
 
   let data = response.payload
   response_log = data.src.map(_ => ({
@@ -437,7 +450,7 @@ async function load_next() {
     <br>
     </div>
     `)
-    $("#progress").text(`Progress: ${response.progress.completed}/${response.progress.total}`)
+    redraw_progress(response_finished.progress.completed, response_finished.progress.total)
     $("#time").text(`Total annotation time: ${Math.round(response_finished.progress.time / 60)}m`)
     $("#button_next").hide()
   } else if (response.status == "ok") {

@@ -181,24 +181,71 @@
       width: 16px;
       height: 200px;
     }
+
+    /* progress bar */
+    #progress span {
+      font-size: 8pt;
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      border-radius: 30%;
+      text-align: center;
+      line-height: 2em;
+      margin-left: -10px;
+    }
+    
+    #progress span:hover {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    #progress span.progress_complete {
+      color: white;
+      background: #3b5238;
+    }
+
+
+    #progress span.progress_complete:hover {
+      background: #2e3e2b;
+    }
+
+    #progress span.progress_current {
+      background: #91b08d;
+      position: relative;
+      top: -3px;
+    }
+
+    #progress span.progress_current:hover {
+      background: #739c6f;
+    }
+
+    #progress span.progress_incomplete {
+      background: #bbb;
+    }
+
+    #progress span.progress_incomplete:hover {
+      background: #aaa;
+    }
   </style>
 </head>
 
 <body>
   <div style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
     <div style="display: flex;">
+      
+      <span id="status_message" style="flex-grow: 1; vertical-align: top;"></span>
+      
+      <span id="time" style="flex: 0 0 120px;" title="Approximation of total annotation time.">Time: 0m</span>
+      <span id="progress" style="width: max-content; text-align: right;"></span>
+      <input
+      type="button" value="Next 🛠️" id="button_next" disabled
+      style="flex: 0 0 150px; margin-right: 20px; margin-left: 20px; margin-top: -10px; height: 2.5em;"
+      title="Finish annotating all examples first."
+      >
       <input
         type="button" value="⚙️" id="button_settings"
         style="margin-right: 20px; height: 1.5em; margin-top: -5px;" 
-      >
-      <span id="progress" style="flex: 0 0 140px;">Annotated: 0/0</span>
-      <span id="time" style="flex: 0 0 190px;">Annotation time: 0m</span>
-      <span id="status_message" style="margin-left: 20px; flex-grow: 1; vertical-align: top;"></span>
-
-      <input
-        type="button" value="Next 🛠️" id="button_next" disabled
-        style="flex: 0 0 150px; margin-right: 20px; margin-left: 20px; margin-top: -10px; height: 2.5em;"
-        title="Finish annotating all examples first."
       >
     </div>
 
