@@ -35,6 +35,7 @@ let has_unsaved_work = false
 window.addEventListener('beforeunload', (event) => {
   if (has_unsaved_work) {
     event.preventDefault()
+    event.returnValue = ''
   }
 })
 
