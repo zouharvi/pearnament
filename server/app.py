@@ -200,9 +200,11 @@ async def _download_progress(
 
     return JSONResponse(content=output, status_code=200)
 
+static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
+os.makedirs(static_dir, exist_ok=True)
 
 app.mount(
     "/",
-    StaticFiles(directory=f"{os.path.dirname(os.path.abspath(__file__))}/static/" , html=True, follow_symlink=True),
+    StaticFiles(directory=static_dir, html=True, follow_symlink=True),
     name="static",
 )
