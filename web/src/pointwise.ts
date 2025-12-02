@@ -29,6 +29,15 @@ type DataFinished = {
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
 let settings_show_alignment = true
+let has_unsaved_work = false
+
+// Prevent accidental refresh/navigation when there is ongoing work
+window.addEventListener('beforeunload', (event) => {
+  if (has_unsaved_work) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
+})
 
 const MQM_ERROR_CATEGORIES = {
   "Terminology": [
@@ -162,6 +171,7 @@ async function display_next_payload(response: DataPayload) {
     "error_spans": [],
   }))
   action_log = [{ "time": Date.now() / 1000, "action": "load" }]
+  has_unsaved_work = false
 
 
   let protocol_score = response.info.protocol_score
@@ -363,6 +373,8 @@ async function display_next_payload(response: DataPayload) {
                 }
                 // remove from response log
                 response_log[item_i].error_spans = response_log[item_i].error_spans.filter(span => span != error_span)
+                action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "start_i": left_i, "end_i": right_i })
+                has_unsaved_work = true
               })
 
               // handle severity buttons
@@ -410,6 +422,8 @@ async function display_next_payload(response: DataPayload) {
 
               // store error span
               response_log[item_i].error_spans.push(error_span)
+              action_log.push({ "time": Date.now() / 1000, "action": "create_span", "index": item_i, "start_i": left_i, "end_i": right_i })
+              has_unsaved_work = true
               for (let j = left_i; j <= right_i; j++) {
                 $(tgt_chars_objs[j].el).addClass("error_unknown")
                 tgt_chars_objs[j].toolbox = toolbox
@@ -462,6 +476,7 @@ async function display_next_payload(response: DataPayload) {
       label.text(val.toString())
       let i = parseInt(slider.attr("id")!.split("_")[1])
       response_log[i].score = val
+      has_unsaved_work = true
       check_unlock()
       action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
     })
@@ -474,6 +489,7 @@ async function display_next_payload(response: DataPayload) {
 let payload: DataPayload | null = null
 async function display_next_item() {
   let response = await get_next_item<DataPayload | DataFinished>()
+  has_unsaved_work = false
 
   if (response == null) {
     notify("Error fetching the next item. Please try again later.")
