@@ -201,7 +201,8 @@ async def _download_progress(
     return JSONResponse(content=output, status_code=200)
 
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
-os.makedirs(static_dir, exist_ok=True)
+if not os.path.exists(static_dir + "index.html"):
+    raise FileNotFoundError("Static directory not found. Please build the frontend first.")
 
 app.mount(
     "/",

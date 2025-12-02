@@ -164,7 +164,7 @@ To make changes locally, clone the repository and run the following, which will 
 cd pearmut
 # watch the frontend for changes (in a separate terminal)
 npm install web/ --prefix web/
-npm run watch --prefix web/
+npm run build --prefix web/ # `watch` for rebuild on code change
 
 # install local package as editable
 pip3 install -e .
