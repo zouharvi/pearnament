@@ -171,7 +171,7 @@ async function display_next_payload(response: DataPayload) {
     "error_spans": [],
   }))
   action_log = [{ "time": Date.now() / 1000, "action": "load" }]
-  has_unsaved_work = true
+  has_unsaved_work = false
 
 
   let protocol_score = response.info.protocol_score
@@ -476,6 +476,7 @@ async function display_next_payload(response: DataPayload) {
       label.text(val.toString())
       let i = parseInt(slider.attr("id")!.split("_")[1])
       response_log[i].score = val
+      has_unsaved_work = true
       check_unlock()
       action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
     })
@@ -488,6 +489,7 @@ async function display_next_payload(response: DataPayload) {
 let payload: DataPayload | null = null
 async function display_next_item() {
   let response = await get_next_item<DataPayload | DataFinished>()
+  has_unsaved_work = false
 
   if (response == null) {
     notify("Error fetching the next item. Please try again later.")
@@ -496,7 +498,6 @@ async function display_next_item() {
 
   if (response.status == "completed") {
     let response_finished = response as DataFinished
-    has_unsaved_work = false
     $("#output_div").html(`
     <div class='white-box' style='width: max-content'>
     <h2>🎉 All done, thank you for your annotations!</h2>
@@ -535,7 +536,6 @@ $("#button_next").on("click", async function () {
     $("#button_next").val("Next ❓")
     return
   }
-  has_unsaved_work = false
   await display_next_item()
 })
 

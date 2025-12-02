@@ -1,7 +1,5 @@
 {
   "name": "pearmut-frontend",
-  "version": "0.1.0",
-  "description": "Frontend for evaluation with Pearmut.",
   "scripts": {
     "build": "webpack --mode production",
     "watch": "webpack --mode production --watch",
@@ -9,8 +7,6 @@
     "watch-dev": "webpack --mode development --watch",
     "dev": "webpack serve --mode development"
   },
-  "keywords": [],
-  "author": "",
   "license": "Apache-2.0",
   "dependencies": {
     "jquery": "^3.7.1"
