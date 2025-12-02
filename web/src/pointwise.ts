@@ -373,6 +373,8 @@ async function display_next_payload(response: DataPayload) {
                 }
                 // remove from response log
                 response_log[item_i].error_spans = response_log[item_i].error_spans.filter(span => span != error_span)
+                action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "start_i": left_i, "end_i": right_i })
+                has_unsaved_work = true
               })
 
               // handle severity buttons
@@ -420,6 +422,8 @@ async function display_next_payload(response: DataPayload) {
 
               // store error span
               response_log[item_i].error_spans.push(error_span)
+              action_log.push({ "time": Date.now() / 1000, "action": "create_span", "index": item_i, "start_i": left_i, "end_i": right_i })
+              has_unsaved_work = true
               for (let j = left_i; j <= right_i; j++) {
                 $(tgt_chars_objs[j].el).addClass("error_unknown")
                 tgt_chars_objs[j].toolbox = toolbox
