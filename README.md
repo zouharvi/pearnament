@@ -12,8 +12,7 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 &nbsp;
 [![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
 
-<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/5383367e-e597-4502-8dbb-632de76f07e1" />
-
+<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/f14c91a5-44d7-4248-ada9-387e95ca59d0" />
 
 ## Quick start
 ```bash
