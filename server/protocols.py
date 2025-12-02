@@ -89,6 +89,10 @@ def get_next_item_single_stream(
     Get the next item for single-stream protocol.
     In this mode, all users share the same pool of items.
     Items are randomly selected from unfinished items.
+    
+    Note: There is a potential race condition where multiple users could
+    receive the same item simultaneously. This is acceptable for this simple
+    assignment type - the random selection minimizes collision probability.
     """
     # Get the shared progress array (stored at campaign level)
     shared_progress = progress_data[campaign_id]["_shared"]["progress"]

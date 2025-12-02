@@ -142,7 +142,8 @@ function redraw_progress(total: number, current_i: number | null, progress_array
   let html = ""
   for (let i = 0; i < total; i++) {
     // Check if item is completed using progress_array if available
-    const is_complete = progress_array ? progress_array[i] : (current_i !== null && i < current_i)
+    // When progress_array is provided, use it; otherwise mark all as incomplete (for legacy compatibility)
+    const is_complete = progress_array ? progress_array[i] : false
     const is_current = (i === current_i)
     
     if (is_complete) {
