@@ -72,3 +72,28 @@ export async function log_response(payload: any, item_i: number | null): Promise
     if (delay > 120) return null
   }
 }
+
+export async function log_validation(item_i: number, validation_passed: boolean, messages: string[]): Promise<void> {
+  /* Log validation results to the server (non-blocking). */
+  let user_id = searchParams.get("user_id");
+  let campaign_id = searchParams.get("campaign_id");
+
+  try {
+    $.ajax({
+      url: `/log-validation`,
+      method: "POST",
+      data: JSON.stringify({ 
+        "campaign_id": campaign_id, 
+        "user_id": user_id, 
+        "item_i": item_i,
+        "validation_passed": validation_passed,
+        "messages": messages,
+        "timestamp": Date.now() / 1000
+      }),
+      contentType: "application/json",
+      dataType: "json",
+    });
+  } catch (e) {
+    console.log("Error logging validation:", e);
+  }
+}

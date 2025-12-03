@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, log_response } from './connector';
+import { get_next_item, log_response, log_validation } from './connector';
 import { 
     notify, 
     ErrorSpan, 
@@ -9,13 +9,21 @@ import {
     MQM_ERROR_CATEGORIES, 
     redrawProgress, 
     createSpanToolbox, 
-    updateToolboxPosition 
+    updateToolboxPosition,
+    Validation,
+    validateResponse,
+    hasAllowSkip,
+    getValidationWarning
 } from './utils';
 
 // Each candidate has its own response
 type CandidateResponse = { score: number | null, error_spans: Array<ErrorSpan> }
 // Response for a document with multiple candidates
 type DocumentResponse = Array<CandidateResponse>
+
+// Validation for listwise is per-item (shared for all candidates in an item)
+// but can also be per-candidate if validation is an array
+type ItemValidation = Validation | Validation[] | undefined
 
 type DataPayload = {
     status: string,
@@ -27,6 +35,7 @@ type DataPayload = {
         checks?: any,
         instructions?: string,
         error_spans?: Array<Array<ErrorSpan>>,  // Pre-filled error spans (2D array, one per candidate)
+        validation?: ItemValidation,  // Validation rules for this item (can be single or per-candidate array)
     }>,
     info: {
         protocol_score: boolean,
@@ -57,10 +66,25 @@ function getErrorSpansForCandidate(error_spans: Array<Array<ErrorSpan>> | undefi
     return error_spans[cand_i] || []
 }
 
+/**
+ * Gets validation for a specific candidate index
+ */
+function getValidationForCandidate(validation: ItemValidation, cand_i: number): Validation | undefined {
+    if (!validation) return undefined
+    if (Array.isArray(validation)) {
+        return validation[cand_i]
+    }
+    return validation
+}
+
 let response_log: Array<DocumentResponse> = []
 let action_log: Array<any> = []
+let validations: Array<ItemValidation> = []
+let output_blocks: Array<JQuery<HTMLElement>> = []
+let candidate_blocks: Array<Array<JQuery<HTMLElement>>> = []
 let settings_show_alignment = true
 let has_unsaved_work = false
+let skip_tutorial_mode = false
 
 // Prevent accidental refresh/navigation when there is ongoing work
 window.addEventListener('beforeunload', (event) => {
@@ -111,6 +135,54 @@ function _slider_html(item_i: number, candidate_i: number): string {
     `
 }
 
+/**
+ * Clear all warning indicators from output blocks
+ */
+function clearWarningIndicators() {
+    $(".validation_warning").remove()
+}
+
+/**
+ * Show warning indicator on a specific element
+ */
+function showWarningIndicator(element: JQuery<HTMLElement>, message?: string) {
+    // Remove existing warning on this element
+    element.find(".validation_warning").remove()
+    
+    const warningEl = $(`<span class="validation_warning" style="color: orange; font-size: 16pt; margin-right: 10px;" title="${message || 'Validation failed'}">⚠️</span>`)
+    element.prepend(warningEl)
+}
+
+/**
+ * Scroll to and highlight a specific element
+ */
+function scrollToElement(element: JQuery<HTMLElement>) {
+    $('html, body').animate({
+        scrollTop: element.offset()!.top - 100
+    }, 500)
+    
+    // Flash highlight
+    element.css('background-color', '#fff3cd')
+    setTimeout(() => {
+        element.css('background-color', '')
+    }, 2000)
+}
+
+/**
+ * Check if any validation has allow_skip enabled
+ */
+function checkHasAllowSkip(): boolean {
+    for (const v of validations) {
+        if (!v) continue
+        if (Array.isArray(v)) {
+            if (v.some(vv => vv?.allow_skip === true)) return true
+        } else {
+            if (v.allow_skip === true) return true
+        }
+    }
+    return false
+}
+
 async function display_next_payload(response: DataPayload) {
     redrawProgress(response.info.item_i, response.progress)
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
@@ -123,8 +195,19 @@ async function display_next_payload(response: DataPayload) {
             "error_spans": [],
         }))
     )
+    validations = data.map(item => item.validation)
+    output_blocks = []
+    candidate_blocks = []
     action_log = [{ "time": Date.now() / 1000, "action": "load" }]
     has_unsaved_work = false
+    skip_tutorial_mode = false
+    
+    // Show/hide skip tutorial button based on validation settings
+    if (checkHasAllowSkip()) {
+        $("#button_skip_tutorial").show()
+    } else {
+        $("#button_skip_tutorial").hide()
+    }
 
     let protocol_score = response.info.protocol_score
     let protocol_error_spans = response.info.protocol_error_spans
@@ -403,6 +486,7 @@ async function display_next_payload(response: DataPayload) {
         }
         
         $("#output_div").append(output_block)
+        output_blocks.push(output_block)
     }
 
     check_unlock()
@@ -444,13 +528,77 @@ async function display_next_item() {
     }
 }
 
+/**
+ * Validate all responses and handle failures
+ * Returns true if validation passes or is skipped, false if it fails
+ */
+async function performValidation(): Promise<boolean> {
+    clearWarningIndicators()
+    
+    let all_valid = true
+    let first_failed_element: JQuery<HTMLElement> | null = null
+    let warning_message: string | undefined
+    
+    // Validate each item and each candidate
+    for (let item_i = 0; item_i < response_log.length; item_i++) {
+        for (let cand_i = 0; cand_i < response_log[item_i].length; cand_i++) {
+            const candidateValidation = getValidationForCandidate(validations[item_i], cand_i)
+            const result = validateResponse(response_log[item_i][cand_i], candidateValidation, cand_i)
+            
+            // Log validation attempt to server
+            log_validation(payload!.info.item_i, result.valid, result.messages)
+            
+            if (!result.valid) {
+                all_valid = false
+                
+                // Show warning on the output block
+                if (first_failed_element === null) {
+                    first_failed_element = output_blocks[item_i]
+                }
+                
+                // Get warning message if this is an attention check
+                const itemWarning = getValidationWarning(candidateValidation)
+                if (itemWarning && !warning_message) {
+                    warning_message = itemWarning
+                }
+                
+                // Show warning indicator on failed item
+                showWarningIndicator(output_blocks[item_i], result.messages.join(' '))
+            }
+        }
+    }
+    
+    if (!all_valid && first_failed_element !== null) {
+        // Scroll to first failed item
+        scrollToElement(first_failed_element)
+        
+        // Show warning notification if there's a warning message
+        if (warning_message) {
+            notify(warning_message)
+        }
+        
+        action_log.push({ "time": Date.now() / 1000, "action": "validation_failed" })
+    }
+    
+    return all_valid
+}
+
 $("#button_next").on("click", async function () {
+    // Perform validation unless in skip tutorial mode
+    if (!skip_tutorial_mode) {
+        const validationPassed = await performValidation()
+        if (!validationPassed) {
+            // Validation failed, don't proceed
+            return
+        }
+    }
+    
     // disable while communicating with the server
     $("#button_next").attr("disabled", "disabled")
     $("#button_next").val("Next 📶")
-    action_log.push({ "time": Date.now() / 1000, "action": "submit" })
+    action_log.push({ "time": Date.now() / 1000, "action": "submit", "skip_tutorial": skip_tutorial_mode })
     let outcome = await log_response(
-        { "annotations": response_log, "actions": action_log, "item": payload },
+        { "annotations": response_log, "actions": action_log, "item": payload, "validation_skipped": skip_tutorial_mode },
         payload!.info.item_i,
     )
     if (outcome == null || outcome == false) {
@@ -460,6 +608,14 @@ $("#button_next").on("click", async function () {
         return
     }
     await display_next_item()
+})
+
+// Skip tutorial button handler
+$("#button_skip_tutorial").on("click", function() {
+    skip_tutorial_mode = true
+    notify("Tutorial skipped. Your current annotations will be submitted.")
+    // Trigger the next button click
+    $("#button_next").trigger("click")
 })
 
 display_next_item()

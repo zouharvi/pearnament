@@ -74,6 +74,58 @@ async def _log_response(request: LogResponseRequest):
     return JSONResponse(content={"status": "ok"}, status_code=200)
 
 
+class LogValidationRequest(BaseModel):
+    campaign_id: str
+    user_id: str
+    item_i: int
+    validation_passed: bool
+    messages: list[str]
+    timestamp: float
+
+
+@app.post("/log-validation")
+async def _log_validation(request: LogValidationRequest):
+    """Log validation results for tutorial/attention checks."""
+    global progress_data
+
+    campaign_id = request.campaign_id
+    user_id = request.user_id
+
+    if campaign_id not in progress_data:
+        return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+    if user_id not in progress_data[campaign_id]:
+        return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
+
+    # Initialize validation_checks if it doesn't exist
+    if "validation_checks" not in progress_data[campaign_id][user_id]:
+        progress_data[campaign_id][user_id]["validation_checks"] = []
+    
+    # Log the validation attempt
+    validation_entry = {
+        "item_i": request.item_i,
+        "passed": request.validation_passed,
+        "messages": request.messages,
+        "timestamp": request.timestamp,
+    }
+    progress_data[campaign_id][user_id]["validation_checks"].append(validation_entry)
+    
+    # Update failed count (only count unique failed items)
+    failed_items = set()
+    for check in progress_data[campaign_id][user_id]["validation_checks"]:
+        if not check["passed"]:
+            failed_items.add(check["item_i"])
+    # But also check which ones were later fixed
+    for check in progress_data[campaign_id][user_id]["validation_checks"]:
+        if check["passed"] and check["item_i"] in failed_items:
+            failed_items.discard(check["item_i"])
+    
+    progress_data[campaign_id][user_id]["failed_checks"] = len(failed_items)
+    
+    save_progress_data(progress_data)
+
+    return JSONResponse(content={"status": "ok"}, status_code=200)
+
+
 class NextItemRequest(BaseModel):
     campaign_id: str
     user_id: str

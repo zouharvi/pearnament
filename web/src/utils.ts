@@ -31,6 +31,24 @@ export type ErrorSpan = { start_i: number, end_i: number, category: string | nul
 export type Response = { score: number | null, error_spans: Array<ErrorSpan> }
 export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null }
 
+// Validation types for tutorial/attention checks
+export type ValidationErrorSpan = { 
+    start_i?: number | [number, number],  // exact value or range [min, max]
+    end_i?: number | [number, number],    // exact value or range [min, max]
+    severity?: string 
+}
+export type Validation = {
+    warning?: string,  // Warning message to display on failure (attention check mode)
+    score?: [number, number],  // [min, max] range for valid score
+    error_spans?: Array<ValidationErrorSpan>,  // Expected error spans
+    allow_skip?: boolean  // Show skip tutorial button
+}
+export type ValidationResult = { 
+    valid: boolean, 
+    failed_items: number[],  // indices of failed items
+    messages: string[]  // failure messages
+}
+
 // MQM Error Categories shared between pointwise and listwise
 export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
     "Terminology": [
@@ -249,4 +267,136 @@ export function updateToolboxPosition(toolbox: JQuery<HTMLElement>, charEl: JQue
         top: topPosition,
         left: leftPosition - 25,
     });
+}
+
+/**
+ * Check if a value is within a specified range
+ */
+function isInRange(value: number, range: number | [number, number]): boolean {
+    if (Array.isArray(range)) {
+        return value >= range[0] && value <= range[1];
+    }
+    return value === range;
+}
+
+/**
+ * Check if a user error span matches a validation error span requirement
+ */
+function spanMatches(userSpan: ErrorSpan, validationSpan: ValidationErrorSpan): boolean {
+    // Check start_i if specified
+    if (validationSpan.start_i !== undefined) {
+        if (!isInRange(userSpan.start_i, validationSpan.start_i)) {
+            return false;
+        }
+    }
+    // Check end_i if specified
+    if (validationSpan.end_i !== undefined) {
+        if (!isInRange(userSpan.end_i, validationSpan.end_i)) {
+            return false;
+        }
+    }
+    // Check severity if specified
+    if (validationSpan.severity !== undefined) {
+        if (userSpan.severity !== validationSpan.severity) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Validate user responses against validation rules
+ * Returns validation result with failed items and messages
+ */
+export function validateResponse(
+    response: Response,
+    validation: Validation | undefined,
+    itemIndex: number
+): ValidationResult {
+    if (!validation) {
+        return { valid: true, failed_items: [], messages: [] };
+    }
+
+    const failed_items: number[] = [];
+    const messages: string[] = [];
+
+    // Validate score if specified
+    if (validation.score !== undefined) {
+        const [minScore, maxScore] = validation.score;
+        if (response.score === null || response.score < minScore || response.score > maxScore) {
+            failed_items.push(itemIndex);
+            messages.push(`Score should be between ${minScore} and ${maxScore}.`);
+        }
+    }
+
+    // Validate error spans if specified
+    if (validation.error_spans !== undefined && validation.error_spans.length > 0) {
+        // Each expected span must be matched by at least one user span
+        for (const expectedSpan of validation.error_spans) {
+            const matched = response.error_spans.some(userSpan => spanMatches(userSpan, expectedSpan));
+            if (!matched) {
+                failed_items.push(itemIndex);
+                let spanDesc = "";
+                if (expectedSpan.start_i !== undefined) {
+                    const startRange = Array.isArray(expectedSpan.start_i) 
+                        ? `${expectedSpan.start_i[0]}-${expectedSpan.start_i[1]}` 
+                        : expectedSpan.start_i.toString();
+                    spanDesc += `start: ${startRange}`;
+                }
+                if (expectedSpan.end_i !== undefined) {
+                    const endRange = Array.isArray(expectedSpan.end_i) 
+                        ? `${expectedSpan.end_i[0]}-${expectedSpan.end_i[1]}` 
+                        : expectedSpan.end_i.toString();
+                    spanDesc += (spanDesc ? ", " : "") + `end: ${endRange}`;
+                }
+                if (expectedSpan.severity !== undefined) {
+                    spanDesc += (spanDesc ? ", " : "") + `severity: ${expectedSpan.severity}`;
+                }
+                messages.push(`Missing expected error span (${spanDesc}).`);
+            }
+        }
+    }
+
+    return {
+        valid: failed_items.length === 0,
+        failed_items: [...new Set(failed_items)], // deduplicate
+        messages
+    };
+}
+
+/**
+ * Validate all responses for a document (array of responses)
+ */
+export function validateAllResponses(
+    responses: Response[],
+    validations: (Validation | undefined)[]
+): ValidationResult {
+    const all_failed_items: number[] = [];
+    const all_messages: string[] = [];
+
+    for (let i = 0; i < responses.length; i++) {
+        const result = validateResponse(responses[i], validations[i], i);
+        all_failed_items.push(...result.failed_items);
+        all_messages.push(...result.messages);
+    }
+
+    return {
+        valid: all_failed_items.length === 0,
+        failed_items: [...new Set(all_failed_items)],
+        messages: all_messages
+    };
+}
+
+/**
+ * Check if any validation has allow_skip enabled
+ */
+export function hasAllowSkip(validations: (Validation | undefined)[]): boolean {
+    return validations.some(v => v?.allow_skip === true);
+}
+
+/**
+ * Get warning message from validation if any
+ */
+export function getValidationWarning(validation: Validation | undefined): string | undefined {
+    return validation?.warning;
 }

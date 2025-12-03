@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, log_response } from './connector';
+import { get_next_item, log_response, log_validation } from './connector';
 import { 
   notify, 
   ErrorSpan, 
@@ -9,7 +9,11 @@ import {
   MQM_ERROR_CATEGORIES, 
   redrawProgress, 
   createSpanToolbox, 
-  updateToolboxPosition 
+  updateToolboxPosition,
+  Validation,
+  validateResponse,
+  hasAllowSkip,
+  getValidationWarning
 } from './utils';
 type DataPayload = {
   status: string,
@@ -21,6 +25,7 @@ type DataPayload = {
     checks?: any,
     instructions?: string,
     error_spans?: Array<ErrorSpan>,
+    validation?: Validation,
   }>,
   info: {
     protocol_score: boolean,
@@ -37,8 +42,11 @@ type DataFinished = {
 }
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
+let validations: Array<Validation | undefined> = []
+let output_blocks: Array<JQuery<HTMLElement>> = []
 let settings_show_alignment = true
 let has_unsaved_work = false
+let skip_tutorial_mode = false
 
 // Prevent accidental refresh/navigation when there is ongoing work
 window.addEventListener('beforeunload', (event) => {
@@ -93,6 +101,42 @@ function _slider_html(i: number): string {
     `
 }
 
+/**
+ * Clear all warning indicators from output blocks
+ */
+function clearWarningIndicators() {
+  $(".validation_warning").remove()
+}
+
+/**
+ * Show warning indicator on a specific output block
+ */
+function showWarningIndicator(block: JQuery<HTMLElement>, message?: string) {
+  // Remove existing warning on this block
+  block.find(".validation_warning").remove()
+  
+  const warningEl = $(`<span class="validation_warning" style="color: orange; font-size: 16pt; margin-right: 10px;" title="${message || 'Validation failed'}">⚠️</span>`)
+  block.prepend(warningEl)
+}
+
+/**
+ * Scroll to and highlight a specific output block
+ */
+function scrollToBlock(index: number) {
+  if (output_blocks[index]) {
+    const block = output_blocks[index]
+    $('html, body').animate({
+      scrollTop: block.offset()!.top - 100
+    }, 500)
+    
+    // Flash highlight
+    block.css('background-color', '#fff3cd')
+    setTimeout(() => {
+      block.css('background-color', '')
+    }, 2000)
+  }
+}
+
 async function display_next_payload(response: DataPayload) {
   redrawProgress(response.info.item_i, response.progress)
   $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
@@ -102,9 +146,18 @@ async function display_next_payload(response: DataPayload) {
     "score": null,
     "error_spans": [],
   }))
+  validations = data.map(item => item.validation)
+  output_blocks = []
   action_log = [{ "time": Date.now() / 1000, "action": "load" }]
   has_unsaved_work = false
-
+  skip_tutorial_mode = false
+  
+  // Show/hide skip tutorial button based on validation settings
+  if (hasAllowSkip(validations)) {
+    $("#button_skip_tutorial").show()
+  } else {
+    $("#button_skip_tutorial").hide()
+  }
 
   let protocol_score = response.info.protocol_score
   let protocol_error_spans = response.info.protocol_error_spans
@@ -429,6 +482,7 @@ async function display_next_payload(response: DataPayload) {
       })
     }
     $("#output_div").append(output_block)
+    output_blocks.push(output_block)
 
     let slider = output_block.find("input[type='range']")
     let label = output_block.find(".output_number")
@@ -486,13 +540,71 @@ async function display_next_item() {
   }
 }
 
+/**
+ * Validate all responses and handle failures
+ * Returns true if validation passes or is skipped, false if it fails
+ */
+async function performValidation(): Promise<boolean> {
+  clearWarningIndicators()
+  
+  let all_valid = true
+  let first_failed_index: number | null = null
+  let warning_message: string | undefined
+  
+  for (let i = 0; i < response_log.length; i++) {
+    const result = validateResponse(response_log[i], validations[i], i)
+    
+    // Log validation attempt to server
+    log_validation(payload!.info.item_i, result.valid, result.messages)
+    
+    if (!result.valid) {
+      all_valid = false
+      if (first_failed_index === null) {
+        first_failed_index = i
+      }
+      
+      // Get warning message if this is an attention check
+      const itemWarning = getValidationWarning(validations[i])
+      if (itemWarning && !warning_message) {
+        warning_message = itemWarning
+      }
+      
+      // Show warning indicator on failed item
+      showWarningIndicator(output_blocks[i], result.messages.join(' '))
+    }
+  }
+  
+  if (!all_valid && first_failed_index !== null) {
+    // Scroll to first failed item
+    scrollToBlock(first_failed_index)
+    
+    // Show warning notification if there's a warning message
+    if (warning_message) {
+      notify(warning_message)
+    }
+    
+    action_log.push({ "time": Date.now() / 1000, "action": "validation_failed", "failed_index": first_failed_index })
+  }
+  
+  return all_valid
+}
+
 $("#button_next").on("click", async function () {
+  // Perform validation unless in skip tutorial mode
+  if (!skip_tutorial_mode) {
+    const validationPassed = await performValidation()
+    if (!validationPassed) {
+      // Validation failed, don't proceed
+      return
+    }
+  }
+  
   // disable while communicating with the server
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
-  action_log.push({ "time": Date.now() / 1000, "action": "submit" })
+  action_log.push({ "time": Date.now() / 1000, "action": "submit", "skip_tutorial": skip_tutorial_mode })
   let outcome = await log_response(
-    { "annotations": response_log, "actions": action_log, "item": payload },
+    { "annotations": response_log, "actions": action_log, "item": payload, "validation_skipped": skip_tutorial_mode },
     payload!.info.item_i,
   )
   if (outcome == null || outcome == false) {
@@ -502,6 +614,14 @@ $("#button_next").on("click", async function () {
     return
   }
   await display_next_item()
+})
+
+// Skip tutorial button handler
+$("#button_skip_tutorial").on("click", function() {
+  skip_tutorial_mode = true
+  notify("Tutorial skipped. Your current annotations will be submitted.")
+  // Trigger the next button click
+  $("#button_next").trigger("click")
 })
 
 display_next_item()
