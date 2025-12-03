@@ -1,0 +1,62 @@
+{
+  "info": {
+    "assignment": "task-based",
+    "template": "pointwise",
+    "protocol_score": true,
+    "protocol_error_spans": true,
+    "protocol_error_categories": false,
+    "instructions": "Review and adjust the pre-filled error annotations. Mark any additional errors you find."
+  },
+  "campaign_id": "esaai_demo",
+  "data": [
+    [
+      [
+        {
+          "doc_id": "esaai_demo_1",
+          "sys_id": "System-A",
+          "src": "The quick brown fox jumps over the lazy dog.",
+          "tgt": "Rychlá hnědá liška skáče přes líného psa.",
+          "instructions": "Review the translation. Pre-filled error spans show potential issues.",
+          "error_spans": [
+            {
+              "start_i": 0,
+              "end_i": 5,
+              "severity": "minor",
+              "category": null
+            },
+            {
+              "start_i": 27,
+              "end_i": 32,
+              "severity": "major",
+              "category": null
+            }
+          ]
+        },
+        {
+          "doc_id": "esaai_demo_2",
+          "sys_id": "System-A",
+          "src": "Machine translation has improved significantly in recent years.",
+          "tgt": "Strojový překlad se v posledních letech výrazně zlepšil.",
+          "instructions": "This sentence has one pre-filled error span for review.",
+          "error_spans": [
+            {
+              "start_i": 9,
+              "end_i": 15,
+              "severity": "minor",
+              "category": null
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "esaai_demo_3",
+          "sys_id": "System-B",
+          "src": "Artificial intelligence is transforming how we work and live.",
+          "tgt": "Umělá inteligence mění způsob, jakým pracujeme a žijeme.",
+          "instructions": "No pre-filled errors - annotate from scratch."
+        }
+      ]
+    ]
+  ]
+}
