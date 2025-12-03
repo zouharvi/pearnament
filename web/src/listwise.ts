@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, log_response } from './connector';
+import { get_next_item, get_item, log_response } from './connector';
 import { 
     notify, 
     ErrorSpan, 
@@ -112,7 +112,7 @@ function _slider_html(item_i: number, candidate_i: number): string {
 }
 
 async function display_next_payload(response: DataPayload) {
-    redrawProgress(response.info.item_i, response.progress)
+    redrawProgress(response.info.item_i, response.progress, navigate_to_item)
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
 
     let data = response.payload
@@ -410,6 +410,41 @@ async function display_next_payload(response: DataPayload) {
 
 
 let payload: DataPayload | null = null
+
+async function navigate_to_item(item_i: number) {
+    // Fetch and display a specific item by index
+    let response = await get_item<DataPayload | DataFinished>(item_i)
+    has_unsaved_work = false
+
+    if (response == null) {
+        notify("Error fetching the item. Please try again later.")
+        return
+    }
+
+    if (response.status == "completed") {
+        let response_finished = response as DataFinished
+        $("#output_div").html(`
+    <div class='white-box' style='width: max-content'>
+    <h2>🎉 All done, thank you for your annotations!</h2>
+
+    If someone asks you for a token of completion, show them
+    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response_finished.token}</span>
+    <br>
+    <br>
+    </div>
+    `)
+        redrawProgress(null, response_finished.progress, navigate_to_item)
+        $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
+        $("#button_settings").hide()
+        $("#button_next").hide()
+    } else if (response.status == "ok") {
+        payload = response as DataPayload
+        display_next_payload(response as DataPayload)
+    } else {
+        console.error("Non-ok response", response)
+    }
+}
+
 async function display_next_item() {
     let response = await get_next_item<DataPayload | DataFinished>()
     has_unsaved_work = false
@@ -431,7 +466,7 @@ async function display_next_item() {
     <br>
     </div>
     `)
-        redrawProgress(null, response_finished.progress)
+        redrawProgress(null, response_finished.progress, navigate_to_item)
         $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
         // NOTE: re-enable if we want to allow going back
         $("#button_settings").hide()
