@@ -8,8 +8,8 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from .assignment import get_next_item, get_i_item, reset_task, update_progress
-from .utils import ROOT, load_progress_data, save_progress_data, save_db_payload
+from .assignment import get_i_item, get_next_item, reset_task, update_progress
+from .utils import ROOT, load_progress_data, save_db_payload, save_progress_data
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 

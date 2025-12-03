@@ -144,7 +144,6 @@ async function display_next_payload(response: DataPayload) {
       </div>
     `)
 
-    console.log("AAA", item.instructions)
     if (item.instructions) {
       output_block.find("#instructions_message").html(item.instructions)
     }

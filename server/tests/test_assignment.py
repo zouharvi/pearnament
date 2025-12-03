@@ -1,8 +1,8 @@
 """Tests for protocol functions."""
 
 from pearmut.assignment import (
-    get_next_item,
     get_i_item,
+    get_next_item,
     reset_task,
     update_progress,
 )
