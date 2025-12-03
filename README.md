@@ -2,7 +2,7 @@
 
 Pearmut is a **Platform for Evaluation and Reviewing of Multilingual Tasks**.
 It evaluates model outputs, primarily translation but also various other NLP tasks.
-Supports multimodality (text, video, audio, images) and a variety of annotation protocols (DA, ESA, MQM, paired ESA, etc).
+Supports multimodality (text, video, audio, images) and a variety of annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437), paired ESA, etc).
 
 [![PyPi version](https://badgen.net/pypi/v/pearmut/)](https://pypi.org/project/pearmut)
 &nbsp;
@@ -104,10 +104,10 @@ For workflows where you want to provide pre-filled error annotations (e.g., ESAA
   "tgt": "Rychlá hnědá liška skáče přes líného psa.",
   "error_spans": [
     {
-      "start_i": 0,      # character index start (inclusive)
-      "end_i": 5,        # character index end (inclusive)
+      "start_i": 0,         # character index start (inclusive)
+      "end_i": 5,           # character index end (inclusive)
       "severity": "minor",  # "minor", "major", "neutral", or null
-      "category": null   # MQM category string or null
+      "category": null      # MQM category string or null
     },
     {
       "start_i": 27,
