@@ -8,18 +8,33 @@
     "instructions": "This is a tutorial campaign. Complete the training items before proceeding to regular annotation."
   },
   "campaign_id": "mock_tutorial",
-  "data": {
-    "user_alpha": [
+  "data": [
+    [
       [
         {
           "doc_id": "tutorial_1",
           "src": "The quick brown fox jumps over the lazy dog.",
           "tgt": "Rychlá hnědá liška skáče přes líného psa.",
-          "instructions": "<b>Tutorial 1:</b> This translation has a minor error at the beginning. Please mark 'Rychlá' (characters 0-5) as a <b>minor</b> error and set the score between 70 and 80.",
+          "instructions": "<b>Tutorial 1:</b> This translation has a minor error at the beginning. Please mark 'Rychlá' as a <b>minor</b> error and set the score between 70 and 80.",
           "validation": {
             "warning": "Please review the tutorial instructions. Mark 'Rychlá' as a minor error and set score between 70-80.",
-            "score": [70, 80],
-            "error_spans": [{"start_i": [0, 2], "end_i": [4, 6], "severity": "minor"}],
+            "score": [
+              70,
+              80
+            ],
+            "error_spans": [
+              {
+                "start_i": [
+                  0,
+                  2
+                ],
+                "end_i": [
+                  4,
+                  6
+                ],
+                "severity": "minor"
+              }
+            ],
             "allow_skip": true
           }
         }
@@ -32,7 +47,10 @@
           "instructions": "<b>Tutorial 2:</b> This is a good translation. Set the score between 85 and 95. No error spans needed.",
           "validation": {
             "warning": "This translation is good. Set score between 85-95 without marking errors.",
-            "score": [85, 95],
+            "score": [
+              85,
+              95
+            ],
             "allow_skip": true
           }
         }
@@ -45,22 +63,40 @@
           "instructions": "<b>Attention Check:</b> Set the score to exactly 50.",
           "validation": {
             "warning": "You failed the attention check. Please set the score to exactly 50.",
-            "score": [50, 50]
+            "score": [
+              50,
+              50
+            ]
           }
         }
       ]
     ],
-    "user_beta": [
+    [
       [
         {
           "doc_id": "tutorial_1",
           "src": "Climate change affects global weather patterns.",
           "tgt": "Změny klimatu ovlivňují globální vzorce počasí.",
-          "instructions": "<b>Tutorial 1:</b> This translation contains a major error. Mark 'vzorce' (characters 30-35) as a <b>major</b> error. Score should be 40-60.",
+          "instructions": "<b>Tutorial 1:</b> This translation contains a major error. Mark 'vzorce' as a <b>major</b> error. Score should be 40-60.",
           "validation": {
             "warning": "Please mark 'vzorce' as a major error and set the score between 40-60.",
-            "score": [40, 60],
-            "error_spans": [{"start_i": [28, 32], "end_i": [34, 38], "severity": "major"}],
+            "score": [
+              40,
+              60
+            ],
+            "error_spans": [
+              {
+                "start_i": [
+                  25,
+                  35
+                ],
+                "end_i": [
+                  35,
+                  45
+                ],
+                "severity": "major"
+              }
+            ],
             "allow_skip": true
           }
         }
@@ -73,7 +109,10 @@
           "instructions": "<b>Tutorial 2:</b> Perfect translation. Score between 90-100.",
           "validation": {
             "warning": "This is a perfect translation. Please set score between 90-100.",
-            "score": [90, 100],
+            "score": [
+              90,
+              100
+            ],
             "allow_skip": true
           }
         }
@@ -86,22 +125,40 @@
           "instructions": "<b>Attention Check:</b> Set the score between 70 and 75.",
           "validation": {
             "warning": "Attention check failed. Please set the score between 70-75.",
-            "score": [70, 75]
+            "score": [
+              70,
+              75
+            ]
           }
         }
       ]
     ],
-    "user_gamma": [
+    [
       [
         {
           "doc_id": "tutorial_1",
           "src": "Renewable energy sources are becoming more affordable.",
           "tgt": "Obnovitelné zdroje energie jsou stále dostupnější.",
-          "instructions": "<b>Tutorial 1:</b> Good translation with minor style issue. Mark 'stále' (characters 27-32) as minor. Score 75-85.",
+          "instructions": "<b>Tutorial 1:</b> Good translation with minor style issue. Mark 'stále' as minor. Score 75-85.",
           "validation": {
             "warning": "Please mark 'stále' as a minor error and set score between 75-85.",
-            "score": [75, 85],
-            "error_spans": [{"start_i": [25, 29], "end_i": [31, 35], "severity": "minor"}],
+            "score": [
+              75,
+              85
+            ],
+            "error_spans": [
+              {
+                "start_i": [
+                  25,
+                  34
+                ],
+                "end_i": [
+                  36,
+                  45
+                ],
+                "severity": "minor"
+              }
+            ],
             "allow_skip": true
           }
         }
@@ -114,7 +171,10 @@
           "instructions": "<b>Tutorial 2:</b> Excellent translation. Score 88-100.",
           "validation": {
             "warning": "Excellent translation. Please set score between 88-100.",
-            "score": [88, 100],
+            "score": [
+              88,
+              100
+            ],
             "allow_skip": true
           }
         }
@@ -127,10 +187,13 @@
           "instructions": "<b>Attention Check:</b> Score must be exactly 65.",
           "validation": {
             "warning": "Attention check failed. Score must be exactly 65.",
-            "score": [65, 65]
+            "score": [
+              65,
+              65
+            ]
           }
         }
       ]
     ]
-  }
+  ]
 }

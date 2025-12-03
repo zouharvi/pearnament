@@ -1,29 +1,22 @@
 import $ from 'jquery';
 
 import { get_next_item, get_i_item, log_response, log_validation } from './connector';
-import { 
-    notify, 
-    ErrorSpan, 
-    Response, 
-    CharData, 
-    MQM_ERROR_CATEGORIES, 
-    redrawProgress, 
-    createSpanToolbox, 
+import {
+    notify,
+    ErrorSpan,
+    CharData,
+    redrawProgress,
+    createSpanToolbox,
     updateToolboxPosition,
     Validation,
     validateResponse,
     hasAllowSkip,
-    getValidationWarning
 } from './utils';
 
 // Each candidate has its own response
 type CandidateResponse = { score: number | null, error_spans: Array<ErrorSpan> }
 // Response for a document with multiple candidates
 type DocumentResponse = Array<CandidateResponse>
-
-// Validation for listwise is per-item (shared for all candidates in an item)
-// but can also be per-candidate if validation is an array
-type ItemValidation = Validation | Validation[] | undefined
 
 type DataPayload = {
     status: string,
@@ -35,7 +28,7 @@ type DataPayload = {
         checks?: any,
         instructions?: string,
         error_spans?: Array<Array<ErrorSpan>>,  // Pre-filled error spans (2D array, one per candidate)
-        validation?: ItemValidation,  // Validation rules for this item (can be single or per-candidate array)
+        validation?: Validation[] | undefined,  // Validation rules for this item
     }>,
     payload_existing?: Array<DocumentResponse>,
     info: {
@@ -67,22 +60,10 @@ function getErrorSpansForCandidate(error_spans: Array<Array<ErrorSpan>> | undefi
     return error_spans[cand_i] || []
 }
 
-/**
- * Gets validation for a specific candidate index
- */
-function getValidationForCandidate(validation: ItemValidation, cand_i: number): Validation | undefined {
-    if (!validation) return undefined
-    if (Array.isArray(validation)) {
-        return validation[cand_i]
-    }
-    return validation
-}
-
 let response_log: Array<DocumentResponse> = []
 let action_log: Array<any> = []
-let validations: Array<ItemValidation> = []
+let validations: Array<Array<Validation> | undefined> = []
 let output_blocks: Array<JQuery<HTMLElement>> = []
-let candidate_blocks: Array<Array<JQuery<HTMLElement>>> = []
 let settings_show_alignment = true
 let has_unsaved_work = false
 let skip_tutorial_mode = false
@@ -114,7 +95,7 @@ function check_unlock() {
     }
 
     // check if all items are done (all candidates have scores)
-    let all_done = response_log.every(doc_responses => 
+    let all_done = response_log.every(doc_responses =>
         doc_responses.every(r => r.score != null)
     )
     if (!all_done) {
@@ -137,19 +118,12 @@ function _slider_html(item_i: number, candidate_i: number): string {
 }
 
 /**
- * Clear all warning indicators from output blocks
- */
-function clearWarningIndicators() {
-    $(".validation_warning").remove()
-}
-
-/**
  * Show warning indicator on a specific element
  */
 function showWarningIndicator(element: JQuery<HTMLElement>, message?: string) {
     // Remove existing warning on this element
     element.find(".validation_warning").remove()
-    
+
     const warningEl = $(`<span class="validation_warning" title="${message || 'Validation failed'}">⚠️</span>`)
     element.prepend(warningEl)
 }
@@ -157,16 +131,12 @@ function showWarningIndicator(element: JQuery<HTMLElement>, message?: string) {
 /**
  * Scroll to and highlight a specific element
  */
-function scrollToElement(element: JQuery<HTMLElement>) {
-    $('html, body').animate({
-        scrollTop: element.offset()!.top - 100
-    }, 500)
-    
-    // Flash highlight
-    element.css('background-color', '#fff3cd')
-    setTimeout(() => {
-        element.css('background-color', '')
-    }, 2000)
+function scrollToBlock(index: number) {
+    if (output_blocks[index]) {
+        $('html, body').animate({
+            scrollTop: output_blocks[index].offset()!.top - 100
+        }, 500)
+    }
 }
 
 async function display_next_payload(response: DataPayload) {
@@ -176,14 +146,14 @@ async function display_next_payload(response: DataPayload) {
     let data = response.payload
     // Initialize response log - use payload_existing if available
     if (response.payload_existing) {
-        response_log = response.payload_existing.map(docResponses => 
+        response_log = response.payload_existing.map(docResponses =>
             docResponses.map(r => ({
                 "score": r.score,
                 "error_spans": r.error_spans ? [...r.error_spans] : [],
             }))
         )
     } else {
-        response_log = data.map(item => 
+        response_log = data.map(item =>
             ensureCandidateArray(item.tgt).map(_ => ({
                 "score": null,
                 "error_spans": [],
@@ -192,11 +162,10 @@ async function display_next_payload(response: DataPayload) {
     }
     validations = data.map(item => item.validation)
     output_blocks = []
-    candidate_blocks = []
     action_log = [{ "time": Date.now() / 1000, "action": "load" }]
     has_unsaved_work = false
     skip_tutorial_mode = false
-    
+
     // Show/hide skip tutorial button based on validation settings
     if (hasAllowSkip(validations)) {
         $("#button_skip_tutorial").show()
@@ -218,12 +187,12 @@ async function display_next_payload(response: DataPayload) {
         let item = data[item_i]
         // Ensure tgt is an array of candidates
         let candidates = ensureCandidateArray(item.tgt)
-        
+
         // character-level stuff won't work on media tags
         let no_src_char = (item.src.startsWith("<audio ") || item.src.startsWith("<video ") || item.src.startsWith("<img ") || item.src.startsWith("<iframe "))
 
         let src_chars = no_src_char ? item.src : item.src.split("").map(c => c == "\n" ? "<br>" : `<span class="src_char">${c}</span>`).join("")
-        
+
         let output_block = $(`
         <div class="output_block">
           <span id="instructions_message"></span>
@@ -239,21 +208,21 @@ async function display_next_payload(response: DataPayload) {
 
         // Add each candidate
         let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
-        
+
         for (let cand_i = 0; cand_i < candidates.length; cand_i++) {
             let tgt = candidates[cand_i]
             let no_tgt_char = (tgt.startsWith("<audio ") || tgt.startsWith("<video ") || tgt.startsWith("<img ") || tgt.startsWith("<iframe "))
             let tgt_chars = no_tgt_char ? tgt : tgt.split("").map(c => c == "\n" ? "<br>" : `<span class="tgt_char">${c}</span>`).join("")
-            
+
             let candidate_block = $(`
             <div class="output_candidate" data-candidate="${cand_i}">
               <div class="output_tgt">${tgt_chars}</div>
               ${protocol_score ? _slider_html(item_i, cand_i) : ""}
             </div>
             `)
-            
+
             output_block.find(".output_srctgt").append(candidate_block)
-            
+
             // Setup character-level interactions for this candidate
             let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : candidate_block.find(".tgt_char").toArray().map(el => ({
                 "el": $(el),
@@ -288,7 +257,7 @@ async function display_next_payload(response: DataPayload) {
                             }
                             // Highlight corresponding characters in all other candidates
                             let relative_pos = i / tgt_chars_objs.length
-                            output_block.find(".output_candidate").each(function() {
+                            output_block.find(".output_candidate").each(function () {
                                 let other_tgt_chars = $(this).find(".tgt_char")
                                 let other_i = Math.round(relative_pos * other_tgt_chars.length)
                                 for (let j = Math.max(0, other_i - 5); j <= Math.min(other_tgt_chars.length - 1, other_i + 5); j++) {
@@ -356,7 +325,7 @@ async function display_next_payload(response: DataPayload) {
                                         has_unsaved_work = true
                                     }
                                 )
-                                
+
                                 $("body").append(toolbox)
                                 check_unlock()
 
@@ -408,13 +377,13 @@ async function display_next_payload(response: DataPayload) {
             // Load error spans - use payload_existing if available, otherwise use item.error_spans
             const existingErrorSpans = response.payload_existing?.[item_i]?.[cand_i]?.error_spans
             const candidateSpans = existingErrorSpans || getErrorSpansForCandidate(item.error_spans, cand_i)
-            
+
             if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
                 // Only reset if loading from payload_existing (to avoid duplicating pre-filled spans)
                 if (existingErrorSpans) {
                     response_log[item_i][cand_i].error_spans = []
                 }
-                
+
                 for (const prefilled of candidateSpans) {
                     const left_i = prefilled.start_i, right_i = prefilled.end_i
                     if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
@@ -461,7 +430,7 @@ async function display_next_payload(response: DataPayload) {
                 check_unlock()
                 action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
             })
-            
+
             // Pre-fill score from payload_existing if available
             const existingScore = response.payload_existing?.[item_i]?.[cand_i]?.score
             if (existingScore != null && protocol_score) {
@@ -483,7 +452,7 @@ async function display_next_payload(response: DataPayload) {
                     $(".tgt_char").removeClass("highlighted")
                     if (settings_show_alignment) {
                         // Highlight corresponding characters in all candidates
-                        output_block.find(".output_candidate").each(function() {
+                        output_block.find(".output_candidate").each(function () {
                             let tgt_chars = $(this).find(".tgt_char")
                             let tgt_i = Math.round(i / src_chars_els.length * tgt_chars.length)
                             for (let j = Math.max(0, tgt_i - 5); j <= Math.min(tgt_chars.length - 1, tgt_i + 5); j++) {
@@ -494,7 +463,7 @@ async function display_next_payload(response: DataPayload) {
                 })
             })
         }
-        
+
         $("#output_div").append(output_block)
         output_blocks.push(output_block)
     }
@@ -512,7 +481,7 @@ async function navigate_to_item(item_i: number) {
             return
         }
     }
-    
+
     // Fetch and display a specific item by index
     let response = await get_i_item<DataPayload | DataFinished>(item_i)
     has_unsaved_work = false
@@ -585,54 +554,39 @@ async function display_next_item() {
  * Returns true if validation passes or is skipped, false if it fails
  */
 async function performValidation(): Promise<boolean> {
-    clearWarningIndicators()
-    
-    let all_valid = true
-    let first_failed_element: JQuery<HTMLElement> | null = null
-    let warning_message: string | undefined
-    
+    $(".validation_warning").remove()
+
+    let results: Array<boolean> = []
+
     // Validate each item and each candidate
     for (let item_ij = 0; item_ij < response_log.length; item_ij++) {
+        let results_local = []
         for (let cand_i = 0; cand_i < response_log[item_ij].length; cand_i++) {
-            const candidateValidation = getValidationForCandidate(validations[item_ij], cand_i)
-            const result = validateResponse(response_log[item_ij][cand_i], candidateValidation, cand_i)
-            
-            // Log validation attempt to server
-            log_validation(payload!.info.item_i, item_ij, cand_i, result.valid)
-            
-            if (!result.valid) {
-                all_valid = false
-                
-                // Show warning on the output block
-                if (first_failed_element === null) {
-                    first_failed_element = output_blocks[item_ij]
-                }
-                
-                // Get warning message if this is an attention check
-                const itemWarning = getValidationWarning(candidateValidation)
-                if (itemWarning && !warning_message) {
-                    warning_message = itemWarning
-                }
-                
-                // Show warning indicator on failed item
-                showWarningIndicator(output_blocks[item_ij], itemWarning || '')
+            if (validations[item_ij] == undefined) {
+                continue
             }
+            const result = validateResponse(response_log[item_ij][cand_i], validations[item_ij]![cand_i] as Validation)
+
+
+            // if we fail and there's a message, prevent loading next item and show warning
+            if (!result && validations[item_ij]![cand_i].warning) {
+                scrollToBlock(item_ij)
+                showWarningIndicator(output_blocks[item_ij], validations[item_ij]![cand_i].warning as string)
+                notify(validations[item_ij]![cand_i].warning as string)
+                return false
+            }
+
+            results_local.push(result)
         }
+        // check if all candidates passed
+        if (results_local.length > 0) results.push(results_local.every(r => r))
     }
-    
-    if (!all_valid && first_failed_element !== null) {
-        // Scroll to first failed item
-        scrollToElement(first_failed_element)
-        
-        // Show warning notification if there's a warning message
-        if (warning_message) {
-            notify(warning_message)
-        }
-        
-        action_log.push({ "time": Date.now() / 1000, "action": "validation_failed" })
-    }
-    
-    return all_valid
+
+    log_validation(payload!.info.item_i, results)
+
+    // TODO: log this incident
+
+    return true
 }
 
 $("#button_next").on("click", async function () {
@@ -644,7 +598,7 @@ $("#button_next").on("click", async function () {
             return
         }
     }
-    
+
     // disable while communicating with the server
     $("#button_next").attr("disabled", "disabled")
     $("#button_next").val("Next 📶")
@@ -663,7 +617,7 @@ $("#button_next").on("click", async function () {
 })
 
 // Skip tutorial button handler
-$("#button_skip_tutorial").on("click", function() {
+$("#button_skip_tutorial").on("click", function () {
     skip_tutorial_mode = true
     notify("Tutorial skipped. Your current annotations will be submitted.")
     // Trigger the next button click

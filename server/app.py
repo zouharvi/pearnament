@@ -77,11 +77,9 @@ async def _log_response(request: LogResponseRequest):
 class LogValidationRequest(BaseModel):
     campaign_id: str
     user_id: str
-    item_i: int
-    item_ij: int
-    cand_i: int
-    validation_passed: bool
     timestamp: float
+    item_i: int
+    results: list[bool]
 
 
 @app.post("/log-validation")
@@ -96,32 +94,12 @@ async def _log_validation(request: LogValidationRequest):
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
     if user_id not in progress_data[campaign_id]:
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
-
+    
     # Initialize validation_checks if it doesn't exist
-    if "validation_checks" not in progress_data[campaign_id][user_id]:
-        progress_data[campaign_id][user_id]["validation_checks"] = []
+    if "validation" not in progress_data[campaign_id][user_id]:
+        progress_data[campaign_id][user_id]["validation"] = {}
     
-    # Log the validation attempt
-    validation_entry = {
-        "item_i": request.item_i,
-        "item_ij": request.item_ij,
-        "cand_i": request.cand_i,
-        "passed": request.validation_passed,
-        "timestamp": request.timestamp,
-    }
-    progress_data[campaign_id][user_id]["validation_checks"].append(validation_entry)
-    
-    # Update failed count (only count unique failed items that haven't been fixed)
-    # Track latest state for each item using (item_i, item_ij, cand_i) as unique key
-    item_states: dict[tuple[int, int, int], bool] = {}
-    for check in progress_data[campaign_id][user_id]["validation_checks"]:
-        key = (check["item_i"], check["item_ij"], check["cand_i"])
-        item_states[key] = check["passed"]
-    
-    failed_count = sum(1 for passed in item_states.values() if not passed)
-    progress_data[campaign_id][user_id]["failed_checks"] = failed_count
-    progress_data[campaign_id][user_id]["total_validation_items"] = len(item_states)
-    
+    progress_data[campaign_id][user_id]["validation"][request.item_i] = request.results
     save_progress_data(progress_data)
 
     return JSONResponse(content={"status": "ok"}, status_code=200)
@@ -198,6 +176,7 @@ async def _dashboard_data(request: DashboardDataRequest):
     for user_id, user_val in progress_data[campaign_id].items():
         # shallow copy
         entry = dict(user_val)
+        entry["validation"] = list(entry.get("validation", {}).values())
 
         if not is_privileged:
             entry["token_correct"] = None

@@ -254,6 +254,7 @@ def _reset_user_time(progress_data: dict, campaign_id: str, user_id: str) -> Non
     progress_data[campaign_id][user_id]["time"] = 0.0
     progress_data[campaign_id][user_id]["time_start"] = None
     progress_data[campaign_id][user_id]["time_end"] = None
+    progress_data[campaign_id][user_id]["validation"] = {}
 
 
 def reset_task(

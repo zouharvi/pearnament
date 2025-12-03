@@ -73,7 +73,7 @@ export async function log_response(payload: any, item_i: number | null): Promise
   }
 }
 
-export async function log_validation(item_i: number, item_ij: number, cand_i: number, validation_passed: boolean): Promise<void> {
+export async function log_validation(item_i: number, results: Array<boolean>): Promise<void> {
   /* Log validation results to the server (non-blocking). */
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");
@@ -84,12 +84,10 @@ export async function log_validation(item_i: number, item_ij: number, cand_i: nu
       method: "POST",
       data: JSON.stringify({ 
         "campaign_id": campaign_id, 
-        "user_id": user_id, 
+        "user_id": user_id,
+        "timestamp": Date.now() / 1000,
         "item_i": item_i,
-        "item_ij": item_ij,
-        "cand_i": cand_i,
-        "validation_passed": validation_passed,
-        "timestamp": Date.now() / 1000
+        "results": results,
       }),
       contentType: "application/json",
       dataType: "json",

@@ -318,58 +318,32 @@ function spanMatches(userSpan: ErrorSpan, validationSpan: ValidationErrorSpan): 
  */
 export function validateResponse(
     response: Response,
-    validation: Validation | undefined,
-    itemIndex: number
-): ValidationResult {
+    validation: Validation,
+): boolean {
     if (!validation) {
-        return { valid: true, failed_items: [] };
+        return true
     }
-
-    const failed_items: number[] = [];
 
     // Validate score if specified
     if (validation.score !== undefined) {
         const [minScore, maxScore] = validation.score;
         if (response.score === null || response.score < minScore || response.score > maxScore) {
-            failed_items.push(itemIndex);
+            return false
         }
     }
-
+    
     // Validate error spans if specified
     if (validation.error_spans !== undefined && validation.error_spans.length > 0) {
         // Each expected span must be matched by at least one user span
         for (const expectedSpan of validation.error_spans) {
             const matched = response.error_spans.some(userSpan => spanMatches(userSpan, expectedSpan));
             if (!matched) {
-                failed_items.push(itemIndex);
+                return false
             }
         }
     }
 
-    return {
-        valid: failed_items.length === 0,
-        failed_items: [...new Set(failed_items)], // deduplicate
-    };
-}
-
-/**
- * Validate all responses for a document (array of responses)
- */
-export function validateAllResponses(
-    responses: Response[],
-    validations: (Validation | undefined)[]
-): ValidationResult {
-    const all_failed_items: number[] = [];
-
-    for (let i = 0; i < responses.length; i++) {
-        const result = validateResponse(responses[i], validations[i], i);
-        all_failed_items.push(...result.failed_items);
-    }
-
-    return {
-        valid: all_failed_items.length === 0,
-        failed_items: [...new Set(all_failed_items)],
-    };
+    return true
 }
 
 /**
@@ -386,11 +360,4 @@ export function hasAllowSkip(validations: (Validation | Validation[] | undefined
         }
     }
     return false;
-}
-
-/**
- * Get warning message from validation if any
- */
-export function getValidationWarning(validation: Validation | undefined): string | undefined {
-    return validation?.warning;
 }
