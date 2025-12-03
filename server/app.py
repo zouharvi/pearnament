@@ -109,17 +109,14 @@ async def _log_validation(request: LogValidationRequest):
     }
     progress_data[campaign_id][user_id]["validation_checks"].append(validation_entry)
     
-    # Update failed count (only count unique failed items)
-    failed_items = set()
+    # Update failed count (only count unique failed items that haven't been fixed)
+    # Track latest state for each item in a single pass
+    item_states: dict[int, bool] = {}
     for check in progress_data[campaign_id][user_id]["validation_checks"]:
-        if not check["passed"]:
-            failed_items.add(check["item_i"])
-    # But also check which ones were later fixed
-    for check in progress_data[campaign_id][user_id]["validation_checks"]:
-        if check["passed"] and check["item_i"] in failed_items:
-            failed_items.discard(check["item_i"])
+        item_states[check["item_i"]] = check["passed"]
     
-    progress_data[campaign_id][user_id]["failed_checks"] = len(failed_items)
+    failed_count = sum(1 for passed in item_states.values() if not passed)
+    progress_data[campaign_id][user_id]["failed_checks"] = failed_count
     
     save_progress_data(progress_data)
 

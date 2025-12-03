@@ -226,3 +226,10 @@ input[type="button"].error_delete:hover {
 #progress span.progress_incomplete:hover {
     background: #aaa;
 }
+
+/* Validation warning indicator */
+.validation_warning {
+    color: orange;
+    font-size: 16pt;
+    margin-right: 10px;
+}

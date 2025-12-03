@@ -149,7 +149,7 @@ function showWarningIndicator(element: JQuery<HTMLElement>, message?: string) {
     // Remove existing warning on this element
     element.find(".validation_warning").remove()
     
-    const warningEl = $(`<span class="validation_warning" style="color: orange; font-size: 16pt; margin-right: 10px;" title="${message || 'Validation failed'}">⚠️</span>`)
+    const warningEl = $(`<span class="validation_warning" title="${message || 'Validation failed'}">⚠️</span>`)
     element.prepend(warningEl)
 }
 
@@ -166,21 +166,6 @@ function scrollToElement(element: JQuery<HTMLElement>) {
     setTimeout(() => {
         element.css('background-color', '')
     }, 2000)
-}
-
-/**
- * Check if any validation has allow_skip enabled
- */
-function checkHasAllowSkip(): boolean {
-    for (const v of validations) {
-        if (!v) continue
-        if (Array.isArray(v)) {
-            if (v.some(vv => vv?.allow_skip === true)) return true
-        } else {
-            if (v.allow_skip === true) return true
-        }
-    }
-    return false
 }
 
 async function display_next_payload(response: DataPayload) {
@@ -203,7 +188,7 @@ async function display_next_payload(response: DataPayload) {
     skip_tutorial_mode = false
     
     // Show/hide skip tutorial button based on validation settings
-    if (checkHasAllowSkip()) {
+    if (hasAllowSkip(validations)) {
         $("#button_skip_tutorial").show()
     } else {
         $("#button_skip_tutorial").hide()

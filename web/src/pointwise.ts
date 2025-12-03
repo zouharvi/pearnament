@@ -115,7 +115,7 @@ function showWarningIndicator(block: JQuery<HTMLElement>, message?: string) {
   // Remove existing warning on this block
   block.find(".validation_warning").remove()
   
-  const warningEl = $(`<span class="validation_warning" style="color: orange; font-size: 16pt; margin-right: 10px;" title="${message || 'Validation failed'}">⚠️</span>`)
+  const warningEl = $(`<span class="validation_warning" title="${message || 'Validation failed'}">⚠️</span>`)
   block.prepend(warningEl)
 }
 
