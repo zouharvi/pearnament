@@ -1,6 +1,6 @@
 [project]
 name = "pearmut"
-version = "0.1.1"
+version = "0.1.3"
 description = "A tool for evaluation of model outputs, primarily MT."
 readme = "README.md"
 license = { text = "apache-2.0" }

@@ -10,7 +10,7 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 &nbsp;
 [![PyPi license](https://badgen.net/pypi/license/pearmut/)](https://pypi.org/project/pearmut/)
 &nbsp;
-[![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
+[![build status](https://github.com/zouharvi/pearmut/actions/workflows/test.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/test.yml)
 
 <img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/f14c91a5-44d7-4248-ada9-387e95ca59d0" />
 
