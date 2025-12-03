@@ -180,8 +180,8 @@ async function display_next_payload(response: DataPayload) {
                     // leaving target character
                     $(obj.el).on("mouseleave", function () {
                         $(".src_char").removeClass("highlighted")
-                        candidate_block.find(".tgt_char").removeClass("highlighted")
-                        candidate_block.find(".tgt_char").removeClass("highlighted_active")
+                        $(".tgt_char").removeClass("highlighted")
+                        $(".tgt_char").removeClass("highlighted_active")
 
                         // highlight corresponding toolbox if error severity is set
                         if (obj.error_span != null && obj.error_span.severity != null && (!protocol_error_categories || (obj.error_span.category != null && obj.error_span.category?.includes("/")))) {
@@ -192,11 +192,22 @@ async function display_next_payload(response: DataPayload) {
                     // entering target character
                     $(obj.el).on("mouseenter", function () {
                         $(".src_char").removeClass("highlighted")
+                        $(".tgt_char").removeClass("highlighted")
                         if (settings_show_alignment) {
+                            // Highlight corresponding characters in source
                             let src_i = Math.round(i / tgt_chars_objs.length * src_chars_els.length)
                             for (let j = Math.max(0, src_i - 5); j <= Math.min(src_chars_els.length - 1, src_i + 5); j++) {
                                 $(src_chars_els[j]).addClass("highlighted")
                             }
+                            // Highlight corresponding characters in all other candidates
+                            let relative_pos = i / tgt_chars_objs.length
+                            output_block.find(".output_candidate").each(function() {
+                                let other_tgt_chars = $(this).find(".tgt_char")
+                                let other_i = Math.round(relative_pos * other_tgt_chars.length)
+                                for (let j = Math.max(0, other_i - 5); j <= Math.min(other_tgt_chars.length - 1, other_i + 5); j++) {
+                                    other_tgt_chars.eq(j).addClass("highlighted")
+                                }
+                            })
                         }
                         if (state_i != null) {
                             for (let j = Math.min(state_i, i); j <= Math.max(state_i, i); j++) {
