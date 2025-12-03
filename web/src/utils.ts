@@ -394,8 +394,8 @@ export function displayCompletionScreen(response: DataFinished, navigate_to_item
     `)
     redrawProgress(null, response.progress, navigate_to_item)
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
-    $("#button_settings").hide()
-    $("#button_next").hide()
+    $("#button_next").prop("disabled", true)
+    $("#button_next").val("Next 💯")
 }
 
 /**

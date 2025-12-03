@@ -43,6 +43,12 @@ for doc_id, segments in documents.items():
 
 r = random.Random(0)
 
+LANGS_TO_CONFIG = {
+    "cs-de_DE": ("mqm_csde", [True, True, True]),
+    "en-cs_CZ": ("esa_encs", [True, True, False]),
+    "en-uk_UA": ("da_enuk", [True, False, False]),
+}
+
 for langs, data in data_out.items():
     # chunk to 10 documents per task
     data_new = []
@@ -51,18 +57,23 @@ for langs, data in data_out.items():
         chunk = data[i:i + 10]
         data_new.append(chunk)
 
-    with open(f"examples/wmt25_#_{langs}.json", "w") as f:
+    if langs not in LANGS_TO_CONFIG:
+        continue
+
+    fname, config = LANGS_TO_CONFIG[langs]
+
+    with open(f"examples/{fname}.json", "w") as f:
         lang1, lang2 = langs.split("-")
         json.dump(
             {
                 "info": {
                     "assignment": "task-based",
                     "template": "pointwise",
-                    "protocol_score": True,
-                    "protocol_error_spans": True,
-                    "protocol_error_categories": True,
+                    "protocol_score": config[0],
+                    "protocol_error_spans": config[1],
+                    "protocol_error_categories": config[2],
                 },
-                "campaign_id": f"wmt25_#_{langs}",
+                "campaign_id": fname,
                 # just first 5 users to keep the size small
                 "data": data_new[:5],
             },

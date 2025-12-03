@@ -214,7 +214,7 @@ def main():
         import shutil
 
         confirm = input(
-            "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n]"
+            "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n] "
         )
         if confirm.lower() == 'y':
             shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)

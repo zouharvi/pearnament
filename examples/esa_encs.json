@@ -4,9 +4,9 @@
     "template": "pointwise",
     "protocol_score": true,
     "protocol_error_spans": true,
-    "protocol_error_categories": true
+    "protocol_error_categories": false
   },
-  "campaign_id": "wmt25_#_en-cs_CZ",
+  "campaign_id": "esa_encs",
   "data": [
     [
       [

@@ -581,15 +581,13 @@ $("#button_next").on("click", async function () {
     }
   }
 
-  console.log(validationResult)
-
   // disable while communicating with the server
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
   action_log.push({ "time": Date.now() / 1000, "action": "submit" + (skip_tutorial_mode ? "_skip" : "") })
 
   let payload_local = { "annotations": response_log, "actions": action_log, "item": payload, }
-  if (!skip_tutorial_mode) {
+  if (!skip_tutorial_mode && validationResult!.length > 0) {
     // @ts-ignore
     payload_local["validations"] = validationResult
   }

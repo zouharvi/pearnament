@@ -76,8 +76,6 @@ def get_i_item_taskbased(
     Get specific item for task-based protocol.
     """
     user_progress = progress_data[campaign_id][user_id]
-    if all(user_progress["progress"]):
-        return _completed_response(progress_data, campaign_id, user_id)
 
     # try to get existing annotations if any
     items_existing = get_db_log_item(campaign_id, user_id, item_i)
@@ -120,8 +118,6 @@ def get_i_item_singlestream(
     Get specific item for single-stream assignment.
     """
     user_progress = progress_data[campaign_id][user_id]
-    if all(user_progress["progress"]):
-        return _completed_response(progress_data, campaign_id, user_id)
 
     # try to get existing annotations if any
     # note the None user_id since it is shared

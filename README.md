@@ -21,11 +21,11 @@ You do not need to clone this repository. Simply install with pip and run locall
 # install the package
 pip install pearmut
 # download two campaign definitions
-wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/wmt25_%23_en-cs_CZ.json
-wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/wmt25_%23_cs-de_DE.json
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/esa_encs.json
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/da_enuk.json
 # load them into pearmut
-pearmut add wmt25_#_en-cs_CZ.json
-pearmut add wmt25_#_cs-de_DE.json
+pearmut add esa_encs.json
+pearmut add da_enuk.json
 # start pearmut (will show management links)
 pearmut run
 ```
