@@ -117,6 +117,7 @@ async def _log_validation(request: LogValidationRequest):
     
     failed_count = sum(1 for passed in item_states.values() if not passed)
     progress_data[campaign_id][user_id]["failed_checks"] = failed_count
+    progress_data[campaign_id][user_id]["total_validation_items"] = len(item_states)
     
     save_progress_data(progress_data)
 

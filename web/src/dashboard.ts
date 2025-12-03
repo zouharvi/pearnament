@@ -50,7 +50,7 @@ campaign_ids.forEach(async (campaign_id, i) => {
                         <th style="min-width: 80px;">First</th>
                         <th style="min-width: 80px;">Last</th>
                         <th style="min-width: 80px;">Time</th>
-                        <th style="min-width: 50px;">Failed</th>
+                        <th style="min-width: 70px;">Checks</th>
                         <th style="min-width: 50px;">Actions</th>
                     </tr></thead>
                     <tbody>`
@@ -86,8 +86,13 @@ campaign_ids.forEach(async (campaign_id, i) => {
                 }
                 html += `<td>${Math.round(data[user_id]["time"] / 60)}m</td>`
                 
-                // failed checks column
-                html += `<td style="${failed_checks > 0 ? 'color: red; font-weight: bold;' : ''}">${failed_checks > 0 ? failed_checks : '-'}</td>`
+                // failed checks column - show as fail/total
+                let total_validation_items = data[user_id]["total_validation_items"] || 0
+                if (total_validation_items > 0) {
+                    html += `<td><span style="${failed_checks > 0 ? 'color: #c75050; font-weight: bold;' : ''}">${failed_checks}</span><span style="color: #333;">/${total_validation_items}</span></td>`
+                } else {
+                    html += `<td>-</td>`
+                }
 
                 // actions section
                 html += `<td>
