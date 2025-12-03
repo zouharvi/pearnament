@@ -2,7 +2,7 @@
 
 Pearmut is a **Platform for Evaluation and Reviewing of Multilingual Tasks**.
 It evaluates model outputs, primarily translation but also various other NLP tasks.
-Supports multimodality (text, video, audio, images) and a variety of annotation protocols (DA, ESA, MQM, paired ESA, etc).
+Supports multimodality (text, video, audio, images) and a variety of annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437), paired ESA, etc).
 
 [![PyPi version](https://badgen.net/pypi/v/pearmut/)](https://pypi.org/project/pearmut)
 &nbsp;
@@ -93,6 +93,37 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 ],
 ... # definition of another item (document)
 ```
+
+## Pre-filled Error Spans (ESAAI Support)
+
+For workflows where you want to provide pre-filled error annotations (e.g., ESAAI), you can include an `error_spans` key in each item. These spans will be loaded into the interface as existing annotations that users can review, modify, or delete.
+
+```python
+{
+  "src": "The quick brown fox jumps over the lazy dog.",
+  "tgt": "Rychlá hnědá liška skáče přes líného psa.",
+  "error_spans": [
+    {
+      "start_i": 0,         # character index start (inclusive)
+      "end_i": 5,           # character index end (inclusive)
+      "severity": "minor",  # "minor", "major", "neutral", or null
+      "category": null      # MQM category string or null
+    },
+    {
+      "start_i": 27,
+      "end_i": 32,
+      "severity": "major",
+      "category": null
+    }
+  ]
+}
+```
+
+For **listwise** template, `error_spans` is a 2D array where each inner array corresponds to error spans for that candidate.
+
+See [examples/esaai_prefilled.json](examples/esaai_prefilled.json) for a complete example.
+
+## Single-stream Assignment
 
 We also support a simple allocation where all annotators draw from the same pool (`single-stream`). Items are randomly assigned to annotators from the pool of unfinished items:
 ```python

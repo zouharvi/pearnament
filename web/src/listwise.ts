@@ -26,6 +26,7 @@ type DataPayload = {
         tgt: string | Array<string>,  // Single or multiple translation candidates
         checks?: any,
         instructions?: string,
+        error_spans?: Array<Array<ErrorSpan>>,  // Pre-filled error spans (2D array, one per candidate)
     }>,
     info: {
         protocol_score: boolean,
@@ -46,6 +47,14 @@ type DataFinished = {
  */
 function ensureCandidateArray(tgt: string | Array<string>): Array<string> {
     return Array.isArray(tgt) ? tgt : [tgt]
+}
+
+/**
+ * Gets error spans for a specific candidate index
+ */
+function getErrorSpansForCandidate(error_spans: Array<Array<ErrorSpan>> | undefined, cand_i: number): Array<ErrorSpan> {
+    if (!error_spans || error_spans.length === 0) return []
+    return error_spans[cand_i] || []
 }
 
 let response_log: Array<DocumentResponse> = []
@@ -316,6 +325,40 @@ async function display_next_payload(response: DataPayload) {
                         })
                     }
                 })
+            }
+
+            // Load pre-filled error spans for this candidate
+            const candidateSpans = getErrorSpansForCandidate(item.error_spans, cand_i)
+            if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
+                for (const prefilled of candidateSpans) {
+                    const left_i = prefilled.start_i, right_i = prefilled.end_i
+                    if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
+                    let error_span: ErrorSpan = { ...prefilled }
+                    response_log[item_i][cand_i].error_spans.push(error_span)
+
+                    let toolbox = createSpanToolbox(protocol_error_categories, error_span, tgt_chars_objs, left_i, right_i, () => {
+                        response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(s => s != error_span)
+                        action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
+                        has_unsaved_work = true
+                    })
+                    $("body").append(toolbox)
+                    toolbox.on("mouseenter", () => { toolbox.css("display", "block"); check_unlock() })
+                    toolbox.on("mouseleave", () => {
+                        if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                            toolbox.css("display", "none"); check_unlock()
+                        }
+                    })
+                    $(window).on('resize', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
+                    $(window).trigger('resize')
+                    for (let j = left_i; j <= right_i; j++) {
+                        $(tgt_chars_objs[j].el).addClass(error_span.severity ? `error_${error_span.severity}` : "error_unknown")
+                        tgt_chars_objs[j].toolbox = toolbox
+                        tgt_chars_objs[j].error_span = error_span
+                    }
+                    if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                        toolbox.css("display", "none")
+                    }
+                }
             }
 
             // Setup slider for this candidate
