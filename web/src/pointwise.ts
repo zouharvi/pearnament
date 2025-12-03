@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, get_item, log_response } from './connector';
+import { get_next_item, get_i_item, log_response } from './connector';
 import { 
   notify, 
   ErrorSpan, 
@@ -22,6 +22,7 @@ type DataPayload = {
     instructions?: string,
     error_spans?: Array<ErrorSpan>,
   }>,
+  payload_existing?: Array<Response>,
   info: {
     protocol_score: boolean,
     protocol_error_spans: boolean,
@@ -98,10 +99,18 @@ async function display_next_payload(response: DataPayload) {
   $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
 
   let data = response.payload
-  response_log = data.map(_ => ({
-    "score": null,
-    "error_spans": [],
-  }))
+  // If payload_existing exists (previously submitted annotations), use it; otherwise initialize empty
+  if (response.payload_existing) {
+    response_log = response.payload_existing.map(r => ({
+      "score": r.score,
+      "error_spans": r.error_spans ? [...r.error_spans] : [],
+    }))
+  } else {
+    response_log = data.map(_ => ({
+      "score": null,
+      "error_spans": [],
+    }))
+  }
   action_log = [{ "time": Date.now() / 1000, "action": "load" }]
   has_unsaved_work = false
 
@@ -377,9 +386,17 @@ async function display_next_payload(response: DataPayload) {
       })
     }
 
-    // Load pre-filled error spans (treat them as user-created)
-    if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && item.error_spans) {
-      for (const prefilled of item.error_spans) {
+    // Load error spans - use payload_existing if available, otherwise use item.error_spans
+    const existingErrorSpans = response.payload_existing?.[item_i]?.error_spans
+    const errorSpansToLoad = existingErrorSpans || item.error_spans || []
+    
+    if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && errorSpansToLoad.length > 0) {
+      // Only reset if loading from payload_existing (to avoid duplicating pre-filled spans)
+      if (existingErrorSpans) {
+        response_log[item_i].error_spans = []
+      }
+      
+      for (const prefilled of errorSpansToLoad) {
         const left_i = prefilled.start_i, right_i = prefilled.end_i
         if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
         let error_span: ErrorSpan = { ...prefilled }
@@ -445,6 +462,14 @@ async function display_next_payload(response: DataPayload) {
       check_unlock()
       action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
     })
+    
+    // Pre-fill score from payload_existing if available
+    const existingScore = response.payload_existing?.[item_i]?.score
+    if (existingScore != null && protocol_score) {
+      slider.val(existingScore)
+      label.text(existingScore.toString())
+      response_log[item_i].score = existingScore
+    }
   }
 
   check_unlock()
@@ -454,7 +479,7 @@ async function display_next_payload(response: DataPayload) {
 let payload: DataPayload | null = null
 async function navigate_to_item(item_i: number) {
   // Fetch and display a specific item by index
-  let response = await get_item<DataPayload | DataFinished>(item_i)
+  let response = await get_i_item<DataPayload | DataFinished>(item_i)
   has_unsaved_work = false
 
   if (response == null) {

@@ -73,7 +73,7 @@ export async function log_response(payload: any, item_i: number | null): Promise
   }
 }
 
-export async function get_item<T>(item_i: number): Promise<T | null> {
+export async function get_i_item<T>(item_i: number): Promise<T | null> {
   /* Fetch a specific item by index for the user from the server. */
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");
@@ -83,7 +83,7 @@ export async function get_item<T>(item_i: number): Promise<T | null> {
     try {
       return await new Promise<T>((resolve, reject) => {
         $.ajax({
-          url: `/get-item`,
+          url: `/get-i-item`,
           method: "POST",
           data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id, "item_i": item_i }),
           contentType: "application/json",

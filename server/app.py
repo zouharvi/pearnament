@@ -103,8 +103,8 @@ class GetItemRequest(BaseModel):
     item_i: int
 
 
-@app.post("/get-item")
-async def _get_item(request: GetItemRequest):
+@app.post("/get-i-item")
+async def _get_i_item(request: GetItemRequest):
     campaign_id = request.campaign_id
     user_id = request.user_id
     item_i = request.item_i
