@@ -1,0 +1,243 @@
+{
+  "info": {
+    "assignment": "task-based",
+    "template": "pointwise",
+    "protocol_score": true,
+    "protocol_error_spans": true,
+    "protocol_error_categories": false,
+    "instructions": "This is a tutorial campaign. Complete the training items before proceeding to regular annotation."
+  },
+  "campaign_id": "mock_tutorial",
+  "data": [
+    [
+      [
+        {
+          "doc_id": "tutorial_1",
+          "src": "The quick brown fox jumps over the lazy dog.",
+          "tgt": "Rychlá hnědá liška skáče přes líného psa.",
+          "instructions": "<b>Tutorial 1:</b> This translation has a minor error at the beginning. Please mark 'Rychlá' as a <b>minor</b> error and set the score between 70 and 80.",
+          "validation": {
+            "warning": "Please review the tutorial instructions. Mark 'Rychlá' as a minor error and set score between 70-80.",
+            "score": [
+              70,
+              80
+            ],
+            "error_spans": [
+              {
+                "start_i": [
+                  0,
+                  2
+                ],
+                "end_i": [
+                  4,
+                  6
+                ],
+                "severity": "minor"
+              }
+            ],
+            "allow_skip": true
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "tutorial_2",
+          "src": "Machine translation has improved significantly.",
+          "tgt": "Strojový překlad se výrazně zlepšil.",
+          "instructions": "<b>Tutorial 2:</b> This is a good translation. Set the score between 85 and 95. No error spans needed.",
+          "validation": {
+            "warning": "This translation is good. Set score between 85-95 without marking errors.",
+            "score": [
+              85,
+              95
+            ],
+            "allow_skip": true
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_1",
+          "src": "Artificial intelligence is transforming industries.",
+          "tgt": "Umělá inteligence transformuje průmysl.",
+          "instructions": "<b>Attention Check:</b> Set the score to exactly 50.",
+          "validation": {
+            "warning": "You failed the attention check. Please set the score to exactly 50.",
+            "score": [
+              50,
+              50
+            ]
+          }
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "doc_id": "tutorial_1",
+          "src": "Climate change affects global weather patterns.",
+          "tgt": "Změny klimatu ovlivňují globální vzorce počasí.",
+          "instructions": "<b>Tutorial 1:</b> This translation contains a major error. Mark 'vzorce' as a <b>major</b> error. Score should be 40-60.",
+          "validation": {
+            "warning": "Please mark 'vzorce' as a major error and set the score between 40-60.",
+            "score": [
+              40,
+              60
+            ],
+            "error_spans": [
+              {
+                "start_i": [
+                  25,
+                  35
+                ],
+                "end_i": [
+                  35,
+                  45
+                ],
+                "severity": "major"
+              }
+            ],
+            "allow_skip": true
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "tutorial_2",
+          "src": "Scientists discovered a new species in the Amazon.",
+          "tgt": "Vědci objevili nový druh v Amazonii.",
+          "instructions": "<b>Tutorial 2:</b> Perfect translation. Score between 90-100.",
+          "validation": {
+            "warning": "This is a perfect translation. Please set score between 90-100.",
+            "score": [
+              90,
+              100
+            ],
+            "allow_skip": true
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_1",
+          "src": "The economy is recovering slowly.",
+          "tgt": "Ekonomika se pomalu zotavuje.",
+          "instructions": "<b>Attention Check:</b> Set the score between 70 and 75.",
+          "validation": {
+            "warning": "Attention check failed. Please set the score between 70-75.",
+            "score": [
+              70,
+              75
+            ]
+          }
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "doc_id": "tutorial_1",
+          "src": "Renewable energy sources are becoming more affordable.",
+          "tgt": "Obnovitelné zdroje energie jsou stále dostupnější.",
+          "instructions": "<b>Tutorial 1:</b> Good translation with minor style issue. Mark 'stále' as minor. Score 75-85.",
+          "validation": {
+            "warning": "Please mark 'stále' as a minor error and set score between 75-85.",
+            "score": [
+              75,
+              85
+            ],
+            "error_spans": [
+              {
+                "start_i": [
+                  25,
+                  34
+                ],
+                "end_i": [
+                  36,
+                  45
+                ],
+                "severity": "minor"
+              }
+            ],
+            "allow_skip": true
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "tutorial_2",
+          "src": "International cooperation is essential for peace.",
+          "tgt": "Mezinárodní spolupráce je nezbytná pro mír.",
+          "instructions": "<b>Tutorial 2:</b> Excellent translation. Score 88-100.",
+          "validation": {
+            "warning": "Excellent translation. Please set score between 88-100.",
+            "score": [
+              88,
+              100
+            ],
+            "allow_skip": true
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_1",
+          "src": "Technology advances rapidly.",
+          "tgt": "Technologie rychle postupují.",
+          "instructions": "<b>Attention Check:</b> Score must be exactly 65.",
+          "validation": {
+            "warning": "Attention check failed. Score must be exactly 65.",
+            "score": [
+              65,
+              65
+            ]
+          }
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "doc_id": "silent_check_1",
+          "src": "The weather forecast predicts rain tomorrow.",
+          "tgt": "Banán létá rychle přes hory kočka.",
+          "instructions": "Evaluate this translation quality.",
+          "validation": {
+            "score": [
+              0,
+              15
+            ]
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "silent_check_2",
+          "src": "Scientists have discovered a new planet.",
+          "tgt": "Stůl plave v moři zelených snů včera.",
+          "instructions": "Evaluate this translation quality.",
+          "validation": {
+            "score": [
+              0,
+              20
+            ]
+          }
+        }
+      ],
+      [
+        {
+          "doc_id": "silent_check_3",
+          "src": "The restaurant serves excellent Italian cuisine.",
+          "tgt": "Počítač zpívá modrou knihu telefon.",
+          "instructions": "Evaluate this translation quality.",
+          "validation": {
+            "score": [
+              0,
+              10
+            ]
+          }
+        }
+      ]
+    ]
+  ]
+}

@@ -73,6 +73,30 @@ export async function log_response(payload: any, item_i: number | null): Promise
   }
 }
 
+export async function log_validation(item_i: number, results: Array<boolean>): Promise<void> {
+  /* Log validation results to the server (non-blocking). */
+  let user_id = searchParams.get("user_id");
+  let campaign_id = searchParams.get("campaign_id");
+
+  try {
+    $.ajax({
+      url: `/log-validation`,
+      method: "POST",
+      data: JSON.stringify({ 
+        "campaign_id": campaign_id, 
+        "user_id": user_id,
+        "timestamp": Date.now() / 1000,
+        "item_i": item_i,
+        "results": results,
+      }),
+      contentType: "application/json",
+      dataType: "json",
+    });
+  } catch (e) {
+    console.log("Error logging validation:", e);
+  }
+}
+
 export async function get_i_item<T>(item_i: number): Promise<T | null> {
   /* Fetch a specific item by index for the user from the server. */
   let user_id = searchParams.get("user_id");

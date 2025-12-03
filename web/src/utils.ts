@@ -31,6 +31,23 @@ export type ErrorSpan = { start_i: number, end_i: number, category: string | nul
 export type Response = { score: number | null, error_spans: Array<ErrorSpan> }
 export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null }
 
+// Validation types for tutorial/attention checks
+export type ValidationErrorSpan = { 
+    start_i?: number | [number, number],  // exact value or range [min, max]
+    end_i?: number | [number, number],    // exact value or range [min, max]
+    severity?: string 
+}
+export type Validation = {
+    warning?: string,  // Warning message to display on failure (attention check mode)
+    score?: [number, number],  // [min, max] range for valid score
+    error_spans?: Array<ValidationErrorSpan>,  // Expected error spans
+    allow_skip?: boolean  // Show skip tutorial button
+}
+export type ValidationResult = { 
+    valid: boolean, 
+    failed_items: number[],  // indices of failed items
+}
+
 // MQM Error Categories shared between pointwise and listwise
 export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
     "Terminology": [
@@ -258,4 +275,89 @@ export function updateToolboxPosition(toolbox: JQuery<HTMLElement>, charEl: JQue
         top: topPosition,
         left: leftPosition - 25,
     });
+}
+
+/**
+ * Check if a value is within a specified range
+ */
+function isInRange(value: number, range: number | [number, number]): boolean {
+    if (Array.isArray(range)) {
+        return value >= range[0] && value <= range[1];
+    }
+    return value === range;
+}
+
+/**
+ * Check if a user error span matches a validation error span requirement
+ */
+function spanMatches(userSpan: ErrorSpan, validationSpan: ValidationErrorSpan): boolean {
+    // Check start_i if specified
+    if (validationSpan.start_i !== undefined) {
+        if (!isInRange(userSpan.start_i, validationSpan.start_i)) {
+            return false;
+        }
+    }
+    // Check end_i if specified
+    if (validationSpan.end_i !== undefined) {
+        if (!isInRange(userSpan.end_i, validationSpan.end_i)) {
+            return false;
+        }
+    }
+    // Check severity if specified
+    if (validationSpan.severity !== undefined) {
+        if (userSpan.severity !== validationSpan.severity) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Validate user responses against validation rules
+ * Returns validation result with failed items
+ */
+export function validateResponse(
+    response: Response,
+    validation: Validation,
+): boolean {
+    if (!validation) {
+        return true
+    }
+
+    // Validate score if specified
+    if (validation.score !== undefined) {
+        const [minScore, maxScore] = validation.score;
+        if (response.score === null || response.score < minScore || response.score > maxScore) {
+            return false
+        }
+    }
+    
+    // Validate error spans if specified
+    if (validation.error_spans !== undefined && validation.error_spans.length > 0) {
+        // Each expected span must be matched by at least one user span
+        for (const expectedSpan of validation.error_spans) {
+            const matched = response.error_spans.some(userSpan => spanMatches(userSpan, expectedSpan));
+            if (!matched) {
+                return false
+            }
+        }
+    }
+
+    return true
+}
+
+/**
+ * Check if any validation has allow_skip enabled
+ * Handles both simple validations and arrays of validations (for listwise)
+ */
+export function hasAllowSkip(validations: (Validation | Validation[] | undefined)[]): boolean {
+    for (const v of validations) {
+        if (!v) continue;
+        if (Array.isArray(v)) {
+            if (v.some(vv => vv?.allow_skip === true)) return true;
+        } else {
+            if (v.allow_skip === true) return true;
+        }
+    }
+    return false;
 }

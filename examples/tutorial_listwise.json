@@ -1,0 +1,378 @@
+{
+  "info": {
+    "assignment": "task-based",
+    "template": "listwise",
+    "protocol_score": true,
+    "protocol_error_spans": true,
+    "protocol_error_categories": false,
+    "instructions": "This is a tutorial campaign for listwise evaluation. Complete the training items before proceeding to regular annotation."
+  },
+  "campaign_id": "mock_tutorial_listwise",
+  "data": [
+    [
+      [
+        {
+          "doc_id": "tutorial_1",
+          "src": "The quick brown fox jumps over the lazy dog.",
+          "tgt": [
+            "Rychlá hnědá liška skáče přes líného psa.",
+            "Hbitá hnědá liška přeskočila lenivého psa.",
+            "Svižná hnědá liška skočila přes ospalého psa."
+          ],
+          "instructions": "<b>Tutorial 1:</b> Compare these translations. First translation (A) is best: 80-90. Second (B) has errors: 40-60. Third (C) is good: 70-80.",
+          "validation": [
+            {
+              "warning": "Translation A is best. Score 80-90.",
+              "score": [
+                80,
+                90
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "Translation B has errors. Score 40-60.",
+              "score": [
+                40,
+                60
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "Translation C is good. Score 70-80.",
+              "score": [
+                70,
+                80
+              ],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "tutorial_2",
+          "src": "Machine translation improves daily.",
+          "tgt": [
+            "Strojový překlad se denně zlepšuje.",
+            "Automatický překlad je každý den lepší."
+          ],
+          "instructions": "<b>Tutorial 2:</b> Both are good. A: 85-95, B: 80-90.",
+          "validation": [
+            {
+              "warning": "Translation A is excellent. Score 85-95.",
+              "score": [
+                85,
+                95
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "Translation B is good. Score 80-90.",
+              "score": [
+                80,
+                90
+              ],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_1",
+          "src": "AI transforms industries.",
+          "tgt": [
+            "UI transformuje průmysly.",
+            "Umělá inteligence mění obory."
+          ],
+          "instructions": "<b>Attention Check:</b> A: exactly 30. B: exactly 85.",
+          "validation": [
+            {
+              "warning": "Attention check: A must be 30.",
+              "score": [
+                30,
+                30
+              ]
+            },
+            {
+              "warning": "Attention check: B must be 85.",
+              "score": [
+                85,
+                85
+              ]
+            }
+          ]
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "doc_id": "tutorial_1",
+          "src": "Scientists study ocean currents.",
+          "tgt": [
+            "Vědci studují mořské proudy.",
+            "Vědci zkoumají oceánské proudy.",
+            "Badatelé pozorují vodní proudy."
+          ],
+          "instructions": "<b>Tutorial 1:</b> A is perfect: 90-100. B is good: 75-85. C has issues: 50-65.",
+          "validation": [
+            {
+              "warning": "A is perfect. Score 90-100.",
+              "score": [
+                90,
+                100
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "B is good. Score 75-85.",
+              "score": [
+                75,
+                85
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "C has issues. Score 50-65.",
+              "score": [
+                50,
+                65
+              ],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "tutorial_2",
+          "src": "Weather affects agriculture.",
+          "tgt": [
+            "Počasí ovlivňuje zemědělství.",
+            "Klima má dopad na farmaření."
+          ],
+          "instructions": "<b>Tutorial 2:</b> A is great: 88-98. B is acceptable: 60-75.",
+          "validation": [
+            {
+              "warning": "A is great. Score 88-98.",
+              "score": [
+                88,
+                98
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "B is acceptable. Score 60-75.",
+              "score": [
+                60,
+                75
+              ],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_1",
+          "src": "Energy costs rise.",
+          "tgt": [
+            "Ceny energie rostou.",
+            "Náklady na energii stoupají."
+          ],
+          "instructions": "<b>Attention Check:</b> A: exactly 80. B: exactly 75.",
+          "validation": [
+            {
+              "warning": "Attention check: A must be 80.",
+              "score": [
+                80,
+                80
+              ]
+            },
+            {
+              "warning": "Attention check: B must be 75.",
+              "score": [
+                75,
+                75
+              ]
+            }
+          ]
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "doc_id": "tutorial_1",
+          "src": "Technology changes society.",
+          "tgt": [
+            "Technologie mění společnost.",
+            "Technika transformuje společnost.",
+            "Technologie ovlivňuje lidstvo."
+          ],
+          "instructions": "<b>Tutorial 1:</b> A is best: 85-95. B is good: 70-80. C is weak: 45-60.",
+          "validation": [
+            {
+              "warning": "A is best. Score 85-95.",
+              "score": [
+                85,
+                95
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "B is good. Score 70-80.",
+              "score": [
+                70,
+                80
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "C is weak. Score 45-60.",
+              "score": [
+                45,
+                60
+              ],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "tutorial_2",
+          "src": "Education is important.",
+          "tgt": [
+            "Vzdělání je důležité.",
+            "Vzdělávání hraje klíčovou roli."
+          ],
+          "instructions": "<b>Tutorial 2:</b> Both excellent. A: 90-100, B: 88-96.",
+          "validation": [
+            {
+              "warning": "A is excellent. Score 90-100.",
+              "score": [
+                90,
+                100
+              ],
+              "allow_skip": true
+            },
+            {
+              "warning": "B is excellent. Score 88-96.",
+              "score": [
+                88,
+                96
+              ],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_1",
+          "src": "Markets fluctuate daily.",
+          "tgt": [
+            "Trhy denně kolísají.",
+            "Trhy se každý den mění."
+          ],
+          "instructions": "<b>Attention Check:</b> A: exactly 70. B: exactly 65.",
+          "validation": [
+            {
+              "warning": "Attention check: A must be 70.",
+              "score": [
+                70,
+                70
+              ]
+            },
+            {
+              "warning": "Attention check: B must be 65.",
+              "score": [
+                65,
+                65
+              ]
+            }
+          ]
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "doc_id": "silent_check_1",
+          "src": "The weather forecast predicts rain tomorrow.",
+          "tgt": [
+            "Banán létá rychle přes hory kočka.",
+            "Předpověď počasí hlásí déšť na zítra."
+          ],
+          "instructions": "Compare these translations.",
+          "validation": [
+            {
+              "score": [
+                0,
+                15
+              ]
+            },
+            {
+              "score": [
+                80,
+                100
+              ]
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "silent_check_2",
+          "src": "Scientists have discovered a new planet.",
+          "tgt": [
+            "Vědci objevili novou planetu.",
+            "Stůl plave v moři zelených snů včera."
+          ],
+          "instructions": "Compare these translations.",
+          "validation": [
+            {
+              "score": [
+                85,
+                100
+              ]
+            },
+            {
+              "score": [
+                0,
+                20
+              ]
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "silent_check_3",
+          "src": "The restaurant serves excellent Italian cuisine.",
+          "tgt": [
+            "Počítač zpívá modrou knihu telefon.",
+            "Restaurace nabízí vynikající italskou kuchyni."
+          ],
+          "instructions": "Compare these translations.",
+          "validation": [
+            {
+              "score": [
+                0,
+                10
+              ]
+            },
+            {
+              "score": [
+                90,
+                100
+              ]
+            }
+          ]
+        }
+      ]
+    ]
+  ]
+}

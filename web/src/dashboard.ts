@@ -50,6 +50,7 @@ campaign_ids.forEach(async (campaign_id, i) => {
                         <th style="min-width: 80px;">First</th>
                         <th style="min-width: 80px;">Last</th>
                         <th style="min-width: 80px;">Time</th>
+                        <th style="min-width: 70px;">Checks</th>
                         <th style="min-width: 50px;">Actions</th>
                     </tr></thead>
                     <tbody>`
@@ -57,6 +58,7 @@ campaign_ids.forEach(async (campaign_id, i) => {
                 // sum
                 let progress_count = (data[user_id]["progress"] as Array<boolean>).reduce((a, b) => a + (b ? 1 : 0), 0)
                 let progress_total = (data[user_id]["progress"] as Array<boolean>).length
+                let failed_checks = data[user_id]["failed_checks"] || 0
                 let status = ''
                 if (data[user_id]["time"] == 0)
                     status = '💤'
@@ -83,6 +85,10 @@ campaign_ids.forEach(async (campaign_id, i) => {
                     html += `<td title="${new Date(data[user_id]["time_end"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_end"])} ago</td>`
                 }
                 html += `<td>${Math.round(data[user_id]["time"] / 60)}m</td>`
+                
+                let validation_passed = data[user_id]["validations"].reduce((a: number, b: boolean) => a + (b ? 1 : 0), 0)
+                let validation_total = data[user_id]["validations"].length
+                html += `<td><span style="${validation_passed != validation_total ? 'color: #c75050;' : ''}">${validation_passed}</span><span style="color: #333;">/${validation_total}</span></td>`
 
                 // actions section
                 html += `<td>

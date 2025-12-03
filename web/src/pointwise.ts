@@ -1,15 +1,18 @@
 import $ from 'jquery';
 
-import { get_next_item, get_i_item, log_response } from './connector';
-import { 
-  notify, 
-  ErrorSpan, 
-  Response, 
-  CharData, 
-  MQM_ERROR_CATEGORIES, 
-  redrawProgress, 
-  createSpanToolbox, 
-  updateToolboxPosition 
+import { get_next_item, get_i_item, log_response, log_validation } from './connector';
+import {
+  notify,
+  ErrorSpan,
+  Response,
+  CharData,
+  MQM_ERROR_CATEGORIES,
+  redrawProgress,
+  createSpanToolbox,
+  updateToolboxPosition,
+  Validation,
+  validateResponse,
+  hasAllowSkip,
 } from './utils';
 type DataPayload = {
   status: string,
@@ -21,6 +24,7 @@ type DataPayload = {
     checks?: any,
     instructions?: string,
     error_spans?: Array<ErrorSpan>,
+    validation?: Validation,
   }>,
   payload_existing?: Array<Response>,
   info: {
@@ -38,8 +42,11 @@ type DataFinished = {
 }
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
+let validations: Array<Validation | undefined> = []
+let output_blocks: Array<JQuery<HTMLElement>> = []
 let settings_show_alignment = true
 let has_unsaved_work = false
+let skip_tutorial_mode = false
 
 // Prevent accidental refresh/navigation when there is ongoing work
 window.addEventListener('beforeunload', (event) => {
@@ -94,6 +101,28 @@ function _slider_html(i: number): string {
     `
 }
 
+/**
+ * Show warning indicator on a specific output block
+ */
+function showWarningIndicator(block: JQuery<HTMLElement>, message?: string) {
+  // Remove existing warning on this block
+  block.find(".validation_warning").remove()
+
+  const warningEl = $(`<span class="validation_warning" title="${message || 'Validation failed'}">⚠️</span>`)
+  block.prepend(warningEl)
+}
+
+/**
+ * Scroll to and highlight a specific output block
+ */
+function scrollToBlock(index: number) {
+  if (output_blocks[index]) {
+    $('html, body').animate({
+      scrollTop: output_blocks[index].offset()!.top - 100
+    }, 500)
+  }
+}
+
 async function display_next_payload(response: DataPayload) {
   redrawProgress(response.info.item_i, response.progress, navigate_to_item)
   $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
@@ -111,9 +140,18 @@ async function display_next_payload(response: DataPayload) {
       "error_spans": [],
     }))
   }
+  validations = data.map(item => item.validation)
+  output_blocks = []
   action_log = [{ "time": Date.now() / 1000, "action": "load" }]
   has_unsaved_work = false
+  skip_tutorial_mode = false
 
+  // Show/hide skip tutorial button based on validation settings
+  if (hasAllowSkip(validations)) {
+    $("#button_skip_tutorial").show()
+  } else {
+    $("#button_skip_tutorial").hide()
+  }
 
   let protocol_score = response.info.protocol_score
   let protocol_error_spans = response.info.protocol_error_spans
@@ -388,13 +426,13 @@ async function display_next_payload(response: DataPayload) {
     // Load error spans - use payload_existing if available, otherwise use item.error_spans
     const existingErrorSpans = response.payload_existing?.[item_i]?.error_spans
     const errorSpansToLoad = existingErrorSpans || item.error_spans || []
-    
+
     if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && errorSpansToLoad.length > 0) {
       // Only reset if loading from payload_existing (to avoid duplicating pre-filled spans)
       if (existingErrorSpans) {
         response_log[item_i].error_spans = []
       }
-      
+
       for (const prefilled of errorSpansToLoad) {
         const left_i = prefilled.start_i, right_i = prefilled.end_i
         if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
@@ -445,6 +483,7 @@ async function display_next_payload(response: DataPayload) {
       })
     }
     $("#output_div").append(output_block)
+    output_blocks.push(output_block)
 
     let slider = output_block.find("input[type='range']")
     let label = output_block.find(".output_number")
@@ -461,7 +500,7 @@ async function display_next_payload(response: DataPayload) {
       check_unlock()
       action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
     })
-    
+
     // Pre-fill score from payload_existing if available
     const existingScore = response.payload_existing?.[item_i]?.score
     if (existingScore != null && protocol_score) {
@@ -483,7 +522,7 @@ async function navigate_to_item(item_i: number) {
       return
     }
   }
-  
+
   // Fetch and display a specific item by index
   let response = await get_i_item<DataPayload | DataFinished>(item_i)
   has_unsaved_work = false
@@ -551,15 +590,60 @@ async function display_next_item() {
   }
 }
 
+/**
+ * Validate all responses and handle failures
+ * Returns true if we can continue (can still happen even on failed validation if no warnings are set).
+ */
+async function performValidation(): Promise<Array<boolean> | null> {
+  $(".validation_warning").remove()
+
+  let results: Array<boolean> = []
+  for (let item_ij = 0; item_ij < response_log.length; item_ij++) {
+    if (validations[item_ij] == undefined) {
+      continue
+    }
+    const result = validateResponse(response_log[item_ij], validations[item_ij] as Validation)
+
+    // if we fail and there's a message, prevent loading next item and show warning
+    if (!result && validations[item_ij]?.warning) {
+      scrollToBlock(item_ij)
+      showWarningIndicator(output_blocks[item_ij], validations[item_ij]?.warning as string)
+      notify(validations[item_ij]?.warning as string)
+      return null
+    }
+
+    results.push(result)
+  }
+
+  // TODO: log this incident
+
+  return results
+}
+
 $("#button_next").on("click", async function () {
+  let validationResult
+  // Perform validation unless in skip tutorial mode
+  if (!skip_tutorial_mode) {
+    validationResult = await performValidation()
+    if (validationResult == null) {
+      // Validation failed, don't proceed
+      return
+    }
+  }
+
+  console.log(validationResult)
+
   // disable while communicating with the server
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
-  action_log.push({ "time": Date.now() / 1000, "action": "submit" })
-  let outcome = await log_response(
-    { "annotations": response_log, "actions": action_log, "item": payload },
-    payload!.info.item_i,
-  )
+  action_log.push({ "time": Date.now() / 1000, "action": "submit" + (skip_tutorial_mode ? "_skip" : "") })
+
+  let payload_local = { "annotations": response_log, "actions": action_log, "item": payload, }
+  if (!skip_tutorial_mode) {
+    // @ts-ignore
+    payload_local["validations"] = validationResult
+  }
+  let outcome = await log_response(payload_local, payload!.info.item_i)
   if (outcome == null || outcome == false) {
     notify("Error submitting the annotations. Please try again.")
     $("#button_next").removeAttr("disabled")
@@ -567,6 +651,14 @@ $("#button_next").on("click", async function () {
     return
   }
   await display_next_item()
+})
+
+// Skip tutorial button handler
+$("#button_skip_tutorial").on("click", function () {
+  skip_tutorial_mode = true
+  notify("Tutorial skipped. Your current annotations will be submitted.")
+  // Trigger the next button click
+  $("#button_next").trigger("click")
 })
 
 display_next_item()

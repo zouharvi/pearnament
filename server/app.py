@@ -53,7 +53,8 @@ async def _log_response(request: LogResponseRequest):
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
 
     # append response to the output log
-    save_db_payload(campaign_id, request.payload | {"user_id": user_id, "item_i": item_i})
+    save_db_payload(campaign_id, request.payload | {
+                    "user_id": user_id, "item_i": item_i})
 
     # if actions were submitted, we can log time data
     if "actions" in request.payload:
@@ -68,7 +69,16 @@ async def _log_response(request: LogResponseRequest):
             for a, b in zip(times, times[1:])
         ])
 
-    update_progress(campaign_id, user_id, tasks_data, progress_data, request.item_i, request.payload)
+    # Initialize validation_checks if it doesn't exist
+    print(request.payload.keys())
+    if "validations" in request.payload:
+        if "validations" not in progress_data[campaign_id][user_id]:
+            progress_data[campaign_id][user_id]["validations"] = {}
+
+        progress_data[campaign_id][user_id]["validations"][request.item_i] = request.payload["validations"]
+
+    update_progress(campaign_id, user_id, tasks_data,
+                    progress_data, request.item_i, request.payload)
     save_progress_data(progress_data)
 
     return JSONResponse(content={"status": "ok"}, status_code=200)
@@ -145,6 +155,11 @@ async def _dashboard_data(request: DashboardDataRequest):
     for user_id, user_val in progress_data[campaign_id].items():
         # shallow copy
         entry = dict(user_val)
+        entry["validations"] = [
+            all(v)
+            for v in list(entry.get("validations", {}).values())
+        ]
+        
 
         if not is_privileged:
             entry["token_correct"] = None
@@ -229,7 +244,8 @@ async def _download_progress(
 
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
 if not os.path.exists(static_dir + "index.html"):
-    raise FileNotFoundError("Static directory not found. Please build the frontend first.")
+    raise FileNotFoundError(
+        "Static directory not found. Please build the frontend first.")
 
 app.mount(
     "/",

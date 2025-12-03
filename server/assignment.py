@@ -254,6 +254,7 @@ def _reset_user_time(progress_data: dict, campaign_id: str, user_id: str) -> Non
     progress_data[campaign_id][user_id]["time"] = 0.0
     progress_data[campaign_id][user_id]["time_start"] = None
     progress_data[campaign_id][user_id]["time_end"] = None
+    progress_data[campaign_id][user_id]["validations"] = {}
 
 
 def reset_task(
@@ -299,7 +300,6 @@ def update_progress(
     if assignment == "task-based":
         # even if it's already set it should be fine
         progress_data[campaign_id][user_id]["progress"][item_i] = True
-        # TODO: log attention checks/quality?
         return JSONResponse(content={"status": "ok"}, status_code=200)
     elif assignment == "single-stream":
         # progress all users
