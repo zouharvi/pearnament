@@ -117,7 +117,7 @@ We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), w
     "campaign_id": "my campaign 6",
     "info": {
         "assignment": "dynamic",
-        "template": "kway",
+        "template": "listwise",
         "protocol_k": 5,
         "num_users": 50,
     },
@@ -132,6 +132,25 @@ It will also output a secret management link. Then, launch the server:
 pearmut add my_campaign_4.json
 pearmut run
 ```
+
+## Campaign options
+
+In summary, you can select from the assignment types
+
+- `task-based`: each user has a predefined set of items
+- `single-stream`: all users are annotating together the same set of items
+- `dynamic`: WIP ⚠️
+
+and independently of that select your protocol template:
+
+- `pointwise`: evaluate a single output given a single output
+  - `protocol_score`: ask for score 0 to 100
+  - `protocol_error_spans`: ask for highlighting error spans
+  - `protocol_error_categories`: ask for highlighting error categories
+- `listwise`: evaluate multiple outputs at the same time given a single output ⚠️
+  - `protocol_score`: ask for score 0 to 100
+  - `protocol_error_spans`: ask for highlighting error spans
+  - `protocol_error_categories`: ask for highlighting error categories
 
 ## Campaign management
 
@@ -149,7 +168,7 @@ An intentionally incorrect token can be shown if the annotations don't pass qual
 
 We also support anything HTML-compatible both on the input and on the output.
 This includes embedded YouTube videos, or even simple `<video ` tags that point to some resource somewhere.
-For an example, try [examples/mock_multimodal.json](examples/mock_multimodal.json).
+For an example, try [examples/multimodal.json](examples/multimodal.json).
 Tip: make sure the elements are already appropriately styled.
 
 <img width="800" alt="Preview of multimodal elements in Pearmut" src="https://github.com/user-attachments/assets/f34a1a3e-ad95-4114-95ee-8a49e8003faf" />
