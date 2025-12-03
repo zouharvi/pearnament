@@ -46,7 +46,6 @@ export type Validation = {
 export type ValidationResult = { 
     valid: boolean, 
     failed_items: number[],  // indices of failed items
-    messages: string[]  // failure messages
 }
 
 // MQM Error Categories shared between pointwise and listwise
@@ -306,7 +305,7 @@ function spanMatches(userSpan: ErrorSpan, validationSpan: ValidationErrorSpan): 
 
 /**
  * Validate user responses against validation rules
- * Returns validation result with failed items and messages
+ * Returns validation result with failed items
  */
 export function validateResponse(
     response: Response,
@@ -314,18 +313,16 @@ export function validateResponse(
     itemIndex: number
 ): ValidationResult {
     if (!validation) {
-        return { valid: true, failed_items: [], messages: [] };
+        return { valid: true, failed_items: [] };
     }
 
     const failed_items: number[] = [];
-    const messages: string[] = [];
 
     // Validate score if specified
     if (validation.score !== undefined) {
         const [minScore, maxScore] = validation.score;
         if (response.score === null || response.score < minScore || response.score > maxScore) {
             failed_items.push(itemIndex);
-            messages.push(`Score should be between ${minScore} and ${maxScore}.`);
         }
     }
 
@@ -336,23 +333,6 @@ export function validateResponse(
             const matched = response.error_spans.some(userSpan => spanMatches(userSpan, expectedSpan));
             if (!matched) {
                 failed_items.push(itemIndex);
-                let spanDesc = "";
-                if (expectedSpan.start_i !== undefined) {
-                    const startRange = Array.isArray(expectedSpan.start_i) 
-                        ? `${expectedSpan.start_i[0]}-${expectedSpan.start_i[1]}` 
-                        : expectedSpan.start_i.toString();
-                    spanDesc += `start: ${startRange}`;
-                }
-                if (expectedSpan.end_i !== undefined) {
-                    const endRange = Array.isArray(expectedSpan.end_i) 
-                        ? `${expectedSpan.end_i[0]}-${expectedSpan.end_i[1]}` 
-                        : expectedSpan.end_i.toString();
-                    spanDesc += (spanDesc ? ", " : "") + `end: ${endRange}`;
-                }
-                if (expectedSpan.severity !== undefined) {
-                    spanDesc += (spanDesc ? ", " : "") + `severity: ${expectedSpan.severity}`;
-                }
-                messages.push(`Missing expected error span (${spanDesc}).`);
             }
         }
     }
@@ -360,7 +340,6 @@ export function validateResponse(
     return {
         valid: failed_items.length === 0,
         failed_items: [...new Set(failed_items)], // deduplicate
-        messages
     };
 }
 
@@ -372,18 +351,15 @@ export function validateAllResponses(
     validations: (Validation | undefined)[]
 ): ValidationResult {
     const all_failed_items: number[] = [];
-    const all_messages: string[] = [];
 
     for (let i = 0; i < responses.length; i++) {
         const result = validateResponse(responses[i], validations[i], i);
         all_failed_items.push(...result.failed_items);
-        all_messages.push(...result.messages);
     }
 
     return {
         valid: all_failed_items.length === 0,
         failed_items: [...new Set(all_failed_items)],
-        messages: all_messages
     };
 }
 

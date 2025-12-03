@@ -525,20 +525,20 @@ async function performValidation(): Promise<boolean> {
     let warning_message: string | undefined
     
     // Validate each item and each candidate
-    for (let item_i = 0; item_i < response_log.length; item_i++) {
-        for (let cand_i = 0; cand_i < response_log[item_i].length; cand_i++) {
-            const candidateValidation = getValidationForCandidate(validations[item_i], cand_i)
-            const result = validateResponse(response_log[item_i][cand_i], candidateValidation, cand_i)
+    for (let item_ij = 0; item_ij < response_log.length; item_ij++) {
+        for (let cand_i = 0; cand_i < response_log[item_ij].length; cand_i++) {
+            const candidateValidation = getValidationForCandidate(validations[item_ij], cand_i)
+            const result = validateResponse(response_log[item_ij][cand_i], candidateValidation, cand_i)
             
             // Log validation attempt to server
-            log_validation(payload!.info.item_i, result.valid, result.messages)
+            log_validation(payload!.info.item_i, item_ij, cand_i, result.valid)
             
             if (!result.valid) {
                 all_valid = false
                 
                 // Show warning on the output block
                 if (first_failed_element === null) {
-                    first_failed_element = output_blocks[item_i]
+                    first_failed_element = output_blocks[item_ij]
                 }
                 
                 // Get warning message if this is an attention check
@@ -548,7 +548,7 @@ async function performValidation(): Promise<boolean> {
                 }
                 
                 // Show warning indicator on failed item
-                showWarningIndicator(output_blocks[item_i], result.messages.join(' '))
+                showWarningIndicator(output_blocks[item_ij], itemWarning || '')
             }
         }
     }
@@ -581,9 +581,9 @@ $("#button_next").on("click", async function () {
     // disable while communicating with the server
     $("#button_next").attr("disabled", "disabled")
     $("#button_next").val("Next 📶")
-    action_log.push({ "time": Date.now() / 1000, "action": "submit", "skip_tutorial": skip_tutorial_mode })
+    action_log.push({ "time": Date.now() / 1000, "action": "submit", ...(skip_tutorial_mode && { "skip_tutorial": true }) })
     let outcome = await log_response(
-        { "annotations": response_log, "actions": action_log, "item": payload, "validation_skipped": skip_tutorial_mode },
+        { "annotations": response_log, "actions": action_log, "item": payload, ...(skip_tutorial_mode && { "validation_skipped": true }) },
         payload!.info.item_i,
     )
     if (outcome == null || outcome == false) {

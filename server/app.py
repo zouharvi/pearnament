@@ -78,8 +78,9 @@ class LogValidationRequest(BaseModel):
     campaign_id: str
     user_id: str
     item_i: int
+    item_ij: int
+    cand_i: int
     validation_passed: bool
-    messages: list[str]
     timestamp: float
 
 
@@ -103,17 +104,19 @@ async def _log_validation(request: LogValidationRequest):
     # Log the validation attempt
     validation_entry = {
         "item_i": request.item_i,
+        "item_ij": request.item_ij,
+        "cand_i": request.cand_i,
         "passed": request.validation_passed,
-        "messages": request.messages,
         "timestamp": request.timestamp,
     }
     progress_data[campaign_id][user_id]["validation_checks"].append(validation_entry)
     
     # Update failed count (only count unique failed items that haven't been fixed)
-    # Track latest state for each item in a single pass
-    item_states: dict[int, bool] = {}
+    # Track latest state for each item using (item_i, item_ij, cand_i) as unique key
+    item_states: dict[tuple[int, int, int], bool] = {}
     for check in progress_data[campaign_id][user_id]["validation_checks"]:
-        item_states[check["item_i"]] = check["passed"]
+        key = (check["item_i"], check["item_ij"], check["cand_i"])
+        item_states[key] = check["passed"]
     
     failed_count = sum(1 for passed in item_states.values() if not passed)
     progress_data[campaign_id][user_id]["failed_checks"] = failed_count

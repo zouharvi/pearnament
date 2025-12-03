@@ -551,26 +551,26 @@ async function performValidation(): Promise<boolean> {
   let first_failed_index: number | null = null
   let warning_message: string | undefined
   
-  for (let i = 0; i < response_log.length; i++) {
-    const result = validateResponse(response_log[i], validations[i], i)
+  for (let item_ij = 0; item_ij < response_log.length; item_ij++) {
+    const result = validateResponse(response_log[item_ij], validations[item_ij], item_ij)
     
-    // Log validation attempt to server
-    log_validation(payload!.info.item_i, result.valid, result.messages)
+    // Log validation attempt to server (cand_i is 0 for pointwise since there's only one candidate)
+    log_validation(payload!.info.item_i, item_ij, 0, result.valid)
     
     if (!result.valid) {
       all_valid = false
       if (first_failed_index === null) {
-        first_failed_index = i
+        first_failed_index = item_ij
       }
       
       // Get warning message if this is an attention check
-      const itemWarning = getValidationWarning(validations[i])
+      const itemWarning = getValidationWarning(validations[item_ij])
       if (itemWarning && !warning_message) {
         warning_message = itemWarning
       }
       
       // Show warning indicator on failed item
-      showWarningIndicator(output_blocks[i], result.messages.join(' '))
+      showWarningIndicator(output_blocks[item_ij], itemWarning || '')
     }
   }
   
@@ -602,9 +602,9 @@ $("#button_next").on("click", async function () {
   // disable while communicating with the server
   $("#button_next").attr("disabled", "disabled")
   $("#button_next").val("Next 📶")
-  action_log.push({ "time": Date.now() / 1000, "action": "submit", "skip_tutorial": skip_tutorial_mode })
+  action_log.push({ "time": Date.now() / 1000, "action": "submit", ...(skip_tutorial_mode && { "skip_tutorial": true }) })
   let outcome = await log_response(
-    { "annotations": response_log, "actions": action_log, "item": payload, "validation_skipped": skip_tutorial_mode },
+    { "annotations": response_log, "actions": action_log, "item": payload, ...(skip_tutorial_mode && { "validation_skipped": true }) },
     payload!.info.item_i,
   )
   if (outcome == null || outcome == false) {
