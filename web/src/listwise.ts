@@ -13,12 +13,7 @@ import {
     hasAllowSkip,
     DataFinished,
     ProtocolInfo,
-    showWarningIndicator,
-    scrollToElement,
     displayCompletionScreen,
-    setupBeforeUnloadHandler,
-    setupToggleDifferences,
-    setupSettingsHandlers,
     isMediaContent,
     contentToCharSpans,
 } from './utils';
@@ -67,9 +62,21 @@ let settings_show_alignment = true
 let has_unsaved_work = false
 let skip_tutorial_mode = false
 
-// Setup event handlers using shared functions
-setupBeforeUnloadHandler(() => has_unsaved_work)
-setupToggleDifferences()
+// Prevent accidental refresh/navigation when there is ongoing work
+window.addEventListener('beforeunload', (event) => {
+    if (has_unsaved_work) {
+        event.preventDefault()
+        event.returnValue = ''
+    }
+})
+
+$("#toggle_differences").on("change", function () {
+    if ($(this).is(":checked")) {
+        $(".difference").removeClass("hidden")
+    } else {
+        $(".difference").addClass("hidden")
+    }
+})
 
 function check_unlock() {
     // check if all toolboxes are hidden
@@ -506,8 +513,14 @@ async function performValidation(): Promise<Array<boolean> | null> {
 
             // if we fail and there's a message, prevent loading next item and show warning
             if (!result && validations[item_ij]![cand_i].warning) {
-                scrollToElement(output_blocks[item_ij])
-                showWarningIndicator(output_blocks[item_ij], validations[item_ij]![cand_i].warning as string)
+                // Scroll to the block
+                if (output_blocks[item_ij] && output_blocks[item_ij].offset()) {
+                    $('html, body').animate({ scrollTop: output_blocks[item_ij].offset()!.top - 100 }, 500)
+                }
+                // Show warning indicator
+                output_blocks[item_ij].find(".validation_warning").remove()
+                const warningEl = $(`<span class="validation_warning" title="${validations[item_ij]![cand_i].warning || 'Validation failed'}">⚠️</span>`)
+                output_blocks[item_ij].prepend(warningEl)
                 notify(validations[item_ij]![cand_i].warning as string)
                 return null
             }
@@ -564,7 +577,15 @@ $("#button_skip_tutorial").on("click", function () {
 
 display_next_item()
 
-// Setup settings handlers using shared function
-setupSettingsHandlers((enabled) => {
-    settings_show_alignment = enabled
+// toggle settings display
+$("#button_settings").on("click", function () {
+    $("#settings_div").toggle()
 })
+
+// load settings from localStorage
+$("#settings_approximate_alignment").on("change", function () {
+    settings_show_alignment = $("#settings_approximate_alignment").is(":checked")
+    localStorage.setItem("setting_approximate_alignment", settings_show_alignment.toString())
+})
+$("#settings_approximate_alignment").prop("checked", localStorage.getItem("setting_approximate_alignment") == "true")
+$("#settings_approximate_alignment").trigger("change")
