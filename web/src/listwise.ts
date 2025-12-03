@@ -26,7 +26,7 @@ type DataPayload = {
         tgt: string | Array<string>,  // Single or multiple translation candidates
         checks?: any,
         instructions?: string,
-        error_spans?: Array<ErrorSpan> | Array<Array<ErrorSpan>>,  // Pre-filled error spans
+        error_spans?: Array<Array<ErrorSpan>>,  // Pre-filled error spans (2D array, one per candidate)
     }>,
     info: {
         protocol_score: boolean,
@@ -52,14 +52,9 @@ function ensureCandidateArray(tgt: string | Array<string>): Array<string> {
 /**
  * Gets error spans for a specific candidate index
  */
-function getErrorSpansForCandidate(error_spans: Array<ErrorSpan> | Array<Array<ErrorSpan>> | undefined, cand_i: number, numCandidates: number): Array<ErrorSpan> {
+function getErrorSpansForCandidate(error_spans: Array<Array<ErrorSpan>> | undefined, cand_i: number): Array<ErrorSpan> {
     if (!error_spans || error_spans.length === 0) return []
-    // Check if 2D array (per-candidate)
-    if (error_spans.every(item => Array.isArray(item))) {
-        return (error_spans as Array<Array<ErrorSpan>>)[cand_i] || []
-    }
-    // 1D array - only use for single candidate
-    return numCandidates === 1 ? error_spans as Array<ErrorSpan> : []
+    return error_spans[cand_i] || []
 }
 
 let response_log: Array<DocumentResponse> = []
@@ -333,7 +328,7 @@ async function display_next_payload(response: DataPayload) {
             }
 
             // Load pre-filled error spans for this candidate
-            const candidateSpans = getErrorSpansForCandidate(item.error_spans, cand_i, candidates.length)
+            const candidateSpans = getErrorSpansForCandidate(item.error_spans, cand_i)
             if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
                 for (const prefilled of candidateSpans) {
                     const left_i = prefilled.start_i, right_i = prefilled.end_i

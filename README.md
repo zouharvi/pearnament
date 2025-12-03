@@ -98,7 +98,6 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 
 For workflows where you want to provide pre-filled error annotations (e.g., ESAAI), you can include an `error_spans` key in each item. These spans will be loaded into the interface as existing annotations that users can review, modify, or delete.
 
-For **pointwise** template:
 ```python
 {
   "src": "The quick brown fox jumps over the lazy dog.",
@@ -120,24 +119,9 @@ For **pointwise** template:
 }
 ```
 
-For **listwise** template with multiple candidates, use a 2D array where each inner array corresponds to error spans for that candidate:
-```python
-{
-  "src": "The European Central Bank announced interest rate changes.",
-  "tgt": [
-    "Evropská centrální banka oznámila změny úrokových sazeb.",
-    "ECB oznámila změny v úrokových sazbách.",
-    "Centrální banka Evropy vyhlásila úpravy sazeb."
-  ],
-  "error_spans": [
-    [{"start_i": 0, "end_i": 7, "severity": "minor", "category": null}],  # candidate 1
-    [],  # candidate 2 (no pre-filled errors)
-    [{"start_i": 10, "end_i": 15, "severity": "major", "category": null}]  # candidate 3
-  ]
-}
-```
+For **listwise** template, `error_spans` is a 2D array where each inner array corresponds to error spans for that candidate.
 
-See [examples/esaai_prefilled.json](examples/esaai_prefilled.json) and [examples/esaai_listwise_prefilled.json](examples/esaai_listwise_prefilled.json) for complete examples.
+See [examples/esaai_prefilled.json](examples/esaai_prefilled.json) for a complete example.
 
 ## Single-stream Assignment
 
