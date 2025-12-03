@@ -296,6 +296,83 @@
           ]
         }
       ]
+    ],
+    [
+      [
+        {
+          "doc_id": "silent_check_1",
+          "src": "The weather forecast predicts rain tomorrow.",
+          "tgt": [
+            "Banán létá rychle přes hory kočka.",
+            "Předpověď počasí hlásí déšť na zítra."
+          ],
+          "instructions": "Compare these translations.",
+          "validation": [
+            {
+              "score": [
+                0,
+                15
+              ]
+            },
+            {
+              "score": [
+                80,
+                100
+              ]
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "silent_check_2",
+          "src": "Scientists have discovered a new planet.",
+          "tgt": [
+            "Vědci objevili novou planetu.",
+            "Stůl plave v moři zelených snů včera."
+          ],
+          "instructions": "Compare these translations.",
+          "validation": [
+            {
+              "score": [
+                85,
+                100
+              ]
+            },
+            {
+              "score": [
+                0,
+                20
+              ]
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "silent_check_3",
+          "src": "The restaurant serves excellent Italian cuisine.",
+          "tgt": [
+            "Počítač zpívá modrou knihu telefon.",
+            "Restaurace nabízí vynikající italskou kuchyni."
+          ],
+          "instructions": "Compare these translations.",
+          "validation": [
+            {
+              "score": [
+                0,
+                10
+              ]
+            },
+            {
+              "score": [
+                90,
+                100
+              ]
+            }
+          ]
+        }
+      ]
     ]
   ]
 }
