@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, get_i_item, log_response, log_validation } from './connector';
+import { get_next_item, get_i_item, log_response } from './connector';
 import {
     notify,
     ErrorSpan,
@@ -11,6 +11,16 @@ import {
     Validation,
     validateResponse,
     hasAllowSkip,
+    DataFinished,
+    ProtocolInfo,
+    showWarningIndicator,
+    scrollToElement,
+    displayCompletionScreen,
+    setupBeforeUnloadHandler,
+    setupToggleDifferences,
+    setupSettingsHandlers,
+    isMediaContent,
+    contentToCharSpans,
 } from './utils';
 
 // Each candidate has its own response
@@ -31,18 +41,7 @@ type DataPayload = {
         validation?: Validation[] | undefined,  // Validation rules for this item
     }>,
     payload_existing?: Array<DocumentResponse>,
-    info: {
-        protocol_score: boolean,
-        protocol_error_spans: boolean,
-        protocol_error_categories: boolean,
-        item_i: number,
-    }
-}
-type DataFinished = {
-    status: string,
-    progress: Array<boolean>,
-    time: number,
-    token: string,
+    info: ProtocolInfo
 }
 
 /**
@@ -68,21 +67,9 @@ let settings_show_alignment = true
 let has_unsaved_work = false
 let skip_tutorial_mode = false
 
-// Prevent accidental refresh/navigation when there is ongoing work
-window.addEventListener('beforeunload', (event) => {
-    if (has_unsaved_work) {
-        event.preventDefault()
-        event.returnValue = ''
-    }
-})
-
-$("#toggle_differences").on("change", function () {
-    if ($(this).is(":checked")) {
-        $(".difference").removeClass("hidden")
-    } else {
-        $(".difference").addClass("hidden")
-    }
-})
+// Setup event handlers using shared functions
+setupBeforeUnloadHandler(() => has_unsaved_work)
+setupToggleDifferences()
 
 function check_unlock() {
     // check if all toolboxes are hidden
@@ -115,28 +102,6 @@ function _slider_html(item_i: number, candidate_i: number): string {
       <span class="slider_label">? / 100</span>
     </div>
     `
-}
-
-/**
- * Show warning indicator on a specific element
- */
-function showWarningIndicator(element: JQuery<HTMLElement>, message?: string) {
-    // Remove existing warning on this element
-    element.find(".validation_warning").remove()
-
-    const warningEl = $(`<span class="validation_warning" title="${message || 'Validation failed'}">⚠️</span>`)
-    element.prepend(warningEl)
-}
-
-/**
- * Scroll to and highlight a specific element
- */
-function scrollToBlock(index: number) {
-    if (output_blocks[index]) {
-        $('html, body').animate({
-            scrollTop: output_blocks[index].offset()!.top - 100
-        }, 500)
-    }
 }
 
 async function display_next_payload(response: DataPayload) {
@@ -189,9 +154,9 @@ async function display_next_payload(response: DataPayload) {
         let candidates = ensureCandidateArray(item.tgt)
 
         // character-level stuff won't work on media tags
-        let no_src_char = (item.src.startsWith("<audio ") || item.src.startsWith("<video ") || item.src.startsWith("<img ") || item.src.startsWith("<iframe "))
+        let no_src_char = isMediaContent(item.src)
 
-        let src_chars = no_src_char ? item.src : item.src.split("").map(c => c == "\n" ? "<br>" : `<span class="src_char">${c}</span>`).join("")
+        let src_chars = no_src_char ? item.src : contentToCharSpans(item.src, "src_char")
 
         let output_block = $(`
         <div class="output_block">
@@ -211,8 +176,8 @@ async function display_next_payload(response: DataPayload) {
 
         for (let cand_i = 0; cand_i < candidates.length; cand_i++) {
             let tgt = candidates[cand_i]
-            let no_tgt_char = (tgt.startsWith("<audio ") || tgt.startsWith("<video ") || tgt.startsWith("<img ") || tgt.startsWith("<iframe "))
-            let tgt_chars = no_tgt_char ? tgt : tgt.split("").map(c => c == "\n" ? "<br>" : `<span class="tgt_char">${c}</span>`).join("")
+            let no_tgt_char = isMediaContent(tgt)
+            let tgt_chars = no_tgt_char ? tgt : contentToCharSpans(tgt, "tgt_char")
 
             let candidate_block = $(`
             <div class="output_candidate" data-candidate="${cand_i}">
@@ -492,21 +457,7 @@ async function navigate_to_item(item_i: number) {
     }
 
     if (response.status == "completed") {
-        let response_finished = response as DataFinished
-        $("#output_div").html(`
-    <div class='white-box' style='width: max-content'>
-    <h2>🎉 All done, thank you for your annotations!</h2>
-
-    If someone asks you for a token of completion, show them
-    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response_finished.token}</span>
-    <br>
-    <br>
-    </div>
-    `)
-        redrawProgress(null, response_finished.progress, navigate_to_item)
-        $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
-        $("#button_settings").hide()
-        $("#button_next").hide()
+        displayCompletionScreen(response as DataFinished, navigate_to_item)
     } else if (response.status == "ok") {
         payload = response as DataPayload
         display_next_payload(response as DataPayload)
@@ -525,22 +476,7 @@ async function display_next_item() {
     }
 
     if (response.status == "completed") {
-        let response_finished = response as DataFinished
-        $("#output_div").html(`
-    <div class='white-box' style='width: max-content'>
-    <h2>🎉 All done, thank you for your annotations!</h2>
-
-    If someone asks you for a token of completion, show them
-    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response_finished.token}</span>
-    <br>
-    <br>
-    </div>
-    `)
-        redrawProgress(null, response_finished.progress, navigate_to_item)
-        $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
-        // NOTE: re-enable if we want to allow going back
-        $("#button_settings").hide()
-        $("#button_next").hide()
+        displayCompletionScreen(response as DataFinished, navigate_to_item)
     } else if (response.status == "ok") {
         payload = response as DataPayload
         display_next_payload(response as DataPayload)
@@ -570,7 +506,7 @@ async function performValidation(): Promise<Array<boolean> | null> {
 
             // if we fail and there's a message, prevent loading next item and show warning
             if (!result && validations[item_ij]![cand_i].warning) {
-                scrollToBlock(item_ij)
+                scrollToElement(output_blocks[item_ij])
                 showWarningIndicator(output_blocks[item_ij], validations[item_ij]![cand_i].warning as string)
                 notify(validations[item_ij]![cand_i].warning as string)
                 return null
@@ -628,15 +564,7 @@ $("#button_skip_tutorial").on("click", function () {
 
 display_next_item()
 
-// toggle settings display
-$("#button_settings").on("click", function () {
-    $("#settings_div").toggle()
+// Setup settings handlers using shared function
+setupSettingsHandlers((enabled) => {
+    settings_show_alignment = enabled
 })
-
-// load settings from localStorage
-$("#settings_approximate_alignment").on("change", function () {
-    settings_show_alignment = $("#settings_approximate_alignment").is(":checked")
-    localStorage.setItem("setting_approximate_alignment", settings_show_alignment.toString())
-})
-$("#settings_approximate_alignment").prop("checked", localStorage.getItem("setting_approximate_alignment") == "true")
-$("#settings_approximate_alignment").trigger("change")

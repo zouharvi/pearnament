@@ -361,3 +361,122 @@ export function hasAllowSkip(validations: (Validation | Validation[] | undefined
     }
     return false;
 }
+
+// Shared type for finished/completed response (used by both pointwise and listwise)
+export type DataFinished = {
+    status: string,
+    progress: Array<boolean>,
+    time: number,
+    token: string,
+}
+
+// Shared protocol info type
+export type ProtocolInfo = {
+    protocol_score: boolean,
+    protocol_error_spans: boolean,
+    protocol_error_categories: boolean,
+    item_i: number,
+}
+
+/**
+ * Show warning indicator on a specific element
+ */
+export function showWarningIndicator(element: JQuery<HTMLElement>, message?: string): void {
+    // Remove existing warning on this element
+    element.find(".validation_warning").remove()
+
+    const warningEl = $(`<span class="validation_warning" title="${message || 'Validation failed'}">⚠️</span>`)
+    element.prepend(warningEl)
+}
+
+/**
+ * Scroll to and highlight a specific element
+ */
+export function scrollToElement(element: JQuery<HTMLElement>): void {
+    if (element && element.offset()) {
+        $('html, body').animate({
+            scrollTop: element.offset()!.top - 100
+        }, 500)
+    }
+}
+
+/**
+ * Display completion screen when all annotations are done
+ */
+export function displayCompletionScreen(response: DataFinished, navigate_to_item: (i: number) => void): void {
+    $("#output_div").html(`
+    <div class='white-box' style='width: max-content'>
+    <h2>🎉 All done, thank you for your annotations!</h2>
+
+    If someone asks you for a token of completion, show them
+    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response.token}</span>
+    <br>
+    <br>
+    </div>
+    `)
+    redrawProgress(null, response.progress, navigate_to_item)
+    $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
+    $("#button_settings").hide()
+    $("#button_next").hide()
+}
+
+/**
+ * Setup beforeunload handler to prevent accidental navigation when there is unsaved work
+ */
+export function setupBeforeUnloadHandler(hasUnsavedWork: () => boolean): void {
+    window.addEventListener('beforeunload', (event) => {
+        if (hasUnsavedWork()) {
+            event.preventDefault()
+            event.returnValue = ''
+        }
+    })
+}
+
+/**
+ * Setup toggle differences checkbox handler
+ */
+export function setupToggleDifferences(): void {
+    $("#toggle_differences").on("change", function () {
+        if ($(this).is(":checked")) {
+            $(".difference").removeClass("hidden")
+        } else {
+            $(".difference").addClass("hidden")
+        }
+    })
+}
+
+/**
+ * Setup settings button and approximate alignment toggle
+ */
+export function setupSettingsHandlers(onAlignmentChange: (enabled: boolean) => void): void {
+    // toggle settings display
+    $("#button_settings").on("click", function () {
+        $("#settings_div").toggle()
+    })
+
+    // load settings from localStorage
+    $("#settings_approximate_alignment").on("change", function () {
+        const enabled = $("#settings_approximate_alignment").is(":checked")
+        onAlignmentChange(enabled)
+        localStorage.setItem("setting_approximate_alignment", enabled.toString())
+    })
+    $("#settings_approximate_alignment").prop("checked", localStorage.getItem("setting_approximate_alignment") == "true")
+    $("#settings_approximate_alignment").trigger("change")
+}
+
+/**
+ * Check if content is a media tag (audio, video, img, iframe)
+ */
+export function isMediaContent(content: string): boolean {
+    return content.startsWith("<audio ") || 
+           content.startsWith("<video ") || 
+           content.startsWith("<img ") || 
+           content.startsWith("<iframe ")
+}
+
+/**
+ * Convert text content to character spans with line break handling
+ */
+export function contentToCharSpans(content: string, className: string): string {
+    return content.split("").map(c => c == "\n" ? "<br>" : `<span class="${className}">${c}</span>`).join("")
+}
