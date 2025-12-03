@@ -86,9 +86,9 @@ campaign_ids.forEach(async (campaign_id, i) => {
                 }
                 html += `<td>${Math.round(data[user_id]["time"] / 60)}m</td>`
                 
-                let validation_passed = data[user_id]["validation"].reduce((a: number, b: boolean) => a + (b ? 1 : 0), 0)
-                let validation_total = data[user_id]["validation"].length
-                html += `<td><span style="${validation_passed != validation_total ? 'color: #c75050; font-weight: bold;' : ''}">${validation_passed}</span><span style="color: #333;">/${validation_total}</span></td>`
+                let validation_passed = data[user_id]["validations"].reduce((a: number, b: boolean) => a + (b ? 1 : 0), 0)
+                let validation_total = data[user_id]["validations"].length
+                html += `<td><span style="${validation_passed != validation_total ? 'color: #c75050;' : ''}">${validation_passed}</span><span style="color: #333;">/${validation_total}</span></td>`
 
                 // actions section
                 html += `<td>

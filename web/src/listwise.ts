@@ -553,7 +553,7 @@ async function display_next_item() {
  * Validate all responses and handle failures
  * Returns true if validation passes or is skipped, false if it fails
  */
-async function performValidation(): Promise<boolean> {
+async function performValidation(): Promise<Array<boolean> | null> {
     $(".validation_warning").remove()
 
     let results: Array<boolean> = []
@@ -573,7 +573,7 @@ async function performValidation(): Promise<boolean> {
                 scrollToBlock(item_ij)
                 showWarningIndicator(output_blocks[item_ij], validations[item_ij]![cand_i].warning as string)
                 notify(validations[item_ij]![cand_i].warning as string)
-                return false
+                return null
             }
 
             results_local.push(result)
@@ -582,19 +582,18 @@ async function performValidation(): Promise<boolean> {
         if (results_local.length > 0) results.push(results_local.every(r => r))
     }
 
-    log_validation(payload!.info.item_i, results)
-
     // TODO: log this incident
 
-    return true
+    return results
 }
 
 $("#button_next").on("click", async function () {
     // Perform validation unless in skip tutorial mode
+    let validationResult;
     if (!skip_tutorial_mode) {
-        const validationPassed = await performValidation()
-        if (!validationPassed) {
-            // Validation failed, don't proceed
+        validationResult = await performValidation()
+        if (validationResult == null) {
+            // validation failed, don't proceed
             return
         }
     }
@@ -602,11 +601,14 @@ $("#button_next").on("click", async function () {
     // disable while communicating with the server
     $("#button_next").attr("disabled", "disabled")
     $("#button_next").val("Next 📶")
-    action_log.push({ "time": Date.now() / 1000, "action": "submit", ...(skip_tutorial_mode && { "skip_tutorial": true }) })
-    let outcome = await log_response(
-        { "annotations": response_log, "actions": action_log, "item": payload, ...(skip_tutorial_mode && { "validation_skipped": true }) },
-        payload!.info.item_i,
-    )
+    action_log.push({ "time": Date.now() / 1000, "action": "submit" + (skip_tutorial_mode ? "_skip" : "") })
+
+    let payload_local = { "annotations": response_log, "actions": action_log, "item": payload, }
+    if (!skip_tutorial_mode) {
+        // @ts-ignore
+        payload_local["validations"] = validationResult
+    }
+    let outcome = await log_response(payload_local, payload!.info.item_i)
     if (outcome == null || outcome == false) {
         notify("Error submitting the annotations. Please try again.")
         $("#button_next").removeAttr("disabled")

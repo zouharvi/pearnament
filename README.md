@@ -135,19 +135,18 @@ You can add validation rules to items for tutorials or attention checks. Items w
   "validation": {
     "warning": "Please set score between 70-80.",  # shown on failure (omit for silent logging)
     "score": [70, 80],                             # required score range [min, max]
-    "error_spans": [{"start_i": [0, 2], "end_i": [4, 6], "severity": "minor"}],  # expected spans
+    "error_spans": [{"start_i": [0, 2], "end_i": [4, 8], "severity": "minor"}],  # expected spans
     "allow_skip": true                             # show "skip tutorial" button
   }
 }
 ```
 
-- **Tutorial items**: Include `allow_skip: true` and `warning` to let users skip after seeing the feedback
-- **Attention checks**: Include `warning` without `allow_skip` to force users to retry
-- **Silent checks**: Omit `warning` to silently log failures without user notification (useful for quality control with bad translations)
-
-For listwise template, `validation` is an array where each element corresponds to a candidate.
-
-The dashboard shows failed/total validation checks per user. See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for complete examples.
+- Tutorial items: Include `allow_skip: true` and `warning` to let users skip after seeing the feedback
+- Loud attention checks: Include `warning` without `allow_skip` to force users to retry
+- Silent attention checks: Omit `warning` to silently log failures without user notification (useful for quality control with bad translations)
+For listwise template, `validation` is an array where each element corresponds to a candidate. 
+The dashboard shows failed/total validation checks per user.
+See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for complete examples.
 
 ## Single-stream Assignment
 
@@ -264,7 +263,7 @@ If you use this work in your paper, please cite as:
 ```bibtex
 @misc{zouhar2025pearmut,
     author={Vilém Zouhar},
-    title={Pearmut🍐 Platform for Evaluation and Reviewing of Multilingual Tasks},
+    title={Pearmut: Platform for Evaluation and Reviewing of Multilingual Tasks},
     url={https://github.com/zouharvi/pearmut/},
     year={2025},
 }
