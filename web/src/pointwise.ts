@@ -1,10 +1,16 @@
 import $ from 'jquery';
 
 import { get_next_item, log_response } from './connector';
-import { notify } from './utils';
-type ErrorSpan = { start_i: number, end_i: number, category: string | null, severity: string | null, }
-type Response = { score: number | null, error_spans: Array<ErrorSpan> }
-type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null, }
+import { 
+  notify, 
+  ErrorSpan, 
+  Response, 
+  CharData, 
+  MQM_ERROR_CATEGORIES, 
+  redrawProgress, 
+  createSpanToolbox, 
+  updateToolboxPosition 
+} from './utils';
 type DataPayload = {
   status: string,
   progress: Array<boolean>,
@@ -40,69 +46,6 @@ window.addEventListener('beforeunload', (event) => {
     event.returnValue = ''
   }
 })
-
-const MQM_ERROR_CATEGORIES = {
-  "Terminology": [
-    "",
-    "Inconsistent with terminology resource",
-    "Inconsistent use of terminology",
-    "Wrong term",
-  ],
-  "Accuracy": [
-    "",
-    "Mistranslation",
-    "Overtranslation",
-    "Undertranslation",
-    "Addition",
-    "Omission",
-    "Do not translate",
-    "Untranslated",
-  ],
-  "Linguistic conventions": [
-    "",
-    "Grammar",
-    "Punctuation",
-    "Spelling",
-    "Unintelligible",
-    "Character encoding",
-    "Textual conventions",
-  ],
-  "Style": [
-    "",
-    "Organization style",
-    "Third-party style",
-    "Inconsistent with external reference",
-    "Language register",
-    "Awkward style",
-    "Unidiomatic style",
-    "Inconsistent style",
-  ],
-  "Locale convention": [
-    "",
-    "Number format",
-    "Currency format",
-    "Measurement format",
-    "Time format",
-    "Date format",
-    "Address format",
-    "Telephone format",
-    "Shortcut key",
-  ],
-  "Audience appropriateness": [
-    "",
-    "Culture-specific reference",
-    "Offensive",
-  ],
-  "Design and markup": [
-    "",
-    "Layout",
-    "Markup tag",
-    "Truncation/text expansion",
-    "Missing text",
-    "Link/cross-reference",
-  ],
-  "Other": [],
-}
 
 $("#toggle_differences").on("change", function () {
   if ($(this).is(":checked")) {
@@ -149,21 +92,8 @@ function _slider_html(i: number): string {
     `
 }
 
-function redraw_progress(current_i: number | null, progress: Array<boolean>) {
-  let html = progress.map((v, i) => {
-    if (v) {
-      return `<span class="progress_complete">${i + 1}</span>`
-    } else if (i === current_i) {
-      return `<span class="progress_current">${i + 1}</span>`
-    } else {
-      return `<span class="progress_incomplete">${i + 1}</span>`
-    }
-  }).join("")
-  $("#progress").html(html)
-}
-
 async function display_next_payload(response: DataPayload) {
-  redraw_progress(response.info.item_i, response.progress)
+  redrawProgress(response.info.item_i, response.progress)
   $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
 
   let data = response.payload
@@ -509,7 +439,7 @@ async function display_next_item() {
     <br>
     </div>
     `)
-    redraw_progress(null, response_finished.progress)
+    redrawProgress(null, response_finished.progress)
     $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
     // NOTE: re-enable if we want to allow going back
     $("#button_settings").hide()
