@@ -361,3 +361,56 @@ export function hasAllowSkip(validations: (Validation | Validation[] | undefined
     }
     return false;
 }
+
+// Shared type for finished/completed response (used by both pointwise and listwise)
+export type DataFinished = {
+    status: string,
+    progress: Array<boolean>,
+    time: number,
+    token: string,
+}
+
+// Shared protocol info type
+export type ProtocolInfo = {
+    protocol_score: boolean,
+    protocol_error_spans: boolean,
+    protocol_error_categories: boolean,
+    item_i: number,
+}
+
+/**
+ * Display completion screen when all annotations are done
+ */
+export function displayCompletionScreen(response: DataFinished, navigate_to_item: (i: number) => void): void {
+    $("#output_div").html(`
+    <div class='white-box' style='width: max-content'>
+    <h2>🎉 All done, thank you for your annotations!</h2>
+
+    If someone asks you for a token of completion, show them
+    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response.token}</span>
+    <br>
+    <br>
+    </div>
+    `)
+    redrawProgress(null, response.progress, navigate_to_item)
+    $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
+    $("#button_settings").hide()
+    $("#button_next").hide()
+}
+
+/**
+ * Check if content is a media tag (audio, video, img, iframe)
+ */
+export function isMediaContent(content: string): boolean {
+    return content.startsWith("<audio ") || 
+           content.startsWith("<video ") || 
+           content.startsWith("<img ") || 
+           content.startsWith("<iframe ")
+}
+
+/**
+ * Convert text content to character spans with line break handling
+ */
+export function contentToCharSpans(content: string, className: string): string {
+    return content.split("").map(c => c == "\n" ? "<br>" : `<span class="${className}">${c}</span>`).join("")
+}

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, get_i_item, log_response, log_validation } from './connector';
+import { get_next_item, get_i_item, log_response } from './connector';
 import {
   notify,
   ErrorSpan,
@@ -13,7 +13,13 @@ import {
   Validation,
   validateResponse,
   hasAllowSkip,
+  DataFinished,
+  ProtocolInfo,
+  displayCompletionScreen,
+  isMediaContent,
+  contentToCharSpans,
 } from './utils';
+
 type DataPayload = {
   status: string,
   progress: Array<boolean>,
@@ -27,18 +33,7 @@ type DataPayload = {
     validation?: Validation,
   }>,
   payload_existing?: Array<Response>,
-  info: {
-    protocol_score: boolean,
-    protocol_error_spans: boolean,
-    protocol_error_categories: boolean,
-    item_i: number,
-  }
-}
-type DataFinished = {
-  status: string,
-  progress: Array<boolean>,
-  time: number,
-  token: string,
+  info: ProtocolInfo
 }
 let response_log: Array<Response> = []
 let action_log: Array<any> = []
@@ -101,28 +96,6 @@ function _slider_html(i: number): string {
     `
 }
 
-/**
- * Show warning indicator on a specific output block
- */
-function showWarningIndicator(block: JQuery<HTMLElement>, message?: string) {
-  // Remove existing warning on this block
-  block.find(".validation_warning").remove()
-
-  const warningEl = $(`<span class="validation_warning" title="${message || 'Validation failed'}">⚠️</span>`)
-  block.prepend(warningEl)
-}
-
-/**
- * Scroll to and highlight a specific output block
- */
-function scrollToBlock(index: number) {
-  if (output_blocks[index]) {
-    $('html, body').animate({
-      scrollTop: output_blocks[index].offset()!.top - 100
-    }, 500)
-  }
-}
-
 async function display_next_payload(response: DataPayload) {
   redrawProgress(response.info.item_i, response.progress, navigate_to_item)
   $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
@@ -166,11 +139,11 @@ async function display_next_payload(response: DataPayload) {
   for (let item_i = 0; item_i < data.length; item_i++) {
     let item = data[item_i]
     // character-level stuff won't work on media tags
-    let no_src_char = (item.src.startsWith("<audio ") || item.src.startsWith("<video ") || item.src.startsWith("<img ") || item.src.startsWith("<iframe "))
-    let no_tgt_char = (item.tgt.startsWith("<audio ") || item.tgt.startsWith("<video ") || item.tgt.startsWith("<img ") || item.tgt.startsWith("<iframe "))
+    let no_src_char = isMediaContent(item.src)
+    let no_tgt_char = isMediaContent(item.tgt)
 
-    let src_chars = no_src_char ? item.src : item.src.split("").map(c => c == "\n" ? "<br>" : `<span class="src_char">${c}</span>`).join("")
-    let tgt_chars = no_tgt_char ? item.tgt : item.tgt.split("").map(c => c == "\n" ? "<br>" : `<span class="tgt_char">${c}</span>`).join("")
+    let src_chars = no_src_char ? item.src : contentToCharSpans(item.src, "src_char")
+    let tgt_chars = no_tgt_char ? item.tgt : contentToCharSpans(item.tgt, "tgt_char")
     let output_block = $(`
       <div class="output_block">
       <span id="instructions_message"></span>
@@ -533,21 +506,7 @@ async function navigate_to_item(item_i: number) {
   }
 
   if (response.status == "completed") {
-    let response_finished = response as DataFinished
-    $("#output_div").html(`
-    <div class='white-box' style='width: max-content'>
-    <h2>🎉 All done, thank you for your annotations!</h2>
-
-    If someone asks you for a token of completion, show them
-    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response_finished.token}</span>
-    <br>
-    <br>
-    </div>
-    `)
-    redrawProgress(null, response_finished.progress, navigate_to_item)
-    $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
-    $("#button_settings").hide()
-    $("#button_next").hide()
+    displayCompletionScreen(response as DataFinished, navigate_to_item)
   } else if (response.status == "ok") {
     payload = response as DataPayload
     display_next_payload(response as DataPayload)
@@ -566,22 +525,7 @@ async function display_next_item() {
   }
 
   if (response.status == "completed") {
-    let response_finished = response as DataFinished
-    $("#output_div").html(`
-    <div class='white-box' style='width: max-content'>
-    <h2>🎉 All done, thank you for your annotations!</h2>
-
-    If someone asks you for a token of completion, show them
-    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response_finished.token}</span>
-    <br>
-    <br>
-    </div>
-    `)
-    redrawProgress(null, response_finished.progress, navigate_to_item)
-    $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
-    // NOTE: re-enable if we want to allow going back
-    $("#button_settings").hide()
-    $("#button_next").hide()
+    displayCompletionScreen(response as DataFinished, navigate_to_item)
   } else if (response.status == "ok") {
     payload = response as DataPayload
     display_next_payload(response as DataPayload)
@@ -606,8 +550,14 @@ async function performValidation(): Promise<Array<boolean> | null> {
 
     // if we fail and there's a message, prevent loading next item and show warning
     if (!result && validations[item_ij]?.warning) {
-      scrollToBlock(item_ij)
-      showWarningIndicator(output_blocks[item_ij], validations[item_ij]?.warning as string)
+      // Scroll to the block
+      if (output_blocks[item_ij] && output_blocks[item_ij].offset()) {
+        $('html, body').animate({ scrollTop: output_blocks[item_ij].offset()!.top - 100 }, 500)
+      }
+      // Show warning indicator
+      output_blocks[item_ij].find(".validation_warning").remove()
+      const warningEl = $(`<span class="validation_warning" title="${validations[item_ij]?.warning || 'Validation failed'}">⚠️</span>`)
+      output_blocks[item_ij].prepend(warningEl)
       notify(validations[item_ij]?.warning as string)
       return null
     }
