@@ -9,7 +9,9 @@ import {
     MQM_ERROR_CATEGORIES, 
     redrawProgress, 
     createSpanToolbox, 
-    updateToolboxPosition 
+    updateToolboxPosition,
+    applySpanSeverityClass,
+    setupCategoryDropdowns
 } from './utils';
 
 // Each candidate has its own response
@@ -26,6 +28,7 @@ type DataPayload = {
         tgt: string | Array<string>,  // Single or multiple translation candidates
         checks?: any,
         instructions?: string,
+        error_spans?: Array<ErrorSpan> | Array<Array<ErrorSpan>>,  // Pre-filled error spans (single or per-candidate)
     }>,
     info: {
         protocol_score: boolean,
@@ -46,6 +49,26 @@ type DataFinished = {
  */
 function ensureCandidateArray(tgt: string | Array<string>): Array<string> {
     return Array.isArray(tgt) ? tgt : [tgt]
+}
+
+/**
+ * Ensures error_spans is always a 2D array (per-candidate)
+ */
+function ensureErrorSpansArray(error_spans: Array<ErrorSpan> | Array<Array<ErrorSpan>> | undefined, numCandidates: number): Array<Array<ErrorSpan>> {
+    if (!error_spans || error_spans.length === 0) {
+        return Array(numCandidates).fill(null).map(() => [])
+    }
+    // Check if all elements are arrays (2D array for multiple candidates)
+    const is2DArray = error_spans.every(item => Array.isArray(item))
+    if (is2DArray) {
+        return error_spans as Array<Array<ErrorSpan>>
+    }
+    // It's a 1D array - for single candidate, use it directly
+    if (numCandidates === 1) {
+        return [error_spans as Array<ErrorSpan>]
+    }
+    // For multiple candidates, return empty arrays (1D array doesn't make sense)
+    return Array(numCandidates).fill(null).map(() => [])
 }
 
 let response_log: Array<DocumentResponse> = []
@@ -108,12 +131,14 @@ async function display_next_payload(response: DataPayload) {
 
     let data = response.payload
     // Initialize response log for each document with responses for each candidate
-    response_log = data.map(item => 
-        ensureCandidateArray(item.tgt).map(_ => ({
+    response_log = data.map(item => {
+        const candidates = ensureCandidateArray(item.tgt)
+        const prefilled_spans = ensureErrorSpansArray(item.error_spans, candidates.length)
+        return candidates.map((_, cand_i) => ({
             "score": null,
-            "error_spans": [],
+            "error_spans": prefilled_spans[cand_i] ? prefilled_spans[cand_i].map(span => ({ ...span })) : [],
         }))
-    )
+    })
     action_log = [{ "time": Date.now() / 1000, "action": "load" }]
     has_unsaved_work = false
 
@@ -333,6 +358,78 @@ async function display_next_payload(response: DataPayload) {
                 check_unlock()
                 action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
             })
+
+            // Load pre-filled error spans for this candidate (ESAAI support)
+            const prefilled_spans = ensureErrorSpansArray(item.error_spans, candidates.length)
+            if (!no_tgt_char && prefilled_spans[cand_i] && prefilled_spans[cand_i].length > 0) {
+                for (const prefilled_span of prefilled_spans[cand_i]) {
+                    const left_i = prefilled_span.start_i
+                    const right_i = prefilled_span.end_i
+                    
+                    // Skip invalid spans
+                    if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) {
+                        continue
+                    }
+                    
+                    // Find the corresponding error span in response_log
+                    const error_span = response_log[item_i][cand_i].error_spans.find(
+                        span => span.start_i === left_i && span.end_i === right_i
+                    )
+                    if (!error_span) continue
+                    
+                    // Create toolbox for the pre-filled span
+                    let toolbox = createSpanToolbox(
+                        protocol_error_categories,
+                        error_span,
+                        tgt_chars_objs,
+                        left_i,
+                        right_i,
+                        () => {
+                            // onDelete callback
+                            response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(span => span != error_span)
+                            action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
+                            has_unsaved_work = true
+                        }
+                    )
+                    
+                    $("body").append(toolbox)
+                    
+                    // Setup pre-filled category dropdowns
+                    setupCategoryDropdowns(toolbox, error_span)
+                    
+                    // handle hover on toolbox
+                    toolbox.on("mouseenter", function () {
+                        toolbox.css("display", "block")
+                        check_unlock()
+                    })
+                    toolbox.on("mouseleave", function () {
+                        if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                            toolbox.css("display", "none")
+                            check_unlock()
+                        }
+                    })
+                    
+                    // set up callback to reposition toolbox on resize
+                    $(window).on('resize', function () {
+                        updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el))
+                    })
+                    $(window).trigger('resize')
+                    
+                    // Apply visual highlighting based on pre-filled severity
+                    applySpanSeverityClass(tgt_chars_objs, left_i, right_i, error_span.severity)
+                    
+                    // Store references in character objects
+                    for (let j = left_i; j <= right_i; j++) {
+                        tgt_chars_objs[j].toolbox = toolbox
+                        tgt_chars_objs[j].error_span = error_span
+                    }
+                    
+                    // Hide toolbox initially if severity is set
+                    if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                        toolbox.css("display", "none")
+                    }
+                }
+            }
         }
 
         // Source character hover effects

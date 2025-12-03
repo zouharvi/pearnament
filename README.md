@@ -94,6 +94,53 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 ... # definition of another item (document)
 ```
 
+## Pre-filled Error Spans (ESAAI Support)
+
+For workflows where you want to provide pre-filled error annotations (e.g., ESAAI), you can include an `error_spans` key in each item. These spans will be loaded into the interface as existing annotations that users can review, modify, or delete.
+
+For **pointwise** template:
+```python
+{
+  "src": "The quick brown fox jumps over the lazy dog.",
+  "tgt": "Rychlá hnědá liška skáče přes líného psa.",
+  "error_spans": [
+    {
+      "start_i": 0,      # character index start (inclusive)
+      "end_i": 5,        # character index end (inclusive)
+      "severity": "minor",  # "minor", "major", "neutral", or null
+      "category": null   # MQM category string or null
+    },
+    {
+      "start_i": 27,
+      "end_i": 32,
+      "severity": "major",
+      "category": null
+    }
+  ]
+}
+```
+
+For **listwise** template with multiple candidates, use a 2D array where each inner array corresponds to error spans for that candidate:
+```python
+{
+  "src": "The European Central Bank announced interest rate changes.",
+  "tgt": [
+    "Evropská centrální banka oznámila změny úrokových sazeb.",
+    "ECB oznámila změny v úrokových sazbách.",
+    "Centrální banka Evropy vyhlásila úpravy sazeb."
+  ],
+  "error_spans": [
+    [{"start_i": 0, "end_i": 7, "severity": "minor", "category": null}],  # candidate 1
+    [],  # candidate 2 (no pre-filled errors)
+    [{"start_i": 10, "end_i": 15, "severity": "major", "category": null}]  # candidate 3
+  ]
+}
+```
+
+See [examples/esaai_prefilled.json](examples/esaai_prefilled.json) and [examples/esaai_listwise_prefilled.json](examples/esaai_listwise_prefilled.json) for complete examples.
+
+## Single-stream Assignment
+
 We also support a simple allocation where all annotators draw from the same pool (`single-stream`). Items are randomly assigned to annotators from the pool of unfinished items:
 ```python
 {
