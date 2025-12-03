@@ -100,10 +100,11 @@ export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
  */
 export function redrawProgress(current_i: number | null, progress: Array<boolean>, onItemClick?: (i: number) => void): void {
     let html = progress.map((v, i) => {
-        if (v) {
-            return `<span class="progress_complete" data-index="${i}">${i + 1}</span>`
-        } else if (i === current_i) {
+        if (i === current_i) {
+            // Current item always gets the "current" highlight (larger indicator)
             return `<span class="progress_current" data-index="${i}">${i + 1}</span>`
+        } else if (v) {
+            return `<span class="progress_complete" data-index="${i}">${i + 1}</span>`
         } else {
             return `<span class="progress_incomplete" data-index="${i}">${i + 1}</span>`
         }
