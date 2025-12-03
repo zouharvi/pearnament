@@ -9,9 +9,7 @@ import {
     MQM_ERROR_CATEGORIES, 
     redrawProgress, 
     createSpanToolbox, 
-    updateToolboxPosition,
-    applySpanSeverityClass,
-    setupCategoryDropdowns
+    updateToolboxPosition 
 } from './utils';
 
 // Each candidate has its own response
@@ -28,7 +26,7 @@ type DataPayload = {
         tgt: string | Array<string>,  // Single or multiple translation candidates
         checks?: any,
         instructions?: string,
-        error_spans?: Array<ErrorSpan> | Array<Array<ErrorSpan>>,  // Pre-filled error spans (single or per-candidate)
+        error_spans?: Array<ErrorSpan> | Array<Array<ErrorSpan>>,  // Pre-filled error spans
     }>,
     info: {
         protocol_score: boolean,
@@ -52,23 +50,16 @@ function ensureCandidateArray(tgt: string | Array<string>): Array<string> {
 }
 
 /**
- * Ensures error_spans is always a 2D array (per-candidate)
+ * Gets error spans for a specific candidate index
  */
-function ensureErrorSpansArray(error_spans: Array<ErrorSpan> | Array<Array<ErrorSpan>> | undefined, numCandidates: number): Array<Array<ErrorSpan>> {
-    if (!error_spans || error_spans.length === 0) {
-        return Array(numCandidates).fill(null).map(() => [])
+function getErrorSpansForCandidate(error_spans: Array<ErrorSpan> | Array<Array<ErrorSpan>> | undefined, cand_i: number, numCandidates: number): Array<ErrorSpan> {
+    if (!error_spans || error_spans.length === 0) return []
+    // Check if 2D array (per-candidate)
+    if (error_spans.every(item => Array.isArray(item))) {
+        return (error_spans as Array<Array<ErrorSpan>>)[cand_i] || []
     }
-    // Check if all elements are arrays (2D array for multiple candidates)
-    const is2DArray = error_spans.every(item => Array.isArray(item))
-    if (is2DArray) {
-        return error_spans as Array<Array<ErrorSpan>>
-    }
-    // It's a 1D array - for single candidate, use it directly
-    if (numCandidates === 1) {
-        return [error_spans as Array<ErrorSpan>]
-    }
-    // For multiple candidates, return empty arrays (1D array doesn't make sense)
-    return Array(numCandidates).fill(null).map(() => [])
+    // 1D array - only use for single candidate
+    return numCandidates === 1 ? error_spans as Array<ErrorSpan> : []
 }
 
 let response_log: Array<DocumentResponse> = []
@@ -131,14 +122,12 @@ async function display_next_payload(response: DataPayload) {
 
     let data = response.payload
     // Initialize response log for each document with responses for each candidate
-    response_log = data.map(item => {
-        const candidates = ensureCandidateArray(item.tgt)
-        const prefilled_spans = ensureErrorSpansArray(item.error_spans, candidates.length)
-        return candidates.map((_, cand_i) => ({
+    response_log = data.map(item => 
+        ensureCandidateArray(item.tgt).map(_ => ({
             "score": null,
-            "error_spans": prefilled_spans[cand_i] ? prefilled_spans[cand_i].map(span => ({ ...span })) : [],
+            "error_spans": [],
         }))
-    })
+    )
     action_log = [{ "time": Date.now() / 1000, "action": "load" }]
     has_unsaved_work = false
 
@@ -343,6 +332,40 @@ async function display_next_payload(response: DataPayload) {
                 })
             }
 
+            // Load pre-filled error spans for this candidate
+            const candidateSpans = getErrorSpansForCandidate(item.error_spans, cand_i, candidates.length)
+            if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
+                for (const prefilled of candidateSpans) {
+                    const left_i = prefilled.start_i, right_i = prefilled.end_i
+                    if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
+                    let error_span: ErrorSpan = { ...prefilled }
+                    response_log[item_i][cand_i].error_spans.push(error_span)
+
+                    let toolbox = createSpanToolbox(protocol_error_categories, error_span, tgt_chars_objs, left_i, right_i, () => {
+                        response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(s => s != error_span)
+                        action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
+                        has_unsaved_work = true
+                    })
+                    $("body").append(toolbox)
+                    toolbox.on("mouseenter", () => { toolbox.css("display", "block"); check_unlock() })
+                    toolbox.on("mouseleave", () => {
+                        if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                            toolbox.css("display", "none"); check_unlock()
+                        }
+                    })
+                    $(window).on('resize', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
+                    $(window).trigger('resize')
+                    for (let j = left_i; j <= right_i; j++) {
+                        $(tgt_chars_objs[j].el).addClass(error_span.severity ? `error_${error_span.severity}` : "error_unknown")
+                        tgt_chars_objs[j].toolbox = toolbox
+                        tgt_chars_objs[j].error_span = error_span
+                    }
+                    if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                        toolbox.css("display", "none")
+                    }
+                }
+            }
+
             // Setup slider for this candidate
             let slider = candidate_block.find("input[type='range']")
             let label = candidate_block.find(".slider_label")
@@ -358,78 +381,6 @@ async function display_next_payload(response: DataPayload) {
                 check_unlock()
                 action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
             })
-
-            // Load pre-filled error spans for this candidate (ESAAI support)
-            const prefilled_spans = ensureErrorSpansArray(item.error_spans, candidates.length)
-            if (!no_tgt_char && prefilled_spans[cand_i] && prefilled_spans[cand_i].length > 0) {
-                for (const prefilled_span of prefilled_spans[cand_i]) {
-                    const left_i = prefilled_span.start_i
-                    const right_i = prefilled_span.end_i
-                    
-                    // Skip invalid spans
-                    if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) {
-                        continue
-                    }
-                    
-                    // Find the corresponding error span in response_log
-                    const error_span = response_log[item_i][cand_i].error_spans.find(
-                        span => span.start_i === left_i && span.end_i === right_i
-                    )
-                    if (!error_span) continue
-                    
-                    // Create toolbox for the pre-filled span
-                    let toolbox = createSpanToolbox(
-                        protocol_error_categories,
-                        error_span,
-                        tgt_chars_objs,
-                        left_i,
-                        right_i,
-                        () => {
-                            // onDelete callback
-                            response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(span => span != error_span)
-                            action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
-                            has_unsaved_work = true
-                        }
-                    )
-                    
-                    $("body").append(toolbox)
-                    
-                    // Setup pre-filled category dropdowns
-                    setupCategoryDropdowns(toolbox, error_span)
-                    
-                    // handle hover on toolbox
-                    toolbox.on("mouseenter", function () {
-                        toolbox.css("display", "block")
-                        check_unlock()
-                    })
-                    toolbox.on("mouseleave", function () {
-                        if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
-                            toolbox.css("display", "none")
-                            check_unlock()
-                        }
-                    })
-                    
-                    // set up callback to reposition toolbox on resize
-                    $(window).on('resize', function () {
-                        updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el))
-                    })
-                    $(window).trigger('resize')
-                    
-                    // Apply visual highlighting based on pre-filled severity
-                    applySpanSeverityClass(tgt_chars_objs, left_i, right_i, error_span.severity)
-                    
-                    // Store references in character objects
-                    for (let j = left_i; j <= right_i; j++) {
-                        tgt_chars_objs[j].toolbox = toolbox
-                        tgt_chars_objs[j].error_span = error_span
-                    }
-                    
-                    // Hide toolbox initially if severity is set
-                    if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
-                        toolbox.css("display", "none")
-                    }
-                }
-            }
         }
 
         // Source character hover effects
