@@ -3,6 +3,8 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
+from .utils import get_db_log_item
+
 
 def _completed_response(
     progress_data: dict,
@@ -37,28 +39,39 @@ def get_next_item(
     if assignment == "task-based":
         return get_next_item_taskbased(campaign_id, user_id, tasks_data, progress_data)
     elif assignment == "single-stream":
-        return get_next_item_single_stream(campaign_id, user_id, tasks_data, progress_data)
+        return get_next_item_singlestream(campaign_id, user_id, tasks_data, progress_data)
     elif assignment == "dynamic":
         return get_next_item_dynamic(campaign_id, user_id, tasks_data, progress_data)
     else:
         return JSONResponse(content={"error": "Unknown campaign assignment type"}, status_code=400)
 
 
-def get_next_item_taskbased(
+def get_i_item_taskbased(
     campaign_id: str,
     user_id: str,
     data_all: dict,
     progress_data: dict,
+    item_i: int,
 ) -> JSONResponse:
     """
-    Get the next item for task-based protocol.
+    Get specific item for task-based protocol.
     """
     user_progress = progress_data[campaign_id][user_id]
     if all(user_progress["progress"]):
         return _completed_response(progress_data, campaign_id, user_id)
 
-    # find first incomplete item
-    item_i = min([i for i, v in enumerate(user_progress["progress"]) if not v])
+    # try to get existing annotations if any
+    items_existing = get_db_log_item(campaign_id, user_id, item_i)
+    if items_existing:
+        # get the latest ones
+        payload_existing = items_existing[-1]["annotations"]
+
+    if item_i < 0 or item_i >= len(data_all[campaign_id]["data"][user_id]):
+        return JSONResponse(
+            content={"status": "error", "message": "Item index out of range"},
+            status_code=400
+        )
+
     return JSONResponse(
         content={
             "status": "ok",
@@ -71,23 +84,105 @@ def get_next_item_taskbased(
                 for k, v in data_all[campaign_id]["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": data_all[campaign_id]["data"][user_id][item_i]},
+            "payload": data_all[campaign_id]["data"][user_id][item_i]
+        } | ({"payload_existing": payload_existing} if items_existing else {}),
         status_code=200
     )
 
 
-def get_next_item_dynamic(campaign_data: dict, user_id: str, progress_data: dict, data_all: dict):
-    raise NotImplementedError("Dynamic protocol is not implemented yet.")
+def get_i_item_singlestrem(
+    campaign_id: str,
+    user_id: str,
+    data_all: dict,
+    progress_data: dict,
+    item_i: int,
+) -> JSONResponse:
+    """
+    Get specific item for single-stream assignment.
+    """
+    user_progress = progress_data[campaign_id][user_id]
+    if all(user_progress["progress"]):
+        return _completed_response(progress_data, campaign_id, user_id)
+
+    # try to get existing annotations if any
+    # note the None user_id since it is shared
+    items_existing = get_db_log_item(campaign_id, None, item_i)
+    if items_existing:
+        # get the latest ones
+        payload_existing = items_existing[-1]["annotations"]
+
+    if item_i < 0 or item_i >= len(data_all[campaign_id]["data"]):
+        return JSONResponse(
+            content={"status": "error", "message": "Item index out of range"},
+            status_code=400
+        )
+
+    return JSONResponse(
+        content={
+            "status": "ok",
+            "progress": user_progress["progress"],
+            "time": user_progress["time"],
+            "info": {
+                "item_i": item_i,
+            } | {
+                k: v
+                for k, v in data_all[campaign_id]["info"].items()
+                if k.startswith("protocol")
+            },
+            "payload": data_all[campaign_id]["data"][user_id]
+        } | ({"payload_existing": payload_existing} if items_existing else {}),
+        status_code=200
+    )
 
 
-def get_next_item_single_stream(
+def get_next_item_taskbased(
     campaign_id: str,
     user_id: str,
     data_all: dict,
     progress_data: dict,
 ) -> JSONResponse:
     """
-    Get the next item for single-stream protocol.
+    Get the next item for task-based assignment.
+    """
+    user_progress = progress_data[campaign_id][user_id]
+    if all(user_progress["progress"]):
+        return _completed_response(progress_data, campaign_id, user_id)
+
+    # find first incomplete item
+    item_i = min([i for i, v in enumerate(user_progress["progress"]) if not v])
+
+    # try to get existing annotations if any
+    items_existing = get_db_log_item(campaign_id, user_id, item_i)
+    if items_existing:
+        # get the latest ones
+        payload_existing = items_existing[-1]["annotations"]
+
+    return JSONResponse(
+        content={
+            "status": "ok",
+            "progress": user_progress["progress"],
+            "time": user_progress["time"],
+            "info": {
+                "item_i": item_i,
+            } | {
+                k: v
+                for k, v in data_all[campaign_id]["info"].items()
+                if k.startswith("protocol")
+            },
+            "payload": data_all[campaign_id]["data"][user_id][item_i]
+        } | ({"payload_existing": payload_existing} if items_existing else {}),
+        status_code=200
+    )
+
+
+def get_next_item_singlestream(
+    campaign_id: str,
+    user_id: str,
+    data_all: dict,
+    progress_data: dict,
+) -> JSONResponse:
+    """
+    Get the next item for single-stream assignment.
     In this mode, all users share the same pool of items.
     Items are randomly selected from unfinished items.
 
@@ -104,6 +199,13 @@ def get_next_item_single_stream(
     incomplete_indices = [i for i, v in enumerate(progress) if not v]
     item_i = random.choice(incomplete_indices)
 
+    # try to get existing annotations if any
+    # note the None user_id since it is shared
+    items_existing = get_db_log_item(campaign_id, None, item_i)
+    if items_existing:
+        # get the latest ones
+        payload_existing = items_existing[-1]["annotations"]
+
     return JSONResponse(
         content={
             "status": "ok",
@@ -116,9 +218,16 @@ def get_next_item_single_stream(
                 for k, v in data_all[campaign_id]["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": data_all[campaign_id]["data"][item_i]},
+            "payload": data_all[campaign_id]["data"][item_i]
+        } | ({"payload_existing": payload_existing} if items_existing else {}),
         status_code=200
     )
+
+
+
+def get_next_item_dynamic(campaign_data: dict, user_id: str, progress_data: dict, data_all: dict):
+    raise NotImplementedError("Dynamic protocol is not implemented yet.")
+
 
 
 def _reset_user_time(progress_data: dict, campaign_id: str, user_id: str) -> None:

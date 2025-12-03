@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .assignment import get_next_item, reset_task, update_progress
-from .utils import ROOT, load_progress_data, save_progress_data
+from .utils import ROOT, load_progress_data, save_progress_data, save_db_payload
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
@@ -36,7 +36,7 @@ class LogResponseRequest(BaseModel):
     campaign_id: str
     user_id: str
     item_i: int
-    payload: Any
+    payload: dict[str, Any]
 
 
 @app.post("/log-response")
@@ -45,6 +45,7 @@ async def _log_response(request: LogResponseRequest):
 
     campaign_id = request.campaign_id
     user_id = request.user_id
+    item_i = request.item_i
 
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
@@ -52,8 +53,7 @@ async def _log_response(request: LogResponseRequest):
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
 
     # append response to the output log
-    with open(f"{ROOT}/data/outputs/{campaign_id}.jsonl", "a") as log_file:
-        log_file.write(json.dumps(request.payload, ensure_ascii=False) + "\n")
+    save_db_payload(campaign_id, request.payload | {"user_id": user_id, "item_i": item_i})
 
     # if actions were submitted, we can log time data
     if "actions" in request.payload:

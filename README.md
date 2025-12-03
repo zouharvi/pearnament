@@ -96,7 +96,8 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 
 ## Pre-filled Error Spans (ESAAI Support)
 
-For workflows where you want to provide pre-filled error annotations (e.g., ESAAI), you can include an `error_spans` key in each item. These spans will be loaded into the interface as existing annotations that users can review, modify, or delete.
+For workflows where you want to provide pre-filled error annotations (e.g., ESAAI), you can include an `error_spans` key in each item.
+These spans will be loaded into the interface as existing annotations that users can review, modify, or delete.
 
 ```python
 {

@@ -165,7 +165,7 @@ class TestSingleStream:
         # Should return item 1 or 2 (incomplete items)
         assert '"item_i":1' in content or '"item_i":2' in content
 
-    def test_single_stream_completed_returns_token(self):
+    def test_singlestream_completed_returns_token(self):
         """Test that single-stream returns completion token when all items done."""
         tasks_data = {
             "campaign1": {

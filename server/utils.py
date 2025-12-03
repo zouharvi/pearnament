@@ -3,6 +3,7 @@ import os
 
 ROOT = "."
 
+
 def highlight_differences(a, b):
     """
     Compares two strings and wraps their differences in HTML span tags.
@@ -30,7 +31,7 @@ def highlight_differences(a, b):
                 res_a.append(f"{span_open}{a[i1:i2]}{span_close}")
             if tag in ('replace', 'insert'):
                 res_b.append(f"{span_open}{b[j1:j2]}{span_close}")
-    
+
     return "".join(res_a), "".join(res_b)
 
 
@@ -43,6 +44,58 @@ def load_progress_data(warn: str | None = None):
     with open(f"{ROOT}/data/progress.json", "r") as f:
         return json.load(f)
 
+
 def save_progress_data(data):
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(data, f, indent=2)
+
+
+_logs = {}
+
+
+def get_db_log(campaign_id: str) -> list[dict]:
+    """
+    Returns up to date log for the given campaign_id.
+    """
+    if campaign_id not in _logs:
+        # create a new one if it doesn't exist
+        log_path = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
+        if os.path.exists(log_path):
+            with open(log_path, "r") as f:
+                _logs[campaign_id] = [
+                    json.loads(line) for line in f.readlines()
+                ]
+        else:
+            _logs[campaign_id] = []
+
+    return _logs[campaign_id]
+
+
+def get_db_log_item(campaign_id: str, user_id: str | None, item_i: int | None) -> list[dict]:
+    """
+    Returns the log item for the given campaign_id, user_id and item_i.
+    Can be empty.
+    """
+    log = get_db_log(campaign_id)
+    return [
+        entry for entry in log
+        if (
+            (user_id is None or entry.get("user_id") == user_id) and
+            (item_i is None or entry.get("item_i") == item_i)
+        )
+    ]
+
+
+def save_db_payload(campaign_id: str, payload: dict):
+    """
+    Saves the given payload to the log for the given campaign_id, user_id and item_i.
+    Saves both on disk and in-memory.
+    """
+
+    log_path = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
+    with open(log_path, "a") as log_file:
+        log_file.write(json.dumps(payload, ensure_ascii=False,) + "\n")
+
+    log = get_db_log(campaign_id)
+    # copy to avoid mutation issues
+    log.append(payload)
