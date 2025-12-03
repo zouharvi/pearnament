@@ -477,6 +477,13 @@ async function display_next_payload(response: DataPayload) {
 
 let payload: DataPayload | null = null
 async function navigate_to_item(item_i: number) {
+  // Warn if there's unsaved work
+  if (has_unsaved_work) {
+    if (!confirm("You have unsaved work. Are you sure you want to navigate away?")) {
+      return
+    }
+  }
+  
   // Fetch and display a specific item by index
   let response = await get_i_item<DataPayload | DataFinished>(item_i)
   has_unsaved_work = false
