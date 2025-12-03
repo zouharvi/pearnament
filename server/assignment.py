@@ -46,6 +46,25 @@ def get_next_item(
         return JSONResponse(content={"error": "Unknown campaign assignment type"}, status_code=400)
 
 
+def get_i_item(
+    campaign_id: str,
+    user_id: str,
+    tasks_data: dict,
+    progress_data: dict,
+    item_i: int,
+) -> JSONResponse:
+    """
+    Get a specific item by index for the user in the specified campaign.
+    """
+    assignment = tasks_data[campaign_id]["info"]["assignment"]
+    if assignment == "task-based":
+        return get_i_item_taskbased(campaign_id, user_id, tasks_data, progress_data, item_i)
+    elif assignment == "single-stream":
+        return get_i_item_singlestream(campaign_id, user_id, tasks_data, progress_data, item_i)
+    else:
+        return JSONResponse(content={"error": "Get item not supported for this assignment type"}, status_code=400)
+
+
 def get_i_item_taskbased(
     campaign_id: str,
     user_id: str,
@@ -90,7 +109,7 @@ def get_i_item_taskbased(
     )
 
 
-def get_i_item_singlestrem(
+def get_i_item_singlestream(
     campaign_id: str,
     user_id: str,
     data_all: dict,
@@ -129,7 +148,7 @@ def get_i_item_singlestrem(
                 for k, v in data_all[campaign_id]["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": data_all[campaign_id]["data"][user_id]
+            "payload": data_all[campaign_id]["data"][item_i]
         } | ({"payload_existing": payload_existing} if items_existing else {}),
         status_code=200
     )

@@ -8,8 +8,8 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from .assignment import get_next_item, reset_task, update_progress
-from .utils import ROOT, load_progress_data, save_progress_data, save_db_payload
+from .assignment import get_i_item, get_next_item, reset_task, update_progress
+from .utils import ROOT, load_progress_data, save_db_payload, save_progress_data
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
@@ -147,6 +147,32 @@ async def _get_next_item(request: NextItemRequest):
         user_id,
         tasks_data,
         progress_data,
+    )
+
+
+class GetItemRequest(BaseModel):
+    campaign_id: str
+    user_id: str
+    item_i: int
+
+
+@app.post("/get-i-item")
+async def _get_i_item(request: GetItemRequest):
+    campaign_id = request.campaign_id
+    user_id = request.user_id
+    item_i = request.item_i
+
+    if campaign_id not in progress_data:
+        return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+    if user_id not in progress_data[campaign_id]:
+        return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
+
+    return get_i_item(
+        campaign_id,
+        user_id,
+        tasks_data,
+        progress_data,
+        item_i,
     )
 
 

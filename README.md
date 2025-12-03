@@ -10,7 +10,7 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 &nbsp;
 [![PyPi license](https://badgen.net/pypi/license/pearmut/)](https://pypi.org/project/pearmut/)
 &nbsp;
-[![build status](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/ci.yml)
+[![build status](https://github.com/zouharvi/pearmut/actions/workflows/test.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/test.yml)
 
 <img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/f14c91a5-44d7-4248-ada9-387e95ca59d0" />
 
@@ -94,9 +94,9 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 ... # definition of another item (document)
 ```
 
-## Pre-filled Error Spans (ESAAI Support)
+## Pre-filled Error Spans (ESA<sup>AI</sup> Support)
 
-For workflows where you want to provide pre-filled error annotations (e.g., ESAAI), you can include an `error_spans` key in each item.
+For workflows where you want to provide pre-filled error annotations (e.g., ESA<sup>AI</sup>), you can include an `error_spans` key in each item.
 These spans will be loaded into the interface as existing annotations that users can review, modify, or delete.
 
 ```python
