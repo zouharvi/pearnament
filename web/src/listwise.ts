@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, log_response } from './connector';
+import { get_next_item, get_i_item, log_response } from './connector';
 import { 
     notify, 
     ErrorSpan, 
@@ -28,6 +28,7 @@ type DataPayload = {
         instructions?: string,
         error_spans?: Array<Array<ErrorSpan>>,  // Pre-filled error spans (2D array, one per candidate)
     }>,
+    payload_existing?: Array<DocumentResponse>,
     info: {
         protocol_score: boolean,
         protocol_error_spans: boolean,
@@ -112,17 +113,26 @@ function _slider_html(item_i: number, candidate_i: number): string {
 }
 
 async function display_next_payload(response: DataPayload) {
-    redrawProgress(response.info.item_i, response.progress)
+    redrawProgress(response.info.item_i, response.progress, navigate_to_item)
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
 
     let data = response.payload
-    // Initialize response log for each document with responses for each candidate
-    response_log = data.map(item => 
-        ensureCandidateArray(item.tgt).map(_ => ({
-            "score": null,
-            "error_spans": [],
-        }))
-    )
+    // Initialize response log - use payload_existing if available
+    if (response.payload_existing) {
+        response_log = response.payload_existing.map(docResponses => 
+            docResponses.map(r => ({
+                "score": r.score,
+                "error_spans": r.error_spans ? [...r.error_spans] : [],
+            }))
+        )
+    } else {
+        response_log = data.map(item => 
+            ensureCandidateArray(item.tgt).map(_ => ({
+                "score": null,
+                "error_spans": [],
+            }))
+        )
+    }
     action_log = [{ "time": Date.now() / 1000, "action": "load" }]
     has_unsaved_work = false
 
@@ -327,9 +337,16 @@ async function display_next_payload(response: DataPayload) {
                 })
             }
 
-            // Load pre-filled error spans for this candidate
-            const candidateSpans = getErrorSpansForCandidate(item.error_spans, cand_i)
+            // Load error spans - use payload_existing if available, otherwise use item.error_spans
+            const existingErrorSpans = response.payload_existing?.[item_i]?.[cand_i]?.error_spans
+            const candidateSpans = existingErrorSpans || getErrorSpansForCandidate(item.error_spans, cand_i)
+            
             if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
+                // Only reset if loading from payload_existing (to avoid duplicating pre-filled spans)
+                if (existingErrorSpans) {
+                    response_log[item_i][cand_i].error_spans = []
+                }
+                
                 for (const prefilled of candidateSpans) {
                     const left_i = prefilled.start_i, right_i = prefilled.end_i
                     if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
@@ -376,6 +393,14 @@ async function display_next_payload(response: DataPayload) {
                 check_unlock()
                 action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
             })
+            
+            // Pre-fill score from payload_existing if available
+            const existingScore = response.payload_existing?.[item_i]?.[cand_i]?.score
+            if (existingScore != null && protocol_score) {
+                slider.val(existingScore)
+                label.text(`${existingScore}/100`)
+                response_log[item_i][cand_i].score = existingScore
+            }
         }
 
         // Source character hover effects
@@ -410,6 +435,48 @@ async function display_next_payload(response: DataPayload) {
 
 
 let payload: DataPayload | null = null
+
+async function navigate_to_item(item_i: number) {
+    // Warn if there's unsaved work
+    if (has_unsaved_work) {
+        if (!confirm("You have unsaved work. Are you sure you want to navigate away?")) {
+            return
+        }
+    }
+    
+    // Fetch and display a specific item by index
+    let response = await get_i_item<DataPayload | DataFinished>(item_i)
+    has_unsaved_work = false
+
+    if (response == null) {
+        notify("Error fetching the item. Please try again later.")
+        return
+    }
+
+    if (response.status == "completed") {
+        let response_finished = response as DataFinished
+        $("#output_div").html(`
+    <div class='white-box' style='width: max-content'>
+    <h2>🎉 All done, thank you for your annotations!</h2>
+
+    If someone asks you for a token of completion, show them
+    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response_finished.token}</span>
+    <br>
+    <br>
+    </div>
+    `)
+        redrawProgress(null, response_finished.progress, navigate_to_item)
+        $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
+        $("#button_settings").hide()
+        $("#button_next").hide()
+    } else if (response.status == "ok") {
+        payload = response as DataPayload
+        display_next_payload(response as DataPayload)
+    } else {
+        console.error("Non-ok response", response)
+    }
+}
+
 async function display_next_item() {
     let response = await get_next_item<DataPayload | DataFinished>()
     has_unsaved_work = false
@@ -431,7 +498,7 @@ async function display_next_item() {
     <br>
     </div>
     `)
-        redrawProgress(null, response_finished.progress)
+        redrawProgress(null, response_finished.progress, navigate_to_item)
         $("#time").text(`Time: ${Math.round(response_finished.time / 60)}m`)
         // NOTE: re-enable if we want to allow going back
         $("#button_settings").hide()

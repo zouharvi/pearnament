@@ -98,17 +98,26 @@ export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
 /**
  * Renders the progress bar for annotation tasks
  */
-export function redrawProgress(current_i: number | null, progress: Array<boolean>): void {
+export function redrawProgress(current_i: number | null, progress: Array<boolean>, onItemClick?: (i: number) => void): void {
     let html = progress.map((v, i) => {
-        if (v) {
-            return `<span class="progress_complete">${i + 1}</span>`
-        } else if (i === current_i) {
-            return `<span class="progress_current">${i + 1}</span>`
+        if (i === current_i) {
+            // Current item always gets the "current" highlight (larger indicator)
+            return `<span class="progress_current" data-index="${i}">${i + 1}</span>`
+        } else if (v) {
+            return `<span class="progress_complete" data-index="${i}">${i + 1}</span>`
         } else {
-            return `<span class="progress_incomplete">${i + 1}</span>`
+            return `<span class="progress_incomplete" data-index="${i}">${i + 1}</span>`
         }
     }).join("")
     $("#progress").html(html)
+
+    // Attach click handlers if callback is provided
+    if (onItemClick) {
+        $("#progress span").on("click", function() {
+            const index = parseInt($(this).data("index"))
+            onItemClick(index)
+        })
+    }
 }
 
 /**

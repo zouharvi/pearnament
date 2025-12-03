@@ -1,6 +1,7 @@
 """Tests for protocol functions."""
 
 from pearmut.assignment import (
+    get_i_item,
     get_next_item,
     reset_task,
     update_progress,
@@ -128,6 +129,72 @@ class TestTaskBased:
         assert progress_data["campaign1"]["user1"]["time"] == 0.0
         assert progress_data["campaign1"]["user1"]["time_start"] is None
         assert progress_data["campaign1"]["user1"]["time_end"] is None
+
+    def test_get_i_item_returns_specific_item(self):
+        """Test that task-based get_i_item returns the requested item."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": "b"}],
+                        [{"src": "c", "tgt": "d"}],
+                        [{"src": "e", "tgt": "f"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True, False, False],
+                    "time": 0,
+                    "token_correct": "abc",
+                    "token_incorrect": "xyz",
+                }
+            }
+        }
+        # Request item 2 specifically
+        response = get_i_item("campaign1", "user1",
+                              tasks_data, progress_data, 2)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"item_i":2' in content
+        assert '"src":"e"' in content
+
+    def test_get_i_item_out_of_range(self):
+        """Test that task-based get_i_item returns error for invalid index."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": "b"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False],
+                    "time": 0,
+                    "token_correct": "abc",
+                    "token_incorrect": "xyz",
+                }
+            }
+        }
+        response = get_i_item("campaign1", "user1",
+                              tasks_data, progress_data, 10)
+        assert response.status_code == 400
+        content = response.body.decode()
+        assert 'out of range' in content
 
 
 class TestSingleStream:
@@ -263,3 +330,36 @@ class TestSingleStream:
             False, True, False]
         assert progress_data["campaign1"]["user2"]["progress"] == [
             False, True, False]
+
+    def test_get_i_item_returns_specific_item(self):
+        """Test that single-stream get_i_item returns the requested item."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "single-stream",
+                    "template": "pointwise",
+                },
+                "data": [
+                    [{"src": "a", "tgt": "b"}],
+                    [{"src": "c", "tgt": "d"}],
+                    [{"src": "e", "tgt": "f"}],
+                ]
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True, False, False],
+                    "time": 0,
+                    "token_correct": "abc",
+                    "token_incorrect": "xyz",
+                }
+            }
+        }
+        # Request item 2 specifically
+        response = get_i_item("campaign1", "user1",
+                              tasks_data, progress_data, 2)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"item_i":2' in content
+        assert '"src":"e"' in content
