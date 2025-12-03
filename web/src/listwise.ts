@@ -97,7 +97,7 @@ function _slider_html(item_i: number, candidate_i: number): string {
     return `
     <div class="output_response">
       <input type="range" min="0" max="100" value="-1" id="response_${item_i}_${candidate_i}">
-      <span class="slider_label"><span class="slider_value">?</span> / 100</span>
+      <span class="slider_label">? / 100</span>
     </div>
     `
 }
@@ -142,7 +142,6 @@ async function display_next_payload(response: DataPayload) {
           <span id="instructions_message"></span>
           <div class="output_srctgt">
             <div class="output_src">${src_chars}</div>
-            <div class="output_candidates"></div>
           </div>
         </div>
         `)
@@ -166,7 +165,7 @@ async function display_next_payload(response: DataPayload) {
             </div>
             `)
             
-            output_block.find(".output_candidates").append(candidate_block)
+            output_block.find(".output_srctgt").append(candidate_block)
             
             // Setup character-level interactions for this candidate
             let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : candidate_block.find(".tgt_char").toArray().map(el => ({
@@ -310,14 +309,14 @@ async function display_next_payload(response: DataPayload) {
 
             // Setup slider for this candidate
             let slider = candidate_block.find("input[type='range']")
-            let label = candidate_block.find(".slider_value")
+            let label = candidate_block.find(".slider_label")
             slider.on("input", function () {
                 let val = parseInt((<HTMLInputElement>this).value)
-                label.text(val.toString())
+                label.text(`${val}/100`)
             })
             slider.on("change", function () {
                 let val = parseInt((<HTMLInputElement>this).value)
-                label.text(val.toString())
+                label.text(`${val}/100`)
                 response_log[item_i][cand_i].score = val
                 has_unsaved_work = true
                 check_unlock()

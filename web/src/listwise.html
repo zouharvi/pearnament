@@ -9,14 +9,15 @@
   <link rel="stylesheet" href="assets/style.css">
   <style>
     .output_srctgt {
-      display: inline-block;
-      width: 100%;
-      vertical-align: top;
+      display: flex;
+      width: calc(100% - 10px);
+      padding-right: 10px;
     }
 
     .output_src {
-      display: block;
-      width: calc(100% - 20px);
+      display: inline-block;
+      flex: 1;
+      box-sizing: border-box;
       background-color: #fff7;
       padding: 10px;
       border-radius: 8px;
@@ -24,28 +25,27 @@
       margin-bottom: 10px;
       user-select: none;
       box-shadow: 0 4px 6px #0005;
-    }
-
-    .output_candidates {
-      display: inline-block;
-      width: 100%;
+      height: min-content;
     }
 
     .output_candidate {
+      margin-left: 10px;
       display: inline-block;
+      flex: 1;
+      box-sizing: border-box;
       vertical-align: top;
       margin-right: 5px;
       margin-bottom: 10px;
+      height: min-content;
     }
 
     .output_tgt {
-      display: inline-block;
+      width: calc(100% - 20px);
       background-color: #fffc;
       padding: 10px;
       border-radius: 8px;
       user-select: none;
       box-shadow: 0 4px 6px #0005;
-      vertical-align: top;
     }
 
     .output_response {
@@ -60,12 +60,10 @@
     }
 
     .slider_label {
-      flex-shrink: 0;
       width: 50px;
       font-size: 10pt;
       color: #555;
-      text-align: left;
-      vertical-align: middle;
+      text-align: right;
       margin-left: 5px;
     }
 
@@ -257,7 +255,7 @@
 <body>
   <div
     style="max-width: 1600px; min-width: 900px; margin-left: auto; margin-right: auto; margin-top: 20px; padding-left: 10px;">
-    <div class="white-box" style="margin-right: 30px; background-color: #e7e2cf; padding: 5px 15px 5px 5px;">
+    <div class="white-box" style="margin-right: 10px; background-color: #e7e2cf; padding: 5px 15px 5px 5px;">
 
       <span id="instructions_global" style="display: inline-block; font-size: 11pt; width: calc(100% - 170px);">
         <ul id="instructions_spans">
