@@ -31,7 +31,7 @@ export type ErrorSpan = { start_i: number, end_i: number, category: string | nul
 export type Response = { score: number | null, error_spans: Array<ErrorSpan> }
 export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null }
 
-// MQM Error Categories shared between pointwise and pairwise
+// MQM Error Categories shared between pointwise and listwise
 export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
     "Terminology": [
         "",
