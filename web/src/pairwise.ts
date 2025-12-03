@@ -97,7 +97,7 @@ function _slider_html(item_i: number, candidate_i: number): string {
     return `
     <div class="output_response">
       <input type="range" min="0" max="100" value="-1" id="response_${item_i}_${candidate_i}">
-      <div class="slider_label"><span class="slider_value">?</span> / 100</div>
+      <span class="slider_label"><span class="slider_value">?</span> / 100</span>
     </div>
     `
 }
@@ -161,7 +161,6 @@ async function display_next_payload(response: DataPayload) {
             
             let candidate_block = $(`
             <div class="output_candidate" data-candidate="${cand_i}">
-              <div class="candidate_label">Candidate ${cand_i + 1}</div>
               <div class="output_tgt">${tgt_chars}</div>
               ${protocol_score ? _slider_html(item_i, cand_i) : ""}
             </div>

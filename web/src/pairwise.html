@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="assets/style.css">
   <style>
     .output_srctgt {
-      display: block;
+      display: inline-block;
       width: 100%;
       vertical-align: top;
     }
@@ -27,47 +27,63 @@
     }
 
     .output_candidates {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 10px;
+      display: inline-block;
+      width: 100%;
     }
 
     .output_candidate {
-      flex: 1;
-      min-width: 300px;
-      max-width: calc(50% - 10px);
-      display: flex;
-      flex-direction: column;
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 5px;
+      margin-bottom: 10px;
     }
 
     .output_tgt {
-      display: block;
-      width: calc(100% - 20px);
+      display: inline-block;
       background-color: #fffc;
       padding: 10px;
       border-radius: 8px;
       user-select: none;
       box-shadow: 0 4px 6px #0005;
-      flex-grow: 1;
+      vertical-align: top;
     }
 
     .output_response {
-      display: block;
-      width: 100%;
-      text-align: center;
-      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .output_response input[type=range] {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .slider_label {
+      flex-shrink: 0;
+      width: 50px;
+      font-size: 10pt;
+      color: #555;
+      text-align: left;
+      vertical-align: middle;
+      margin-left: 5px;
     }
 
     .output_block {
       margin-bottom: 30pt;
     }
 
-    /* on displays with less than 1000px */
+    /* on displays with less than 1000px - stack vertically */
     @media (max-width: 1000px) {
       .output_candidate {
-        max-width: 100%;
-        min-width: 100%;
+        display: block;
+        width: 100%;
+        margin-right: 0;
+      }
+
+      .output_tgt {
+        display: block;
+        width: calc(100% - 20px);
       }
     }
 
@@ -174,15 +190,7 @@
 
     /* Horizontal slider for pairwise */
     input[type=range] {
-      width: 100%;
       height: 16px;
-    }
-
-    .slider_label {
-      font-size: 10pt;
-      color: #555;
-      text-align: center;
-      margin-top: 3px;
     }
 
     /* progress bar */
@@ -242,13 +250,6 @@
 
     #progress span.progress_incomplete:hover {
       background: #aaa;
-    }
-
-    .candidate_label {
-      font-weight: bold;
-      font-size: 10pt;
-      color: #666;
-      margin-bottom: 5px;
     }
   </style>
 </head>
