@@ -181,6 +181,21 @@ We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), w
 }
 ```
 
+## Pre-defined User IDs and Tokens
+
+By default, user IDs and completion tokens are automatically generated. If you want to use specific user IDs (e.g., annotator names), you can specify them in the campaign file:
+```python
+{
+    "campaign_id": "my campaign",
+    "user_ids": ["annotator_alice", "annotator_bob"],  # optional: use these instead of random IDs
+    "tokens": {  # optional: use these completion tokens instead of random ones
+        "annotator_alice": {"correct": "alice_completed", "incorrect": "alice_failed"},
+        "annotator_bob": {"correct": "bob_completed"}  # partial specification is allowed
+    },
+    ...
+}
+```
+
 To load a campaign into the server, run the following.
 It will fail if an existing campaign with the same `campaign_id` already exists, unless you specify `-o/--overwrite`.
 It will also output a secret management link. Then, launch the server:

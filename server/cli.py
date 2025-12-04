@@ -123,16 +123,23 @@ def _add_campaign(args_unknown):
     else:
         raise ValueError(f"Unknown campaign assignment type: {assignment}")
 
-    user_ids = []
-    while len(user_ids) < num_users:
-        # generate random user IDs
-        new_id = f"{rword.random_words(amount=1, include_parts_of_speech=['adjective'])[0]}-{rword.random_words(amount=1, include_parts_of_speech=['noun'])[0]}"
-        if new_id not in user_ids:
-            user_ids.append(new_id)
-    user_ids = [
-        f"{user_id}-{rng.randint(0, 999):03d}"
-        for user_id in user_ids
-    ]
+    # use user_ids from data file if provided, otherwise generate random ones
+    if "user_ids" in campaign_data:
+        user_ids = campaign_data["user_ids"]
+        if len(user_ids) != num_users:
+            raise ValueError(
+                f"Number of user_ids ({len(user_ids)}) must match number of users ({num_users}).")
+    else:
+        user_ids = []
+        while len(user_ids) < num_users:
+            # generate random user IDs
+            new_id = f"{rword.random_words(amount=1, include_parts_of_speech=['adjective'])[0]}-{rword.random_words(amount=1, include_parts_of_speech=['noun'])[0]}"
+            if new_id not in user_ids:
+                user_ids.append(new_id)
+        user_ids = [
+            f"{user_id}-{rng.randint(0, 999):03d}"
+            for user_id in user_ids
+        ]
 
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
@@ -150,6 +157,9 @@ def _add_campaign(args_unknown):
             hashlib.sha256(random.randbytes(16)).hexdigest()[:10]
         )
 
+    # use tokens from data file if provided
+    tokens = campaign_data.get("tokens", {})
+
     user_progress = {
         user_id: {
             # TODO: progress tracking could be based on the assignment type
@@ -166,8 +176,8 @@ def _add_campaign(args_unknown):
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),
-            "token_correct": hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
-            "token_incorrect": hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
+            "token_correct": tokens.get(user_id, {}).get("correct") or hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
+            "token_incorrect": tokens.get(user_id, {}).get("incorrect") or hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
         }
         for user_id in user_ids
     }
