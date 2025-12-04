@@ -234,8 +234,7 @@ and independently of that select your protocol template:
 When adding new campaigns or launching pearmut, a management link is shown that gives an overview of annotator progress but also an easy access to the annotation links or resetting the task progress (no data will be lost).
 This is also the place where you can download all progress and collected annotations (these files exist also locally but this might be more convenient).
 
-<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/82470693-a5ec-4d0e-8989-e93d5b0bb840" />
-
+<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/800a1741-5f41-47ac-9d5d-5cbf6abfc0e6" />
 
 Additionally, at the end of an annotation, a token of completion is shown which can be compared to the correct one that you can download in metadat from the dashboard.
 An intentionally incorrect token can be shown if the annotations don't pass quality control.
