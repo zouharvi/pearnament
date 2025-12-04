@@ -290,12 +290,10 @@ def main():
                 if os.path.exists(output_file):
                     os.remove(output_file)
                 # Remove from progress data
-                if os.path.exists(f"{ROOT}/data/progress.json"):
-                    with open(f"{ROOT}/data/progress.json", "r") as f:
-                        progress_data = json.load(f)
-                    if campaign_id in progress_data:
-                        del progress_data[campaign_id]
-                        save_progress_data(progress_data)
+                progress_data = load_progress_data()
+                if campaign_id in progress_data:
+                    del progress_data[campaign_id]
+                    save_progress_data(progress_data)
                 print(f"Campaign '{campaign_id}' purged.")
             else:
                 print("Cancelled.")
