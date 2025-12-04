@@ -143,7 +143,7 @@ async function display_next_payload(response: DataPayload) {
     let no_tgt_char = isMediaContent(item.tgt)
 
     let src_chars = no_src_char ? item.src : contentToCharSpans(item.src, "src_char")
-    let tgt_chars = no_tgt_char ? item.tgt : contentToCharSpans(item.tgt, "tgt_char")
+    let tgt_chars = no_tgt_char ? item.tgt : (contentToCharSpans(item.tgt, "tgt_char") + (protocol_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
     let output_block = $(`
       <div class="output_block">
       <span id="instructions_message"></span>
@@ -167,9 +167,12 @@ async function display_next_payload(response: DataPayload) {
       "error_span": null,
     }))
     let state_i: null | number = null
+    let missing_i = protocol_error_spans ? tgt_chars_objs.findIndex(obj => obj.el.hasClass("char_missing")) : -1
 
     if (!no_tgt_char) {
       tgt_chars_objs.forEach((obj, i) => {
+        let is_missing = (i == missing_i)
+        
         // leaving target character
         $(obj.el).on("mouseleave", function () {
           $(".src_char").removeClass("highlighted")
@@ -185,13 +188,13 @@ async function display_next_payload(response: DataPayload) {
         // entering target character
         $(obj.el).on("mouseenter", function () {
           $(".src_char").removeClass("highlighted")
-          if (settings_show_alignment) {
+          if (settings_show_alignment && !is_missing) {
             let src_i = Math.round(i / tgt_chars_objs.length * src_chars_els.length)
             for (let j = Math.max(0, src_i - 5); j <= Math.min(src_chars_els.length - 1, src_i + 5); j++) {
               $(src_chars_els[j]).addClass("highlighted")
             }
           }
-          if (state_i != null) {
+          if (state_i != null && !is_missing) {
             for (let j = Math.min(state_i, i); j <= Math.max(state_i, i); j++) {
               $(tgt_chars_objs[j].el).addClass("highlighted")
             }
@@ -212,6 +215,9 @@ async function display_next_payload(response: DataPayload) {
         // add spans and toolbox only in case the protocol asks for it
         if (protocol_error_spans || protocol_error_categories) {
           $(obj.el).on("click", function () {
+            if (is_missing) {
+              state_i = missing_i
+            }
             if (state_i != null) {
               // check if we're not overlapping
               let left_i = Math.min(state_i, i)

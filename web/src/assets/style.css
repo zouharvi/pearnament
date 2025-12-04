@@ -233,3 +233,7 @@ input[type="button"].error_delete:hover {
     position: relative;
     top: -5px;
 }
+
+.char_missing {
+    font-family: monospace;
+}
