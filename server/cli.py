@@ -99,6 +99,11 @@ def _add_campaign(args_unknown):
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
+
+    # Parse users specification from info
+    users_spec = campaign_data["info"].get("users")
+    user_tokens = {}  # user_id -> {"pass": ..., "fail": ...}
+
     if assignment == "task-based":
         tasks = campaign_data["data"]
         if not isinstance(tasks, list):
@@ -110,29 +115,29 @@ def _add_campaign(args_unknown):
         num_users = len(tasks)
     elif assignment == "single-stream":
         tasks = campaign_data["data"]
-        if "num_users" not in campaign_data["info"]:
+        if users_spec is None:
             raise ValueError(
-                "Single-stream campaigns must specify 'num_users' in info.")
+                "Single-stream campaigns must specify 'users' in info.")
         if not isinstance(campaign_data["data"], list):
             raise ValueError(
                 "Single-stream campaign 'data' must be a list of items.")
-        num_users = campaign_data["info"]["num_users"]
+        if isinstance(users_spec, int):
+            num_users = users_spec
+        elif isinstance(users_spec, list):
+            num_users = len(users_spec)
+        else:
+            raise ValueError("'users' must be an integer or a list.")
     elif assignment == "dynamic":
         raise NotImplementedError(
             "Dynamic campaign assignment is not yet implemented.")
     else:
         raise ValueError(f"Unknown campaign assignment type: {assignment}")
 
-    # use user_ids from data file if provided, otherwise generate random ones
-    if "user_ids" in campaign_data:
-        user_ids = campaign_data["user_ids"]
-        if len(user_ids) != num_users:
-            raise ValueError(
-                f"Number of user_ids ({len(user_ids)}) must match number of users ({num_users}).")
-    else:
+    # Generate or parse user IDs based on users specification
+    if users_spec is None or isinstance(users_spec, int):
+        # Generate random user IDs
         user_ids = []
         while len(user_ids) < num_users:
-            # generate random user IDs
             new_id = f"{rword.random_words(amount=1, include_parts_of_speech=['adjective'])[0]}-{rword.random_words(amount=1, include_parts_of_speech=['noun'])[0]}"
             if new_id not in user_ids:
                 user_ids.append(new_id)
@@ -140,6 +145,28 @@ def _add_campaign(args_unknown):
             f"{user_id}-{rng.randint(0, 999):03d}"
             for user_id in user_ids
         ]
+    elif isinstance(users_spec, list):
+        if len(users_spec) != num_users:
+            raise ValueError(
+                f"Number of users ({len(users_spec)}) must match expected count ({num_users}).")
+        if all(isinstance(u, str) for u in users_spec):
+            # List of string IDs
+            user_ids = users_spec
+        elif all(isinstance(u, dict) for u in users_spec):
+            # List of dicts with user_id, token_pass, token_fail
+            user_ids = []
+            for u in users_spec:
+                if "user_id" not in u:
+                    raise ValueError("Each user dict must contain 'user_id'.")
+                user_ids.append(u["user_id"])
+                user_tokens[u["user_id"]] = {
+                    "pass": u.get("token_pass"),
+                    "fail": u.get("token_fail"),
+                }
+        else:
+            raise ValueError("'users' list must contain all strings or all dicts.")
+    else:
+        raise ValueError("'users' must be an integer or a list.")
 
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
@@ -157,8 +184,12 @@ def _add_campaign(args_unknown):
             hashlib.sha256(random.randbytes(16)).hexdigest()[:10]
         )
 
-    # use tokens from data file if provided
-    tokens = campaign_data.get("tokens", {})
+    def get_token(user_id, token_type):
+        """Get user token or generate a random one."""
+        token = user_tokens.get(user_id, {}).get(token_type)
+        if token is not None:
+            return token
+        return hashlib.sha256(random.randbytes(16)).hexdigest()[:10]
 
     user_progress = {
         user_id: {
@@ -176,8 +207,8 @@ def _add_campaign(args_unknown):
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),
-            "token_correct": tokens.get(user_id, {}).get("correct") if tokens.get(user_id, {}).get("correct") is not None else hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
-            "token_incorrect": tokens.get(user_id, {}).get("incorrect") if tokens.get(user_id, {}).get("incorrect") is not None else hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
+            "token_correct": get_token(user_id, "pass"),
+            "token_incorrect": get_token(user_id, "fail"),
         }
         for user_id in user_ids
     }
