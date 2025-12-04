@@ -250,6 +250,20 @@ Tip: make sure the elements are already appropriately styled.
 
 <img width="1000" alt="Preview of multimodal elements in Pearmut" src="https://github.com/user-attachments/assets/77c4fa96-ee62-4e46-8e78-fd16e9007956" />
 
+## CLI Commands
+
+Pearmut provides the following commands:
+
+- `pearmut add <file(s)>`: Add one or more campaign JSON files. Supports wildcards (e.g., `pearmut add examples/*.json`).
+  - `-o/--overwrite`: Overwrite existing campaigns with the same ID.
+  - `--server <url>`: Prefix server URL for protocol links (default: `http://localhost:8001`).
+- `pearmut run`: Start the Pearmut server.
+  - `--port <port>`: Port to run the server on (default: 8001).
+  - `--server <url>`: Prefix server URL for protocol links.
+- `pearmut purge [campaign]`: Remove campaign data.
+  - Without arguments: Purges all campaigns (tasks, outputs, progress).
+  - With campaign name: Purges only the specified campaign's data.
+
 
 ## Hosting Assets
 
