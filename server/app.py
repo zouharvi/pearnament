@@ -1,5 +1,6 @@
 import json
 import os
+import warnings
 from typing import Any
 
 from fastapi import FastAPI, Query
@@ -251,6 +252,8 @@ for i, served_dir in enumerate(meta_data.get("served_directories", [])):
             StaticFiles(directory=served_dir, html=False, follow_symlink=True),
             name=f"served_{i}",
         )
+    else:
+        warnings.warn(f"Served directory does not exist or is not a directory: {served_dir}")
 
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
 if not os.path.exists(static_dir + "index.html"):
