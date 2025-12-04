@@ -3,7 +3,12 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
-from .utils import RESET_MARKER, check_validation_threshold, get_db_log_item, save_db_payload
+from .utils import (
+    RESET_MARKER,
+    check_validation_threshold,
+    get_db_log_item,
+    save_db_payload,
+)
 
 
 def _completed_response(

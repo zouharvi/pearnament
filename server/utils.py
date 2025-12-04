@@ -151,7 +151,7 @@ def check_validation_threshold(
             total_checks += 1
             if not check_passed:
                 failed_checks += 1
-    
+
     # If no validation checks exist, pass
     if total_checks == 0:
         return True
@@ -163,8 +163,7 @@ def check_validation_threshold(
     # Check threshold based on type
     if isinstance(threshold, float):
         # Float in [0, 1): proportion-based, pass if failed proportion <= threshold
-        failed_proportion = failed_checks / total_checks
-        return failed_proportion <= threshold
+        return failed_checks / total_checks <= threshold
     else:
         # Integer: count-based, pass if failed count <= threshold
         return failed_checks <= threshold
