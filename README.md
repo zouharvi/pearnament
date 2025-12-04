@@ -12,7 +12,7 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 &nbsp;
 [![build status](https://github.com/zouharvi/pearmut/actions/workflows/test.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/test.yml)
 
-<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/f14c91a5-44d7-4248-ada9-387e95ca59d0" />
+<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/4fb9a1cb-78ac-47e0-99cd-0870a368a0ad" />
 
 ## Quick start
 
@@ -213,12 +213,14 @@ and independently of that select your protocol template:
 When adding new campaigns or launching pearmut, a management link is shown that gives an overview of annotator progress but also an easy access to the annotation links or resetting the task progress (no data will be lost).
 This is also the place where you can download all progress and collected annotations (these files exist also locally but this might be more convenient).
 
-<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/057899d7-2291-46c7-876f-407c4050a9cb" />
+<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/82470693-a5ec-4d0e-8989-e93d5b0bb840" />
+
 
 Additionally, at the end of an annotation, a token of completion is shown which can be compared to the correct one that you can download in metadat from the dashboard.
 An intentionally incorrect token can be shown if the annotations don't pass quality control.
 
-<img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/4b4d2aa9-7bab-44d6-894b-6c789cd3bc6e" />
+<img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
+
 
 ## Multimodal Annotations
 
@@ -227,7 +229,8 @@ This includes embedded YouTube videos, or even simple `<video ` tags that point 
 For an example, try [examples/multimodal.json](examples/multimodal.json).
 Tip: make sure the elements are already appropriately styled.
 
-<img width="800" alt="Preview of multimodal elements in Pearmut" src="https://github.com/user-attachments/assets/f34a1a3e-ad95-4114-95ee-8a49e8003faf" />
+<img width="1000" alt="Preview of multimodal elements in Pearmut" src="https://github.com/user-attachments/assets/77c4fa96-ee62-4e46-8e78-fd16e9007956" />
+
 
 ## Development
 
