@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
-from .utils import get_db_log_item
+from .utils import RESET_MARKER, get_db_log_item, save_db_payload
 
 
 def _completed_response(
@@ -261,20 +261,33 @@ def reset_task(
 ) -> JSONResponse:
     """
     Reset the task progress for the user in the specified campaign.
+    Saves a reset marker to mask existing annotations.
     """
     assignment = tasks_data[campaign_id]["info"]["assignment"]
     if assignment == "task-based":
-        progress_data[campaign_id][user_id]["progress"] = (
-            [False]*len(tasks_data[campaign_id]["data"][user_id])
-        )
+        # Save reset marker for this user to mask existing annotations
+        num_items = len(tasks_data[campaign_id]["data"][user_id])
+        for item_i in range(num_items):
+            save_db_payload(campaign_id, {
+                "user_id": user_id,
+                "item_i": item_i,
+                "annotations": RESET_MARKER
+            })
+        progress_data[campaign_id][user_id]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content={"status": "ok"}, status_code=200)
     elif assignment == "single-stream":
+        # Save reset markers for all items (shared pool)
+        num_items = len(tasks_data[campaign_id]["data"])
+        for item_i in range(num_items):
+            save_db_payload(campaign_id, {
+                "user_id": None,
+                "item_i": item_i,
+                "annotations": RESET_MARKER
+            })
         # for single-stream reset all progress
         for uid in progress_data[campaign_id]:
-            progress_data[campaign_id][uid]["progress"] = (
-                [False]*len(tasks_data[campaign_id]["data"])
-            )
+            progress_data[campaign_id][uid]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content={"status": "ok"}, status_code=200)
     else:

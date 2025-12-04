@@ -6,6 +6,17 @@ from pearmut.assignment import (
     reset_task,
     update_progress,
 )
+from pearmut.utils import (
+    RESET_MARKER,
+    _logs,
+    get_db_log_item,
+    save_db_payload,
+)
+
+
+def _clear_test_logs():
+    """Clear in-memory log cache for clean test state."""
+    _logs.clear()
 
 
 class TestTaskBased:
@@ -363,3 +374,102 @@ class TestSingleStream:
         content = response.body.decode()
         assert '"item_i":2' in content
         assert '"src":"e"' in content
+
+class TestResetMasking:
+    """Tests for reset masking functionality."""
+
+    def test_reset_marker_masks_existing_annotations(self):
+        """Test that reset marker masks all existing annotations."""
+        _clear_test_logs()
+        campaign_id = "test_campaign_reset"
+
+        # Save some annotations
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": {"score": 80}
+        })
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": {"score": 90}
+        })
+
+        # Verify annotations exist
+        items = get_db_log_item(campaign_id, "user1", 0)
+        assert len(items) == 2
+
+        # Save reset marker
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": RESET_MARKER
+        })
+
+        # Verify annotations are masked (no items returned after reset)
+        items = get_db_log_item(campaign_id, "user1", 0)
+        assert len(items) == 0
+
+    def test_annotations_after_reset_are_visible(self):
+        """Test that annotations after reset marker are visible."""
+        _clear_test_logs()
+        campaign_id = "test_campaign_after_reset"
+
+        # Save old annotations
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": {"score": 50}
+        })
+
+        # Save reset marker
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": RESET_MARKER
+        })
+
+        # Save new annotations after reset
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": {"score": 75}
+        })
+
+        # Verify only new annotations are visible
+        items = get_db_log_item(campaign_id, "user1", 0)
+        assert len(items) == 1
+        assert items[0]["annotations"] == {"score": 75}
+
+    def test_reset_marker_per_user_isolation(self):
+        """Test that reset markers only affect the specific user."""
+        _clear_test_logs()
+        campaign_id = "test_campaign_user_isolation"
+
+        # Save annotations for user1 and user2
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": {"score": 60}
+        })
+        save_db_payload(campaign_id, {
+            "user_id": "user2",
+            "item_i": 0,
+            "annotations": {"score": 70}
+        })
+
+        # Reset only user1
+        save_db_payload(campaign_id, {
+            "user_id": "user1",
+            "item_i": 0,
+            "annotations": RESET_MARKER
+        })
+
+        # User1 should have no annotations
+        items_user1 = get_db_log_item(campaign_id, "user1", 0)
+        assert len(items_user1) == 0
+
+        # User2 should still have annotations
+        items_user2 = get_db_log_item(campaign_id, "user2", 0)
+        assert len(items_user2) == 1
+        assert items_user2[0]["annotations"] == {"score": 70}
