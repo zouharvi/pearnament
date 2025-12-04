@@ -176,8 +176,8 @@ def _add_campaign(args_unknown):
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),
-            "token_correct": tokens.get(user_id, {}).get("correct") or hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
-            "token_incorrect": tokens.get(user_id, {}).get("incorrect") or hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
+            "token_correct": tokens.get(user_id, {}).get("correct") if tokens.get(user_id, {}).get("correct") is not None else hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
+            "token_incorrect": tokens.get(user_id, {}).get("incorrect") if tokens.get(user_id, {}).get("incorrect") is not None else hashlib.sha256(random.randbytes(16)).hexdigest()[:10],
         }
         for user_id in user_ids
     }

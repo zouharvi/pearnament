@@ -190,7 +190,7 @@ By default, user IDs and completion tokens are automatically generated. If you w
     "user_ids": ["annotator_alice", "annotator_bob"],  # optional: use these instead of random IDs
     "tokens": {  # optional: use these completion tokens instead of random ones
         "annotator_alice": {"correct": "alice_completed", "incorrect": "alice_failed"},
-        "annotator_bob": {"correct": "bob_completed"}  # partial specification is allowed
+        "annotator_bob": {"correct": "bob_completed"}  # missing tokens are auto-generated
     },
     ...
 }
