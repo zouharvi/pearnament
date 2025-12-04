@@ -214,7 +214,7 @@ def _add_single_campaign(data_file, overwrite, server):
     print("-"*10)
     for user_id, user_val in user_progress.items():
         # point to the protocol URL
-        print(f"{server}/{user_val["url"]}")
+        print(f'{server}/{user_val["url"]}')
 
 
 def _add_campaign(args_unknown):
@@ -224,7 +224,7 @@ def _add_campaign(args_unknown):
     args = argparse.ArgumentParser()
     args.add_argument(
         'data_files', type=str, nargs='+',
-        help='Path(s) to the campaign data file(s)'
+        help='One or more paths to campaign data files'
     )
     args.add_argument(
         "-o", "--overwrite", action="store_true",
@@ -237,7 +237,11 @@ def _add_campaign(args_unknown):
     args = args.parse_args(args_unknown)
 
     for data_file in args.data_files:
-        _add_single_campaign(data_file, args.overwrite, args.server)
+        try:
+            _add_single_campaign(data_file, args.overwrite, args.server)
+        except Exception as e:
+            print(f"Error processing {data_file}: {e}")
+            exit(1)
 
 
 def main():
