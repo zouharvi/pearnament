@@ -10,7 +10,7 @@ import urllib.parse
 
 import psutil
 
-from .utils import ROOT, load_progress_data
+from .utils import ROOT, load_progress_data, save_progress_data
 
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 load_progress_data(warn=None)
@@ -295,8 +295,7 @@ def main():
                         progress_data = json.load(f)
                     if campaign_id in progress_data:
                         del progress_data[campaign_id]
-                        with open(f"{ROOT}/data/progress.json", "w") as f:
-                            json.dump(progress_data, f, indent=2, ensure_ascii=False)
+                        save_progress_data(progress_data)
                 print(f"Campaign '{campaign_id}' purged.")
             else:
                 print("Cancelled.")
