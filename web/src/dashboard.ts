@@ -30,7 +30,9 @@ function delta_to_human(delta: number): string {
 }
 
 // for each campaign_id, fetch dashboard data and display them in a white-box
-campaign_ids.forEach(async (campaign_id, i) => {
+(async () => {
+for (let i = 0; i < campaign_ids.length; i++) {
+    let campaign_id = campaign_ids[i];
     let token = tokens[i] || null
     await $.ajax({
         url: `/dashboard-data`,
@@ -137,7 +139,8 @@ campaign_ids.forEach(async (campaign_id, i) => {
             notify("Error fetching data:" + JSON.stringify(textStatus) + JSON.stringify(errorThrown));
         },
     });
-});
+}
+})();
 
 
 // progress requries an access token
