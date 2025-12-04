@@ -502,7 +502,7 @@ async function display_next_payload(response: DataPayload) {
     }
   }
 
-  // trigger once
+  // trigger once to reposition toolboxes
   $(window).trigger('resize.toolbox')
   check_unlock()
 }
