@@ -3,60 +3,7 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
-from .utils import RESET_MARKER, get_db_log_item, save_db_payload
-
-
-def check_validation_threshold(
-    tasks_data: dict,
-    progress_data: dict,
-    campaign_id: str,
-    user_id: str,
-) -> bool:
-    """
-    Check if user passes the validation threshold.
-    
-    The threshold is defined in campaign info as 'validation_threshold':
-    - If integer: pass if number of failed checks <= threshold
-    - If float in [0, 1): pass if proportion of failed checks <= threshold  
-    - If float >= 1: always fail
-    - If None/not set: always pass (returns True)
-    
-    Returns True if validation passes, False otherwise.
-    """
-    threshold = tasks_data[campaign_id]["info"].get("validation_threshold")
-    
-    # If no threshold is set, always pass
-    if threshold is None:
-        return True
-    
-    user_progress = progress_data[campaign_id][user_id]
-    validations = user_progress.get("validations", {})
-    
-    # Count failed checks (validations is dict of item_i -> list of bools)
-    total_checks = 0
-    failed_checks = 0
-    for item_validations in validations.values():
-        for check_passed in item_validations:
-            total_checks += 1
-            if not check_passed:
-                failed_checks += 1
-    
-    # If no validation checks exist, pass
-    if total_checks == 0:
-        return True
-    
-    # Float >= 1: always fail
-    if isinstance(threshold, float) and threshold >= 1:
-        return False
-    
-    # Check threshold based on type
-    if isinstance(threshold, float):
-        # Float in [0, 1): proportion-based, pass if failed proportion <= threshold
-        failed_proportion = failed_checks / total_checks
-        return failed_proportion <= threshold
-    else:
-        # Integer: count-based, pass if failed count <= threshold
-        return failed_checks <= threshold
+from .utils import RESET_MARKER, check_validation_threshold, get_db_log_item, save_db_payload
 
 
 def _completed_response(

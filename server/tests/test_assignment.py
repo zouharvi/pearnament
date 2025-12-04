@@ -1,7 +1,6 @@
 """Tests for protocol functions."""
 
 from pearmut.assignment import (
-    check_validation_threshold,
     get_i_item,
     get_next_item,
     reset_task,
@@ -10,6 +9,7 @@ from pearmut.assignment import (
 from pearmut.utils import (
     RESET_MARKER,
     _logs,
+    check_validation_threshold,
     get_db_log_item,
     save_db_payload,
 )
@@ -479,17 +479,18 @@ class TestResetMasking:
 class TestValidationThreshold:
     """Tests for validation threshold functionality."""
 
-    def test_no_threshold_always_passes(self):
-        """Test that no threshold means always pass."""
+    def test_no_threshold_defaults_to_zero(self):
+        """Test that no threshold defaults to 0 (fail on any failure)."""
         tasks_data = {
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
                     "template": "pointwise",
-                    # No validation_threshold set
+                    # No validation_threshold set - defaults to 0
                 }
             }
         }
+        # With failures, should fail (threshold defaults to 0)
         progress_data = {
             "campaign1": {
                 "user1": {
@@ -499,6 +500,10 @@ class TestValidationThreshold:
                 }
             }
         }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+        
+        # With all passed, should pass
+        progress_data["campaign1"]["user1"]["validations"][0] = [True, True, True]
         assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
 
     def test_integer_threshold_zero_fails_on_any_failure(self):
