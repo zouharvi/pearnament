@@ -1,6 +1,6 @@
 [project]
 name = "pearmut"
-version = "0.2.1"
+version = "0.2.2"
 description = "A tool for evaluation of model outputs, primarily MT."
 readme = "README.md"
 license = { text = "apache-2.0" }
@@ -39,10 +39,3 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
 "pearmut" = ["static/**"]
-
-# managed by .github/workflows/publish.yml now but still can be built and pushed lcoally
-# rm -rf server/static/; npm install web/ --prefix web/; npm run build --prefix web/
-# rm -rf {build,dist,pearmut.egg-info}/*; python3 -m build 
-# python3 -m twine upload dist/* -u __token__
-
-# pip install -e . --config-settings editable_mode=strict

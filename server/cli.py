@@ -162,7 +162,7 @@ def _add_campaign(args_unknown):
             "time_end": None,
             "time": 0,
             "url": (
-                f"{args.server}/{campaign_data["info"]["template"]}.html"
+                f"{campaign_data["info"]["template"]}.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),
@@ -188,7 +188,7 @@ def _add_campaign(args_unknown):
     print("-"*10)
     for user_id, user_val in user_progress.items():
         # point to the protocol URL
-        print(user_val["url"])
+        print(f"{args.server}/{user_val["url"]}")
 
 
 def main():
