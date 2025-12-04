@@ -242,40 +242,15 @@ async def _download_progress(
     return JSONResponse(content=output, status_code=200)
 
 
-# Custom StaticFiles class that supports multiple directories with fallback
-class MultiStaticFiles(StaticFiles):
-    """
-    A StaticFiles class that supports serving from multiple directories.
-    Files are looked up in order: served_directories first, then the main static directory.
-    """
-    def __init__(
-        self,
-        *,
-        directory: str,
-        additional_directories: list[str] | None = None,
-        html: bool = False,
-        check_dir: bool = True,
-        follow_symlink: bool = False,
-    ) -> None:
-        super().__init__(
-            directory=directory,
-            html=html,
-            check_dir=check_dir,
-            follow_symlink=follow_symlink,
-        )
-        # Prepend additional directories so they are searched first
-        if additional_directories:
-            for d in reversed(additional_directories):
-                if os.path.isdir(d):
-                    self.all_directories.insert(0, d)
-
-
-# Load served directories from meta.json
+# Load and mount served directories from meta.json
 meta_data = load_meta_data()
-served_directories = [
-    d for d in meta_data.get("served_directories", [])
-    if os.path.isdir(d)
-]
+for i, served_dir in enumerate(meta_data.get("served_directories", [])):
+    if os.path.isdir(served_dir):
+        app.mount(
+            "/",
+            StaticFiles(directory=served_dir, html=False, follow_symlink=True),
+            name=f"served_{i}",
+        )
 
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
 if not os.path.exists(static_dir + "index.html"):
@@ -284,11 +259,6 @@ if not os.path.exists(static_dir + "index.html"):
 
 app.mount(
     "/",
-    MultiStaticFiles(
-        directory=static_dir,
-        additional_directories=served_directories,
-        html=True,
-        follow_symlink=True,
-    ),
+    StaticFiles(directory=static_dir, html=True, follow_symlink=True),
     name="static",
 )
