@@ -220,7 +220,7 @@ def _add_single_campaign(data_file, overwrite, server):
 
         # Remove existing symlink if present and we are overriding
         if os.path.exists(symlink_path):
-            if args.overwrite:
+            if overwrite:
                 os.remove(symlink_path)
             else:
                 raise ValueError(f"Assets symlink '{symlink_path}' already exists.")
@@ -240,14 +240,15 @@ def _add_single_campaign(data_file, overwrite, server):
 
 
     print(
+        "🎛️ ",
         f"{server}/dashboard.html"
         f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
         f"&token={campaign_data['token']}"
     )
-    print("-"*10)
     for user_id, user_val in user_progress.items():
         # point to the protocol URL
         print(f'{server}/{user_val["url"]}')
+    print()
 
 
 def _add_campaign(args_unknown):
