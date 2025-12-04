@@ -115,6 +115,17 @@ function check_unlock() {
     $("#button_next").val("Next ✅")
 }
 
+/**
+ * Cleanup function to remove toolboxes and handlers from previous item
+ * Must be called before loading a new item to prevent memory leaks and stale UI
+ */
+function cleanupPreviousItem(): void {
+    // Remove all toolboxes appended to body
+    $(".span_toolbox_parent").remove()
+    // Remove resize handlers for toolbox positioning (use namespace to avoid removing other handlers)
+    $(window).off('resize.toolbox')
+}
+
 function _slider_html(item_i: number, candidate_i: number): string {
     return `
     <div class="output_response">
@@ -125,6 +136,9 @@ function _slider_html(item_i: number, candidate_i: number): string {
 }
 
 async function display_next_payload(response: DataPayload) {
+    // Cleanup toolboxes and handlers from previous item
+    cleanupPreviousItem()
+
     redrawProgress(response.info.item_i, response.progress, navigate_to_item)
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
 
@@ -334,10 +348,10 @@ async function display_next_payload(response: DataPayload) {
                                 })
 
                                 // set up callback to reposition toolbox on resize         
-                                $(window).on('resize', function () {
+                                $(window).on('resize.toolbox', function () {
                                     updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el))
                                 })
-                                $(window).trigger('resize');
+                                $(window).trigger('resize.toolbox');
 
                                 // store error span
                                 response_log[item_i][cand_i].error_spans.push(error_span)
@@ -392,8 +406,8 @@ async function display_next_payload(response: DataPayload) {
                             toolbox.css("display", "none"); check_unlock()
                         }
                     })
-                    $(window).on('resize', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
-                    $(window).trigger('resize')
+                    $(window).on('resize.toolbox', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
+                    $(window).trigger('resize.toolbox')
                     for (let j = left_i; j <= right_i; j++) {
                         $(tgt_chars_objs[j].el).addClass(error_span.severity ? `error_${error_span.severity}` : "error_unknown")
                         tgt_chars_objs[j].toolbox = toolbox
