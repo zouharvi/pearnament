@@ -2,7 +2,7 @@
   "info": {
     "assignment": "single-stream",
     "template": "pointwise",
-    "num_users": 10,
+    "users": 10,
     "protocol_score": true,
     "protocol_error_spans": true,
     "protocol_error_categories": false

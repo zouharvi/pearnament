@@ -160,7 +160,7 @@ We also support a simple allocation where all annotators draw from the same pool
         "protocol_score": True,                # collect scores
         "protocol_error_spans": True,          # collect error spans
         "protocol_error_categories": False,    # do not collect MQM categories, so ESA
-        "num_users": 50,                       # number of annotators
+        "users": 50,                           # number of annotators (can also be a list, see below)
     },
     "data": [...], # list of all items (shared among all annotators)
 }
@@ -175,9 +175,28 @@ We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), w
         "assignment": "dynamic",
         "template": "listwise",
         "protocol_k": 5,
-        "num_users": 50,
+        "users": 50,
     },
     "data": [...], # list of all items
+}
+```
+
+## Pre-defined User IDs and Tokens
+
+By default, user IDs and completion tokens are automatically generated. The `users` field can be:
+- A number (e.g., `50`) to generate that many random user IDs
+- A list of strings (e.g., `["alice", "bob"]`) to use specific user IDs
+- A list of dictionaries to specify user IDs with custom tokens:
+```python
+{
+    "info": {
+        ...
+        "users": [
+            {"user_id": "alice", "token_pass": "alice_done", "token_fail": "alice_fail"},
+            {"user_id": "bob", "token_pass": "bob_done"}  # missing tokens are auto-generated
+        ],
+    },
+    ...
 }
 ```
 
