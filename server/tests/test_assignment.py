@@ -1,6 +1,7 @@
 """Tests for protocol functions."""
 
 from pearmut.assignment import (
+    check_validation_threshold,
     get_i_item,
     get_next_item,
     reset_task,
@@ -473,3 +474,217 @@ class TestResetMasking:
         items_user2 = get_db_log_item(campaign_id, "user2", 0)
         assert len(items_user2) == 1
         assert items_user2[0]["annotations"] == {"score": 70}
+
+
+class TestValidationThreshold:
+    """Tests for validation threshold functionality."""
+
+    def test_no_threshold_always_passes(self):
+        """Test that no threshold means always pass."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    # No validation_threshold set
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [False, False, False],  # All failed
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+    def test_integer_threshold_zero_fails_on_any_failure(self):
+        """Test that threshold 0 fails if there's any failed check."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 0,
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [True, False, True],  # 1 failed
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+
+    def test_integer_threshold_zero_passes_on_all_success(self):
+        """Test that threshold 0 passes if all checks pass."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 0,
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [True, True, True],  # All passed
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+    def test_integer_threshold_allows_failures_up_to_limit(self):
+        """Test that integer threshold allows failures up to the limit."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 2,
+                }
+            }
+        }
+        # 2 failures should pass
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [True, False, False],  # 2 failed
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+        # 3 failures should fail
+        progress_data["campaign1"]["user1"]["validations"][0] = [False, False, False]
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+
+    def test_float_threshold_proportion_based(self):
+        """Test that float threshold is proportion-based."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 0.5,  # Allow up to 50% failures
+                }
+            }
+        }
+        # 1/4 = 25% failed should pass
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [True, True, True, False],  # 1/4 = 25% failed
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+        # 3/4 = 75% failed should fail
+        progress_data["campaign1"]["user1"]["validations"][0] = [False, False, False, True]
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+
+    def test_float_threshold_above_one_always_fails(self):
+        """Test that float threshold >= 1 always fails."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 1.5,  # Above 1, always fail
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [True, True, True],  # All passed, but threshold >= 1 should still fail
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+
+    def test_empty_validations_passes(self):
+        """Test that no validations means pass."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 0,
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {}
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+    def test_missing_validations_passes(self):
+        """Test that missing validations key means pass."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 0,
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    # No validations key
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+    def test_multiple_items_aggregated(self):
+        """Test that validations from multiple items are aggregated."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 2,  # Allow up to 2 failures
+                }
+            }
+        }
+        # 1 failure in item 0, 1 failure in item 1 = 2 total failures
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [True, False],  # 1 failed
+                        1: [False, True],  # 1 failed
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+        # Add another failure to exceed threshold
+        progress_data["campaign1"]["user1"]["validations"][2] = [False]
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False

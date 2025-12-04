@@ -148,6 +148,34 @@ For listwise template, `validation` is an array where each element corresponds t
 The dashboard shows failed/total validation checks per user.
 See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for complete examples.
 
+### Validation Threshold
+
+You can set a threshold for the maximum number or proportion of failed validation checks allowed. Add `validation_threshold` to the campaign's `info` section:
+
+```python
+{
+  "info": {
+    "assignment": "task-based",
+    "template": "pointwise",
+    "validation_threshold": 2,  # allow up to 2 failed checks
+    # or: "validation_threshold": 0.1,  # allow up to 10% failed checks
+    ...
+  },
+  ...
+}
+```
+
+The threshold can be:
+- **Integer**: Fail if the number of failed checks exceeds this value. Use `0` to fail on any failed check.
+- **Float in [0, 1)**: Fail if the proportion of failed checks exceeds this value (e.g., `0.1` means at most 10% failures allowed).
+- **Float >= 1**: Always fail (useful for testing).
+- **Not set**: Always pass (default behavior).
+
+When a user completes their task:
+- If they pass the threshold, they receive `token_correct`
+- If they fail the threshold, they receive `token_incorrect`
+- The dashboard shows ✅ for passed users and ❌ for failed users
+
 ## Single-stream Assignment
 
 We also support a simple allocation where all annotators draw from the same pool (`single-stream`). Items are randomly assigned to annotators from the pool of unfinished items:

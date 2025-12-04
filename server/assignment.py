@@ -6,15 +6,69 @@ from fastapi.responses import JSONResponse
 from .utils import RESET_MARKER, get_db_log_item, save_db_payload
 
 
+def check_validation_threshold(
+    tasks_data: dict,
+    progress_data: dict,
+    campaign_id: str,
+    user_id: str,
+) -> bool:
+    """
+    Check if user passes the validation threshold.
+    
+    The threshold is defined in campaign info as 'validation_threshold':
+    - If integer: fails at most this number of checks
+    - If float in [0, 1): fails at most this proportion of checks  
+    - If float >= 1: always fail
+    - If 0: fail if there's even one failed check
+    - If None/not set: always pass (returns True)
+    
+    Returns True if validation passes, False otherwise.
+    """
+    threshold = tasks_data[campaign_id]["info"].get("validation_threshold")
+    
+    # If no threshold is set, always pass
+    if threshold is None:
+        return True
+    
+    user_progress = progress_data[campaign_id][user_id]
+    validations = user_progress.get("validations", {})
+    
+    # Count failed checks (validations is dict of item_i -> list of bools)
+    total_checks = 0
+    failed_checks = 0
+    for item_validations in validations.values():
+        for check_passed in item_validations:
+            total_checks += 1
+            if not check_passed:
+                failed_checks += 1
+    
+    # If no validation checks exist, pass
+    if total_checks == 0:
+        return True
+    
+    # Float >= 1: always fail
+    if isinstance(threshold, float) and threshold >= 1:
+        return False
+    
+    # Check threshold
+    if isinstance(threshold, float) and 0 < threshold < 1:
+        # Proportion-based: fail if failed proportion exceeds threshold
+        failed_proportion = failed_checks / total_checks
+        return failed_proportion <= threshold
+    else:
+        # Integer or 0: fail if failed count exceeds threshold
+        return failed_checks <= threshold
+
+
 def _completed_response(
+    tasks_data: dict,
     progress_data: dict,
     campaign_id: str,
     user_id: str,
 ) -> JSONResponse:
     """Build a completed response with progress, time, and token."""
     user_progress = progress_data[campaign_id][user_id]
-    # TODO: add check for data quality
-    is_ok = True
+    is_ok = check_validation_threshold(tasks_data, progress_data, campaign_id, user_id)
     return JSONResponse(
         content={
             "status": "completed",
@@ -161,7 +215,7 @@ def get_next_item_taskbased(
     """
     user_progress = progress_data[campaign_id][user_id]
     if all(user_progress["progress"]):
-        return _completed_response(progress_data, campaign_id, user_id)
+        return _completed_response(data_all, progress_data, campaign_id, user_id)
 
     # find first incomplete item
     item_i = min([i for i, v in enumerate(user_progress["progress"]) if not v])
@@ -208,7 +262,7 @@ def get_next_item_singlestream(
     progress = user_progress["progress"]
 
     if all(progress):
-        return _completed_response(progress_data, campaign_id, user_id)
+        return _completed_response(data_all, progress_data, campaign_id, user_id)
 
     # find a random incomplete item
     incomplete_indices = [i for i, v in enumerate(progress) if not v]

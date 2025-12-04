@@ -57,11 +57,18 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         let progress_count = (data[user_id]["progress"] as Array<boolean>).reduce((a, b) => a + (b ? 1 : 0), 0)
         let progress_total = (data[user_id]["progress"] as Array<boolean>).length
         let failed_checks = data[user_id]["failed_checks"] || 0
+        let threshold_passed = data[user_id]["threshold_passed"]
         let status = ''
         if (data[user_id]["time"] == 0)
             status = '💤'
-        else if (data[user_id]["time"] != 0 && progress_count == progress_total)
-            status = '✅'
+        else if (data[user_id]["time"] != 0 && progress_count == progress_total) {
+            // Use threshold_passed to determine if user passed/failed
+            // threshold_passed is null if not complete, true if passed, false if failed
+            if (threshold_passed === false)
+                status = '❌'
+            else
+                status = '✅'
+        }
         else
             status = '🚧'
 
