@@ -16,6 +16,7 @@ import {
     displayCompletionScreen,
     isMediaContent,
     contentToCharSpans,
+    isSpanComplete,
 } from './utils';
 
 // Each candidate has its own response
@@ -61,6 +62,10 @@ let output_blocks: Array<JQuery<HTMLElement>> = []
 let settings_show_alignment = true
 let has_unsaved_work = false
 let skip_tutorial_mode = false
+// Protocol settings for check_unlock
+let current_protocol_score = false
+let current_protocol_error_spans = false
+let current_protocol_error_categories = false
 
 // Prevent accidental refresh/navigation when there is ongoing work
 window.addEventListener('beforeunload', (event) => {
@@ -79,27 +84,46 @@ $("#toggle_differences").on("change", function () {
 })
 
 function check_unlock() {
-    // check if all toolboxes are hidden
-    for (let el of $(".span_toolbox_parent")) {
-        if ($(el).css("display") != "none") {
+    // Check if all error spans are complete (have required severity and category based on protocol)
+    if (current_protocol_error_spans || current_protocol_error_categories) {
+        for (const doc_responses of response_log) {
+            for (const r of doc_responses) {
+                for (const span of r.error_spans) {
+                    if (!isSpanComplete(span, current_protocol_error_categories)) {
+                        $("#button_next").attr("disabled", "disabled")
+                        $("#button_next").val("Next 🚧")
+                        return
+                    }
+                }
+            }
+        }
+    }
+
+    // Check if all scores are set (if protocol requires scores)
+    if (current_protocol_score) {
+        let all_done = response_log.every(doc_responses =>
+            doc_responses.every(r => r.score != null)
+        )
+        if (!all_done) {
             $("#button_next").attr("disabled", "disabled")
             $("#button_next").val("Next 🚧")
             return
         }
     }
 
-    // check if all items are done (all candidates have scores)
-    let all_done = response_log.every(doc_responses =>
-        doc_responses.every(r => r.score != null)
-    )
-    if (!all_done) {
-        $("#button_next").attr("disabled", "disabled")
-        $("#button_next").val("Next 🚧")
-        return
-    }
-
     $("#button_next").removeAttr("disabled")
     $("#button_next").val("Next ✅")
+}
+
+/**
+ * Cleanup function to remove toolboxes and handlers from previous item
+ * Must be called before loading a new item to prevent memory leaks and stale UI
+ */
+function cleanupPreviousItem(): void {
+    // Remove all toolboxes appended to body
+    $(".span_toolbox_parent").remove()
+    // Remove resize handlers for toolbox positioning (use namespace to avoid removing other handlers)
+    $(window).off('resize.toolbox')
 }
 
 function _slider_html(item_i: number, candidate_i: number): string {
@@ -112,6 +136,9 @@ function _slider_html(item_i: number, candidate_i: number): string {
 }
 
 async function display_next_payload(response: DataPayload) {
+    // Cleanup toolboxes and handlers from previous item
+    cleanupPreviousItem()
+
     redrawProgress(response.info.item_i, response.progress, navigate_to_item)
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
 
@@ -148,6 +175,11 @@ async function display_next_payload(response: DataPayload) {
     let protocol_score = response.info.protocol_score
     let protocol_error_spans = response.info.protocol_error_spans
     let protocol_error_categories = response.info.protocol_error_categories
+
+    // Update global protocol settings for check_unlock
+    current_protocol_score = protocol_score
+    current_protocol_error_spans = protocol_error_spans
+    current_protocol_error_categories = protocol_error_categories
 
     if (!protocol_score) $("#instructions_score").hide()
     if (!protocol_error_spans) $("#instructions_spans").hide()
@@ -326,10 +358,10 @@ async function display_next_payload(response: DataPayload) {
                                 })
 
                                 // set up callback to reposition toolbox on resize         
-                                $(window).on('resize', function () {
+                                $(window).on('resize.toolbox', function () {
                                     updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el))
                                 })
-                                $(window).trigger('resize');
+                                $(window).trigger('resize.toolbox');
 
                                 // store error span
                                 response_log[item_i][cand_i].error_spans.push(error_span)
@@ -384,8 +416,8 @@ async function display_next_payload(response: DataPayload) {
                             toolbox.css("display", "none"); check_unlock()
                         }
                     })
-                    $(window).on('resize', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
-                    $(window).trigger('resize')
+                    $(window).on('resize.toolbox', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
+                    $(window).trigger('resize.toolbox')
                     for (let j = left_i; j <= right_i; j++) {
                         $(tgt_chars_objs[j].el).addClass(error_span.severity ? `error_${error_span.severity}` : "error_unknown")
                         tgt_chars_objs[j].toolbox = toolbox
