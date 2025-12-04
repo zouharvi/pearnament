@@ -117,6 +117,7 @@ def save_meta_data(data: dict):
     """
     Saves the meta.json file.
     """
+    os.makedirs(f"{ROOT}/data", exist_ok=True)
     meta_path = f"{ROOT}/data/meta.json"
     with open(meta_path, "w") as f:
         json.dump(data, f, indent=2)
