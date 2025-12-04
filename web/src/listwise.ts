@@ -16,6 +16,7 @@ import {
     displayCompletionScreen,
     isMediaContent,
     contentToCharSpans,
+    isSpanComplete,
 } from './utils';
 
 // Each candidate has its own response
@@ -82,22 +83,13 @@ $("#toggle_differences").on("change", function () {
     }
 })
 
-/**
- * Check if an error span is complete (has required fields set based on protocol)
- */
-function isSpanComplete(span: ErrorSpan): boolean {
-    if (span.severity == null) return false
-    if (current_protocol_error_categories && (span.category == null || !span.category.includes("/"))) return false
-    return true
-}
-
 function check_unlock() {
     // Check if all error spans are complete (have required severity and category based on protocol)
     if (current_protocol_error_spans || current_protocol_error_categories) {
         for (const doc_responses of response_log) {
             for (const r of doc_responses) {
                 for (const span of r.error_spans) {
-                    if (!isSpanComplete(span)) {
+                    if (!isSpanComplete(span, current_protocol_error_categories)) {
                         $("#button_next").attr("disabled", "disabled")
                         $("#button_next").val("Next 🚧")
                         return

@@ -31,6 +31,18 @@ export type ErrorSpan = { start_i: number, end_i: number, category: string | nul
 export type Response = { score: number | null, error_spans: Array<ErrorSpan> }
 export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null }
 
+/**
+ * Check if an error span is complete (has required fields set based on protocol).
+ * For MQM protocol, category must contain "/" to indicate both main category and subcategory are set.
+ * For ESA protocol (no categories), only severity is required.
+ */
+export function isSpanComplete(span: ErrorSpan, protocol_error_categories: boolean): boolean {
+    if (span.severity == null) return false
+    // MQM categories require format "MainCategory/SubCategory" (e.g., "Accuracy/Mistranslation")
+    if (protocol_error_categories && (span.category == null || !span.category.includes("/"))) return false
+    return true
+}
+
 // Validation types for tutorial/attention checks
 export type ValidationErrorSpan = { 
     start_i?: number | [number, number],  // exact value or range [min, max]
