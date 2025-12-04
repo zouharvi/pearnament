@@ -250,7 +250,7 @@ def _add_campaign(args_unknown):
                 "Cannot create assets symlink."
             )
 
-        os.symlink(assets_path, symlink_path)
+        os.symlink(assets_path, symlink_path, target_is_directory=True)
         print(f"Assets symlinked: {assets_path} -> {symlink_path}")
 
     print(
