@@ -31,21 +31,21 @@ function delta_to_human(delta: number): string {
 
 // for each campaign_id, fetch dashboard data and display them in a white-box
 (async () => {
-for (let i = 0; i < campaign_ids.length; i++) {
-    let campaign_id = campaign_ids[i];
-    let token = tokens[i] || null
-    try {
-        let x = await $.ajax({
-            url: `/dashboard-data`,
-            method: "POST",
-            data: JSON.stringify({ "campaign_id": campaign_id, "token": token }),
-            contentType: "application/json",
-            dataType: "json",
-        });
-        let data = x.data
+    for (let i = 0; i < campaign_ids.length; i++) {
+        let campaign_id = campaign_ids[i];
+        let token = tokens[i] || null
+        try {
+            let data = await $.ajax({
+                url: `/dashboard-data`,
+                method: "POST",
+                data: JSON.stringify({ "campaign_id": campaign_id, "token": token }),
+                contentType: "application/json",
+                dataType: "json",
+                // @ts-ignore
+            }).data;
 
-        let html = ""
-        html += `
+            let html = ""
+            html += `
             <table>
                 <thead><tr>
                     <th style="min-width: 300px;">User ID</th>
@@ -57,88 +57,88 @@ for (let i = 0; i < campaign_ids.length; i++) {
                     <th style="min-width: 50px;">Actions</th>
                 </tr></thead>
                 <tbody>`
-        for (let user_id in data) {
-            // sum
-            let progress_count = (data[user_id]["progress"] as Array<boolean>).reduce((a, b) => a + (b ? 1 : 0), 0)
-            let progress_total = (data[user_id]["progress"] as Array<boolean>).length
-            let failed_checks = data[user_id]["failed_checks"] || 0
-            let status = ''
-            if (data[user_id]["time"] == 0)
-                status = '💤'
-            else if (data[user_id]["time"] != 0 && progress_count == progress_total)
-                status = '✅'
-            else
-                status = '🚧'
+            for (let user_id in data) {
+                // sum
+                let progress_count = (data[user_id]["progress"] as Array<boolean>).reduce((a, b) => a + (b ? 1 : 0), 0)
+                let progress_total = (data[user_id]["progress"] as Array<boolean>).length
+                let failed_checks = data[user_id]["failed_checks"] || 0
+                let status = ''
+                if (data[user_id]["time"] == 0)
+                    status = '💤'
+                else if (data[user_id]["time"] != 0 && progress_count == progress_total)
+                    status = '✅'
+                else
+                    status = '🚧'
 
-            html += '<tr>'
+                html += '<tr>'
 
-            // user id and emoji
-            html += `<td>${status} ${user_id}</td>`
+                // user id and emoji
+                html += `<td>${status} ${user_id}</td>`
 
-            // time section
-            html += `<td>${progress_count}/${progress_total}</td>`
-            if (data[user_id]["time_start"] == null) {
-                html += `<td title="N/A"></td>`
-            } else {
-                html += `<td title="${new Date(data[user_id]["time_start"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_start"])} ago</td>`
-            }
-            if (data[user_id]["time_end"] == null) {
-                html += `<td title="N/A"></td>`
-            } else {
-                html += `<td title="${new Date(data[user_id]["time_end"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_end"])} ago</td>`
-            }
-            html += `<td>${Math.round(data[user_id]["time"] / 60)}m</td>`
-            
-            let validation_passed = data[user_id]["validations"].reduce((a: number, b: boolean) => a + (b ? 1 : 0), 0)
-            let validation_total = data[user_id]["validations"].length
-            html += `<td><span style="${validation_passed != validation_total ? 'color: #c75050;' : ''}">${validation_passed}</span><span style="color: #333;">/${validation_total}</span></td>`
+                // time section
+                html += `<td>${progress_count}/${progress_total}</td>`
+                if (data[user_id]["time_start"] == null) {
+                    html += `<td title="N/A"></td>`
+                } else {
+                    html += `<td title="${new Date(data[user_id]["time_start"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_start"])} ago</td>`
+                }
+                if (data[user_id]["time_end"] == null) {
+                    html += `<td title="N/A"></td>`
+                } else {
+                    html += `<td title="${new Date(data[user_id]["time_end"] * 1000).toLocaleString()}">${delta_to_human(Date.now() / 1000 - data[user_id]["time_end"])} ago</td>`
+                }
+                html += `<td>${Math.round(data[user_id]["time"] / 60)}m</td>`
 
-            // actions section
-            html += `<td>
+                let validation_passed = data[user_id]["validations"].reduce((a: number, b: boolean) => a + (b ? 1 : 0), 0)
+                let validation_total = data[user_id]["validations"].length
+                html += `<td><span style="${validation_passed != validation_total ? 'color: #c75050;' : ''}">${validation_passed}</span><span style="color: #333;">/${validation_total}</span></td>`
+
+                // actions section
+                html += `<td>
                     <a href="${data[user_id]["url"]}">🔗</a>
                     &nbsp;&nbsp;
                     <span class="reset-task" user_id="${user_id}" ${token == null ? "disabled" : ""}>🗑️</span>
-                </td>` 
-            html += '</tr>'
-        }
-        html += '</tbody></table>'
+                </td>`
+                html += '</tr>'
+            }
+            html += '</tbody></table>'
 
-        // link to campaign-specific dashboard
-        let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}`
-        let el = $(`
+            // link to campaign-specific dashboard
+            let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}`
+            let el = $(`
                 <div class="white-box">
                 <h3>${campaign_id} <a href="${dashboard_url}">🔗</a></h3>
                 ${html}
                 </div>`)
 
-        $("#dashboard_div").append(el)
-        if (token != null) {
-            el.find(".reset-task").on("click", function () {
-                let user_id = $(this).attr("user_id")
-                // show dialog to confirm
-                if (!confirm(`Are you sure you want to reset progress for user ${$(this).attr("user_id")} in ${campaign_id}?\n\nThe user will annotate new data which will be stored alongside the already-collected data. This action cannot be undone.`)) {
-                    return
-                }
-                $.ajax({
-                    url: `/reset-task`,
-                    method: "POST",
-                    data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id, "token": token }),
-                    contentType: "application/json",
-                    dataType: "json",
-                    success: (x) => {
-                        notify(`Task for user ${user_id} has been reset.`)
-                        location.reload()
-                    },
-                    error: (XMLHttpRequest, textStatus, errorThrown) => {
-                        notify("Error resetting task:" + JSON.stringify(textStatus) + JSON.stringify(errorThrown));
-                    },
-                });
-            })
+            $("#dashboard_div").append(el)
+            if (token != null) {
+                el.find(".reset-task").on("click", function () {
+                    let user_id = $(this).attr("user_id")
+                    // show dialog to confirm
+                    if (!confirm(`Are you sure you want to reset progress for user ${$(this).attr("user_id")} in ${campaign_id}?\n\nThe user will annotate new data which will be stored alongside the already-collected data. This action cannot be undone.`)) {
+                        return
+                    }
+                    $.ajax({
+                        url: `/reset-task`,
+                        method: "POST",
+                        data: JSON.stringify({ "campaign_id": campaign_id, "user_id": user_id, "token": token }),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: (x) => {
+                            notify(`Task for user ${user_id} has been reset.`)
+                            location.reload()
+                        },
+                        error: (XMLHttpRequest, textStatus, errorThrown) => {
+                            notify("Error resetting task:" + JSON.stringify(textStatus) + JSON.stringify(errorThrown));
+                        },
+                    });
+                })
+            }
+        } catch (error: any) {
+            notify("Error fetching data:" + JSON.stringify(error?.statusText || error));
         }
-    } catch (error: any) {
-        notify("Error fetching data:" + JSON.stringify(error?.statusText || error));
     }
-}
 })();
 
 
