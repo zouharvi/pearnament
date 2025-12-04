@@ -53,8 +53,8 @@ async def _log_response(request: LogResponseRequest):
         return JSONResponse(content={"error": "Unknown user ID"}, status_code=400)
 
     # append response to the output log
-    save_db_payload(campaign_id, request.payload | {
-                    "user_id": user_id, "item_i": item_i})
+    save_db_payload(
+        campaign_id, request.payload | {"user_id": user_id, "item_i": item_i})
 
     # if actions were submitted, we can log time data
     if "actions" in request.payload:
@@ -70,7 +70,6 @@ async def _log_response(request: LogResponseRequest):
         ])
 
     # Initialize validation_checks if it doesn't exist
-    print(request.payload.keys())
     if "validations" in request.payload:
         if "validations" not in progress_data[campaign_id][user_id]:
             progress_data[campaign_id][user_id]["validations"] = {}
