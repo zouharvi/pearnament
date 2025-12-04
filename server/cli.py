@@ -65,11 +65,10 @@ def _add_single_campaign(data_file, overwrite, server):
         progress_data = json.load(f)
 
     if campaign_data['campaign_id'] in progress_data and not overwrite:
-        print(
-            f"Campaign {campaign_data['campaign_id']} already exists.",
+        raise ValueError(
+            f"Campaign {campaign_data['campaign_id']} already exists.\n"
             "Use -o to overwrite."
         )
-        exit(1)
 
     if "info" not in campaign_data:
         raise ValueError("Campaign data must contain 'info' field.")

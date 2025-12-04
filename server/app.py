@@ -147,10 +147,10 @@ class DashboardDataRequest(BaseModel):
 async def _dashboard_data(request: DashboardDataRequest):
     campaign_id = request.campaign_id
 
-    is_privileged = (request.token == tasks_data[campaign_id]["token"])
-
     if campaign_id not in progress_data:
         return JSONResponse(content={"error": "Unknown campaign ID"}, status_code=400)
+    
+    is_privileged = (request.token == tasks_data[campaign_id]["token"])
 
     progress_new = {}
     assignment = tasks_data[campaign_id]["info"]["assignment"]
