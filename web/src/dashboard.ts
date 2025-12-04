@@ -70,7 +70,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
                 status = '✅'
         }
         else
-            status = '🚧'
+            status = '✍️'
 
         html += '<tr>'
 
