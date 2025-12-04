@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .assignment import get_i_item, get_next_item, reset_task, update_progress
-from .utils import ROOT, load_progress_data, save_db_payload, save_progress_data
+from .utils import ROOT, load_meta_data, load_progress_data, save_db_payload, save_progress_data
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
@@ -241,6 +241,42 @@ async def _download_progress(
 
     return JSONResponse(content=output, status_code=200)
 
+
+# Custom StaticFiles class that supports multiple directories with fallback
+class MultiStaticFiles(StaticFiles):
+    """
+    A StaticFiles class that supports serving from multiple directories.
+    Files are looked up in order: served_directories first, then the main static directory.
+    """
+    def __init__(
+        self,
+        *,
+        directory: str,
+        additional_directories: list[str] | None = None,
+        html: bool = False,
+        check_dir: bool = True,
+        follow_symlink: bool = False,
+    ) -> None:
+        super().__init__(
+            directory=directory,
+            html=html,
+            check_dir=check_dir,
+            follow_symlink=follow_symlink,
+        )
+        # Prepend additional directories so they are searched first
+        if additional_directories:
+            for d in reversed(additional_directories):
+                if os.path.isdir(d):
+                    self.all_directories.insert(0, d)
+
+
+# Load served directories from meta.json
+meta_data = load_meta_data()
+served_directories = [
+    d for d in meta_data.get("served_directories", [])
+    if os.path.isdir(d)
+]
+
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
 if not os.path.exists(static_dir + "index.html"):
     raise FileNotFoundError(
@@ -248,6 +284,11 @@ if not os.path.exists(static_dir + "index.html"):
 
 app.mount(
     "/",
-    StaticFiles(directory=static_dir, html=True, follow_symlink=True),
+    MultiStaticFiles(
+        directory=static_dir,
+        additional_directories=served_directories,
+        html=True,
+        follow_symlink=True,
+    ),
     name="static",
 )

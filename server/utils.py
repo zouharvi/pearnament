@@ -99,3 +99,24 @@ def save_db_payload(campaign_id: str, payload: dict):
     log = get_db_log(campaign_id)
     # copy to avoid mutation issues
     log.append(payload)
+
+
+def load_meta_data() -> dict:
+    """
+    Loads the meta.json file which contains configuration like served asset directories.
+    Returns an empty dict with default structure if the file doesn't exist.
+    """
+    meta_path = f"{ROOT}/data/meta.json"
+    if not os.path.exists(meta_path):
+        return {"served_directories": []}
+    with open(meta_path, "r") as f:
+        return json.load(f)
+
+
+def save_meta_data(data: dict):
+    """
+    Saves the meta.json file.
+    """
+    meta_path = f"{ROOT}/data/meta.json"
+    with open(meta_path, "w") as f:
+        json.dump(data, f, indent=2)

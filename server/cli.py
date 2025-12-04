@@ -10,7 +10,7 @@ import urllib.parse
 
 import psutil
 
-from .utils import ROOT, load_progress_data
+from .utils import ROOT, load_meta_data, load_progress_data, save_meta_data
 
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 load_progress_data(warn=None)
@@ -191,12 +191,40 @@ def _add_campaign(args_unknown):
         print(f"{args.server}/{user_val["url"]}")
 
 
+def _serve_directory(args_unknown):
+    """
+    Add a directory to be statically served.
+    """
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        'directory', type=str,
+        help='Path to the directory to serve'
+    )
+    args = args.parse_args(args_unknown)
+
+    # Normalize path and ensure it exists
+    directory = os.path.abspath(args.directory)
+    if not os.path.isdir(directory):
+        print(f"Error: '{args.directory}' is not a valid directory.")
+        exit(1)
+
+    meta_data = load_meta_data()
+    
+    if directory in meta_data["served_directories"]:
+        print(f"Directory '{directory}' is already being served.")
+        return
+
+    meta_data["served_directories"].append(directory)
+    save_meta_data(meta_data)
+    print(f"Added '{directory}' to served directories.")
+
+
 def main():
     """
     Main entry point for the CLI.
     """
     args = argparse.ArgumentParser()
-    args.add_argument('command', type=str, choices=['run', 'add', 'purge'])
+    args.add_argument('command', type=str, choices=['run', 'add', 'purge', 'serve'])
     args, args_unknown = args.parse_known_args()
 
     # enforce that only one pearmut process is running
@@ -210,6 +238,8 @@ def main():
         _run(args_unknown)
     elif args.command == 'add':
         _add_campaign(args_unknown)
+    elif args.command == 'serve':
+        _serve_directory(args_unknown)
     elif args.command == 'purge':
         import shutil
 
