@@ -44,9 +44,9 @@ let settings_show_alignment = true
 let has_unsaved_work = false
 let skip_tutorial_mode = false
 // Protocol settings for check_unlock
-let current_protocol_score = false
-let current_protocol_error_spans = false
-let current_protocol_error_categories = false
+let protocol_score = false
+let protocol_error_spans = false
+let protocol_error_categories = false
 
 // Prevent accidental refresh/navigation when there is ongoing work
 window.addEventListener('beforeunload', (event) => {
@@ -66,10 +66,10 @@ $("#toggle_differences").on("change", function () {
 
 function check_unlock() {
   // Check if all error spans are complete (have required severity and category based on protocol)
-  if (current_protocol_error_spans || current_protocol_error_categories) {
+  if (protocol_error_spans || protocol_error_categories) {
     for (const r of response_log) {
       for (const span of r.error_spans) {
-        if (!isSpanComplete(span, current_protocol_error_categories)) {
+        if (!isSpanComplete(span, protocol_error_categories)) {
           $("#button_next").attr("disabled", "disabled")
           $("#button_next").val("Next 🚧")
           return
@@ -79,7 +79,7 @@ function check_unlock() {
   }
 
   // Check if all scores are set (if protocol requires scores)
-  if (current_protocol_score && !response_log.every(r => r.score != null)) {
+  if (protocol_score && !response_log.every(r => r.score != null)) {
     $("#button_next").attr("disabled", "disabled")
     $("#button_next").val("Next 🚧")
     return
@@ -149,14 +149,9 @@ async function display_next_payload(response: DataPayload) {
     $("#button_skip_tutorial").hide()
   }
 
-  let protocol_score = response.info.protocol_score
-  let protocol_error_spans = response.info.protocol_error_spans
-  let protocol_error_categories = response.info.protocol_error_categories
-
-  // Update global protocol settings for check_unlock
-  current_protocol_score = protocol_score
-  current_protocol_error_spans = protocol_error_spans
-  current_protocol_error_categories = protocol_error_categories
+  protocol_score = response.info.protocol_score
+  protocol_error_spans = response.info.protocol_error_spans
+  protocol_error_categories = response.info.protocol_error_categories
 
   if (!protocol_score) $("#instructions_score").hide()
   if (!protocol_error_spans) $("#instructions_spans").hide()
