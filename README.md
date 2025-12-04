@@ -251,6 +251,23 @@ Tip: make sure the elements are already appropriately styled.
 <img width="1000" alt="Preview of multimodal elements in Pearmut" src="https://github.com/user-attachments/assets/77c4fa96-ee62-4e46-8e78-fd16e9007956" />
 
 
+## Hosting Assets
+
+If you need to host local assets (e.g., audio files, images, videos) via Pearmut, you can use the `assets` key in your campaign file.
+When present, this directory is symlinked to the `static/` directory so its contents become accessible from the server.
+
+```python
+{
+    "campaign_id": "my_campaign",
+    "assets": "my_assets_dir",  # path to directory containing assets
+    "info": { ... },
+    "data": [ ... ]
+}
+```
+
+For example, if `my_assets_dir` contains `audio.mp3`, it will be accessible at `localhost:8001/assets/audio.mp3`.
+The path can be absolute or relative to the campaign JSON file.
+
 ## Development
 
 Pearmut works by running a server that responds to requests from the frontend.

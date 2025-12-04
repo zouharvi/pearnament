@@ -221,6 +221,41 @@ def _add_campaign(args_unknown):
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
 
+    # Handle assets symlink if specified
+    if "assets" in campaign_data:
+        assets_path = campaign_data["assets"]
+        # Resolve relative paths from the data file's directory
+        data_file_dir = os.path.dirname(os.path.abspath(args.data_file))
+        if not os.path.isabs(assets_path):
+            assets_path = os.path.join(data_file_dir, assets_path)
+        assets_path = os.path.abspath(assets_path)
+
+        if not os.path.isdir(assets_path):
+            raise ValueError(
+                f"Assets path '{assets_path}' must be an existing directory."
+            )
+
+        # Create symlink in static directory
+        static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+        if not os.path.isdir(static_dir):
+            raise ValueError(
+                f"Static directory '{static_dir}' does not exist. "
+                "Please build the frontend first."
+            )
+        symlink_path = os.path.join(static_dir, "assets")
+
+        # Remove existing symlink if present
+        if os.path.islink(symlink_path):
+            os.unlink(symlink_path)
+        elif os.path.exists(symlink_path):
+            raise ValueError(
+                f"'{symlink_path}' exists and is not a symlink. "
+                "Cannot create assets symlink."
+            )
+
+        os.symlink(assets_path, symlink_path)
+        print(f"Assets symlinked: {assets_path} -> {symlink_path}")
+
     print(
         f"{args.server}/dashboard.html"
         f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
