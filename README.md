@@ -144,37 +144,11 @@ You can add validation rules to items for tutorials or attention checks. Items w
 - Tutorial items: Include `allow_skip: true` and `warning` to let users skip after seeing the feedback
 - Loud attention checks: Include `warning` without `allow_skip` to force users to retry
 - Silent attention checks: Omit `warning` to silently log failures without user notification (useful for quality control with bad translations)
+
 For listwise template, `validation` is an array where each element corresponds to a candidate. 
-The dashboard shows failed/total validation checks per user.
+The dashboard shows failed/total validation checks per user, and ✅/❌ based on whether they pass the threshold.
+Set `validation_threshold` in `info` to control pass/fail: integer for max failed count, float in [0,1) for max failed proportion.
 See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for complete examples.
-
-### Validation Threshold
-
-You can set a threshold for the maximum number or proportion of failed validation checks allowed. Add `validation_threshold` to the campaign's `info` section:
-
-```python
-{
-  "info": {
-    "assignment": "task-based",
-    "template": "pointwise",
-    "validation_threshold": 2,  # allow up to 2 failed checks
-    # or: "validation_threshold": 0.1,  # allow up to 10% failed checks
-    ...
-  },
-  ...
-}
-```
-
-The threshold can be:
-- **Integer**: Fail if the number of failed checks exceeds this value. Use `0` to fail on any failed check.
-- **Float in [0, 1)**: Fail if the proportion of failed checks exceeds this value (e.g., `0.1` means at most 10% failures allowed).
-- **Float >= 1**: Always fail (useful for testing).
-- **Not set**: Always pass (default behavior).
-
-When a user completes their task:
-- If they pass the threshold, they receive `token_correct`
-- If they fail the threshold, they receive `token_incorrect`
-- The dashboard shows ✅ for passed users and ❌ for failed users
 
 ## Single-stream Assignment
 
