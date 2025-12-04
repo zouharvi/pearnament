@@ -7,10 +7,10 @@ from pearmut.assignment import (
     update_progress,
 )
 from pearmut.utils import (
-    get_db_log_item,
-    save_db_payload,
     RESET_MARKER,
     _logs,
+    get_db_log_item,
+    save_db_payload,
 )
 
 

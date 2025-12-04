@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
-from .utils import get_db_log_item, save_db_payload, RESET_MARKER
+from .utils import RESET_MARKER, get_db_log_item, save_db_payload
 
 
 def _completed_response(
