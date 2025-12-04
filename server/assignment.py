@@ -3,18 +3,23 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
-from .utils import RESET_MARKER, get_db_log_item, save_db_payload
+from .utils import (
+    RESET_MARKER,
+    check_validation_threshold,
+    get_db_log_item,
+    save_db_payload,
+)
 
 
 def _completed_response(
+    tasks_data: dict,
     progress_data: dict,
     campaign_id: str,
     user_id: str,
 ) -> JSONResponse:
     """Build a completed response with progress, time, and token."""
     user_progress = progress_data[campaign_id][user_id]
-    # TODO: add check for data quality
-    is_ok = True
+    is_ok = check_validation_threshold(tasks_data, progress_data, campaign_id, user_id)
     return JSONResponse(
         content={
             "status": "completed",
@@ -161,7 +166,7 @@ def get_next_item_taskbased(
     """
     user_progress = progress_data[campaign_id][user_id]
     if all(user_progress["progress"]):
-        return _completed_response(progress_data, campaign_id, user_id)
+        return _completed_response(data_all, progress_data, campaign_id, user_id)
 
     # find first incomplete item
     item_i = min([i for i, v in enumerate(user_progress["progress"]) if not v])
@@ -208,7 +213,7 @@ def get_next_item_singlestream(
     progress = user_progress["progress"]
 
     if all(progress):
-        return _completed_response(progress_data, campaign_id, user_id)
+        return _completed_response(data_all, progress_data, campaign_id, user_id)
 
     # find a random incomplete item
     incomplete_indices = [i for i, v in enumerate(progress) if not v]

@@ -144,8 +144,10 @@ You can add validation rules to items for tutorials or attention checks. Items w
 - Tutorial items: Include `allow_skip: true` and `warning` to let users skip after seeing the feedback
 - Loud attention checks: Include `warning` without `allow_skip` to force users to retry
 - Silent attention checks: Omit `warning` to silently log failures without user notification (useful for quality control with bad translations)
+
 For listwise template, `validation` is an array where each element corresponds to a candidate. 
-The dashboard shows failed/total validation checks per user.
+The dashboard shows failed/total validation checks per user, and ✅/❌ based on whether they pass the threshold.
+Set `validation_threshold` in `info` to control pass/fail: integer for max failed count, float in [0,1) for max failed proportion.
 See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for complete examples.
 
 ## Single-stream Assignment

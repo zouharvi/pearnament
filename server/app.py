@@ -9,7 +9,13 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .assignment import get_i_item, get_next_item, reset_task, update_progress
-from .utils import ROOT, load_progress_data, save_db_payload, save_progress_data
+from .utils import (
+    ROOT,
+    check_validation_threshold,
+    load_progress_data,
+    save_db_payload,
+    save_progress_data,
+)
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
@@ -151,6 +157,9 @@ async def _dashboard_data(request: DashboardDataRequest):
     if assignment not in ["task-based", "single-stream"]:
         return JSONResponse(content={"error": "Unsupported campaign assignment type"}, status_code=400)
 
+    # Get threshold info for the campaign
+    validation_threshold = tasks_data[campaign_id]["info"].get("validation_threshold")
+
     for user_id, user_val in progress_data[campaign_id].items():
         # shallow copy
         entry = dict(user_val)
@@ -159,6 +168,13 @@ async def _dashboard_data(request: DashboardDataRequest):
             for v in list(entry.get("validations", {}).values())
         ]
         
+        # Add threshold pass/fail status (only when user is complete)
+        if all(entry["progress"]):
+            entry["threshold_passed"] = check_validation_threshold(
+                tasks_data, progress_data, campaign_id, user_id
+            )
+        else:
+            entry["threshold_passed"] = None
 
         if not is_privileged:
             entry["token_correct"] = None
@@ -169,7 +185,8 @@ async def _dashboard_data(request: DashboardDataRequest):
     return JSONResponse(
         content={
             "status": "ok",
-            "data": progress_new
+            "data": progress_new,
+            "validation_threshold": validation_threshold
         },
         status_code=200
     )
