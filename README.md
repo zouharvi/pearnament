@@ -259,13 +259,15 @@ When present, this directory is symlinked to the `static/` directory so its cont
 ```python
 {
     "campaign_id": "my_campaign",
-    "assets": "my_assets_dir",  # path to directory containing assets
-    "info": { ... },
+    "info": { 
+      "assets": "videos",  # path to directory containing assets
+      ...
+    },
     "data": [ ... ]
 }
 ```
 
-For example, if `my_assets_dir` contains `audio.mp3`, it will be accessible at `localhost:8001/assets/audio.mp3`.
+For example, if `videos` contains `audio.mp3`, it will be accessible at `localhost:8001/assets/videos/audio.mp3`.
 The path can be absolute or relative to your current working directory.
 
 ## Development

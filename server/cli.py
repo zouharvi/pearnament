@@ -213,6 +213,38 @@ def _add_campaign(args_unknown):
         for user_id in user_ids
     }
 
+    # Handle assets symlink if specified
+    if "assets" in campaign_data["info"]:
+        assets_real_path = campaign_data["info"]["assets"]
+        
+        # Resolve relative paths from the caller's current working directory
+        assets_real_path = os.path.abspath(assets_real_path)
+
+        if not os.path.isdir(assets_real_path):
+            raise ValueError(f"Assets path '{assets_real_path}' must be an existing directory.")
+
+        static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static"
+        dir_name = assets_real_path.split(os.sep)[-1]
+
+        if not os.path.isdir(static_dir):
+            raise ValueError(
+                f"Static directory '{static_dir}' does not exist. "
+                "Please build the frontend first."
+            )
+        symlink_path = f"{static_dir}/assets/{dir_name}"
+
+        # Remove existing symlink if present and we are overriding
+        if os.path.exists(symlink_path):
+            if args.overwrite:
+                os.remove(symlink_path)
+            else:
+                raise ValueError(f"Assets symlink '{symlink_path}' already exists.")
+
+        os.symlink(assets_real_path, symlink_path, target_is_directory=True)
+        print(f"Assets symlinked: {symlink_path} -> {assets_real_path}")
+
+
+    # commit to transaction
     with open(f"{ROOT}/data/tasks/{campaign_data['campaign_id']}.json", "w") as f:
         json.dump(campaign_data, f, indent=2, ensure_ascii=False)
 
@@ -221,37 +253,6 @@ def _add_campaign(args_unknown):
     with open(f"{ROOT}/data/progress.json", "w") as f:
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
 
-    # Handle assets symlink if specified
-    if "assets" in campaign_data:
-        assets_path = campaign_data["assets"]
-        # Resolve relative paths from the caller's current working directory
-        assets_path = os.path.abspath(assets_path)
-
-        if not os.path.isdir(assets_path):
-            raise ValueError(
-                f"Assets path '{assets_path}' must be an existing directory."
-            )
-
-        # Create symlink in static directory
-        static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-        if not os.path.isdir(static_dir):
-            raise ValueError(
-                f"Static directory '{static_dir}' does not exist. "
-                "Please build the frontend first."
-            )
-        symlink_path = os.path.join(static_dir, "assets")
-
-        # Remove existing symlink if present
-        if os.path.islink(symlink_path):
-            os.unlink(symlink_path)
-        elif os.path.exists(symlink_path):
-            raise ValueError(
-                f"'{symlink_path}' exists and is not a symlink. "
-                "Cannot create assets symlink."
-            )
-
-        os.symlink(assets_path, symlink_path, target_is_directory=True)
-        print(f"Assets symlinked: {assets_path} -> {symlink_path}")
 
     print(
         f"{args.server}/dashboard.html"
