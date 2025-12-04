@@ -232,7 +232,11 @@ async function display_next_payload(response: DataPayload) {
                             }
                             // Highlight corresponding characters in all other candidates
                             let relative_pos = i / tgt_chars_objs.length
+                            // if not our candidate
                             output_block.find(".output_candidate").each(function () {
+                                if (parseInt($(this).attr("data-candidate")!) == cand_i) {
+                                    return
+                                }
                                 let other_tgt_chars = $(this).find(".tgt_char")
                                 let other_i = Math.round(relative_pos * other_tgt_chars.length)
                                 for (let j = Math.max(0, other_i - 5); j <= Math.min(other_tgt_chars.length - 1, other_i + 5); j++) {
