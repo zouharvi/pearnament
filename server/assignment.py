@@ -16,10 +16,9 @@ def check_validation_threshold(
     Check if user passes the validation threshold.
     
     The threshold is defined in campaign info as 'validation_threshold':
-    - If integer: fails at most this number of checks
-    - If float in [0, 1): fails at most this proportion of checks  
+    - If integer: pass if number of failed checks <= threshold
+    - If float in [0, 1): pass if proportion of failed checks <= threshold  
     - If float >= 1: always fail
-    - If 0: fail if there's even one failed check
     - If None/not set: always pass (returns True)
     
     Returns True if validation passes, False otherwise.
@@ -50,13 +49,13 @@ def check_validation_threshold(
     if isinstance(threshold, float) and threshold >= 1:
         return False
     
-    # Check threshold
-    if isinstance(threshold, float) and 0 < threshold < 1:
-        # Proportion-based: fail if failed proportion exceeds threshold
+    # Check threshold based on type
+    if isinstance(threshold, float):
+        # Float in [0, 1): proportion-based, pass if failed proportion <= threshold
         failed_proportion = failed_checks / total_checks
         return failed_proportion <= threshold
     else:
-        # Integer or 0: fail if failed count exceeds threshold
+        # Integer: count-based, pass if failed count <= threshold
         return failed_checks <= threshold
 
 

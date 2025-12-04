@@ -599,6 +599,33 @@ class TestValidationThreshold:
         progress_data["campaign1"]["user1"]["validations"][0] = [False, False, False, True]
         assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
 
+    def test_float_threshold_zero_proportion_based(self):
+        """Test that float 0.0 threshold is proportion-based (0% failures allowed)."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "template": "pointwise",
+                    "validation_threshold": 0.0,  # 0% failures allowed (same as 0 integer)
+                }
+            }
+        }
+        # All passed should pass
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "validations": {
+                        0: [True, True, True],
+                    }
+                }
+            }
+        }
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is True
+
+        # Any failure should fail (0% proportion exceeded)
+        progress_data["campaign1"]["user1"]["validations"][0] = [True, True, False]
+        assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+
     def test_float_threshold_above_one_always_fails(self):
         """Test that float threshold >= 1 always fails."""
         tasks_data = {
