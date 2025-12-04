@@ -50,36 +50,21 @@ def _run(args_unknown):
     )
 
 
-def _add_campaign(args_unknown):
+def _add_single_campaign(data_file, overwrite, server):
     """
-    Add a new campaign from a JSON data file.
+    Add a single campaign from a JSON data file.
     """
     import random
 
     import wonderwords
 
-    args = argparse.ArgumentParser()
-    args.add_argument(
-        'data_file', type=str,
-        help='Path to the campaign data file'
-    )
-    args.add_argument(
-        "-o", "--overwrite", action="store_true",
-        help="Overwrite existing campaign if it exists"
-    )
-    args.add_argument(
-        "--server", default="http://localhost:8001",
-        help="Prefix server URL for protocol links"
-    )
-    args = args.parse_args(args_unknown)
-
-    with open(args.data_file, 'r') as f:
+    with open(data_file, 'r') as f:
         campaign_data = json.load(f)
 
     with open(f"{ROOT}/data/progress.json", "r") as f:
         progress_data = json.load(f)
 
-    if campaign_data['campaign_id'] in progress_data and not args.overwrite:
+    if campaign_data['campaign_id'] in progress_data and not overwrite:
         print(
             f"Campaign {campaign_data['campaign_id']} already exists.",
             "Use -o to overwrite."
@@ -222,14 +207,37 @@ def _add_campaign(args_unknown):
         json.dump(progress_data, f, indent=2, ensure_ascii=False)
 
     print(
-        f"{args.server}/dashboard.html"
+        f"{server}/dashboard.html"
         f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
         f"&token={campaign_data['token']}"
     )
     print("-"*10)
     for user_id, user_val in user_progress.items():
         # point to the protocol URL
-        print(f"{args.server}/{user_val["url"]}")
+        print(f"{server}/{user_val["url"]}")
+
+
+def _add_campaign(args_unknown):
+    """
+    Add campaigns from one or more JSON data files.
+    """
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        'data_files', type=str, nargs='+',
+        help='Path(s) to the campaign data file(s)'
+    )
+    args.add_argument(
+        "-o", "--overwrite", action="store_true",
+        help="Overwrite existing campaign if it exists"
+    )
+    args.add_argument(
+        "--server", default="http://localhost:8001",
+        help="Prefix server URL for protocol links"
+    )
+    args = args.parse_args(args_unknown)
+
+    for data_file in args.data_files:
+        _add_single_campaign(data_file, args.overwrite, args.server)
 
 
 def main():
@@ -254,14 +262,50 @@ def main():
     elif args.command == 'purge':
         import shutil
 
-        confirm = input(
-            "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n] "
+        # Parse optional campaign name
+        purge_args = argparse.ArgumentParser()
+        purge_args.add_argument(
+            'campaign', type=str, nargs='?', default=None,
+            help='Optional campaign name to purge (purges all if not specified)'
         )
-        if confirm.lower() == 'y':
-            shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)
-            shutil.rmtree(f"{ROOT}/data/outputs", ignore_errors=True)
-            if os.path.exists(f"{ROOT}/data/progress.json"):
-                os.remove(f"{ROOT}/data/progress.json")
-            print("All campaign data purged.")
+        purge_args = purge_args.parse_args(args_unknown)
+
+        if purge_args.campaign is not None:
+            # Purge specific campaign
+            campaign_id = purge_args.campaign
+            confirm = input(
+                f"Are you sure you want to purge campaign '{campaign_id}'? This action cannot be undone. [y/n] "
+            )
+            if confirm.lower() == 'y':
+                # Remove task file
+                task_file = f"{ROOT}/data/tasks/{campaign_id}.json"
+                if os.path.exists(task_file):
+                    os.remove(task_file)
+                # Remove output file
+                output_file = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
+                if os.path.exists(output_file):
+                    os.remove(output_file)
+                # Remove from progress data
+                if os.path.exists(f"{ROOT}/data/progress.json"):
+                    with open(f"{ROOT}/data/progress.json", "r") as f:
+                        progress_data = json.load(f)
+                    if campaign_id in progress_data:
+                        del progress_data[campaign_id]
+                        with open(f"{ROOT}/data/progress.json", "w") as f:
+                            json.dump(progress_data, f, indent=2, ensure_ascii=False)
+                print(f"Campaign '{campaign_id}' purged.")
+            else:
+                print("Cancelled.")
         else:
-            print("Cancelled.")
+            # Purge all campaigns
+            confirm = input(
+                "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n] "
+            )
+            if confirm.lower() == 'y':
+                shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)
+                shutil.rmtree(f"{ROOT}/data/outputs", ignore_errors=True)
+                if os.path.exists(f"{ROOT}/data/progress.json"):
+                    os.remove(f"{ROOT}/data/progress.json")
+                print("All campaign data purged.")
+            else:
+                print("Cancelled.")
