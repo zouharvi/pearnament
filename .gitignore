@@ -1,7 +1,7 @@
 # added manually
 # by default ignore, override with -.f
 data/
-data_vm/
+data_*/
 server/static/
 examples/
 

@@ -353,10 +353,8 @@ async function display_next_payload(response: DataPayload) {
                                 })
 
                                 // set up callback to reposition toolbox on resize         
-                                $(window).on('resize.toolbox', function () {
-                                    updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el))
-                                })
-                                $(window).trigger('resize.toolbox');
+                                $(window).on('resize.toolbox', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
+                                updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el))
 
                                 // store error span
                                 response_log[item_i][cand_i].error_spans.push(error_span)
@@ -412,7 +410,7 @@ async function display_next_payload(response: DataPayload) {
                         }
                     })
                     $(window).on('resize.toolbox', () => updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el)))
-                    $(window).trigger('resize.toolbox')
+                    
                     for (let j = left_i; j <= right_i; j++) {
                         $(tgt_chars_objs[j].el).addClass(error_span.severity ? `error_${error_span.severity}` : "error_unknown")
                         tgt_chars_objs[j].toolbox = toolbox
@@ -477,6 +475,8 @@ async function display_next_payload(response: DataPayload) {
         output_blocks.push(output_block)
     }
 
+    // trigger once to reposition toolboxes
+    $(window).trigger('resize.toolbox')
     check_unlock()
 }
 
