@@ -224,10 +224,7 @@ def _add_campaign(args_unknown):
     # Handle assets symlink if specified
     if "assets" in campaign_data:
         assets_path = campaign_data["assets"]
-        # Resolve relative paths from the data file's directory
-        data_file_dir = os.path.dirname(os.path.abspath(args.data_file))
-        if not os.path.isabs(assets_path):
-            assets_path = os.path.join(data_file_dir, assets_path)
+        # Resolve relative paths from the caller's current working directory
         assets_path = os.path.abspath(assets_path)
 
         if not os.path.isdir(assets_path):
