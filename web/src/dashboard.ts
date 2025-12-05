@@ -132,7 +132,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
                     location.reload()
                 },
                 error: (XMLHttpRequest) => {
-                    const errorMsg = XMLHttpRequest.responseJSON?.error || XMLHttpRequest.responseText || XMLHttpRequest.statusText;
+                    const errorMsg = XMLHttpRequest.responseJSON?.error || XMLHttpRequest.responseText || XMLHttpRequest.statusText || "An unknown error occurred";
                     notify("Error resetting task: " + errorMsg);
                 },
             });
@@ -148,7 +148,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         try {
             await fetchAndRenderCampaign(campaign_id, token);
         } catch (error: any) {
-            const errorMsg = error?.responseJSON?.error || error?.responseText || error?.statusText || error;
+            const errorMsg = error?.responseJSON?.error || error?.responseText || error?.statusText || "An unknown error occurred";
             notify("Error fetching data: " + errorMsg);
         }
     }
