@@ -99,6 +99,8 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         html += `<td>
             <a href="${data[user_id]["url"]}">🔗</a>
             &nbsp;&nbsp;
+            <a href="${data[user_id]["url"]}&frozen" title="View only (frozen)">👁️</a>
+            &nbsp;&nbsp;
             <span class="reset-task" user_id="${user_id}" ${token == null ? "disabled" : ""}>🗑️</span>
         </td>`
         html += '</tr>'

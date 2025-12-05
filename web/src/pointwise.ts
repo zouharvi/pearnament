@@ -21,6 +21,10 @@ import {
   isSpanComplete,
 } from './utils';
 
+// Check if frozen mode is enabled (view-only, no annotations)
+const searchParams = new URLSearchParams(window.location.search)
+const frozenMode = searchParams.has("frozen")
+
 type DataPayload = {
   status: string,
   progress: Array<boolean>,
@@ -65,6 +69,13 @@ $("#toggle_differences").on("change", function () {
 })
 
 function check_unlock() {
+  // In frozen mode, always keep the button disabled
+  if (frozenMode) {
+    $("#button_next").attr("disabled", "disabled")
+    $("#button_next").val("Next 🔒")
+    return
+  }
+
   // Check if all error spans are complete (have required severity and category based on protocol)
   if (protocol_error_spans || protocol_error_categories) {
     for (const r of response_log) {
@@ -238,6 +249,9 @@ async function display_next_payload(response: DataPayload) {
         // add spans and toolbox only in case the protocol asks for it
         if (protocol_error_spans || protocol_error_categories) {
           $(obj.el).on("click", function () {
+            // In frozen mode, do not allow creating new error spans
+            if (frozenMode) return
+
             if (is_missing) {
               state_i = missing_i
             }
@@ -484,6 +498,9 @@ async function display_next_payload(response: DataPayload) {
       label.text(val.toString())
     })
     slider.on("change", function () {
+      // In frozen mode, do not allow changing scores
+      if (frozenMode) return
+
       let val = parseInt((<HTMLInputElement>this).value)
       label.text(val.toString())
       let i = parseInt(slider.attr("id")!.split("_")[1])
@@ -492,6 +509,11 @@ async function display_next_payload(response: DataPayload) {
       check_unlock()
       action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
     })
+
+    // Disable slider in frozen mode
+    if (frozenMode) {
+      slider.prop("disabled", true)
+    }
 
     // Pre-fill score from payload_existing if available
     const existingScore = response.payload_existing?.[item_i]?.score
