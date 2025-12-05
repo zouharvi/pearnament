@@ -29,7 +29,7 @@ export function notify(message: string): void {
 // Shared types for error span annotation
 export type ErrorSpan = { start_i: number, end_i: number, category: string | null, severity: string | null }
 export type Response = { score: number | null, error_spans: Array<ErrorSpan> }
-export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null }
+export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null, word_start: number, word_end: number }
 
 /**
  * Check if an error span is complete (has required fields set based on protocol).
@@ -425,4 +425,31 @@ export function isMediaContent(content: string): boolean {
  */
 export function contentToCharSpans(content: string, className: string): string {
     return content.split("").map(c => c == "\n" ? "<br>" : `<span class="${className}">${c}</span>`).join("")
+}
+
+/**
+ * Compute word boundaries for each character index in the content.
+ * Returns an array where each element contains [word_start, word_end] for that character index.
+ * Word boundaries are defined by spaces.
+ */
+export function computeWordBoundaries(content: string): Array<[number, number]> {
+    const boundaries: Array<[number, number]> = []
+    let wordStart = 0
+    
+    for (let i = 0; i < content.length; i++) {
+        if (content[i] === ' ' || content[i] === '\n') {
+            // Space/newline is its own "word"
+            boundaries.push([i, i])
+            wordStart = i + 1
+        } else {
+            // Find the end of this word
+            let wordEnd = i
+            while (wordEnd < content.length - 1 && content[wordEnd + 1] !== ' ' && content[wordEnd + 1] !== '\n') {
+                wordEnd++
+            }
+            boundaries.push([wordStart, wordEnd])
+        }
+    }
+    
+    return boundaries
 }
