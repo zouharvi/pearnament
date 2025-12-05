@@ -158,7 +158,8 @@ export function createSpanToolbox(
     tgt_chars_objs: Array<CharData>,
     left_i: number,
     right_i: number,
-    onDelete: () => void
+    onDelete: () => void,
+    frozenMode: boolean = false
 ): JQuery<HTMLElement> {
     let toolbox = $(`
     <div class='span_toolbox_parent'>
@@ -183,6 +184,7 @@ export function createSpanToolbox(
     
     // select one category handler
     toolbox.find("select").eq(0).on("change", function () {
+        if (frozenMode) return
         let cat1 = (<HTMLSelectElement>this).value
         error_span.category = cat1
         let subcat_select = toolbox.find("select").eq(1)
@@ -201,6 +203,7 @@ export function createSpanToolbox(
     })
     
     toolbox.find("select").eq(1).on("change", function () {
+        if (frozenMode) return
         let cat1 = toolbox.find("select").eq(0).val() as string
         let cat2 = (<HTMLSelectElement>this).value
         // enforce both category and subcategory
@@ -219,8 +222,18 @@ export function createSpanToolbox(
         toolbox.find(".span_toolbox_esa").css("margin-right", "-5px")
     }
     
+    // In frozen mode, disable all modification controls
+    if (frozenMode) {
+        toolbox.find(".error_delete").prop("disabled", true)
+        toolbox.find(".error_neutral").prop("disabled", true)
+        toolbox.find(".error_minor").prop("disabled", true)
+        toolbox.find(".error_major").prop("disabled", true)
+        toolbox.find("select").prop("disabled", true)
+    }
+    
     // handle delete button
     toolbox.find(".error_delete").on("click", () => {
+        if (frozenMode) return
         toolbox.remove()
         for (let j = left_i; j <= right_i; j++) {
             $(tgt_chars_objs[j].el).removeClass("error_unknown")
@@ -235,6 +248,7 @@ export function createSpanToolbox(
     
     // handle severity buttons
     toolbox.find(".error_neutral").on("click", () => {
+        if (frozenMode) return
         for (let j = left_i; j <= right_i; j++) {
             $(tgt_chars_objs[j].el).removeClass("error_unknown")
             $(tgt_chars_objs[j].el).removeClass("error_minor")
@@ -245,6 +259,7 @@ export function createSpanToolbox(
     })
     
     toolbox.find(".error_minor").on("click", () => {
+        if (frozenMode) return
         for (let j = left_i; j <= right_i; j++) {
             $(tgt_chars_objs[j].el).removeClass("error_unknown")
             $(tgt_chars_objs[j].el).removeClass("error_neutral")
@@ -255,6 +270,7 @@ export function createSpanToolbox(
     })
     
     toolbox.find(".error_major").on("click", () => {
+        if (frozenMode) return
         for (let j = left_i; j <= right_i; j++) {
             $(tgt_chars_objs[j].el).removeClass("error_unknown")
             $(tgt_chars_objs[j].el).removeClass("error_neutral")
