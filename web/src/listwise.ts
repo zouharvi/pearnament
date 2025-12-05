@@ -346,7 +346,8 @@ async function display_next_payload(response: DataPayload) {
                                         response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(span => span != error_span)
                                         action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
                                         has_unsaved_work = true
-                                    }
+                                    },
+                                    frozenMode
                                 )
 
                                 $("body").append(toolbox)
@@ -415,7 +416,7 @@ async function display_next_payload(response: DataPayload) {
                         response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(s => s != error_span)
                         action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
                         has_unsaved_work = true
-                    })
+                    }, frozenMode)
                     $("body").append(toolbox)
                     toolbox.on("mouseenter", () => { toolbox.css("display", "block"); check_unlock() })
                     toolbox.on("mouseleave", () => {
