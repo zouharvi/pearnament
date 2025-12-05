@@ -29,7 +29,7 @@ export function notify(message: string): void {
 // Shared types for error span annotation
 export type ErrorSpan = { start_i: number, end_i: number, category: string | null, severity: string | null }
 export type Response = { score: number | null, error_spans: Array<ErrorSpan> }
-export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null }
+export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> | null, error_span: ErrorSpan | null, word_start: number, word_end: number }
 
 /**
  * Check if an error span is complete (has required fields set based on protocol).
@@ -425,4 +425,32 @@ export function isMediaContent(content: string): boolean {
  */
 export function contentToCharSpans(content: string, className: string): string {
     return content.split("").map(c => c == "\n" ? "<br>" : `<span class="${className}">${c}</span>`).join("")
+}
+
+/**
+ * Compute word boundaries for each character index in the content (list of characters).
+ * Returns an array where each element contains [word_start, word_end] for that character index.
+ * Word boundaries are defined by non-alphanumeric characters.
+ */
+const is_alphanum = /^\p{L}|\p{N}$/u
+export function computeWordBoundaries(content: string[]): Array<[number, number]> {
+    const boundaries: Array<[number, number]> = []
+    
+    for (let i = 0; i < content.length; i++) {
+        // non-alphanumeric characters are their own words
+        if (!is_alphanum.test(content[i])) {
+            boundaries.push([i, i])
+        } else {
+            // Find the end of this word that's all alphanumeric
+            let word_start = i
+            while (i < content.length - 1 && is_alphanum.test(content[i+1])) {
+                i++;
+            }
+            for(let j = word_start; j <= i; j++) {
+                boundaries.push([word_start, i])
+            }
+        }
+    }
+    
+    return boundaries
 }

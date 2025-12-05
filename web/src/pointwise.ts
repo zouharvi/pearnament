@@ -19,6 +19,7 @@ import {
   isMediaContent,
   contentToCharSpans,
   isSpanComplete,
+  computeWordBoundaries,
 } from './utils';
 
 type DataPayload = {
@@ -41,6 +42,7 @@ let action_log: Array<any> = []
 let validations: Array<Validation | undefined> = []
 let output_blocks: Array<JQuery<HTMLElement>> = []
 let settings_show_alignment = true
+let settings_word_level = false
 let has_unsaved_work = false
 let skip_tutorial_mode = false
 // Protocol settings for check_unlock
@@ -184,10 +186,15 @@ async function display_next_payload(response: DataPayload) {
 
     // crude character alignment
     let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
-    let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : output_block.find(".tgt_char").toArray().map(el => ({
+    let _tgt_chars_els = output_block.find(".tgt_char").toArray()
+    // Compute word boundaries for the target text. Use _tgt_chars_els because we might skip/collapse some chars
+    let tgt_word_boundaries = no_tgt_char ? [] : computeWordBoundaries(_tgt_chars_els.map(el => $(el).text()))
+    let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : _tgt_chars_els.map((el, idx) => ({
       "el": $(el),
       "toolbox": null,
       "error_span": null,
+      "word_start": idx < tgt_word_boundaries.length ? tgt_word_boundaries[idx][0] : idx,
+      "word_end": idx < tgt_word_boundaries.length ? tgt_word_boundaries[idx][1] : idx,
     }))
     let state_i: null | number = null
     let missing_i = protocol_error_spans ? tgt_chars_objs.findIndex(obj => obj.el.hasClass("char_missing")) : -1
@@ -218,7 +225,19 @@ async function display_next_payload(response: DataPayload) {
             }
           }
           if (state_i != null && !is_missing) {
-            for (let j = Math.min(state_i, i); j <= Math.max(state_i, i); j++) {
+            // In word-level mode, expand selection preview to word boundaries
+            let preview_left = Math.min(state_i, i)
+            let preview_right = Math.max(state_i, i)
+            if (settings_word_level && state_i != missing_i) {
+              preview_left = tgt_chars_objs[preview_left].word_start
+              preview_right = tgt_chars_objs[preview_right].word_end
+            }
+            for (let j = preview_left; j <= preview_right; j++) {
+              $(tgt_chars_objs[j].el).addClass("highlighted")
+            }
+          } else if (settings_word_level && !is_missing && state_i == null) {
+            // Highlight current word on hover when in word-level mode (no active selection)
+            for (let j = obj.word_start; j <= obj.word_end; j++) {
               $(tgt_chars_objs[j].el).addClass("highlighted")
             }
           }
@@ -245,6 +264,13 @@ async function display_next_payload(response: DataPayload) {
               // check if we're not overlapping
               let left_i = Math.min(state_i, i)
               let right_i = Math.max(state_i, i)
+              
+              // Expand to word boundaries if word-level mode is enabled
+              if (settings_word_level && !is_missing && state_i != missing_i) {
+                left_i = tgt_chars_objs[left_i].word_start
+                right_i = tgt_chars_objs[right_i].word_end
+              }
+              
               state_i = null
               $(".src_char").removeClass("highlighted")
               $(".tgt_char").removeClass("highlighted")
@@ -608,7 +634,6 @@ $("#button_next").on("click", async function () {
   action_log.push({ "time": Date.now() / 1000, "action": "submit" + (skip_tutorial_mode ? "_skip" : "") })
 
   let payload_local = { "annotations": response_log, "actions": action_log, "item": payload?.payload, }
-  console.log(payload_local)
   if (!skip_tutorial_mode && validationResult!.length > 0) {
     // @ts-ignore
     payload_local["validations"] = validationResult
@@ -645,3 +670,11 @@ $("#settings_approximate_alignment").on("change", function () {
 })
 $("#settings_approximate_alignment").prop("checked", localStorage.getItem("setting_approximate_alignment") == "true")
 $("#settings_approximate_alignment").trigger("change")
+
+// word-level annotation setting
+$("#settings_word_level").on("change", function () {
+  settings_word_level = $("#settings_word_level").is(":checked")
+  localStorage.setItem("setting_word_level", settings_word_level.toString())
+})
+$("#settings_word_level").prop("checked", localStorage.getItem("setting_word_level") == "true")
+$("#settings_word_level").trigger("change")
