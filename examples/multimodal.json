@@ -18,13 +18,13 @@
         },
         {
           "doc_id": "mock_audiovideo",
-          "src": "<audio controls=\"\"> <source src=\"https://www.signalogic.com/melp/EngSamples/Orig/ENG_M.wav\" type=\"audio/wav\"></audio>",
+          "src": "<audio controls=\"\" src=\"https://www.signalogic.com/melp/EngSamples/Orig/ENG_M.wav\" type=\"audio/wav\"></audio>",
           "tgt": "1992년 태양돛을 이용한 화성과 달 탐사 계획이 순조롭게 진행되고 있습니다. 화성 탐사는 500년 전 콜럼버스의 신대륙 탐험을 기념하는 것이고, 달 탐사는 우주 탐사에 태양돛을 활용하는 것을 장려하는 것입니다."
         },
         {
           "doc_id": "mock_audiovideo",
           "src": "It was something that surprised me and made me wonder why I hadn't thought of it before.",
-          "tgt": "<audio controls=\"\"> <source src=\"https://upload.wikimedia.org/wikipedia/commons/0/06/%EA%B7%B8%EA%B2%83%EC%9D%80_%EB%82%B4%EA%B0%80_%EC%96%B4%EC%A7%B8_%EC%9D%B4%EB%95%8C_%EA%B7%B8%EA%B2%83_%EC%83%9D%EA%B0%81%EC%9D%B4_%EC%95%84%EB%8B%88%EB%82%AC%EB%8A%94%EA%B3%A0%2C_%ED%95%98%EA%B3%A0_%EC%8A%A4%EC%8A%A4%EB%A1%9C_%EB%86%80%EB%9E%84_%EB%A7%8C%ED%95%9C_%EB%AC%B4%EC%97%87%EC%9D%B4%EC%97%88%EB%8B%A4.ogg\" type=\"audio/wav\"></audio>"
+          "tgt": "<audio controls=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/0/06/%EA%B7%B8%EA%B2%83%EC%9D%80_%EB%82%B4%EA%B0%80_%EC%96%B4%EC%A7%B8_%EC%9D%B4%EB%95%8C_%EA%B7%B8%EA%B2%83_%EC%83%9D%EA%B0%81%EC%9D%B4_%EC%95%84%EB%8B%88%EB%82%AC%EB%8A%94%EA%B3%A0%2C_%ED%95%98%EA%B3%A0_%EC%8A%A4%EC%8A%A4%EB%A1%9C_%EB%86%80%EB%9E%84_%EB%A7%8C%ED%95%9C_%EB%AC%B4%EC%97%87%EC%9D%B4%EC%97%88%EB%8B%A4.ogg\" type=\"audio/wav\"></audio>"
         }
       ],
       [
