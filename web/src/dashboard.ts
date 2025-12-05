@@ -131,8 +131,9 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
                     notify(`Task for user ${user_id} has been reset.`)
                     location.reload()
                 },
-                error: (XMLHttpRequest, textStatus, errorThrown) => {
-                    notify("Error resetting task:" + JSON.stringify(textStatus) + JSON.stringify(errorThrown));
+                error: (XMLHttpRequest) => {
+                    const errorMsg = XMLHttpRequest.responseJSON?.error || XMLHttpRequest.responseText || XMLHttpRequest.statusText;
+                    notify("Error resetting task: " + errorMsg);
                 },
             });
         })
@@ -147,7 +148,8 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         try {
             await fetchAndRenderCampaign(campaign_id, token);
         } catch (error: any) {
-            notify("Error fetching data:" + JSON.stringify(error?.statusText || error));
+            const errorMsg = error?.responseJSON?.error || error?.responseText || error?.statusText || error;
+            notify("Error fetching data: " + errorMsg);
         }
     }
 })();
