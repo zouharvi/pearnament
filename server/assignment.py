@@ -48,7 +48,7 @@ def get_next_item(
     elif assignment == "dynamic":
         return get_next_item_dynamic(campaign_id, user_id, tasks_data, progress_data)
     else:
-        return JSONResponse(content={"error": "Unknown campaign assignment type"}, status_code=400)
+        return JSONResponse(content="Unknown campaign assignment type", status_code=400)
 
 
 def get_i_item(
@@ -67,7 +67,7 @@ def get_i_item(
     elif assignment == "single-stream":
         return get_i_item_singlestream(campaign_id, user_id, tasks_data, progress_data, item_i)
     else:
-        return JSONResponse(content={"error": "Get item not supported for this assignment type"}, status_code=400)
+        return JSONResponse(content="Get item not supported for this assignment type", status_code=400)
 
 
 def get_i_item_taskbased(
@@ -90,7 +90,7 @@ def get_i_item_taskbased(
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"][user_id]):
         return JSONResponse(
-            content={"status": "error", "message": "Item index out of range"},
+            content="Item index out of range",
             status_code=400
         )
 
@@ -133,7 +133,7 @@ def get_i_item_singlestream(
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"]):
         return JSONResponse(
-            content={"status": "error", "message": "Item index out of range"},
+            content="Item index out of range",
             status_code=400
         )
 
@@ -280,7 +280,7 @@ def reset_task(
             })
         progress_data[campaign_id][user_id]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
-        return JSONResponse(content={"status": "ok"}, status_code=200)
+        return JSONResponse(content="ok", status_code=200)
     elif assignment == "single-stream":
         # Save reset markers for all items (shared pool)
         num_items = len(tasks_data[campaign_id]["data"])
@@ -294,9 +294,9 @@ def reset_task(
         for uid in progress_data[campaign_id]:
             progress_data[campaign_id][uid]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
-        return JSONResponse(content={"status": "ok"}, status_code=200)
+        return JSONResponse(content="ok", status_code=200)
     else:
-        return JSONResponse(content={"status": "error", "message": "Reset not supported for this assignment type"}, status_code=400)
+        return JSONResponse(content="Reset not supported for this assignment type", status_code=400)
 
 
 def update_progress(
@@ -319,8 +319,8 @@ def update_progress(
         # progress all users
         for uid in progress_data[campaign_id]:
             progress_data[campaign_id][uid]["progress"][item_i] = True
-        return JSONResponse(content={"status": "ok"}, status_code=200)
+        return JSONResponse(content="ok", status_code=200)
     elif assignment == "dynamic":
-        return JSONResponse(content={"status": "error", "message": "Dynamic protocol logging not implemented yet."}, status_code=400)
+        return JSONResponse(content="Dynamic protocol logging not implemented yet.", status_code=400)
     else:
-        return JSONResponse(content={"status": "error", "message": "Unknown campaign assignment type"}, status_code=400)
+        return JSONResponse(content="Unknown campaign assignment type", status_code=400)
