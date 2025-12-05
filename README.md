@@ -275,15 +275,21 @@ When present, this directory is symlinked to the `static/` directory so its cont
 {
     "campaign_id": "my_campaign",
     "info": { 
-      "assets": "videos",  # path to directory containing assets
+      "assets": {
+        "source": "videos",          # path to directory containing assets
+        "destination": "assets/my_videos"  # where to mount under static/ (must start with "assets/")
+      },
       ...
     },
     "data": [ ... ]
 }
 ```
 
-For example, if `videos` contains `audio.mp3`, it will be accessible at `localhost:8001/assets/videos/audio.mp3`.
-The path can be absolute or relative to your current working directory.
+For example, if `videos` contains `audio.mp3`, it will be accessible at `localhost:8001/assets/my_videos/audio.mp3`.
+The `source` path can be absolute or relative to your current working directory.
+The `destination` must always start with `assets/` to clearly indicate where files will be served from.
+If the destination path is already taken by another campaign, the add command will fail unless `-o/--overwrite` is used.
+When a campaign is purged, its asset symlink is automatically removed.
 
 ## Development
 

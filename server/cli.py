@@ -199,30 +199,55 @@ def _add_single_campaign(data_file, overwrite, server):
 
     # Handle assets symlink if specified
     if "assets" in campaign_data["info"]:
-        assets_real_path = campaign_data["info"]["assets"]
+        assets_config = campaign_data["info"]["assets"]
+        
+        # assets must be a dictionary with source and destination keys
+        if not isinstance(assets_config, dict):
+            raise ValueError(
+                "Assets must be a dictionary with 'source' and 'destination' keys. "
+                "Example: {\"source\": \"videos\", \"destination\": \"assets/my_videos\"}"
+            )
+        if "source" not in assets_config:
+            raise ValueError("Assets config must contain 'source' key.")
+        if "destination" not in assets_config:
+            raise ValueError("Assets config must contain 'destination' key.")
+        
+        assets_source = assets_config["source"]
+        assets_destination = assets_config["destination"]
+        
+        # Validate destination starts with 'assets/'
+        if not assets_destination.startswith("assets/"):
+            raise ValueError(
+                f"Assets destination '{assets_destination}' must start with 'assets/'. "
+                f"Example: \"assets/{assets_destination.lstrip('/')}\""
+            )
         
         # Resolve relative paths from the caller's current working directory
-        assets_real_path = os.path.abspath(assets_real_path)
+        assets_real_path = os.path.abspath(assets_source)
 
         if not os.path.isdir(assets_real_path):
-            raise ValueError(f"Assets path '{assets_real_path}' must be an existing directory.")
+            raise ValueError(f"Assets source path '{assets_real_path}' must be an existing directory.")
 
         static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static"
-        dir_name = assets_real_path.split(os.sep)[-1]
-
+        
         if not os.path.isdir(static_dir):
             raise ValueError(
                 f"Static directory '{static_dir}' does not exist. "
                 "Please build the frontend first."
             )
-        symlink_path = f"{static_dir}/assets/{dir_name}"
+        
+        # Symlink path is based on the destination, stripping the 'assets/' prefix
+        symlink_path = f"{static_dir}/{assets_destination}"
 
         # Remove existing symlink if present and we are overriding
-        if os.path.exists(symlink_path):
+        if os.path.exists(symlink_path) or os.path.islink(symlink_path):
             if overwrite:
                 os.remove(symlink_path)
             else:
-                raise ValueError(f"Assets symlink '{symlink_path}' already exists.")
+                raise ValueError(f"Assets destination '{assets_destination}' is already taken.")
+        
+        # Ensure the assets directory exists
+        os.makedirs(f"{static_dir}/assets", exist_ok=True)
 
         os.symlink(assets_real_path, symlink_path, target_is_directory=True)
         print(f"Assets symlinked: {symlink_path} -> {assets_real_path}")
@@ -299,6 +324,22 @@ def main():
     elif args.command == 'purge':
         import shutil
 
+        def _unlink_assets(campaign_id):
+            """Unlink assets symlink for a campaign if it exists."""
+            task_file = f"{ROOT}/data/tasks/{campaign_id}.json"
+            if os.path.exists(task_file):
+                with open(task_file, "r") as f:
+                    campaign_data = json.load(f)
+                assets_config = campaign_data.get("info", {}).get("assets")
+                if assets_config and isinstance(assets_config, dict):
+                    destination = assets_config.get("destination")
+                    if destination:
+                        static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static"
+                        symlink_path = f"{static_dir}/{destination}"
+                        if os.path.islink(symlink_path):
+                            os.remove(symlink_path)
+                            print(f"Assets symlink removed: {symlink_path}")
+
         # Parse optional campaign name
         purge_args = argparse.ArgumentParser()
         purge_args.add_argument(
@@ -314,6 +355,8 @@ def main():
                 f"Are you sure you want to purge campaign '{campaign_id}'? This action cannot be undone. [y/n] "
             )
             if confirm.lower() == 'y':
+                # Unlink assets before removing task file
+                _unlink_assets(campaign_id)
                 # Remove task file
                 task_file = f"{ROOT}/data/tasks/{campaign_id}.json"
                 if os.path.exists(task_file):
@@ -336,6 +379,13 @@ def main():
                 "Are you sure you want to purge all campaign data? This action cannot be undone. [y/n] "
             )
             if confirm.lower() == 'y':
+                # Unlink all assets first
+                tasks_dir = f"{ROOT}/data/tasks"
+                if os.path.exists(tasks_dir):
+                    for task_file in os.listdir(tasks_dir):
+                        if task_file.endswith('.json'):
+                            campaign_id = task_file[:-5]
+                            _unlink_assets(campaign_id)
                 shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)
                 shutil.rmtree(f"{ROOT}/data/outputs", ignore_errors=True)
                 if os.path.exists(f"{ROOT}/data/progress.json"):
