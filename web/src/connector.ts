@@ -21,13 +21,17 @@ export async function get_next_item<T>(): Promise<T | null> {
           success: (x) => resolve(x),
           error: (XMLHttpRequest, textStatus, errorThrown) => {
             console.error("Error fetching data:", textStatus, errorThrown);
-            reject(`Status: ${XMLHttpRequest.status} Error: ${XMLHttpRequest.responseText}`);
+            if (XMLHttpRequest.status === 0) {
+              reject("Can't reach server.");
+              return;
+            }
+            reject(`${XMLHttpRequest.status}: ${XMLHttpRequest.responseText}`);
           },
         });
       });
     } catch (e) {
       console.log("Error in try-catch:", e);
-      notify(`Error fetching item. <br> ${e} <br> Retrying in ${delay} seconds...`);
+      notify(`Error fetching item. <br><br> ${e} <br><br> Retrying in ${delay} seconds...`);
     }
     // wait for 5 seconds
     await new Promise(resolve => setTimeout(resolve, delay * 1000));
@@ -56,14 +60,18 @@ export async function log_response(payload: any, item_i: number | null): Promise
           success: (x) => resolve(),
           error: (XMLHttpRequest, textStatus, errorThrown) => {
             console.error("Error storing data:", textStatus, errorThrown);
-            reject(`Status: ${XMLHttpRequest.status} Error: ${XMLHttpRequest.responseText}`);
+            if (XMLHttpRequest.status === 0) {
+              reject("Can't reach server.");
+              return;
+            }
+            reject(`${XMLHttpRequest.status}: ${XMLHttpRequest.responseText}`);
           },
         });
       });
       return true;
     } catch (e) {
       console.log("Error in try-catch:", e);
-      notify(`Error storing item. <br> ${e} <br> Retrying in ${delay} seconds...`);
+      notify(`Error storing item. <br><br> ${e} <br><br> Retrying in ${delay} seconds...`);
     }
     // wait for 5 seconds
     await new Promise(resolve => setTimeout(resolve, delay * 1000));
@@ -91,13 +99,17 @@ export async function get_i_item<T>(item_i: number): Promise<T | null> {
           success: (x) => resolve(x),
           error: (XMLHttpRequest, textStatus, errorThrown) => {
             console.error("Error fetching data:", textStatus, errorThrown);
-            reject(`Status: ${XMLHttpRequest.status} Error: ${XMLHttpRequest.responseText}`);
+            if (XMLHttpRequest.status === 0) {
+              reject("Can't reach server.");
+              return;
+            }
+            reject(`${XMLHttpRequest.status}: ${XMLHttpRequest.responseText}`);
           },
         });
       });
     } catch (e) {
       console.log("Error in try-catch:", e);
-      notify(`Error fetching item. <br> ${e} <br> Retrying in ${delay} seconds...`);
+      notify(`Error fetching item. <br><br> ${e} <br><br> Retrying in ${delay} seconds...`);
     }
     // wait for 5 seconds
     await new Promise(resolve => setTimeout(resolve, delay * 1000));
