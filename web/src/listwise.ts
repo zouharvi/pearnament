@@ -226,8 +226,9 @@ async function display_next_payload(response: DataPayload) {
 
             // Setup character-level interactions for this candidate
             // Compute word boundaries for the target text
-            let tgt_word_boundaries = no_tgt_char ? [] : computeWordBoundaries(tgt)
-            let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : candidate_block.find(".tgt_char").toArray().map((el, idx) => ({
+            let _tgt_chars_els = candidate_block.find(".tgt_char").toArray()
+            let tgt_word_boundaries = no_tgt_char ? [] : computeWordBoundaries(_tgt_chars_els.map(el => $(el).text()))
+            let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : _tgt_chars_els.map((el, idx) => ({
                 "el": $(el),
                 "toolbox": null,
                 "error_span": null,

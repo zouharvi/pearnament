@@ -428,26 +428,27 @@ export function contentToCharSpans(content: string, className: string): string {
 }
 
 /**
- * Compute word boundaries for each character index in the content.
+ * Compute word boundaries for each character index in the content (list of characters).
  * Returns an array where each element contains [word_start, word_end] for that character index.
- * Word boundaries are defined by spaces.
+ * Word boundaries are defined by non-alphanumeric characters.
  */
-export function computeWordBoundaries(content: string): Array<[number, number]> {
+const is_alphanum = /^\p{L}|\p{N}$/u
+export function computeWordBoundaries(content: string[]): Array<[number, number]> {
     const boundaries: Array<[number, number]> = []
-    let wordStart = 0
     
     for (let i = 0; i < content.length; i++) {
-        if (content[i] === ' ' || content[i] === '\n') {
-            // Space/newline is its own "word"
+        // non-alphanumeric characters are their own words
+        if (!is_alphanum.test(content[i])) {
             boundaries.push([i, i])
-            wordStart = i + 1
         } else {
-            // Find the end of this word
-            let wordEnd = i
-            while (wordEnd < content.length - 1 && content[wordEnd + 1] !== ' ' && content[wordEnd + 1] !== '\n') {
-                wordEnd++
+            // Find the end of this word that's all alphanumeric
+            let word_start = i
+            while (i < content.length - 1 && is_alphanum.test(content[i+1])) {
+                i++;
             }
-            boundaries.push([wordStart, wordEnd])
+            for(let j = word_start; j <= i; j++) {
+                boundaries.push([word_start, i])
+            }
         }
     }
     

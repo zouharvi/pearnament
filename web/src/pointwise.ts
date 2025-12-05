@@ -186,9 +186,10 @@ async function display_next_payload(response: DataPayload) {
 
     // crude character alignment
     let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
-    // Compute word boundaries for the target text
-    let tgt_word_boundaries = no_tgt_char ? [] : computeWordBoundaries(item.tgt)
-    let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : output_block.find(".tgt_char").toArray().map((el, idx) => ({
+    let _tgt_chars_els = output_block.find(".tgt_char").toArray()
+    // Compute word boundaries for the target text. Use _tgt_chars_els because we might skip/collapse some chars
+    let tgt_word_boundaries = no_tgt_char ? [] : computeWordBoundaries(_tgt_chars_els.map(el => $(el).text()))
+    let tgt_chars_objs: Array<CharData> = no_tgt_char ? [] : _tgt_chars_els.map((el, idx) => ({
       "el": $(el),
       "toolbox": null,
       "error_span": null,
@@ -633,7 +634,6 @@ $("#button_next").on("click", async function () {
   action_log.push({ "time": Date.now() / 1000, "action": "submit" + (skip_tutorial_mode ? "_skip" : "") })
 
   let payload_local = { "annotations": response_log, "actions": action_log, "item": payload?.payload, }
-  console.log(payload_local)
   if (!skip_tutorial_mode && validationResult!.length > 0) {
     // @ts-ignore
     payload_local["validations"] = validationResult
