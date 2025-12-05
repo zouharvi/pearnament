@@ -12,6 +12,9 @@ import psutil
 
 from .utils import ROOT, load_progress_data, save_progress_data
 
+# Static directory path (constant for consistency)
+STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 load_progress_data(warn=None)
 
@@ -228,26 +231,24 @@ def _add_single_campaign(data_file, overwrite, server):
         if not os.path.isdir(assets_real_path):
             raise ValueError(f"Assets source path '{assets_real_path}' must be an existing directory.")
 
-        static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static"
-        
-        if not os.path.isdir(static_dir):
+        if not os.path.isdir(STATIC_DIR):
             raise ValueError(
-                f"Static directory '{static_dir}' does not exist. "
+                f"Static directory '{STATIC_DIR}' does not exist. "
                 "Please build the frontend first."
             )
         
         # Symlink path is based on the destination, stripping the 'assets/' prefix
-        symlink_path = f"{static_dir}/{assets_destination}"
+        symlink_path = f"{STATIC_DIR}/{assets_destination}"
 
         # Remove existing symlink if present and we are overriding
-        if os.path.exists(symlink_path) or os.path.islink(symlink_path):
+        if os.path.lexists(symlink_path):
             if overwrite:
                 os.remove(symlink_path)
             else:
                 raise ValueError(f"Assets destination '{assets_destination}' is already taken.")
         
         # Ensure the assets directory exists
-        os.makedirs(f"{static_dir}/assets", exist_ok=True)
+        os.makedirs(f"{STATIC_DIR}/assets", exist_ok=True)
 
         os.symlink(assets_real_path, symlink_path, target_is_directory=True)
         print(f"Assets symlinked: {symlink_path} -> {assets_real_path}")
@@ -334,8 +335,7 @@ def main():
                 if assets_config and isinstance(assets_config, dict):
                     destination = assets_config.get("destination")
                     if destination:
-                        static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static"
-                        symlink_path = f"{static_dir}/{destination}"
+                        symlink_path = f"{STATIC_DIR}/{destination}"
                         if os.path.islink(symlink_path):
                             os.remove(symlink_path)
                             print(f"Assets symlink removed: {symlink_path}")
