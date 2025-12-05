@@ -206,24 +206,16 @@ def _add_single_campaign(data_file, overwrite, server):
         
         # assets must be a dictionary with source and destination keys
         if not isinstance(assets_config, dict):
-            raise ValueError(
-                "Assets must be a dictionary with 'source' and 'destination' keys. "
-                "Example: {\"source\": \"videos\", \"destination\": \"assets/my_videos\"}"
-            )
-        if "source" not in assets_config:
-            raise ValueError("Assets config must contain 'source' key.")
-        if "destination" not in assets_config:
-            raise ValueError("Assets config must contain 'destination' key.")
+            raise ValueError("Assets must be a dictionary with 'source' and 'destination' keys.")
+        if "source" not in assets_config or "destination" not in assets_config:
+            raise ValueError("Assets config must contain 'source' and 'destination' keys.")
         
         assets_source = assets_config["source"]
         assets_destination = assets_config["destination"]
         
         # Validate destination starts with 'assets/'
         if not assets_destination.startswith("assets/"):
-            raise ValueError(
-                f"Assets destination '{assets_destination}' must start with 'assets/'. "
-                f"Example: \"assets/{assets_destination.lstrip('/')}\""
-            )
+            raise ValueError(f"Assets destination '{assets_destination}' must start with 'assets/'.")
         
         # Resolve relative paths from the caller's current working directory
         assets_real_path = os.path.abspath(assets_source)
@@ -345,17 +337,16 @@ def main():
         def _unlink_assets(campaign_id):
             """Unlink assets symlink for a campaign if it exists."""
             task_file = f"{ROOT}/data/tasks/{campaign_id}.json"
-            if os.path.exists(task_file):
-                with open(task_file, "r") as f:
-                    campaign_data = json.load(f)
-                assets_config = campaign_data.get("info", {}).get("assets")
-                if assets_config and isinstance(assets_config, dict):
-                    destination = assets_config.get("destination")
-                    if destination:
-                        symlink_path = f"{STATIC_DIR}/{destination}"
-                        if os.path.islink(symlink_path):
-                            os.remove(symlink_path)
-                            print(f"Assets symlink removed: {symlink_path}")
+            if not os.path.exists(task_file):
+                return
+            with open(task_file, "r") as f:
+                campaign_data = json.load(f)
+            destination = campaign_data.get("info", {}).get("assets", {}).get("destination")
+            if destination:
+                symlink_path = f"{STATIC_DIR}/{destination}"
+                if os.path.islink(symlink_path):
+                    os.remove(symlink_path)
+                    print(f"Assets symlink removed: {symlink_path}")
 
         # Parse optional campaign name
         purge_args = argparse.ArgumentParser()

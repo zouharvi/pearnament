@@ -54,7 +54,7 @@ class TestAssetsValidation:
                     "data": [[[{"src": "a", "tgt": "b"}]]]
                 }, f)
 
-            with pytest.raises(ValueError, match="must contain 'source' key"):
+            with pytest.raises(ValueError, match="must contain 'source' and 'destination' keys"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_assets_requires_destination_key(self):
@@ -77,7 +77,7 @@ class TestAssetsValidation:
                     "data": [[[{"src": "a", "tgt": "b"}]]]
                 }, f)
 
-            with pytest.raises(ValueError, match="must contain 'destination' key"):
+            with pytest.raises(ValueError, match="must contain 'source' and 'destination' keys"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_assets_destination_must_start_with_assets(self):
