@@ -268,16 +268,15 @@ Pearmut provides the following commands:
 
 ## Hosting Assets
 
-If you need to host local assets (e.g., audio files, images, videos) via Pearmut, you can use the `assets` key in your campaign file.
-When present, this directory is symlinked to the `static/` directory so its contents become accessible from the server.
+To host local assets (e.g., audio files, images, videos), use the `assets` key in your campaign file:
 
 ```python
 {
     "campaign_id": "my_campaign",
     "info": { 
       "assets": {
-        "source": "videos",          # path to directory containing assets
-        "destination": "assets/my_videos"  # where to mount under static/ (must start with "assets/")
+        "source": "videos",              # path to directory containing assets
+        "destination": "assets/my_videos"  # where to mount (must start with "assets/")
       },
       ...
     },
@@ -285,11 +284,10 @@ When present, this directory is symlinked to the `static/` directory so its cont
 }
 ```
 
-For example, if `videos` contains `audio.mp3`, it will be accessible at `localhost:8001/assets/my_videos/audio.mp3`.
-The `source` path can be absolute or relative to your current working directory.
-The `destination` must always start with `assets/` to clearly indicate where files will be served from.
-If the destination path is already taken by another campaign, the add command will fail unless `-o/--overwrite` is used.
-When a campaign is purged, its asset symlink is automatically removed.
+Files in `videos/` become accessible at `localhost:8001/assets/my_videos/`.
+
+**Important**: This creates a symlink, so the source directory must exist throughout the annotation period.
+If another campaign already uses the destination path, the add command will fail.
 
 ## Development
 

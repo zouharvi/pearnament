@@ -240,8 +240,25 @@ def _add_single_campaign(data_file, overwrite, server):
         # Symlink path is based on the destination, stripping the 'assets/' prefix
         symlink_path = f"{STATIC_DIR}/{assets_destination}"
 
-        # Remove existing symlink if present and we are overriding
+        # Remove existing symlink if present and we are overriding the same campaign
         if os.path.lexists(symlink_path):
+            # Check if any other campaign is using this destination
+            current_campaign_id = campaign_data['campaign_id']
+            tasks_dir = f"{ROOT}/data/tasks"
+            if os.path.exists(tasks_dir):
+                for task_file in os.listdir(tasks_dir):
+                    if task_file.endswith('.json'):
+                        other_campaign_id = task_file[:-5]
+                        if other_campaign_id != current_campaign_id:
+                            with open(f"{tasks_dir}/{task_file}", "r") as f:
+                                other_campaign = json.load(f)
+                            other_assets = other_campaign.get("info", {}).get("assets")
+                            if other_assets and isinstance(other_assets, dict):
+                                if other_assets.get("destination") == assets_destination:
+                                    raise ValueError(
+                                        f"Assets destination '{assets_destination}' is already used by campaign '{other_campaign_id}'."
+                                    )
+            # Only allow overwrite if it's the same campaign
             if overwrite:
                 os.remove(symlink_path)
             else:
