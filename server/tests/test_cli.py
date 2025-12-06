@@ -2,9 +2,7 @@
 
 import json
 import os
-import shutil
 import tempfile
-from unittest.mock import patch
 
 import pytest
 
@@ -108,7 +106,7 @@ class TestAssetsValidation:
 
     def test_assets_source_must_exist(self):
         """Test that assets source directory must exist."""
-        from pearmut.cli import _add_single_campaign, ROOT, STATIC_DIR
+        from pearmut.cli import ROOT, STATIC_DIR, _add_single_campaign
 
         # Create static directory for this test
         os.makedirs(f"{STATIC_DIR}/assets", exist_ok=True)

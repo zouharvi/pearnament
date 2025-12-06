@@ -285,8 +285,7 @@ To host local assets (e.g., audio files, images, videos), use the `assets` key i
 ```
 
 Files in `videos/` become accessible at `localhost:8001/assets/my_videos/`.
-
-**Important**: This creates a symlink, so the source directory must exist throughout the annotation period.
+This creates a symlink, so the source directory must exist throughout the annotation period.
 If another campaign already uses the destination path, the add command will fail.
 
 ## Development
