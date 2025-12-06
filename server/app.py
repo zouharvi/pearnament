@@ -12,6 +12,7 @@ from .assignment import get_i_item, get_next_item, reset_task, update_progress
 from .utils import (
     ROOT,
     check_validation_threshold,
+    get_db_log_item,
     load_progress_data,
     save_db_payload,
     save_progress_data,
@@ -189,6 +190,114 @@ async def _dashboard_data(request: DashboardDataRequest):
         },
         status_code=200
     )
+
+
+class DashboardResultsRequest(BaseModel):
+    campaign_id: str
+    token: str
+
+
+@app.post("/dashboard-results")
+async def _dashboard_results(request: DashboardResultsRequest):
+    campaign_id = request.campaign_id
+    token = request.token
+
+    if campaign_id not in progress_data:
+        return JSONResponse(content="Unknown campaign ID", status_code=400)
+    
+    # Check if token is valid
+    if token != tasks_data[campaign_id]["token"]:
+        return JSONResponse(content="Invalid token", status_code=400)
+
+    # Compute model scores from annotations
+    model_scores = {}
+    model_counts = {}
+    
+    # Iterate through all tasks to find items with 'model' field
+    task_data = tasks_data[campaign_id]
+    
+    # Get all annotations for this campaign
+    for user_id in progress_data[campaign_id].keys():
+        user_progress = progress_data[campaign_id][user_id]["progress"]
+        
+        # Get assignment type
+        assignment = task_data["info"]["assignment"]
+        
+        if assignment == "task-based":
+            # task_data["data"] is a dict with user_id as key
+            if user_id not in task_data["data"]:
+                continue
+            user_task_data = task_data["data"][user_id]
+        elif assignment == "single-stream":
+            user_task_data = task_data["data"]
+        else:
+            continue
+        
+        # Iterate through items
+        for item_i, is_complete in enumerate(user_progress):
+            if not is_complete:
+                continue
+                
+            # Get annotations for this item
+            annotations_list = get_db_log_item(campaign_id, user_id, item_i)
+            
+            # Get the actual item data
+            if item_i >= len(user_task_data):
+                continue
+            
+            doc_group = user_task_data[item_i]
+            
+            # Get the latest annotation for this item
+            if not annotations_list:
+                continue
+            
+            latest_annotation = annotations_list[-1]  # Take the most recent annotation
+            if "annotations" not in latest_annotation:
+                continue
+            
+            annotation_scores = latest_annotation["annotations"]
+            
+            # Match annotations to documents
+            for doc_idx, doc in enumerate(doc_group):
+                if doc_idx >= len(annotation_scores):
+                    break
+                
+                annotation = annotation_scores[doc_idx]
+                if not isinstance(annotation, dict) or "score" not in annotation:
+                    continue
+                
+                score = annotation["score"]
+                if score is None:
+                    continue
+                
+                # Check if this doc has a model field
+                if "model" in doc:
+                    model = doc["model"]
+                    if model not in model_scores:
+                        model_scores[model] = 0
+                        model_counts[model] = 0
+                    model_scores[model] += score
+                    model_counts[model] += 1
+    
+    # Calculate averages and create ranking
+    results = []
+    for model in model_scores:
+        if model_counts[model] > 0:
+            avg_score = model_scores[model] / model_counts[model]
+            results.append({
+                "model": model,
+                "avg_score": round(avg_score, 2),
+                "count": model_counts[model]
+            })
+    
+    # Sort by average score (descending)
+    results.sort(key=lambda x: x["avg_score"], reverse=True)
+    
+    # Add rank
+    for i, result in enumerate(results):
+        result["rank"] = i + 1
+    
+    return JSONResponse(content={"results": results}, status_code=200)
 
 
 class ResetTaskRequest(BaseModel):

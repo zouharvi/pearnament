@@ -61,6 +61,37 @@
             pointer-events: none;
             opacity: 0.4;
         }
+
+        .dashboard-content {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .dashboard-table {
+            flex-shrink: 0;
+        }
+
+        .results-section {
+            flex-shrink: 0;
+            min-width: 300px;
+        }
+
+        .results-table {
+            width: 100%;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding-right: 15px;
+            text-align: left;
+        }
+
+        @media (max-width: 1400px) {
+            .white-box {
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 
