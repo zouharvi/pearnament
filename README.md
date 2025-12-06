@@ -317,6 +317,8 @@ The `pearmut run` also accepts `--port` (default 8001).
 If you wish to create a new protocol (referenceable from `info->template`), simply create a new HTML and TS file in `web/src` and add a rule to `webpack.config.js` so that your template gets built.
 A template can call the server for data etc (see [web/src/pointwise.ts](web/src/pointwise.ts) as an exmple).
 
+To run the platform, you need to run this on some publicly-facing server, or run it locally and tunnel your port to a public IP/domain.
+
 ## Citation
 
 If you use this work in your paper, please cite as:
