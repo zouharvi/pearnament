@@ -5,6 +5,7 @@ let searchParams = new URLSearchParams(window.location.search)
 
 let campaign_ids = searchParams.getAll("campaign_id")
 let tokens = searchParams.getAll("token")
+let showResults = searchParams.has("results")
 
 // verify that tokens length is either 0 or same as campaign_ids length
 if (tokens.length != 0 && tokens.length != campaign_ids.length) {
@@ -29,6 +30,15 @@ function delta_to_human(delta: number): string {
     }
 }
 
+// Reusable element for HTML escaping
+const _escapeDiv = document.createElement('div');
+
+function escapeHtml(text: string | number): string {
+    /* Escape HTML special characters to prevent XSS */
+    _escapeDiv.textContent = String(text);
+    return _escapeDiv.innerHTML;
+}
+
 async function fetchAndRenderCampaign(campaign_id: string, token: string | null) {
     let x = await $.ajax({
         url: `/dashboard-data`,
@@ -39,9 +49,26 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     });
     let data = x.data;
 
+    // Fetch results if requested and token is available
+    let resultsData = null;
+    if (showResults && token !== null && token !== undefined) {
+        try {
+            let resultsResponse = await $.ajax({
+                url: `/dashboard-results`,
+                method: "POST",
+                data: JSON.stringify({ "campaign_id": campaign_id, "token": token }),
+                contentType: "application/json",
+                dataType: "json",
+            });
+            resultsData = resultsResponse.results;
+        } catch (error) {
+            console.error("Error fetching results:", error);
+        }
+    }
+
     let html = ""
     html += `
-    <table>
+    <table class="dashboard-table">
         <thead><tr>
             <th style="min-width: 300px;">User ID</th>
             <th style="min-width: 50px;">Progress</th>
@@ -107,12 +134,46 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     }
     html += '</tbody></table>'
 
+    // Add results section if available
+    let resultsHtml = '';
+    if (resultsData && resultsData.length > 0) {
+        resultsHtml = `
+        <div class="results-section">
+            <h4 style="margin-top: 0;">Results</h4>
+            <table class="results-table">
+                <thead><tr>
+                    <th>Rank</th>
+                    <th>Model</th>
+                    <th>Avg Score</th>
+                    <th>Count</th>
+                </tr></thead>
+                <tbody>`;
+        
+        for (let result of resultsData) {
+            resultsHtml += `
+                <tr>
+                    <td>${escapeHtml(result.rank)}</td>
+                    <td>${escapeHtml(result.model)}</td>
+                    <td>${escapeHtml(result.avg_score)}</td>
+                    <td>${escapeHtml(result.count)}</td>
+                </tr>`;
+        }
+        
+        resultsHtml += `
+                </tbody>
+            </table>
+        </div>`;
+    }
+
     // link to campaign-specific dashboard
-    let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}`
+    let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}${showResults ? '&results' : ''}`
     let el = $(`
         <div class="white-box">
         <h3>${campaign_id} <a href="${dashboard_url}">🔗</a></h3>
-        ${html}
+        <div class="dashboard-content">
+            ${html}
+            ${resultsHtml}
+        </div>
         </div>`)
 
     $("#dashboard_div").append(el)
