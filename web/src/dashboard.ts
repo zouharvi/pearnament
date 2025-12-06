@@ -30,11 +30,13 @@ function delta_to_human(delta: number): string {
     }
 }
 
+// Reusable element for HTML escaping
+const _escapeDiv = document.createElement('div');
+
 function escapeHtml(text: string | number): string {
     /* Escape HTML special characters to prevent XSS */
-    const div = document.createElement('div');
-    div.textContent = String(text);
-    return div.innerHTML;
+    _escapeDiv.textContent = String(text);
+    return _escapeDiv.innerHTML;
 }
 
 async function fetchAndRenderCampaign(campaign_id: string, token: string | null) {
