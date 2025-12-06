@@ -31,7 +31,7 @@ type DataPayload = {
   progress: Array<boolean>,
   time: number,
   payload: Array<{
-    src: string,
+    src?: string,
     tgt: string,
     checks?: any,
     instructions?: string,
@@ -174,17 +174,19 @@ async function display_next_payload(response: DataPayload) {
 
   for (let item_i = 0; item_i < data.length; item_i++) {
     let item = data[item_i]
+    // Check if source is present
+    let has_src = item.src != null && item.src !== ""
     // character-level stuff won't work on media tags
-    let no_src_char = isMediaContent(item.src)
+    let no_src_char = has_src && isMediaContent(item.src!)
     let no_tgt_char = isMediaContent(item.tgt)
 
-    let src_chars = no_src_char ? item.src : contentToCharSpans(item.src, "src_char")
+    let src_chars = has_src ? (no_src_char ? item.src : contentToCharSpans(item.src!, "src_char")) : ""
     let tgt_chars = no_tgt_char ? item.tgt : (contentToCharSpans(item.tgt, "tgt_char") + (protocol_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
     let output_block = $(`
       <div class="output_block">
       <span id="instructions_message"></span>
       <div class="output_srctgt">
-        <div class="output_src">${src_chars}</div>
+        ${has_src ? `<div class="output_src">${src_chars}</div>` : ""}
         <div class="output_tgt">${tgt_chars}</div>
       </div>
       ${protocol_score ? _slider_html(item_i) : ""}
@@ -196,7 +198,7 @@ async function display_next_payload(response: DataPayload) {
     }
 
     // crude character alignment
-    let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
+    let src_chars_els = (has_src && !no_src_char) ? output_block.find(".src_char").toArray() : []
     let _tgt_chars_els = output_block.find(".tgt_char").toArray()
     // Compute word boundaries for the target text. Use _tgt_chars_els because we might skip/collapse some chars
     let tgt_word_boundaries = no_tgt_char ? [] : computeWordBoundaries(_tgt_chars_els.map(el => $(el).text()))
@@ -496,7 +498,7 @@ async function display_next_payload(response: DataPayload) {
       }
     }
 
-    if (!no_src_char) {
+    if (has_src && !no_src_char) {
       src_chars_els.forEach((obj, i) => {
         $(obj).on("mouseleave", function () {
           $(".src_char").removeClass("highlighted")

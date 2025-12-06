@@ -34,7 +34,7 @@ type DataPayload = {
     progress: Array<boolean>,
     time: number,
     payload: Array<{
-        src: string,
+        src?: string,
         tgt: string | Array<string>,  // Single or multiple translation candidates
         checks?: any,
         instructions?: string,
@@ -200,16 +200,18 @@ async function display_next_payload(response: DataPayload) {
         // Ensure tgt is an array of candidates
         let candidates = ensureCandidateArray(item.tgt)
 
+        // Check if source is present
+        let has_src = item.src != null && item.src !== ""
         // character-level stuff won't work on media tags
-        let no_src_char = isMediaContent(item.src)
+        let no_src_char = has_src && isMediaContent(item.src!)
 
-        let src_chars = no_src_char ? item.src : contentToCharSpans(item.src, "src_char")
+        let src_chars = has_src ? (no_src_char ? item.src : contentToCharSpans(item.src!, "src_char")) : ""
 
         let output_block = $(`
         <div class="output_block">
           <span id="instructions_message"></span>
           <div class="output_srctgt">
-            <div class="output_src">${src_chars}</div>
+            ${has_src ? `<div class="output_src">${src_chars}</div>` : ""}
           </div>
         </div>
         `)
@@ -219,7 +221,7 @@ async function display_next_payload(response: DataPayload) {
         }
 
         // Add each candidate
-        let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
+        let src_chars_els = (has_src && !no_src_char) ? output_block.find(".src_char").toArray() : []
 
         for (let cand_i = 0; cand_i < candidates.length; cand_i++) {
             let tgt = candidates[cand_i]
@@ -509,7 +511,7 @@ async function display_next_payload(response: DataPayload) {
         }
 
         // Source character hover effects
-        if (!no_src_char) {
+        if (has_src && !no_src_char) {
             src_chars_els.forEach((obj, i) => {
                 $(obj).on("mouseleave", function () {
                     $(".src_char").removeClass("highlighted")

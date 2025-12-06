@@ -87,30 +87,7 @@ class TestItemValidation:
             # Should not raise - use overwrite to avoid conflicts
             _add_single_campaign(campaign_file, True, "http://localhost:8001")
 
-    def test_missing_src_key(self):
-        """Test that items without 'src' key fail validation."""
-        from pearmut.cli import _add_single_campaign
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            campaign_file = os.path.join(tmpdir, "campaign.json")
-            with open(campaign_file, "w") as f:
-                json.dump({
-                    "campaign_id": "test_missing_src",
-                    "info": {
-                        "assignment": "task-based",
-                        "template": "pointwise",
-                    },
-                    "data": [
-                        [
-                            [
-                                {"tgt": "hola"}  # Missing 'src'
-                            ]
-                        ]
-                    ]
-                }, f)
-
-            with pytest.raises(ValueError, match="must contain 'src' and 'tgt' keys"):
-                _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_missing_tgt_key(self):
         """Test that items without 'tgt' key fail validation."""
@@ -134,7 +111,7 @@ class TestItemValidation:
                     ]
                 }, f)
 
-            with pytest.raises(ValueError, match="must contain 'src' and 'tgt' keys"):
+            with pytest.raises(ValueError, match="must contain 'tgt' key"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_item_not_dict(self):
@@ -185,29 +162,7 @@ class TestItemValidation:
             with pytest.raises(ValueError, match="Items must be a list"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
-    def test_singlestream_missing_src(self):
-        """Test that single-stream items without 'src' fail validation."""
-        from pearmut.cli import _add_single_campaign
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            campaign_file = os.path.join(tmpdir, "campaign.json")
-            with open(campaign_file, "w") as f:
-                json.dump({
-                    "campaign_id": "test_ss_missing_src",
-                    "info": {
-                        "assignment": "single-stream",
-                        "template": "pointwise",
-                        "users": 2,
-                    },
-                    "data": [
-                        [
-                            {"tgt": "hola"}  # Missing 'src'
-                        ]
-                    ]
-                }, f)
-
-            with pytest.raises(ValueError, match="must contain 'src' and 'tgt' keys"):
-                _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_extra_keys_allowed(self):
         """Test that extra keys beyond src/tgt are allowed."""
@@ -263,7 +218,7 @@ class TestItemValidation:
                     ]
                 }, f)
 
-            with pytest.raises(ValueError, match="'src' must be a string"):
+            with pytest.raises(ValueError, match="'src' must be a string if present"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_pointwise_tgt_must_be_string(self):
@@ -339,4 +294,104 @@ class TestItemValidation:
                 }, f)
 
             with pytest.raises(ValueError, match="All elements in 'tgt' list must be strings"):
+                _add_single_campaign(campaign_file, False, "http://localhost:8001")
+
+    def test_pointwise_without_src(self):
+        """Test that pointwise items without 'src' key pass validation (source-less mode)."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_pointwise_no_src",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "pointwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"tgt": "hola"}  # No 'src' key
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise - use overwrite to avoid conflicts
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_listwise_without_src(self):
+        """Test that listwise items without 'src' key pass validation (source-less mode)."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_no_src",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"tgt": ["hola", "ola"]}  # No 'src' key
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise - use overwrite to avoid conflicts
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_src_empty_string(self):
+        """Test that empty string src is allowed."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_src_empty",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "pointwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"src": "", "tgt": "hola"}  # Empty src
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise - use overwrite to avoid conflicts
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_src_must_be_string_if_present(self):
+        """Test that src must be a string if present."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_src_not_string_if_present",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "pointwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"src": 123, "tgt": "hello"}  # src is not a string
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            with pytest.raises(ValueError, match="'src' must be a string if present"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")

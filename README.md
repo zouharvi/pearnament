@@ -82,7 +82,7 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 # single document definition
 [
   {
-    "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", # mandatory for ESA/MQM/DA
+    "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", # typically expected but optional
     "tgt": "And suddenly all the water became full of other people and other people." # mandatory for ESA/MQM/DA
   },
   {
@@ -93,6 +93,8 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 ],
 ... # definition of another item (document)
 ```
+
+**Note:** While the `src` field is typically expected for most annotation tasks, it is optional. If omitted, the source text box will be hidden in the annotation interface.
 
 ## Pre-filled Error Spans (ESA<sup>AI</sup> Support)
 
