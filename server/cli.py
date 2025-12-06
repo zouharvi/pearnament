@@ -60,7 +60,7 @@ def _validate_item_structure(items, template):
     
     Args:
         items: List of item dictionaries to validate
-        template: Template type (reserved for future template-specific validation)
+        template: Template type ('pointwise' or 'listwise') for type validation
     """
     if not isinstance(items, list):
         raise ValueError("Items must be a list")
@@ -70,6 +70,21 @@ def _validate_item_structure(items, template):
             raise ValueError("Each item must be a dictionary with 'src' and 'tgt' keys")
         if 'src' not in item or 'tgt' not in item:
             raise ValueError("Each item must contain 'src' and 'tgt' keys")
+        
+        # Validate src is always a string
+        if not isinstance(item['src'], str):
+            raise ValueError("Item 'src' must be a string")
+        
+        # Validate tgt type based on template
+        if template == 'listwise':
+            if not isinstance(item['tgt'], list):
+                raise ValueError("Item 'tgt' must be a list for listwise template")
+            # Check that all elements in tgt list are strings
+            if not all(isinstance(t, str) for t in item['tgt']):
+                raise ValueError("All elements in 'tgt' list must be strings for listwise template")
+        elif template == 'pointwise':
+            if not isinstance(item['tgt'], str):
+                raise ValueError("Item 'tgt' must be a string for pointwise template")
 
 
 def _add_single_campaign(data_file, overwrite, server):

@@ -240,3 +240,103 @@ class TestItemValidation:
 
             # Should not raise - extra keys are fine, use overwrite to avoid conflicts
             _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_src_must_be_string(self):
+        """Test that src must be a string."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_src_not_string",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "pointwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"src": 123, "tgt": "hello"}  # src is not a string
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            with pytest.raises(ValueError, match="'src' must be a string"):
+                _add_single_campaign(campaign_file, False, "http://localhost:8001")
+
+    def test_pointwise_tgt_must_be_string(self):
+        """Test that tgt must be a string for pointwise template."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_pointwise_tgt_not_string",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "pointwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"src": "hello", "tgt": ["list", "not", "string"]}
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            with pytest.raises(ValueError, match="'tgt' must be a string for pointwise template"):
+                _add_single_campaign(campaign_file, False, "http://localhost:8001")
+
+    def test_listwise_tgt_must_be_list(self):
+        """Test that tgt must be a list for listwise template."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_tgt_not_list",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"src": "hello", "tgt": "not a list"}
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            with pytest.raises(ValueError, match="'tgt' must be a list for listwise template"):
+                _add_single_campaign(campaign_file, False, "http://localhost:8001")
+
+    def test_listwise_tgt_elements_must_be_strings(self):
+        """Test that all elements in tgt list must be strings for listwise."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_tgt_non_string_element",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"src": "hello", "tgt": ["valid", 123, "another"]}
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            with pytest.raises(ValueError, match="All elements in 'tgt' list must be strings"):
+                _add_single_campaign(campaign_file, False, "http://localhost:8001")
