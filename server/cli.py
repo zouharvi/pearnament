@@ -55,12 +55,16 @@ def _run(args_unknown):
 
 def _validate_item_structure(items, template):
     """
-    Validate that items have the correct structure based on template.
+    Validate that items have the correct structure.
     Items should be lists of dictionaries with 'src' and 'tgt' keys.
+    
+    Args:
+        items: List of item dictionaries to validate
+        template: Template type (reserved for future template-specific validation)
     """
     if not isinstance(items, list):
         raise ValueError("Items must be a list")
-    
+
     for item in items:
         if not isinstance(item, dict):
             raise ValueError("Each item must be a dictionary with 'src' and 'tgt' keys")
