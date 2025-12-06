@@ -56,7 +56,7 @@ def _run(args_unknown):
 def _validate_item_structure(items, template):
     """
     Validate that items have the correct structure.
-    Items should be lists of dictionaries with 'src' and 'tgt' keys.
+    Items should be lists of dictionaries with 'tgt' key (and optionally 'src').
     
     Args:
         items: List of item dictionaries to validate
@@ -67,13 +67,13 @@ def _validate_item_structure(items, template):
 
     for item in items:
         if not isinstance(item, dict):
-            raise ValueError("Each item must be a dictionary with 'src' and 'tgt' keys")
-        if 'src' not in item or 'tgt' not in item:
-            raise ValueError("Each item must contain 'src' and 'tgt' keys")
+            raise ValueError("Each item must be a dictionary with 'tgt' key (and optionally 'src')")
+        if 'tgt' not in item:
+            raise ValueError("Each item must contain 'tgt' key")
         
-        # Validate src is always a string
-        if not isinstance(item['src'], str):
-            raise ValueError("Item 'src' must be a string")
+        # Validate src is always a string if present
+        if 'src' in item and not isinstance(item['src'], str):
+            raise ValueError("Item 'src' must be a string if present")
         
         # Validate tgt type based on template
         if template == 'listwise':
