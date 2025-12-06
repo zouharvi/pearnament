@@ -53,6 +53,21 @@ def _run(args_unknown):
     )
 
 
+def _validate_item_structure(items, template):
+    """
+    Validate that items have the correct structure based on template.
+    Items should be lists of dictionaries with 'src' and 'tgt' keys.
+    """
+    if not isinstance(items, list):
+        raise ValueError("Items must be a list")
+    
+    for item in items:
+        if not isinstance(item, dict):
+            raise ValueError("Each item must be a dictionary with 'src' and 'tgt' keys")
+        if 'src' not in item or 'tgt' not in item:
+            raise ValueError("Each item must contain 'src' and 'tgt' keys")
+
+
 def _add_single_campaign(data_file, overwrite, server):
     """
     Add a single campaign from a JSON data file.
@@ -83,6 +98,7 @@ def _add_single_campaign(data_file, overwrite, server):
         raise ValueError("Campaign 'info' must contain 'template' field.")
 
     assignment = campaign_data["info"]["assignment"]
+    template = campaign_data["info"]["template"]
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
@@ -99,6 +115,13 @@ def _add_single_campaign(data_file, overwrite, server):
         if not all(isinstance(task, list) for task in tasks):
             raise ValueError(
                 "Each task in task-based campaign 'data' must be a list of items.")
+        # Validate item structure for each task
+        for task_i, task in enumerate(tasks):
+            for doc_i, doc in enumerate(task):
+                try:
+                    _validate_item_structure(doc, template)
+                except ValueError as e:
+                    raise ValueError(f"Task {task_i}, document {doc_i}: {e}")
         num_users = len(tasks)
     elif assignment == "single-stream":
         tasks = campaign_data["data"]
@@ -108,6 +131,12 @@ def _add_single_campaign(data_file, overwrite, server):
         if not isinstance(campaign_data["data"], list):
             raise ValueError(
                 "Single-stream campaign 'data' must be a list of items.")
+        # Validate item structure for single-stream
+        for doc_i, doc in enumerate(tasks):
+            try:
+                _validate_item_structure(doc, template)
+            except ValueError as e:
+                raise ValueError(f"Document {doc_i}: {e}")
         if isinstance(users_spec, int):
             num_users = users_spec
         elif isinstance(users_spec, list):
