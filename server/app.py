@@ -270,6 +270,10 @@ async def _dashboard_results(request: DashboardResultsRequest):
                 if score is None:
                     continue
                 
+                # Validate score is numeric
+                if not isinstance(score, (int, float)):
+                    continue
+                
                 # Check if this doc has a model field
                 if "model" in doc:
                     model = doc["model"]

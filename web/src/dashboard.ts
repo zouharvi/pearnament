@@ -30,6 +30,13 @@ function delta_to_human(delta: number): string {
     }
 }
 
+function escapeHtml(text: string | number): string {
+    /* Escape HTML special characters to prevent XSS */
+    const div = document.createElement('div');
+    div.textContent = String(text);
+    return div.innerHTML;
+}
+
 async function fetchAndRenderCampaign(campaign_id: string, token: string | null) {
     let x = await $.ajax({
         url: `/dashboard-data`,
@@ -42,7 +49,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
 
     // Fetch results if requested and token is available
     let resultsData = null;
-    if (showResults && token != null) {
+    if (showResults && token !== null && token !== undefined) {
         try {
             let resultsResponse = await $.ajax({
                 url: `/dashboard-results`,
@@ -143,10 +150,10 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         for (let result of resultsData) {
             resultsHtml += `
                 <tr>
-                    <td>${result.rank}</td>
-                    <td>${result.model}</td>
-                    <td>${result.avg_score}</td>
-                    <td>${result.count}</td>
+                    <td>${escapeHtml(result.rank)}</td>
+                    <td>${escapeHtml(result.model)}</td>
+                    <td>${escapeHtml(result.avg_score)}</td>
+                    <td>${escapeHtml(result.count)}</td>
                 </tr>`;
         }
         
