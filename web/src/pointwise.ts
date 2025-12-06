@@ -177,10 +177,10 @@ async function display_next_payload(response: DataPayload) {
     // Check if source is present
     let has_src = item.src != null && item.src !== ""
     // character-level stuff won't work on media tags
-    let no_src_char = has_src && isMediaContent(item.src!)
+    let no_src_char = has_src && item.src ? isMediaContent(item.src) : false
     let no_tgt_char = isMediaContent(item.tgt)
 
-    let src_chars = has_src ? (no_src_char ? item.src : contentToCharSpans(item.src!, "src_char")) : ""
+    let src_chars = has_src && item.src ? (no_src_char ? item.src : contentToCharSpans(item.src, "src_char")) : ""
     let tgt_chars = no_tgt_char ? item.tgt : (contentToCharSpans(item.tgt, "tgt_char") + (protocol_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
     let output_block = $(`
       <div class="output_block">
