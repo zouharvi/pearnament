@@ -467,8 +467,19 @@ async function display_next_payload(response: DataPayload) {
             let slider = candidate_block.find("input[type='range']")
             let label = candidate_block.find(".slider_label")
             slider.on("input", function () {
+                // In frozen mode, do not allow changing scores
+                if (frozenMode) return
+
                 let val = parseInt((<HTMLInputElement>this).value)
                 label.text(`${val}/100`)
+
+                // val == 0 is the only case when 'change' does not fire
+                if (val == 0) {
+                    response_log[item_i][cand_i].score = val
+                    has_unsaved_work = true
+                    check_unlock()
+                    action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
+                }
             })
             slider.on("change", function () {
                 // In frozen mode, do not allow changing scores
@@ -479,6 +490,7 @@ async function display_next_payload(response: DataPayload) {
                 response_log[item_i][cand_i].score = val
                 has_unsaved_work = true
                 check_unlock()
+                // push only for change which happens just once
                 action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
             })
 
