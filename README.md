@@ -94,7 +94,7 @@ For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (co
 ... # definition of another item (document)
 ```
 
-**Note:** While the `src` field is typically expected for most annotation tasks, it is optional. If omitted, the source text box will be hidden in the annotation interface.
+Note: While the `src` field is typically expected for most annotation tasks, it is optional. If omitted, the source text box will be hidden in the annotation interface.
 
 ## Pre-filled Error Spans (ESA<sup>AI</sup> Support)
 
