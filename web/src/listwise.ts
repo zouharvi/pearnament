@@ -478,7 +478,7 @@ async function display_next_payload(response: DataPayload) {
                     response_log[item_i][cand_i].score = val
                     has_unsaved_work = true
                     check_unlock()
-                    action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
+                    action_log.push({ "time": Date.now() / 1000, "action": "score", "index": item_i, "candidate": cand_i, "value": val })
                 }
             })
             slider.on("change", function () {
@@ -491,7 +491,7 @@ async function display_next_payload(response: DataPayload) {
                 has_unsaved_work = true
                 check_unlock()
                 // push only for change which happens just once
-                action_log.push({ "time": Date.now() / 1000, "index": item_i, "candidate": cand_i, "value": val })
+                action_log.push({ "time": Date.now() / 1000, "action": "score", "index": item_i, "candidate": cand_i, "value": val })
             })
 
             // Disable slider in frozen mode
