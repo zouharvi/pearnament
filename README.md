@@ -1,8 +1,6 @@
 # Pearmut 🍐
 
-Pearmut is a **Platform for Evaluation and Reviewing of Multilingual Tasks**.
-It evaluates model outputs, primarily translation but also various other NLP tasks.
-Supports multimodality (text, video, audio, images) and a variety of annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437), paired ESA, etc).
+**Platform for Evaluation and Reviewing of Multilingual Tasks** — Evaluate model outputs for translation and NLP tasks with support for multimodal data (text, video, audio, images) and multiple annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437), and more!).
 
 [![PyPi version](https://badgen.net/pypi/v/pearmut/)](https://pypi.org/project/pearmut)
 &nbsp;
@@ -14,31 +12,42 @@ Supports multimodality (text, video, audio, images) and a variety of annotation 
 
 <img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/4fb9a1cb-78ac-47e0-99cd-0870a368a0ad" />
 
-## Quick start
+## Table of Contents
 
-You do not need to clone this repository. Simply install with pip and run locally:
+- [Quick Start](#quick-start)
+- [Campaign Configuration](#campaign-configuration)
+  - [Basic Structure](#basic-structure)
+  - [Assignment Types](#assignment-types)
+  - [Protocol Templates](#protocol-templates)
+- [Advanced Features](#advanced-features)
+  - [Pre-filled Error Spans (ESA<sup>AI</sup>)](#pre-filled-error-spans-esaai)
+  - [Tutorial and Attention Checks](#tutorial-and-attention-checks)
+  - [Pre-defined User IDs and Tokens](#pre-defined-user-ids-and-tokens)
+  - [Multimodal Annotations](#multimodal-annotations)
+  - [Hosting Assets](#hosting-assets)
+- [Campaign Management](#campaign-management)
+- [CLI Commands](#cli-commands)
+- [Development](#development)
+- [Citation](#citation)
+
+## Quick Start
+
+Install and run locally without cloning:
 ```bash
-# install the package
 pip install pearmut
-# download two campaign definitions
+# Download example campaigns
 wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/esa_encs.json
 wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/da_enuk.json
-# load them into pearmut
-pearmut add esa_encs.json
-pearmut add da_enuk.json
-# start pearmut (will show management links)
+# Load and start
+pearmut add esa_encs.json da_enuk.json
 pearmut run
 ```
 
-## Starting a campaign
+## Campaign Configuration
 
-First, install the package
-```bash
-pip install pearmut
-```
+### Basic Structure
 
-A campaign is described in a single JSON file (see [examples/](examples/)).
-One of the simplest ones, where each user has a pre-defined list of tasks (`task-based`), is:
+Campaigns are defined in JSON files (see [examples/](examples/)). The simplest configuration uses `task-based` assignment where each user has pre-defined tasks:
 ```python
 {
   "info": {
@@ -76,28 +85,47 @@ One of the simplest ones, where each user has a pre-defined list of tasks (`task
   ]
 }
 ```
-In general, the task item can be anything and is handled by the specific protocol template.
-For the standard ones (ESA, DA, MQM), we expect each item to be a dictionary (corresponding to a single document unit) that looks as follows:
+Task items are protocol-specific. For ESA/DA/MQM protocols, each item is a dictionary representing a document unit:
 ```python
-# single document definition
 [
   {
-    "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.", # mandatory for ESA/MQM/DA
-    "tgt": "And suddenly all the water became full of other people and other people." # mandatory for ESA/MQM/DA
+    "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.",  # required
+    "tgt": "And suddenly all the water became full of other people and other people."  # required
   },
   {
     "src": "toto je pokračování stejného dokumentu",
-    "tgt": "this is a continuation of the same document",
-    ...  # all other keys that will be stored, useful for your analysis
+    "tgt": "this is a continuation of the same document"
+    # Additional keys stored for analysis
   }
-],
-... # definition of another item (document)
+]
 ```
 
-## Pre-filled Error Spans (ESA<sup>AI</sup> Support)
+Load campaigns and start the server:
+```bash
+pearmut add my_campaign.json  # Use -o/--overwrite to replace existing
+pearmut run
+```
 
-For workflows where you want to provide pre-filled error annotations (e.g., ESA<sup>AI</sup>), you can include an `error_spans` key in each item.
-These spans will be loaded into the interface as existing annotations that users can review, modify, or delete.
+### Assignment Types
+
+- **`task-based`**: Each user has predefined items
+- **`single-stream`**: All users draw from a shared pool (random assignment)
+- **`dynamic`**: work in progress ⚠️
+
+### Protocol Templates
+
+- **Pointwise**: Evaluate single output against single input
+  - `protocol_score`: Collect scores [0-100]
+  - `protocol_error_spans`: Collect error span highlights
+  - `protocol_error_categories`: Collect MQM category labels
+- **Listwise**: Evaluate multiple outputs simultaneously
+  - Same protocol options as pointwise
+
+## Advanced Features
+
+### Pre-filled Error Spans (ESA<sup>AI</sup>)
+
+Include `error_spans` to pre-fill annotations that users can review, modify, or delete:
 
 ```python
 {
@@ -120,13 +148,11 @@ These spans will be loaded into the interface as existing annotations that users
 }
 ```
 
-For **listwise** template, `error_spans` is a 2D array where each inner array corresponds to error spans for that candidate.
+For **listwise** template, `error_spans` is a 2D array (one per candidate). See [examples/esaai_prefilled.json](examples/esaai_prefilled.json).
 
-See [examples/esaai_prefilled.json](examples/esaai_prefilled.json) for a complete example.
+### Tutorial and Attention Checks
 
-## Tutorial and Attention Checks
-
-You can add validation rules to items for tutorials or attention checks. Items with `validation` field will be checked before submission:
+Add `validation` rules for tutorials or attention checks:
 
 ```python
 {
@@ -141,18 +167,17 @@ You can add validation rules to items for tutorials or attention checks. Items w
 }
 ```
 
-- Tutorial items: Include `allow_skip: true` and `warning` to let users skip after seeing the feedback
-- Loud attention checks: Include `warning` without `allow_skip` to force users to retry
-- Silent attention checks: Omit `warning` to silently log failures without user notification (useful for quality control with bad translations)
+**Types:**
+- **Tutorial**: Include `allow_skip: true` and `warning` to let users skip after feedback
+- **Loud attention checks**: Include `warning` without `allow_skip` to force retry
+- **Silent attention checks**: Omit `warning` to log failures without notification (quality control)
 
-For listwise template, `validation` is an array where each element corresponds to a candidate. 
-The dashboard shows failed/total validation checks per user, and ✅/❌ based on whether they pass the threshold.
-Set `validation_threshold` in `info` to control pass/fail: integer for max failed count, float in [0,1) for max failed proportion.
-See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for complete examples.
+For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
+See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json).
 
-## Single-stream Assignment
+### Single-stream Assignment
 
-We also support a simple allocation where all annotators draw from the same pool (`single-stream`). Items are randomly assigned to annotators from the pool of unfinished items:
+All annotators draw from a shared pool with random assignment:
 ```python
 {
     "campaign_id": "my campaign 6",
@@ -169,26 +194,12 @@ We also support a simple allocation where all annotators draw from the same pool
 ```
 
 
-We also support dynamic allocation of annotations (`dynamic`, not yet ⚠️), which is more complex and can be ignored for now:
-```python
-{
-    "campaign_id": "my campaign 6",
-    "info": {
-        "assignment": "dynamic",
-        "template": "listwise",
-        "protocol_k": 5,
-        "users": 50,
-    },
-    "data": [...], # list of all items
-}
-```
+### Pre-defined User IDs and Tokens
 
-## Pre-defined User IDs and Tokens
-
-By default, user IDs and completion tokens are automatically generated. The `users` field can be:
-- A number (e.g., `50`) to generate that many random user IDs
-- A list of strings (e.g., `["alice", "bob"]`) to use specific user IDs
-- A list of dictionaries to specify user IDs with custom tokens:
+The `users` field accepts:
+- **Number** (e.g., `50`): Generate random user IDs
+- **List of strings** (e.g., `["alice", "bob"]`): Use specific user IDs
+- **List of dictionaries**: Specify custom tokens:
 ```python
 {
     "info": {
@@ -202,125 +213,91 @@ By default, user IDs and completion tokens are automatically generated. The `use
 }
 ```
 
-To load a campaign into the server, run the following.
-It will fail if an existing campaign with the same `campaign_id` already exists, unless you specify `-o/--overwrite`.
-It will also output a secret management link. Then, launch the server:
-```bash
-pearmut add my_campaign_4.json
-pearmut run
-```
+### Multimodal Annotations
 
-## Campaign options
-
-In summary, you can select from the assignment types
-
-- `task-based`: each user has a predefined set of items
-- `single-stream`: all users are annotating together the same set of items
-- `dynamic`: WIP ⚠️
-
-and independently of that select your protocol template:
-
-- `pointwise`: evaluate a single output given a single output
-  - `protocol_score`: ask for score 0 to 100
-  - `protocol_error_spans`: ask for highlighting error spans
-  - `protocol_error_categories`: ask for highlighting error categories
-- `listwise`: evaluate multiple outputs at the same time given a single output ⚠️
-  - `protocol_score`: ask for score 0 to 100
-  - `protocol_error_spans`: ask for highlighting error spans
-  - `protocol_error_categories`: ask for highlighting error categories
-
-## Campaign management
-
-When adding new campaigns or launching pearmut, a management link is shown that gives an overview of annotator progress but also an easy access to the annotation links or resetting the task progress (no data will be lost).
-This is also the place where you can download all progress and collected annotations (these files exist also locally but this might be more convenient).
-
-<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/800a1741-5f41-47ac-9d5d-5cbf6abfc0e6" />
-
-Additionally, at the end of an annotation, a token of completion is shown which can be compared to the correct one that you can download in metadat from the dashboard.
-An intentionally incorrect token can be shown if the annotations don't pass quality control.
-
-<img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
-
-
-## Multimodal Annotations
-
-We also support anything HTML-compatible both on the input and on the output.
-This includes embedded YouTube videos, or even simple `<video ` tags that point to some resource somewhere.
-For an example, try [examples/multimodal.json](examples/multimodal.json).
-Tip: make sure the elements are already appropriately styled.
+Support for HTML-compatible elements (YouTube embeds, `<video>` tags, images). Ensure elements are pre-styled. See [examples/multimodal.json](examples/multimodal.json).
 
 <img width="1000" alt="Preview of multimodal elements in Pearmut" src="https://github.com/user-attachments/assets/77c4fa96-ee62-4e46-8e78-fd16e9007956" />
 
-## CLI Commands
+### Hosting Assets
 
-Pearmut provides the following commands:
-
-- `pearmut add <file(s)>`: Add one or more campaign JSON files. Supports wildcards (e.g., `pearmut add examples/*.json`).
-  - `-o/--overwrite`: Overwrite existing campaigns with the same ID.
-  - `--server <url>`: Prefix server URL for protocol links (default: `http://localhost:8001`).
-- `pearmut run`: Start the Pearmut server.
-  - `--port <port>`: Port to run the server on (default: 8001).
-  - `--server <url>`: Prefix server URL for protocol links.
-- `pearmut purge [campaign]`: Remove campaign data.
-  - Without arguments: Purges all campaigns (tasks, outputs, progress).
-  - With campaign name: Purges only the specified campaign's data.
-
-
-## Hosting Assets
-
-To host local assets (e.g., audio files, images, videos), use the `assets` key in your campaign file:
+Host local assets (audio, images, videos) using the `assets` key:
 
 ```python
 {
     "campaign_id": "my_campaign",
     "info": { 
       "assets": {
-        "source": "videos",              # path to directory containing assets
-        "destination": "assets/my_videos"  # where to mount (must start with "assets/")
-      },
-      ...
+        "source": "videos",                    # Source directory
+        "destination": "assets/my_videos"      # Mount path (must start with "assets/")
+      }
     },
     "data": [ ... ]
 }
 ```
 
-Files in `videos/` become accessible at `localhost:8001/assets/my_videos/`.
-This creates a symlink, so the source directory must exist throughout the annotation period.
-If another campaign already uses the destination path, the add command will fail.
+Files from `videos/` become accessible at `localhost:8001/assets/my_videos/`. Creates a symlink, so source directory must exist throughout annotation. Destination paths must be unique across campaigns.
+
+## CLI Commands
+
+- **`pearmut add <file(s)>`**: Add campaign JSON files (supports wildcards)
+  - `-o/--overwrite`: Replace existing campaigns with same ID
+  - `--server <url>`: Server URL prefix (default: `http://localhost:8001`)
+- **`pearmut run`**: Start server
+  - `--port <port>`: Server port (default: 8001)
+  - `--server <url>`: Server URL prefix
+- **`pearmut purge [campaign]`**: Remove campaign data
+  - Without args: Purge all campaigns
+  - With campaign name: Purge specific campaign only
+
+## Campaign Management
+
+Management link (shown when adding campaigns or running server) provides:
+- Annotator progress overview
+- Access to annotation links
+- Task progress reset (data preserved)
+- Download progress and annotations
+
+<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/800a1741-5f41-47ac-9d5d-5cbf6abfc0e6" />
+
+Completion tokens are shown at annotation end for verification (download correct tokens from dashboard). Incorrect tokens can be shown if quality control fails.
+
+<img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
 
 ## Development
 
-Pearmut works by running a server that responds to requests from the frontend.
-These requests are not template-based but rather carry only data (which gives flexibility in designing new protocols and interfaces).
-By default, the frontend is served from `static/` which is pre-built when you `pip install pearmut`.
-To make changes locally, clone the repository and run the following, which will recompile the frontend on changes (server changes need server restart):
+Server responds to data-only requests from frontend (no template coupling). Frontend served from pre-built `static/` on install.
+
+### Local development:
 ```bash
 cd pearmut
-# watch the frontend for changes (in a separate terminal)
+# Frontend (separate terminal, recompiles on change)
 npm install web/ --prefix web/
-npm run build --prefix web/ # `watch` for rebuild on code change
+npm run build --prefix web/
+# optionally keep running indefinitely to auto-rebuild
+npm watch build --prefix web/
 
-# install local package as editable
+# Install as editable
 pip3 install -e .
-# add existing data from WMT25, this generates annotation links
-# sets up progress/log files in current working folder
-pearmut add examples/wmt25_#_en-cs_CZ.json
-pearmut add examples/wmt25_#_cs-de_DE.json
-# shows a management link for all loaded campaigns and reload on change
+# Load examples
+pearmut add examples/wmt25_#_en-cs_CZ.json examples/wmt25_#_cs-de_DE.json
 pearmut run
 ```
 
-Optionally, you can specify `--server` in `pearmut add` and `pearmut run` to show correct URL prefixes.
-The `pearmut run` also accepts `--port` (default 8001). 
+### Creating new protocols:
+1. Add HTML and TS files to `web/src`
+2. Add build rule to `webpack.config.js`
+3. Reference as `info->template` in campaign JSON
 
-If you wish to create a new protocol (referenceable from `info->template`), simply create a new HTML and TS file in `web/src` and add a rule to `webpack.config.js` so that your template gets built.
-A template can call the server for data etc (see [web/src/pointwise.ts](web/src/pointwise.ts) as an exmple).
+See [web/src/pointwise.ts](web/src/pointwise.ts) for example.
 
-To run the platform, you need to run this on some publicly-facing server, or run it locally and tunnel your port to a public IP/domain.
+### Deployment
 
-## Citation
+Run on public server or tunnel local port to public IP/domain and run locally.
 
-If you use this work in your paper, please cite as:
+## Misc.
+
+If you use this work in your paper, please cite as following.
 ```bibtex
 @misc{zouhar2025pearmut,
     author={Vilém Zouhar},
@@ -328,3 +305,6 @@ If you use this work in your paper, please cite as:
     url={https://github.com/zouharvi/pearmut/},
     year={2025},
 }
+```
+
+Contributions are welcome! Please reach out to [Vilém Zouhar](mailto:vilem.zouhar@gmail.com).
