@@ -1,6 +1,6 @@
 # Pearmut 🍐
 
-**Platform for Evaluation and Reviewing of Multilingual Tasks** — Evaluate model outputs for translation and NLP tasks with support for multimodal data (text, video, audio, images) and multiple annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437)).
+**Platform for Evaluation and Reviewing of Multilingual Tasks** — Evaluate model outputs for translation and NLP tasks with support for multimodal data (text, video, audio, images) and multiple annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437), and more!).
 
 [![PyPi version](https://badgen.net/pypi/v/pearmut/)](https://pypi.org/project/pearmut)
 &nbsp;
@@ -110,17 +110,16 @@ pearmut run
 
 - **`task-based`**: Each user has predefined items
 - **`single-stream`**: All users draw from a shared pool (random assignment)
-- **`dynamic`**: WIP ⚠️
+- **`dynamic`**: work in progress ⚠️
 
 ### Protocol Templates
 
-**Pointwise**: Evaluate single output against single input
-- `protocol_score`: Collect scores [0-100]
-- `protocol_error_spans`: Collect error span highlights
-- `protocol_error_categories`: Collect MQM category labels
-
-**Listwise**: Evaluate multiple outputs simultaneously ⚠️
-- Same protocol options as pointwise
+- **Pointwise**: Evaluate single output against single input
+  - `protocol_score`: Collect scores [0-100]
+  - `protocol_error_spans`: Collect error span highlights
+  - `protocol_error_categories`: Collect MQM category labels
+- **Listwise**: Evaluate multiple outputs simultaneously
+  - Same protocol options as pointwise
 
 ## Advanced Features
 
@@ -173,7 +172,8 @@ Add `validation` rules for tutorials or attention checks:
 - **Loud attention checks**: Include `warning` without `allow_skip` to force retry
 - **Silent attention checks**: Omit `warning` to log failures without notification (quality control)
 
-For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float [0,1) for max proportion). See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json).
+For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
+See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json).
 
 ### Single-stream Assignment
 
@@ -268,12 +268,14 @@ Completion tokens are shown at annotation end for verification (download correct
 
 Server responds to data-only requests from frontend (no template coupling). Frontend served from pre-built `static/` on install.
 
-**Local development:**
+### Local development:
 ```bash
 cd pearmut
 # Frontend (separate terminal, recompiles on change)
 npm install web/ --prefix web/
-npm run build --prefix web/  # or `watch` for auto-rebuild
+npm run build --prefix web/
+# optionally keep running indefinitely to auto-rebuild
+npm watch build --prefix web/
 
 # Install as editable
 pip3 install -e .
@@ -282,18 +284,20 @@ pearmut add examples/wmt25_#_en-cs_CZ.json examples/wmt25_#_cs-de_DE.json
 pearmut run
 ```
 
-**Creating new protocols:**
+### Creating new protocols:
 1. Add HTML and TS files to `web/src`
 2. Add build rule to `webpack.config.js`
 3. Reference as `info->template` in campaign JSON
 
 See [web/src/pointwise.ts](web/src/pointwise.ts) for example.
 
-**Deployment:** Run on public server or tunnel local port to public IP/domain.
+### Deployment
 
-## Citation
+Run on public server or tunnel local port to public IP/domain and run locally.
 
-If you use this work in your paper, please cite as:
+## Misc.
+
+If you use this work in your paper, please cite as following.
 ```bibtex
 @misc{zouhar2025pearmut,
     author={Vilém Zouhar},
@@ -301,3 +305,6 @@ If you use this work in your paper, please cite as:
     url={https://github.com/zouharvi/pearmut/},
     year={2025},
 }
+```
+
+Contributions are welcome! Please reach out to [Vilém Zouhar](mailto:vilem.zouhar@gmail.com).
