@@ -442,14 +442,27 @@ export function validateListwiseResponse(
     // Check score_gt condition if specified
     if (validation.score_gt !== undefined) {
         const otherIndex = validation.score_gt;
+        
+        // Validate the index is within bounds
         if (otherIndex < 0 || otherIndex >= responses.length) {
             console.error(`Invalid score_gt index: ${otherIndex}`);
             return false;
         }
+        
+        // Check for self-reference (candidate comparing with itself)
+        if (otherIndex === cand_i) {
+            console.error(`score_gt cannot reference itself (index ${cand_i})`);
+            return false;
+        }
+        
         const otherScore = responses[otherIndex].score;
+        // Both scores must be set (not null) to perform comparison
+        // Null scores indicate the user hasn't provided a score yet
         if (response.score === null || otherScore === null) {
             return false;
         }
+        
+        // Verify this candidate's score is strictly greater than the other
         if (response.score <= otherScore) {
             return false;
         }
