@@ -13,4 +13,4 @@ sudo snap install ngrok
 ngrok authtoken YOUR_NGROK_AUTH_TOKEN_HERE
 
 ngrok http --url=pearmut.ngrok.io 8001
-pearmut run --port 8001 --server https://pearmut.ngrok.io
+nohup pearmut run --port 8001 --server https://pearmut.ngrok.io 1> pearmut.log 2>pearmut.err &
