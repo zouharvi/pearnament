@@ -226,15 +226,6 @@ export function createSpanToolbox(
         toolbox.find(".span_toolbox_esa").css("margin-right", "-5px")
     }
     
-    // In frozen mode, disable all modification controls
-    if (frozenMode) {
-        toolbox.find(".error_delete").prop("disabled", true)
-        toolbox.find(".error_neutral").prop("disabled", true)
-        toolbox.find(".error_minor").prop("disabled", true)
-        toolbox.find(".error_major").prop("disabled", true)
-        toolbox.find("select").prop("disabled", true)
-    }
-    
     // handle delete button
     toolbox.find(".error_delete").on("click", () => {
         if (frozenMode) return
@@ -318,6 +309,15 @@ export function createSpanToolbox(
                 cat2_select.append(`<option value="${subcat}">${subcat}</option>`)
             }
         }
+    }
+
+    // In frozen mode, disable all modification controls
+    if (frozenMode) {
+        toolbox.find(".error_delete").prop("disabled", true)
+        toolbox.find(".error_neutral").prop("disabled", true)
+        toolbox.find(".error_minor").prop("disabled", true)
+        toolbox.find(".error_major").prop("disabled", true)
+        toolbox.find("select").prop("disabled", true)
     }
     
     return toolbox
