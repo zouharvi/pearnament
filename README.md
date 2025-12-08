@@ -258,7 +258,7 @@ Management link (shown when adding campaigns or running server) provides:
 - Task progress reset (data preserved)
 - Download progress and annotations
 
-<img width="800" alt="Management dashboard" src="https://github.com/user-attachments/assets/800a1741-5f41-47ac-9d5d-5cbf6abfc0e6" />
+<img width="1000" alt="Management dashboard" src="https://github.com/user-attachments/assets/8953252c-d7b1-428c-a974-5bc7501457c7" />
 
 Completion tokens are shown at annotation end for verification (download correct tokens from dashboard). Incorrect tokens can be shown if quality control fails.
 
