@@ -173,7 +173,21 @@ Add `validation` rules for tutorials or attention checks:
 - **Silent attention checks**: Omit `warning` to log failures without notification (quality control)
 
 For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
-See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json) and [examples/tutorial_listwise.json](examples/tutorial_listwise.json).
+
+**Listwise score comparison:** Use `score_gt` to ensure one candidate scores higher than another:
+```python
+{
+  "src": "AI transforms industries.",
+  "tgt": ["UI transformuje průmysly.", "Umělá inteligence mění obory."],
+  "validation": [
+    {"warning": "A has error, score 20-40.", "score": [20, 40]},
+    {"warning": "B is correct and must score higher than A.", "score": [70, 90], "score_gt": 0}
+  ]
+}
+```
+The `score_gt` field specifies the index of the candidate that must have a lower score than the current candidate.
+
+See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json), [examples/tutorial_listwise.json](examples/tutorial_listwise.json), and [examples/tutorial_listwise_score_gt.json](examples/tutorial_listwise_score_gt.json).
 
 ### Single-stream Assignment
 
