@@ -264,6 +264,17 @@ Completion tokens are shown at annotation end for verification (download correct
 
 <img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
 
+### Model Results Display
+
+Add `&results` to dashboard URL to show model rankings (requires valid token). Items need `model` field (pointwise) or `models` field (listwise):
+
+```python
+{"doc_id": "1", "model": "GPT-4", "src": "...", "tgt": "..."}
+{"doc_id": "2", "models": ["GPT-4", "Claude"], "src": "...", "tgt": ["...", "..."]}
+```
+
+Results show rank, model name, average score, and annotation count.
+
 ## Development
 
 Server responds to data-only requests from frontend (no template coupling). Frontend served from pre-built `static/` on install.
