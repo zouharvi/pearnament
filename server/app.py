@@ -1,5 +1,7 @@
+import collections
 import json
 import os
+import statistics
 from typing import Any
 
 from fastapi import FastAPI, Query
@@ -12,6 +14,7 @@ from .assignment import get_i_item, get_next_item, reset_task, update_progress
 from .utils import (
     ROOT,
     check_validation_threshold,
+    get_db_log,
     load_progress_data,
     save_db_payload,
     save_progress_data,
@@ -189,6 +192,58 @@ async def _dashboard_data(request: DashboardDataRequest):
         content={"data": progress_new, "validation_threshold": validation_threshold},
         status_code=200,
     )
+
+
+class DashboardResultsRequest(BaseModel):
+    campaign_id: str
+    token: str
+
+
+@app.post("/dashboard-results")
+async def _dashboard_results(request: DashboardResultsRequest):
+    campaign_id = request.campaign_id
+    token = request.token
+
+    if campaign_id not in progress_data:
+        return JSONResponse(content="Unknown campaign ID", status_code=400)
+    
+    # Check if token is valid
+    if token != tasks_data[campaign_id]["token"]:
+        return JSONResponse(content="Invalid token", status_code=400)
+
+    # Compute model scores from annotations
+    model_scores = collections.defaultdict(dict)
+    
+    # Iterate through all tasks to find items with 'model' field
+    log = get_db_log(campaign_id)
+    for entry in log:
+        if "item" not in entry or "annotations" not in entry:
+            continue
+        for item, annotation in zip(entry["item"], entry["annotations"]):
+            if "model" in item:
+                # pointwise
+                if "score" in annotation:
+                    # make sure to only keep the latest score for each item
+                    # json.dumps(item) creates a unique item key
+                    model_scores[item["model"]][json.dumps(item)] = annotation["score"]
+            elif "models" in item:
+                # listwise
+                for model, annotation_cand in zip(item["models"], annotation):
+                    if "score" in annotation_cand:
+                        model_scores[model][json.dumps(item)] = (
+                            annotation_cand["score"]
+                        )
+
+    results = [
+        {
+            "model": model,
+            "score": statistics.mean(scores.values()),
+            "count": len(scores),
+        }
+        for model, scores in model_scores.items()
+    ]
+    results.sort(key=lambda x: x["score"], reverse=True)
+    return JSONResponse(content=results, status_code=200)
 
 
 class ResetTaskRequest(BaseModel):

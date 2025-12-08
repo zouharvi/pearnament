@@ -61,11 +61,38 @@
             pointer-events: none;
             opacity: 0.4;
         }
+
+        .dashboard-content {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .dashboard-table {
+            flex-shrink: 0;
+        }
+
+        .results-section {
+            flex-shrink: 0;
+            min-width: 300px;
+        }
+
+        .results-table th:not(:first-child),
+        .results-table td:not(:first-child) {
+            padding-left: 5px;
+            text-align: right;
+        }
+
+        @media (max-width: 1400px) {
+            .white-box {
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 
 <body style="padding-top: 50px; padding-bottom: 50px;">
-    <div id="main_div" style="width: calc(100% - 200px); min-width: 1000px; margin-left: auto; margin-right: auto;">
+    <div id="main_div" style="width: calc(100% - 200px); min-width: 1300px; margin-left: auto; margin-right: auto;">
         <div style="margin-bottom: 15px; font-size: 0.9em; color: #555;">
             💤not started &nbsp;&nbsp; ✍️in progress &nbsp;&nbsp; ✅completed & passed &nbsp;&nbsp;❌completed & failed
             &nbsp;&nbsp;&nbsp;&nbsp;

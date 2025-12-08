@@ -229,7 +229,7 @@ class TestItemValidation:
                                     "src": "hello",
                                     "tgt": "hola",
                                     "doc_id": "123",
-                                    "sys_id": "system1",
+                                    "model": "system1",
                                     "instructions": "Translate this",
                                     "validation": {"score": [70, 80]}
                                 }

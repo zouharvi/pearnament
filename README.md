@@ -264,6 +264,16 @@ Completion tokens are shown at annotation end for verification (download correct
 
 <img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
 
+### Model Results Display
+
+Add `&results` to dashboard URL to show model rankings (requires valid token).
+Items need `model` field (pointwise) or `models` field (listwise) and the `protocol_score` needs to be enable such that the `score` can be used for the ranking:
+```python
+{"doc_id": "1", "model": "CommandA", "src": "...", "tgt": "..."}
+{"doc_id": "2", "models": ["CommandA", "Claude"], "src": "...", "tgt": ["...", "..."]}
+```
+See an example in [Campaign Management](#campaign-management)
+
 ## Development
 
 Server responds to data-only requests from frontend (no template coupling). Frontend served from pre-built `static/` on install.
