@@ -30,7 +30,8 @@ app.add_middleware(
 
 tasks_data = {}
 progress_data = load_progress_data(
-    warn="No progress.json found. Running, but no campaign will be available.")
+    warn="No progress.json found. Running, but no campaign will be available."
+)
 
 # load all tasks into data_all
 for campaign_id in progress_data.keys():
@@ -60,30 +61,31 @@ async def _log_response(request: LogResponseRequest):
 
     # append response to the output log
     save_db_payload(
-        campaign_id, request.payload | {"user_id": user_id, "item_i": item_i})
+        campaign_id, request.payload | {"user_id": user_id, "item_i": item_i}
+    )
 
     # if actions were submitted, we can log time data
     if "actions" in request.payload:
-        times = [
-            x["time"] for x in request.payload["actions"]
-        ]
+        times = [x["time"] for x in request.payload["actions"]]
         if progress_data[campaign_id][user_id]["time_start"] is None:
             progress_data[campaign_id][user_id]["time_start"] = min(times)
         progress_data[campaign_id][user_id]["time_end"] = max(times)
-        progress_data[campaign_id][user_id]["time"] += sum([
-            min(b - a, 60)
-            for a, b in zip(times, times[1:])
-        ])
+        progress_data[campaign_id][user_id]["time"] += sum(
+            [min(b - a, 60) for a, b in zip(times, times[1:])]
+        )
 
     # Initialize validation_checks if it doesn't exist
     if "validations" in request.payload:
         if "validations" not in progress_data[campaign_id][user_id]:
             progress_data[campaign_id][user_id]["validations"] = {}
 
-        progress_data[campaign_id][user_id]["validations"][request.item_i] = request.payload["validations"]
+        progress_data[campaign_id][user_id]["validations"][request.item_i] = (
+            request.payload["validations"]
+        )
 
-    update_progress(campaign_id, user_id, tasks_data,
-                    progress_data, request.item_i, request.payload)
+    update_progress(
+        campaign_id, user_id, tasks_data, progress_data, request.item_i, request.payload
+    )
     save_progress_data(progress_data)
 
     return JSONResponse(content="ok", status_code=200)
@@ -149,13 +151,15 @@ async def _dashboard_data(request: DashboardDataRequest):
 
     if campaign_id not in progress_data:
         return JSONResponse(content="Unknown campaign ID", status_code=400)
-    
-    is_privileged = (request.token == tasks_data[campaign_id]["token"])
+
+    is_privileged = request.token == tasks_data[campaign_id]["token"]
 
     progress_new = {}
     assignment = tasks_data[campaign_id]["info"]["assignment"]
     if assignment not in ["task-based", "single-stream"]:
-        return JSONResponse(content="Unsupported campaign assignment type", status_code=400)
+        return JSONResponse(
+            content="Unsupported campaign assignment type", status_code=400
+        )
 
     # Get threshold info for the campaign
     validation_threshold = tasks_data[campaign_id]["info"].get("validation_threshold")
@@ -164,10 +168,9 @@ async def _dashboard_data(request: DashboardDataRequest):
         # shallow copy
         entry = dict(user_val)
         entry["validations"] = [
-            all(v)
-            for v in list(entry.get("validations", {}).values())
+            all(v) for v in list(entry.get("validations", {}).values())
         ]
-        
+
         # Add threshold pass/fail status (only when user is complete)
         if all(entry["progress"]):
             entry["threshold_passed"] = check_validation_threshold(
@@ -183,11 +186,8 @@ async def _dashboard_data(request: DashboardDataRequest):
         progress_new[user_id] = entry
 
     return JSONResponse(
-        content={
-            "data": progress_new,
-            "validation_threshold": validation_threshold
-        },
-        status_code=200
+        content={"data": progress_new, "validation_threshold": validation_threshold},
+        status_code=200,
     )
 
 
@@ -227,7 +227,9 @@ async def _download_annotations(
     for campaign_id in campaign_id:
         output_path = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
         if campaign_id not in progress_data:
-            return JSONResponse(content=f"Unknown campaign ID {campaign_id}", status_code=400)
+            return JSONResponse(
+                content=f"Unknown campaign ID {campaign_id}", status_code=400
+            )
         if not os.path.exists(output_path):
             output[campaign_id] = []
         else:
@@ -239,28 +241,33 @@ async def _download_annotations(
 
 @app.get("/download-progress")
 async def _download_progress(
-    campaign_id: list[str] = Query(),
-    token: list[str] = Query()
+    campaign_id: list[str] = Query(), token: list[str] = Query()
 ):
 
     if len(campaign_id) != len(token):
-        return JSONResponse(content="Mismatched campaign_id and token count", status_code=400)
+        return JSONResponse(
+            content="Mismatched campaign_id and token count", status_code=400
+        )
 
     output = {}
     for i, cid in enumerate(campaign_id):
         if cid not in progress_data:
             return JSONResponse(content=f"Unknown campaign ID {cid}", status_code=400)
         if token[i] != tasks_data[cid]["token"]:
-            return JSONResponse(content=f"Invalid token for campaign ID {cid}", status_code=400)
+            return JSONResponse(
+                content=f"Invalid token for campaign ID {cid}", status_code=400
+            )
 
         output[cid] = progress_data[cid]
 
     return JSONResponse(content=output, status_code=200)
 
+
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
 if not os.path.exists(static_dir + "index.html"):
     raise FileNotFoundError(
-        "Static directory not found. Please build the frontend first.")
+        "Static directory not found. Please build the frontend first."
+    )
 
 app.mount(
     "/",
