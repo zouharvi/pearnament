@@ -340,3 +340,43 @@ class TestItemValidation:
 
             with pytest.raises(ValueError, match="All elements in 'tgt' list must be strings"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
+
+    def test_listwise_with_score_gt_validation(self):
+        """Test that listwise campaigns with score_gt validation can be loaded."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_score_gt",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                        "protocol_score": True,
+                    },
+                    "data": [
+                        [
+                            [
+                                {
+                                    "src": "Test source text.",
+                                    "tgt": ["Translation A", "Translation B"],
+                                    "validation": [
+                                        {
+                                            "warning": "A must score higher than B.",
+                                            "score": [80, 100],
+                                            "score_gt": 1
+                                        },
+                                        {
+                                            "warning": "B should score lower.",
+                                            "score": [40, 70]
+                                        }
+                                    ]
+                                }
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise - the score_gt field is valid
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")

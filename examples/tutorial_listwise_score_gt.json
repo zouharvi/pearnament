@@ -1,0 +1,147 @@
+{
+  "info": {
+    "assignment": "task-based",
+    "template": "listwise",
+    "protocol_score": true,
+    "protocol_error_spans": false,
+    "protocol_error_categories": false,
+    "instructions": "This tutorial demonstrates the score_gt validation feature for listwise evaluation."
+  },
+  "campaign_id": "mock_tutorial_listwise_score_gt",
+  "data": [
+    [
+      [
+        {
+          "doc_id": "tutorial_score_gt_1",
+          "src": "The quick brown fox jumps over the lazy dog.",
+          "tgt": [
+            "Rychlá hnědá liška skáče přes líného psa.",
+            "Hbitá hnědá liška přeskočila lenivého psa.",
+            "Špatný překlad text chyba."
+          ],
+          "instructions": "<b>Tutorial 1:</b> Compare translations. Translation A is best and must score higher than B. Translation B is good and must score higher than C.",
+          "validation": [
+            {
+              "warning": "Translation A must score higher than B (score_gt: 1).",
+              "score": [80, 100],
+              "score_gt": 1,
+              "allow_skip": true
+            },
+            {
+              "warning": "Translation B must score higher than C (score_gt: 2).",
+              "score": [60, 85],
+              "score_gt": 2,
+              "allow_skip": true
+            },
+            {
+              "warning": "Translation C is poor (score 20-50).",
+              "score": [20, 50],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_score_gt",
+          "src": "Artificial intelligence is transforming industries.",
+          "tgt": [
+            "UI transformuje průmysly.",
+            "Umělá inteligence mění obory."
+          ],
+          "instructions": "<b>Attention Check:</b> Translation A has a major error (UI instead of AI), so B must score higher than A.",
+          "validation": [
+            {
+              "warning": "Attention check failed: A has error, score 20-40.",
+              "score": [20, 40]
+            },
+            {
+              "warning": "Attention check failed: B is correct and must score higher than A (score_gt: 0).",
+              "score": [70, 90],
+              "score_gt": 0
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "tutorial_score_gt_2",
+          "src": "Climate change affects global weather patterns.",
+          "tgt": [
+            "Změny klimatu ovlivňují globální vzorce počasí.",
+            "Klima změna má vliv na svět počasí systémy."
+          ],
+          "instructions": "<b>Tutorial 2:</b> Translation A is better than B. Ensure A scores higher.",
+          "validation": [
+            {
+              "warning": "Translation A must score 75-95 and higher than B.",
+              "score": [75, 95],
+              "score_gt": 1,
+              "allow_skip": true
+            },
+            {
+              "warning": "Translation B is weaker, score 40-65.",
+              "score": [40, 65],
+              "allow_skip": true
+            }
+          ]
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "doc_id": "tutorial_multi_comparison",
+          "src": "Scientists discovered a new species.",
+          "tgt": [
+            "Vědci objevili nový druh.",
+            "Vědci našli novou speciální věc.",
+            "Vědci druh nový objevit."
+          ],
+          "instructions": "<b>Tutorial:</b> A is excellent, B is okay, C is poor. A > B > C.",
+          "validation": [
+            {
+              "warning": "A is excellent (85-100) and must score higher than B.",
+              "score": [85, 100],
+              "score_gt": 1,
+              "allow_skip": true
+            },
+            {
+              "warning": "B is okay (55-75) and must score higher than C.",
+              "score": [55, 75],
+              "score_gt": 2,
+              "allow_skip": true
+            },
+            {
+              "warning": "C is poor (15-40).",
+              "score": [15, 40],
+              "allow_skip": true
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "doc_id": "attention_check_2",
+          "src": "The economy is recovering slowly.",
+          "tgt": [
+            "Ekonomika se pomalu zotavuje.",
+            "Hospodářství pomalu uzdravuje."
+          ],
+          "instructions": "<b>Attention Check:</b> A is perfect, B is acceptable. A must be higher.",
+          "validation": [
+            {
+              "warning": "Attention check: A is perfect (90-95) and must score higher than B.",
+              "score": [90, 95],
+              "score_gt": 1
+            },
+            {
+              "warning": "Attention check: B is acceptable (65-75).",
+              "score": [65, 75]
+            }
+          ]
+        }
+      ]
+    ]
+  ]
+}
