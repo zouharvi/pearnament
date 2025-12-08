@@ -7,7 +7,8 @@ multipass shell pearmut-box
 
 sudo apt update
 sudo apt install python3-pip -y
-pip install pearmut --break-system-packages
+python3 -m pip config set global.break-system-packages true
+pip install pearmut
 export PATH=$PATH:/home/ubuntu/.local/bin
 sudo snap install ngrok
 ngrok authtoken YOUR_NGROK_AUTH_TOKEN_HERE

@@ -278,26 +278,24 @@ def _add_single_campaign(data_file, overwrite, server):
             )
         
         # Symlink path is based on the destination, stripping the 'assets/' prefix
-        symlink_path = f"{STATIC_DIR}/{assets_destination}"
+        symlink_path = f"{STATIC_DIR}/{assets_destination}".rstrip("/")
 
         # Remove existing symlink if present and we are overriding the same campaign
         if os.path.lexists(symlink_path):
             # Check if any other campaign is using this destination
             current_campaign_id = campaign_data['campaign_id']
-            tasks_dir = f"{ROOT}/data/tasks"
-            if os.path.exists(tasks_dir):
-                for task_file in os.listdir(tasks_dir):
-                    if task_file.endswith('.json'):
-                        other_campaign_id = task_file[:-5]
-                        if other_campaign_id != current_campaign_id:
-                            with open(f"{tasks_dir}/{task_file}", "r") as f:
-                                other_campaign = json.load(f)
-                            other_assets = other_campaign.get("info", {}).get("assets")
-                            if other_assets and isinstance(other_assets, dict):
-                                if other_assets.get("destination") == assets_destination:
-                                    raise ValueError(
-                                        f"Assets destination '{assets_destination}' is already used by campaign '{other_campaign_id}'."
-                                    )
+
+            for other_campaign_id in progress_data.keys():
+                if other_campaign_id == current_campaign_id:
+                    continue
+                with open(f"{ROOT}/data/tasks/{other_campaign_id}.json", "r") as f:
+                    other_campaign = json.load(f)
+                    other_assets = other_campaign.get("info", {}).get("assets")
+                    if other_assets:
+                        if other_assets.get("destination") == assets_destination:
+                            raise ValueError(
+                                f"Assets destination '{assets_destination}' is already used by campaign '{other_campaign_id}'."
+                            )
             # Only allow overwrite if it's the same campaign
             if overwrite:
                 os.remove(symlink_path)
@@ -305,7 +303,8 @@ def _add_single_campaign(data_file, overwrite, server):
                 raise ValueError(f"Assets destination '{assets_destination}' is already taken.")
         
         # Ensure the assets directory exists
-        os.makedirs(f"{STATIC_DIR}/assets", exist_ok=True)
+        # get parent of symlink_path dir
+        os.makedirs(os.path.dirname(symlink_path), exist_ok=True)
 
         os.symlink(assets_real_path, symlink_path, target_is_directory=True)
         print(f"Assets symlinked: {symlink_path} -> {assets_real_path}")
@@ -391,7 +390,7 @@ def main():
                 campaign_data = json.load(f)
             destination = campaign_data.get("info", {}).get("assets", {}).get("destination")
             if destination:
-                symlink_path = f"{STATIC_DIR}/{destination}"
+                symlink_path = f"{STATIC_DIR}/{destination}".rstrip("/")
                 if os.path.islink(symlink_path):
                     os.remove(symlink_path)
                     print(f"Assets symlink removed: {symlink_path}")
@@ -436,12 +435,9 @@ def main():
             )
             if confirm.lower() == 'y':
                 # Unlink all assets first
-                tasks_dir = f"{ROOT}/data/tasks"
-                if os.path.exists(tasks_dir):
-                    for task_file in os.listdir(tasks_dir):
-                        if task_file.endswith('.json'):
-                            campaign_id = task_file[:-5]
-                            _unlink_assets(campaign_id)
+                progress_data = load_progress_data()
+                for campaign_id in progress_data.keys():
+                    _unlink_assets(campaign_id)
                 shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)
                 shutil.rmtree(f"{ROOT}/data/outputs", ignore_errors=True)
                 if os.path.exists(f"{ROOT}/data/progress.json"):
