@@ -26,14 +26,14 @@ for doc_id, segments in documents.items():
     langs = doc_id.split("_#_")[0]
     lang1, lang2 = langs.split("-")
     segments.sort(key=lambda x: x[0])
-    for sys in segments[0][1]["tgt_text"].keys():
+    for model in segments[0][1]["tgt_text"].keys():
         document_task = []
         for seg_i, seg in segments:
             document_task.append({
                 "doc_id": f"{doc_id}_#_{seg_i}",
-                "sys_id": sys,
+                "model": model,
                 "src": seg["src_text"],
-                "tgt": seg["tgt_text"][sys],
+                "tgt": seg["tgt_text"][model],
             } | (
                 {} if seg_i != "0" else {
                     "instructions": f"Evaluate translation from {LANG_TO_NAME.get(lang1, lang1)} to {LANG_TO_NAME.get(lang2, lang2)}.",

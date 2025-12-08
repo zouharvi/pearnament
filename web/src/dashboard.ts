@@ -30,15 +30,6 @@ function delta_to_human(delta: number): string {
     }
 }
 
-// Reusable element for HTML escaping
-const _escapeDiv = document.createElement('div');
-
-function escapeHtml(text: string | number): string {
-    /* Escape HTML special characters to prevent XSS */
-    _escapeDiv.textContent = String(text);
-    return _escapeDiv.innerHTML;
-}
-
 async function fetchAndRenderCampaign(campaign_id: string, token: string | null) {
     let x = await $.ajax({
         url: `/dashboard-data`,
@@ -53,14 +44,13 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     let resultsData = null;
     if (showResults && token !== null && token !== undefined) {
         try {
-            let resultsResponse = await $.ajax({
+            resultsData = await $.ajax({
                 url: `/dashboard-results`,
                 method: "POST",
                 data: JSON.stringify({ "campaign_id": campaign_id, "token": token }),
                 contentType: "application/json",
                 dataType: "json",
             });
-            resultsData = resultsResponse.results;
         } catch (error) {
             console.error("Error fetching results:", error);
         }
@@ -139,12 +129,11 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     if (resultsData && resultsData.length > 0) {
         resultsHtml = `
         <div class="results-section">
-            <h4 style="margin-top: 0;">Results</h4>
+            <h4 style="margin-top: -2.5em;">Intermediate results</h4>
             <table class="results-table">
                 <thead><tr>
-                    <th>Rank</th>
                     <th>Model</th>
-                    <th>Avg Score</th>
+                    <th>Score</th>
                     <th>Count</th>
                 </tr></thead>
                 <tbody>`;
@@ -152,10 +141,9 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         for (let result of resultsData) {
             resultsHtml += `
                 <tr>
-                    <td>${escapeHtml(result.rank)}</td>
-                    <td>${escapeHtml(result.model)}</td>
-                    <td>${escapeHtml(result.avg_score)}</td>
-                    <td>${escapeHtml(result.count)}</td>
+                    <td>${result.model}</td>
+                    <td>${result.score.toFixed(1)}</td>
+                    <td>${result.count}</td>
                 </tr>`;
         }
         
