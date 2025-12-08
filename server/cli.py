@@ -41,7 +41,9 @@ def _run(args_unknown):
             args.server + "/dashboard.html?" + "&".join([
                 f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
                 for campaign_id, campaign_data in tasks_data.items()
-            ])
+            ]),
+            # this is important to flush
+            flush=True,
         )
 
     uvicorn.run(

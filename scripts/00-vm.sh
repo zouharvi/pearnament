@@ -13,5 +13,5 @@ export PATH=$PATH:/home/ubuntu/.local/bin
 sudo snap install ngrok
 ngrok authtoken YOUR_NGROK_AUTH_TOKEN_HERE
 
-ngrok http --url=pearmut.ngrok.io 8001
-nohup pearmut run --port 8001 --server https://pearmut.ngrok.io 1> pearmut.log 2>pearmut.err &
+nohup ngrok http --url=pearmut.ngrok.io 8001 1>ngrok.out 2>ngrok.err &
+nohup pearmut run --port 8001 --server https://pearmut.ngrok.io 1>pearmut.out 2>pearmut.err &
