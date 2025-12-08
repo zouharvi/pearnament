@@ -266,14 +266,13 @@ Completion tokens are shown at annotation end for verification (download correct
 
 ### Model Results Display
 
-Add `&results` to dashboard URL to show model rankings (requires valid token). Items need `model` field (pointwise) or `models` field (listwise):
-
+Add `&results` to dashboard URL to show model rankings (requires valid token).
+Items need `model` field (pointwise) or `models` field (listwise) and the `protocol_score` needs to be enable such that the `score` can be used for the ranking:
 ```python
-{"doc_id": "1", "model": "GPT-4", "src": "...", "tgt": "..."}
-{"doc_id": "2", "models": ["GPT-4", "Claude"], "src": "...", "tgt": ["...", "..."]}
+{"doc_id": "1", "model": "CommandA", "src": "...", "tgt": "..."}
+{"doc_id": "2", "models": ["CommandA", "Claude"], "src": "...", "tgt": ["...", "..."]}
 ```
-
-Results show rank, model name, average score, and annotation count.
+See an example in [Campaign Management](#campaign-management)
 
 ## Development
 
