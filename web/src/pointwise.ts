@@ -6,7 +6,6 @@ import {
   ErrorSpan,
   Response,
   CharData,
-  MQM_ERROR_CATEGORIES,
   redrawProgress,
   createSpanToolbox,
   updateToolboxPosition,
@@ -306,62 +305,22 @@ async function display_next_payload(response: DataPayload) {
                 return
               }
 
-              // create a new toolbox at the top of the first character
-              let toolbox = $(`
-              <div class='span_toolbox_parent'>
-              <div class='span_toolbox'>
-                <div class="span_toolbox_esa" style="display: inline-block; width: 70px; padding-right: 5px;">
-                  <input type="button" class="error_delete" style="border-radius: 8px;" value="Remove">
-                  <input type="button" class="error_neutral" style="margin-top: 3px;" value="Neutral">
-                  <input type="button" class="error_minor" style="margin-top: 3px;" value="Minor">
-                  <input type="button" class="error_major" style="margin-top: 3px;" value="Major">
-                </div>
-                <div class="span_toolbox_mqm" style="display: inline-block; width: 140px; vertical-align: top;">
-                  <select style="height: 2em; width: 100%;"></select><br>
-                  <select style="height: 2em; width: 100%; margin-top: 3px;" disabled></select>
-                </div>
-              </div>
-              </div>
-              `)
-              for (let category1 of Object.keys(MQM_ERROR_CATEGORIES)) {
-                toolbox.find("select").eq(0).append(`<option value="${category1}">${category1}</option>`)
-              }
-              // select one category handler
-              toolbox.find("select").eq(0).on("change", function () {
-                let cat1 = (<HTMLSelectElement>this).value
-                error_span.category = cat1
-                let subcat_select = toolbox.find("select").eq(1)
-                subcat_select.empty()
-                // @ts-ignore
-                let subcats = MQM_ERROR_CATEGORIES[cat1]
-                subcat_select.prop("disabled", false)
-                for (let subcat of subcats) {
-                  subcat_select.append(`<option value="${subcat}">${subcat}</option>`)
-                }
-                if (cat1 == "Other") {
-                  subcat_select.prop("disabled", true)
-                  error_span.category = "Other/Other"
-                } else {
-                  error_span.category = `${cat1}`
-                }
-              })
-              toolbox.find("select").eq(1).on("change", function () {
-                let cat1 = toolbox.find("select").eq(0).val() as string
-                let cat2 = (<HTMLSelectElement>this).value
-                // enfore both category and subcategory
-                if (cat2 == "" && cat1 != "Other") {
-                  error_span.category = `${cat1}`
-                } else {
-                  error_span.category = `${cat1}/${cat2}`
-                }
-              })
-              if (!protocol_error_categories) {
-                // only MQM has neutral severity
-                toolbox.find(".error_neutral").remove()
-                toolbox.find(".span_toolbox_mqm").remove()
-                toolbox.find(".span_toolbox_esa").css("border-right", "")
-                toolbox.find(".span_toolbox_esa").css("margin-right", "-5px")
-              }
+              // create toolbox using shared utility
+              let toolbox = createSpanToolbox(
+                protocol_error_categories,
+                error_span,
+                tgt_chars_objs,
+                left_i,
+                right_i,
+                () => {
+                  // onDelete callback
+                  response_log[item_i].error_spans = response_log[item_i].error_spans.filter(span => span != error_span)
+                  action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "start_i": left_i, "end_i": right_i })
+                  has_unsaved_work = true
+                },
+                frozenMode
+              )
+
               $("body").append(toolbox)
               check_unlock()
 
@@ -377,53 +336,6 @@ async function display_next_payload(response: DataPayload) {
                   toolbox.css("display", "none")
                   check_unlock()
                 }
-              })
-              // handle delete button
-              toolbox.find(".error_delete").on("click", () => {
-                // remove toolbox
-                toolbox.remove()
-                for (let j = left_i; j <= right_i; j++) {
-                  // remove highlighting
-                  $(tgt_chars_objs[j].el).removeClass("error_unknown")
-                  $(tgt_chars_objs[j].el).removeClass("error_neutral")
-                  $(tgt_chars_objs[j].el).removeClass("error_minor")
-                  $(tgt_chars_objs[j].el).removeClass("error_major")
-                  tgt_chars_objs[j].toolbox = null
-                  tgt_chars_objs[j].error_span = null
-                }
-                // remove from response log
-                response_log[item_i].error_spans = response_log[item_i].error_spans.filter(span => span != error_span)
-                action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "start_i": left_i, "end_i": right_i })
-                has_unsaved_work = true
-              })
-
-              // handle severity buttons
-              toolbox.find(".error_neutral").on("click", () => {
-                for (let j = left_i; j <= right_i; j++) {
-                  $(tgt_chars_objs[j].el).removeClass("error_unknown")
-                  $(tgt_chars_objs[j].el).removeClass("error_minor")
-                  $(tgt_chars_objs[j].el).removeClass("error_major")
-                  $(tgt_chars_objs[j].el).addClass("error_neutral")
-                }
-                error_span.severity = "neutral"
-              })
-              toolbox.find(".error_minor").on("click", () => {
-                for (let j = left_i; j <= right_i; j++) {
-                  $(tgt_chars_objs[j].el).removeClass("error_unknown")
-                  $(tgt_chars_objs[j].el).removeClass("error_neutral")
-                  $(tgt_chars_objs[j].el).removeClass("error_major")
-                  $(tgt_chars_objs[j].el).addClass("error_minor")
-                }
-                error_span.severity = "minor"
-              })
-              toolbox.find(".error_major").on("click", () => {
-                for (let j = left_i; j <= right_i; j++) {
-                  $(tgt_chars_objs[j].el).removeClass("error_unknown")
-                  $(tgt_chars_objs[j].el).removeClass("error_neutral")
-                  $(tgt_chars_objs[j].el).removeClass("error_minor")
-                  $(tgt_chars_objs[j].el).addClass("error_major")
-                }
-                error_span.severity = "major"
               })
 
               // set up callback to reposition toolbox on resize         
@@ -532,7 +444,7 @@ async function display_next_payload(response: DataPayload) {
           response_log[i].score = val
           has_unsaved_work = true
           check_unlock()
-          action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
+          action_log.push({ "time": Date.now() / 1000, "action": "score", "index": i, "value": val })
       }
     })
     slider.on("change", function () {
@@ -546,7 +458,7 @@ async function display_next_payload(response: DataPayload) {
       has_unsaved_work = true
       check_unlock()
       // push only for change which happens just once
-      action_log.push({ "time": Date.now() / 1000, "index": i, "value": val })
+      action_log.push({ "time": Date.now() / 1000, "action": "score", "index": i, "value": val })
     })
 
     // Disable slider in frozen mode

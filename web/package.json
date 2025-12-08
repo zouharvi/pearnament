@@ -7,7 +7,6 @@
     "watch-dev": "webpack --mode development --watch",
     "dev": "webpack serve --mode development"
   },
-  "license": "Apache-2.0",
   "dependencies": {
     "jquery": "^3.7.1"
   },

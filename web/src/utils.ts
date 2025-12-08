@@ -62,6 +62,7 @@ export type ValidationResult = {
 
 // MQM Error Categories shared between pointwise and listwise
 export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
+    "": [],
     "Terminology": [
         "",
         "Inconsistent with terminology resource",
@@ -194,7 +195,10 @@ export function createSpanToolbox(
         for (let subcat of subcats) {
             subcat_select.append(`<option value="${subcat}">${subcat}</option>`)
         }
-        if (cat1 == "Other") {
+        if (cat1 == "") {
+            subcat_select.prop("disabled", true)
+            error_span.category = ""
+        } else if (cat1 == "Other") {
             subcat_select.prop("disabled", true)
             error_span.category = "Other/Other"
         } else {
@@ -279,6 +283,42 @@ export function createSpanToolbox(
         }
         error_span.severity = "major"
     })
+    
+    // Restore category from error_span if it exists (for previously saved annotations)
+    if (protocol_error_categories && error_span.category && error_span.category.includes("/")) {
+        const [cat1, cat2] = error_span.category.split("/")
+        const cat1_select = toolbox.find("select").eq(0)
+        const cat2_select = toolbox.find("select").eq(1)
+        
+        // Set the first dropdown
+        cat1_select.val(cat1)
+        
+        // Populate and set the second dropdown
+        cat2_select.empty()
+        const subcats = MQM_ERROR_CATEGORIES[cat1]
+        if (subcats) {
+            cat2_select.prop("disabled", false)
+            for (let subcat of subcats) {
+                cat2_select.append(`<option value="${subcat}">${subcat}</option>`)
+            }
+            cat2_select.val(cat2)
+        }
+    } else if (protocol_error_categories && error_span.category && error_span.category !== "") {
+        // Handle case where only category is set (no subcategory yet)
+        const cat1_select = toolbox.find("select").eq(0)
+        cat1_select.val(error_span.category)
+        
+        // Populate the second dropdown but don't select anything yet
+        const cat2_select = toolbox.find("select").eq(1)
+        cat2_select.empty()
+        const subcats = MQM_ERROR_CATEGORIES[error_span.category]
+        if (subcats && error_span.category !== "Other") {
+            cat2_select.prop("disabled", false)
+            for (let subcat of subcats) {
+                cat2_select.append(`<option value="${subcat}">${subcat}</option>`)
+            }
+        }
+    }
     
     return toolbox
 }
