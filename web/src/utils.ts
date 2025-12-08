@@ -62,6 +62,7 @@ export type ValidationResult = {
 
 // MQM Error Categories shared between pointwise and listwise
 export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
+    "": [],
     "Terminology": [
         "",
         "Inconsistent with terminology resource",
@@ -194,7 +195,10 @@ export function createSpanToolbox(
         for (let subcat of subcats) {
             subcat_select.append(`<option value="${subcat}">${subcat}</option>`)
         }
-        if (cat1 == "Other") {
+        if (cat1 == "") {
+            subcat_select.prop("disabled", true)
+            error_span.category = ""
+        } else if (cat1 == "Other") {
             subcat_select.prop("disabled", true)
             error_span.category = "Other/Other"
         } else {

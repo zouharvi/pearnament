@@ -275,7 +275,7 @@ cd pearmut
 npm install web/ --prefix web/
 npm run build --prefix web/
 # optionally keep running indefinitely to auto-rebuild
-npm watch build --prefix web/
+npm run watch --prefix web/
 
 # Install as editable
 pip3 install -e .

@@ -338,7 +338,11 @@ async function display_next_payload(response: DataPayload) {
                 for (let subcat of subcats) {
                   subcat_select.append(`<option value="${subcat}">${subcat}</option>`)
                 }
-                if (cat1 == "Other") {
+
+                if (cat1 == "") {
+                  subcat_select.prop("disabled", true)
+                  error_span.category = ""
+                } else if (cat1 == "Other") {
                   subcat_select.prop("disabled", true)
                   error_span.category = "Other/Other"
                 } else {
