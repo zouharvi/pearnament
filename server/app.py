@@ -4,7 +4,7 @@ import os
 import statistics
 from typing import Any
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -22,6 +22,30 @@ from .utils import (
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
+
+class NoCacheStaticFiles(StaticFiles):
+    """Custom StaticFiles that disables browser caching for all static files."""
+
+    async def __call__(self, scope, receive, send) -> None:
+        if scope["type"] == "http":
+
+            async def send_wrapper(message):
+                if message["type"] == "http.response.start":
+                    headers = list(message.get("headers", []))
+                    # Add cache-control headers to prevent browser caching
+                    headers.append(
+                        (b"cache-control", b"no-store, no-cache, must-revalidate, max-age=0")
+                    )
+                    headers.append((b"pragma", b"no-cache"))
+                    headers.append((b"expires", b"0"))
+                    message["headers"] = headers
+                await send(message)
+
+            await super().__call__(scope, receive, send_wrapper)
+        else:
+            await super().__call__(scope, receive, send)
+
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -30,6 +54,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_no_cache_headers(request: Request, call_next):
+    """Middleware to add no-cache headers to all API responses."""
+    response = await call_next(request)
+    # Add cache-control headers to prevent browser caching of API responses
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 tasks_data = {}
 progress_data = load_progress_data(
@@ -326,6 +361,6 @@ if not os.path.exists(static_dir + "index.html"):
 
 app.mount(
     "/",
-    StaticFiles(directory=static_dir, html=True, follow_symlink=True),
+    NoCacheStaticFiles(directory=static_dir, html=True, follow_symlink=True),
     name="static",
 )
