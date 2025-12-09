@@ -291,7 +291,11 @@ async def _download_annotations(
             with open(output_path, "r") as f:
                 output[campaign_id] = [json.loads(x) for x in f.readlines()]
 
-    return JSONResponse(content=output, status_code=200)
+    return JSONResponse(
+        content=output,
+        status_code=200,
+        headers={"Content-Disposition": 'inline; filename="annotations.json"'}
+    )
 
 
 @app.get("/download-progress")
@@ -315,7 +319,11 @@ async def _download_progress(
 
         output[cid] = progress_data[cid]
 
-    return JSONResponse(content=output, status_code=200)
+    return JSONResponse(
+        content=output,
+        status_code=200,
+        headers={"Content-Disposition": 'inline; filename="progress.json"'}
+    )
 
 
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
