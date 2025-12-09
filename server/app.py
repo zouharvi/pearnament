@@ -332,6 +332,16 @@ if not os.path.exists(static_dir + "index.html"):
         "Static directory not found. Please build the frontend first."
     )
 
+# Mount user assets from data/assets/
+assets_dir = f"{ROOT}/data/assets"
+os.makedirs(assets_dir, exist_ok=True)
+
+app.mount(
+    "/assets",
+    StaticFiles(directory=assets_dir, follow_symlink=True),
+    name="assets",
+)
+
 app.mount(
     "/",
     StaticFiles(directory=static_dir, html=True, follow_symlink=True),

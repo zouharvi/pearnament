@@ -272,15 +272,10 @@ def _add_single_campaign(data_file, overwrite, server):
 
         if not os.path.isdir(assets_real_path):
             raise ValueError(f"Assets source path '{assets_real_path}' must be an existing directory.")
-
-        if not os.path.isdir(STATIC_DIR):
-            raise ValueError(
-                f"Static directory '{STATIC_DIR}' does not exist. "
-                "Please build the frontend first."
-            )
         
         # Symlink path is based on the destination, stripping the 'assets/' prefix
-        symlink_path = f"{STATIC_DIR}/{assets_destination}".rstrip("/")
+        # User assets are now stored under data/assets/ instead of static/assets/
+        symlink_path = f"{ROOT}/data/{assets_destination}".rstrip("/")
 
         # Remove existing symlink if present and we are overriding the same campaign
         if os.path.lexists(symlink_path):
@@ -392,7 +387,7 @@ def main():
                 campaign_data = json.load(f)
             destination = campaign_data.get("info", {}).get("assets", {}).get("destination")
             if destination:
-                symlink_path = f"{STATIC_DIR}/{destination}".rstrip("/")
+                symlink_path = f"{ROOT}/data/{destination}".rstrip("/")
                 if os.path.islink(symlink_path):
                     os.remove(symlink_path)
                     print(f"Assets symlink removed: {symlink_path}")
