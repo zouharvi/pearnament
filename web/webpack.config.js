@@ -65,7 +65,8 @@ module.exports = (env, argv) => {
       }),
       new CopyWebpackPlugin({
         patterns: [
-          { from: 'src/assets', to: '.' },
+          { from: 'src/favicon.svg', to: '.' },
+          { from: 'src/style.css', to: '.' },
         ],
       }),
     ],
