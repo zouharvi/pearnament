@@ -120,17 +120,25 @@ def _validate_item_structure(items, template):
         
         # Validate tgt type based on template
         if template == 'listwise':
-            if not isinstance(item['tgt'], dict):
-                raise ValueError("Item 'tgt' must be a dictionary for listwise template")
-            # Check that all keys are strings and not number-only
-            for key in item['tgt'].keys():
-                if not isinstance(key, str):
-                    raise ValueError("All model names in 'tgt' dict must be strings")
-                if key.isdigit():
-                    raise ValueError(f"Model name '{key}' cannot be number-only (would cause ordering issues in JavaScript)")
-            # Check that all values in tgt dict are strings
-            if not all(isinstance(v, str) for v in item['tgt'].values()):
-                raise ValueError("All values in 'tgt' dict must be strings for listwise template")
+            # Accept both dict (new format) and list (legacy format)
+            if isinstance(item['tgt'], dict):
+                # New format: dictionary
+                # Check that all keys are strings and not number-only
+                for key in item['tgt'].keys():
+                    if not isinstance(key, str):
+                        raise ValueError("All model names in 'tgt' dict must be strings")
+                    if key.isdigit():
+                        raise ValueError(f"Model name '{key}' cannot be number-only (would cause ordering issues in JavaScript)")
+                # Check that all values in tgt dict are strings
+                if not all(isinstance(v, str) for v in item['tgt'].values()):
+                    raise ValueError("All values in 'tgt' dict must be strings for listwise template")
+            elif isinstance(item['tgt'], list):
+                # Legacy format: list (kept for backward compatibility)
+                # Check that all elements in tgt list are strings
+                if not all(isinstance(t, str) for t in item['tgt']):
+                    raise ValueError("All elements in 'tgt' list must be strings for listwise template")
+            else:
+                raise ValueError("Item 'tgt' must be a dictionary or list for listwise template")
         elif template == 'pointwise':
             if not isinstance(item['tgt'], str):
                 raise ValueError("Item 'tgt' must be a string for pointwise template")

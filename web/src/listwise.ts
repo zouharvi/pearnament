@@ -42,7 +42,7 @@ type DataPayload = {
         validation?: Validation[] | Record<string, Validation> | undefined,  // Validation rules for this item
     }>,
     payload_existing?: {
-        annotation: Array<DocumentResponse> | Record<string, CandidateResponse>,
+        annotation: Array<DocumentResponse>,  // Always an array indexed by item and candidate
         comment?: string
     },
     info: ProtocolInfo
@@ -175,26 +175,12 @@ async function display_next_payload(response: DataPayload) {
     let data = response.payload
     // Initialize response log and model names - use payload_existing if available
     if (response.payload_existing) {
-        if (Array.isArray(response.payload_existing.annotation)) {
-            response_log = response.payload_existing.annotation.map(docResponses =>
-                docResponses.map(r => ({
-                    "score": r.score,
-                    "error_spans": r.error_spans ? [...r.error_spans] : [],
-                }))
-            )
-        } else {
-            // Handle dict format from server
-            response_log = data.map(item => {
-                const [_, model_names] = ensureCandidateArray(item.tgt)
-                return model_names.map(name => {
-                    const existing = (response.payload_existing!.annotation as any)[name]
-                    return {
-                        "score": existing?.score ?? null,
-                        "error_spans": existing?.error_spans ? [...existing.error_spans] : [],
-                    }
-                })
-            })
-        }
+        response_log = response.payload_existing.annotation.map(docResponses =>
+            docResponses.map(r => ({
+                "score": r.score,
+                "error_spans": r.error_spans ? [...r.error_spans] : [],
+            }))
+        )
         // Reload comment if it exists
         if (response.payload_existing.comment) {
             $("#settings_comment").val(response.payload_existing.comment)

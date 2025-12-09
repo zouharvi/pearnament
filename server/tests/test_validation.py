@@ -291,15 +291,15 @@ class TestItemValidation:
             with pytest.raises(ValueError, match="'tgt' must be a string for pointwise template"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
-    def test_listwise_tgt_must_be_list(self):
-        """Test that tgt must be a list for listwise template."""
+    def test_listwise_tgt_must_be_list_or_dict(self):
+        """Test that tgt must be a list or dict for listwise template."""
         from pearmut.cli import _add_single_campaign
 
         with tempfile.TemporaryDirectory() as tmpdir:
             campaign_file = os.path.join(tmpdir, "campaign.json")
             with open(campaign_file, "w") as f:
                 json.dump({
-                    "campaign_id": "test_listwise_tgt_not_list",
+                    "campaign_id": "test_listwise_tgt_not_list_or_dict",
                     "info": {
                         "assignment": "task-based",
                         "template": "listwise",
@@ -307,13 +307,13 @@ class TestItemValidation:
                     "data": [
                         [
                             [
-                                {"src": "hello", "tgt": "not a list"}
+                                {"src": "hello", "tgt": "not a list or dict"}
                             ]
                         ]
                     ]
                 }, f)
 
-            with pytest.raises(ValueError, match="'tgt' must be a list for listwise template"):
+            with pytest.raises(ValueError, match="'tgt' must be a dictionary or list for listwise template"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_listwise_tgt_elements_must_be_strings(self):
