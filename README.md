@@ -14,6 +14,7 @@
 
 ## Table of Contents
 
+- [Terminology](#terminology)
 - [Quick Start](#quick-start)
 - [Campaign Configuration](#campaign-configuration)
   - [Basic Structure](#basic-structure)
@@ -29,6 +30,54 @@
 - [CLI Commands](#cli-commands)
 - [Development](#development)
 - [Citation](#citation)
+
+## Terminology
+
+**Campaign** — An annotation project that contains configuration, data, and user assignments. Each campaign has a unique identifier and is defined in a JSON file.
+
+**Campaign File** — A JSON file that defines the campaign configuration, including the campaign ID, assignment type, protocol settings, and annotation data.
+
+**Campaign ID** — A unique identifier for a campaign (e.g., `"wmt25_#_en-cs_CZ"`). Used to reference and manage specific campaigns.
+
+**Task** — A unit of work assigned to a user. In task-based assignment, each task consists of a predefined set of items for a specific user.
+
+**Item** — A single annotation unit within a task. For translation evaluation, an item typically represents a document (source text and target translation). Items can contain text, images, audio, or video.
+
+**Document** — A collection of one or more segments (sentence pairs or text units) that are evaluated together as a single item.
+
+**User** / **Annotator** — A person who performs annotations in a campaign. Each user is identified by a unique user ID and accesses the campaign through a unique URL.
+
+**Token** — A completion code shown to users when they finish their annotations. Tokens verify whether the user passed quality control checks:
+  - **Pass Token** (`token_pass`): Shown when user meets validation thresholds
+  - **Fail Token** (`token_fail`): Shown when user fails to meet validation requirements
+
+**Attention Check** — A validation item with known correct answers used to ensure annotator quality. Can be:
+  - **Loud**: Shows warning message and forces retry on failure
+  - **Silent**: Logs failures without notifying the user (for quality control analysis)
+
+**Tutorial** — An instructional validation item that teaches users how to annotate. Includes `allow_skip: true` to let users skip after reviewing the instructions and feedback.
+
+**Validation** — Quality control rules attached to items that check if annotations match expected criteria (score ranges, error span locations, etc.). Used for tutorials and attention checks.
+
+**Model** — The system or model that generated the output being evaluated (e.g., `"GPT-4"`, `"Claude"`). Used for tracking and ranking model performance.
+
+**Dashboard** — The management interface that shows campaign progress, annotator statistics, access links, and allows downloading annotations. Accessed via a special management URL with token authentication.
+
+**Protocol** — The annotation scheme defining what data is collected:
+  - **Score**: Numeric quality rating (0-100)
+  - **Error Spans**: Text highlights marking errors
+  - **Error Categories**: MQM taxonomy labels for errors
+
+**Template** — The annotation interface type:
+  - **Pointwise**: Evaluate one output at a time
+  - **Listwise**: Compare multiple outputs simultaneously
+
+**Assignment** — The method for distributing items to users:
+  - **Task-based**: Each user has predefined items
+  - **Single-stream**: Users draw from a shared pool with random assignment
+  - **Dynamic**: Work in progress
+
+**Error Span** — A highlighted segment of text marked as containing an error, with optional severity (`minor`, `major`, `neutral`) and MQM category labels.
 
 ## Quick Start
 
