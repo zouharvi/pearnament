@@ -57,7 +57,7 @@
   },
   {
     "src": "Der Hund ist rausgerannt.",
-    "tgt": "The walked outside.",
+    "tgt": "The walked outside. [MISSING]",
     "instructions": "<b>Tutorial 5 - Missing Word (Major Error):</b><br>The word for <u>\"dog\"</u> (Hund) is completely missing from the translation. This is a <b>major</b> error because it changes the meaning significantly.<br><br><b>How to mark missing content:</b><br>1. Look for the <b>[MISSING]</b> placeholder at the end of the translation<br>2. Select it by clicking and dragging<br>3. Click to change severity to <b>dark red</b> (major)<br>4. Set the score to approximately <b>5%</b>",
     "validation": {
       "warning": "Please mark the [MISSING] text as a major error (dark red) and set the score between 0-10%. The missing word \"dog\" is a critical omission.",
