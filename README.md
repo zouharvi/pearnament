@@ -91,6 +91,8 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
 }
 ```
 Task items are protocol-specific. For ESA/DA/MQM protocols, each item is a dictionary representing a document unit:
+
+**Pointwise** template (single translation per item):
 ```python
 [
   {
@@ -101,6 +103,28 @@ Task items are protocol-specific. For ESA/DA/MQM protocols, each item is a dicti
     "src": "toto je pokračování stejného dokumentu",
     "tgt": "this is a continuation of the same document"
     # Additional keys stored for analysis
+  }
+]
+```
+
+**Listwise** template (multiple translations per item):
+```python
+[
+  {
+    "src": "The European Central Bank announced rate increases.",
+    "tgt": {
+      "model_A": "Evropská centrální banka oznámila zvýšení sazeb.",
+      "model_B": "ECB ohlásila navýšení úrokových sazeb.",
+      "model_C": "Centrální banka Evropy prohlásila růst úroků."
+    }
+  },
+  {
+    "src": "This is a continuation of the same document.",
+    "tgt": {
+      "model_A": "Toto je pokračování stejného dokumentu.",
+      "model_B": "To je další část téhož dokumentu.",
+      "model_C": "Jedná se o pokračování tohoto dokumentu."
+    }
   }
 ]
 ```
@@ -123,6 +147,10 @@ pearmut run
   - `protocol`: DA, MQM, or ESA
 - **Listwise**: Evaluate multiple outputs simultaneously
   - Same protocol options as pointwise
+  - `tgt` is a dictionary mapping model names to translations
+  - Model names cannot be number-only (e.g., `"1"`, `"2"`) to avoid ordering issues
+  - Set `shuffle: false` in `info` to disable automatic shuffling (default is `true`)
+  - Shuffling is applied at document level to shuffle entire columns consistently
 
 ## Advanced Features
 
@@ -285,10 +313,13 @@ Completion tokens are shown at annotation end for verification (download correct
 ### Model Results Display
 
 Add `&results` to dashboard URL to show model rankings (requires valid token).
-Items need `model` field (pointwise) or `models` field (listwise):
+Items need `model` field (pointwise) or model names as keys in `tgt` dict (listwise):
 ```python
+# Pointwise
 {"doc_id": "1", "model": "CommandA", "src": "...", "tgt": "..."}
-{"doc_id": "2", "models": ["CommandA", "Claude"], "src": "...", "tgt": ["...", "..."]}
+
+# Listwise (model names are automatically extracted from tgt dict keys)
+{"doc_id": "2", "src": "...", "tgt": {"CommandA": "...", "Claude": "..."}}
 ```
 See an example in [Campaign Management](#campaign-management)
 

@@ -55,6 +55,47 @@ def _run(args_unknown):
     )
 
 
+def _shuffle_listwise_document(doc, rng):
+    """
+    Shuffle the order of models in a listwise document at the document level.
+    This shuffles entire columns rather than individual segments.
+    
+    Args:
+        doc: List of items in a document
+        rng: Random number generator for reproducible shuffling
+    
+    Returns:
+        List of items with shuffled model order (consistently across all segments)
+    """
+    if not doc or not isinstance(doc, list):
+        return doc
+    
+    # Get the model names from the first item (all items in doc should have same models)
+    first_item = doc[0]
+    if not isinstance(first_item, dict) or 'tgt' not in first_item or not isinstance(first_item['tgt'], dict):
+        return doc
+    
+    # Get the list of model names and shuffle them
+    model_names = list(first_item['tgt'].keys())
+    shuffled_model_names = model_names.copy()
+    rng.shuffle(shuffled_model_names)
+    
+    # Apply the same shuffling to all items in the document
+    shuffled_doc = []
+    for item in doc:
+        if not isinstance(item, dict) or 'tgt' not in item or not isinstance(item['tgt'], dict):
+            shuffled_doc.append(item)
+            continue
+        
+        # Create a new dict with the shuffled order
+        shuffled_tgt = {name: item['tgt'][name] for name in shuffled_model_names if name in item['tgt']}
+        shuffled_item = item.copy()
+        shuffled_item['tgt'] = shuffled_tgt
+        shuffled_doc.append(shuffled_item)
+    
+    return shuffled_doc
+
+
 def _validate_item_structure(items, template):
     """
     Validate that items have the correct structure.
@@ -79,11 +120,17 @@ def _validate_item_structure(items, template):
         
         # Validate tgt type based on template
         if template == 'listwise':
-            if not isinstance(item['tgt'], list):
-                raise ValueError("Item 'tgt' must be a list for listwise template")
-            # Check that all elements in tgt list are strings
-            if not all(isinstance(t, str) for t in item['tgt']):
-                raise ValueError("All elements in 'tgt' list must be strings for listwise template")
+            if not isinstance(item['tgt'], dict):
+                raise ValueError("Item 'tgt' must be a dictionary for listwise template")
+            # Check that all keys are strings and not number-only
+            for key in item['tgt'].keys():
+                if not isinstance(key, str):
+                    raise ValueError("All model names in 'tgt' dict must be strings")
+                if key.isdigit():
+                    raise ValueError(f"Model name '{key}' cannot be number-only (would cause ordering issues in JavaScript)")
+            # Check that all values in tgt dict are strings
+            if not all(isinstance(v, str) for v in item['tgt'].values()):
+                raise ValueError("All values in 'tgt' dict must be strings for listwise template")
         elif template == 'pointwise':
             if not isinstance(item['tgt'], str):
                 raise ValueError("Item 'tgt' must be a string for pointwise template")
@@ -128,6 +175,11 @@ def _add_single_campaign(data_file, overwrite, server):
     users_spec = campaign_data["info"].get("users")
     user_tokens = {}  # user_id -> {"pass": ..., "fail": ...}
 
+    # Get shuffle setting (default is True for listwise)
+    shuffle = campaign_data["info"].get("shuffle", True)
+    if template == "listwise" and not isinstance(shuffle, bool):
+        raise ValueError("'shuffle' parameter in info must be a boolean")
+    
     if assignment == "task-based":
         tasks = campaign_data["data"]
         if not isinstance(tasks, list):
@@ -143,6 +195,15 @@ def _add_single_campaign(data_file, overwrite, server):
                     _validate_item_structure(doc, template)
                 except ValueError as e:
                     raise ValueError(f"Task {task_i}, document {doc_i}: {e}")
+        
+        # Apply shuffling for listwise templates if enabled
+        if template == "listwise" and shuffle:
+            for task_i, task in enumerate(tasks):
+                for doc_i, doc in enumerate(task):
+                    # Create a deterministic RNG for this specific document
+                    doc_rng = random.Random(f"{campaign_data['campaign_id']}_task{task_i}_doc{doc_i}")
+                    tasks[task_i][doc_i] = _shuffle_listwise_document(doc, doc_rng)
+        
         num_users = len(tasks)
     elif assignment == "single-stream":
         tasks = campaign_data["data"]
@@ -158,6 +219,14 @@ def _add_single_campaign(data_file, overwrite, server):
                 _validate_item_structure(doc, template)
             except ValueError as e:
                 raise ValueError(f"Document {doc_i}: {e}")
+        
+        # Apply shuffling for listwise templates if enabled
+        if template == "listwise" and shuffle:
+            for doc_i, doc in enumerate(tasks):
+                # Create a deterministic RNG for this specific document
+                doc_rng = random.Random(f"{campaign_data['campaign_id']}_doc{doc_i}")
+                tasks[doc_i] = _shuffle_listwise_document(doc, doc_rng)
+        
         if isinstance(users_spec, int):
             num_users = users_spec
         elif isinstance(users_spec, list):

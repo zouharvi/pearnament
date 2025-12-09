@@ -226,8 +226,14 @@ async def _dashboard_results(request: DashboardResultsRequest):
                     # make sure to only keep the latest score for each item
                     # json.dumps(item) creates a unique item key
                     model_scores[item["model"]][json.dumps(item)] = annotation["score"]
+            elif "tgt" in item and isinstance(item["tgt"], dict):
+                # listwise with dict format (new format)
+                model_names = list(item["tgt"].keys())
+                for model_i, model in enumerate(model_names):
+                    if model_i < len(annotation) and "score" in annotation[model_i]:
+                        model_scores[model][json.dumps(item)] = annotation[model_i]["score"]
             elif "models" in item:
-                # listwise
+                # listwise with legacy array format
                 for model, annotation_cand in zip(item["models"], annotation):
                     if "score" in annotation_cand:
                         model_scores[model][json.dumps(item)] = (

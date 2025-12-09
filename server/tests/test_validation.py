@@ -380,3 +380,162 @@ class TestItemValidation:
 
             # Should not raise - the score_greaterthan field is valid
             _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_listwise_tgt_dict_valid(self):
+        """Test that listwise campaigns with dict tgt are valid."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_dict",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {
+                                    "src": "hello",
+                                    "tgt": {
+                                        "model_A": "hola",
+                                        "model_B": "ola"
+                                    }
+                                }
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_listwise_tgt_dict_number_only_name_fails(self):
+        """Test that number-only model names are rejected."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_number_only",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {
+                                    "src": "hello",
+                                    "tgt": {
+                                        "1": "hola",
+                                        "2": "ola"
+                                    }
+                                }
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            with pytest.raises(ValueError, match="cannot be number-only"):
+                _add_single_campaign(campaign_file, False, "http://localhost:8001")
+
+    def test_listwise_shuffle_default_true(self):
+        """Test that shuffle defaults to true for listwise."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_shuffle_default",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                    },
+                    "data": [
+                        [
+                            [
+                                {
+                                    "src": "hello",
+                                    "tgt": {
+                                        "model_A": "hola",
+                                        "model_B": "ola",
+                                        "model_C": "salut"
+                                    }
+                                }
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise and should shuffle by default
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_listwise_shuffle_false(self):
+        """Test that shuffle can be disabled."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_no_shuffle",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                        "shuffle": False,
+                    },
+                    "data": [
+                        [
+                            [
+                                {
+                                    "src": "hello",
+                                    "tgt": {
+                                        "model_A": "hola",
+                                        "model_B": "ola",
+                                        "model_C": "salut"
+                                    }
+                                }
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_listwise_shuffle_must_be_bool(self):
+        """Test that shuffle parameter must be a boolean."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_listwise_shuffle_not_bool",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "listwise",
+                        "shuffle": "yes",  # Should be bool
+                    },
+                    "data": [
+                        [
+                            [
+                                {
+                                    "src": "hello",
+                                    "tgt": {
+                                        "model_A": "hola",
+                                        "model_B": "ola"
+                                    }
+                                }
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            with pytest.raises(ValueError, match="must be a boolean"):
+                _add_single_campaign(campaign_file, False, "http://localhost:8001")

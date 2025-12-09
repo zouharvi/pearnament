@@ -10,35 +10,32 @@
       [
         {
           "doc_id": "news_article_1",
-          "models" : ["model_A", "model_B", "model_C"],
           "src": "The European Central Bank announced on Thursday that it would raise interest rates by 0.25 percentage points, marking the tenth consecutive increase since July 2022 as policymakers continue their efforts to combat persistent inflation in the eurozone.",
-          "tgt": [
-            "Evropská centrální banka ve čtvrtek oznámila, že zvýší úrokové sazby o 0,25 procentního bodu, což je desáté po sobě jdoucí zvýšení od července 2022, kdy tvůrci politik pokračují ve svém úsilí bojovat proti přetrvávající inflaci v eurozóně.",
-            "Evropská centrální banka ve čtvrtek ohlásila zvýšení úrokových sazeb o čtvrt procentního bodu. Jedná se o desáté navýšení v řadě od července 2022, jelikož politici pokračují v boji s přetrvávající inflací v eurozóně.",
-            "Ve čtvrtek Evropská centrální banka prohlásila, že úrokové míry vzrostou o 0,25 procentních bodů, což představuje desáté postupné navýšení od července 2022, zatímco představitelé politiky vedou své snahy k potlačení trvalé inflace v eurozóně."
-          ]
+          "tgt": {
+            "model_A": "Evropská centrální banka ve čtvrtek oznámila, že zvýší úrokové sazby o 0,25 procentního bodu, což je desáté po sobě jdoucí zvýšení od července 2022, kdy tvůrci politik pokračují ve svém úsilí bojovat proti přetrvávající inflaci v eurozóně.",
+            "model_B": "Evropská centrální banka ve čtvrtek ohlásila zvýšení úrokových sazeb o čtvrt procentního bodu. Jedná se o desáté navýšení v řadě od července 2022, jelikož politici pokračují v boji s přetrvávající inflací v eurozóně.",
+            "model_C": "Ve čtvrtek Evropská centrální banka prohlásila, že úrokové míry vzrostou o 0,25 procentních bodů, což představuje desáté postupné navýšení od července 2022, zatímco představitelé politiky vedou své snahy k potlačení trvalé inflace v eurozóně."
+          }
         },
         {
           "doc_id": "news_article_1",
-          "models": ["model_A", "model_B", "model_C"],
           "src": "The decision comes despite growing concerns about the impact of higher borrowing costs on economic growth, with several economists warning that further rate hikes could push the region into a recession.",
-          "tgt": [
-            "Rozhodnutí přichází navzdory rostoucím obavám o dopad vyšších nákladů na půjčky na ekonomický růst, přičemž několik ekonomů varuje, že další zvyšování sazeb by mohlo region přivést do recese.",
-            "Toto rozhodnutí bylo učiněno i přes narůstající obavy z dopadu vyšších úvěrových nákladů na hospodářský růst, kdy několik ekonomů upozorňuje, že další zvýšení sazeb by mohlo region uvrhnout do recese.",
-            "Rozhodnutí bylo přijato nehledě na rostoucí znepokojení ohledně vlivu vyšších cen za půjčky na ekonomický vývoj, přičemž více ekonomů varuje, že budoucí růst sazeb může způsobit recesi regionu."
-          ]
+          "tgt": {
+            "model_A": "Rozhodnutí přichází navzdory rostoucím obavám o dopad vyšších nákladů na půjčky na ekonomický růst, přičemž několik ekonomů varuje, že další zvyšování sazeb by mohlo region přivést do recese.",
+            "model_B": "Toto rozhodnutí bylo učiněno i přes narůstající obavy z dopadu vyšších úvěrových nákladů na hospodářský růst, kdy několik ekonomů upozorňuje, že další zvýšení sazeb by mohlo region uvrhnout do recese.",
+            "model_C": "Rozhodnutí bylo přijato nehledě na rostoucí znepokojení ohledně vlivu vyšších cen za půjčky na ekonomický vývoj, přičemž více ekonomů varuje, že budoucí růst sazeb může způsobit recesi regionu."
+          }
         }
       ],
       [
         {
           "doc_id": "technology_review",
-          "models": ["model_B", "model_C", "model_A"],
           "src": "Artificial intelligence researchers at Stanford University have developed a new machine learning algorithm that can predict protein structures with unprecedented accuracy, potentially revolutionizing drug discovery and our understanding of biological processes.",
-          "tgt": [
-            "Vědci v oblasti umělé inteligence na Stanfordově univerzitě vyvinuli nový algoritmus strojového učení, který dokáže předpovídat struktury proteinů s nebývalou přesností, což by mohlo způsobit revoluci v objevování léků a v našem chápání biologických procesů.",
-            "Výzkumníci umělé inteligence ze Stanfordské univerzity vytvořili nový algoritmus strojového učení schopný predikovat proteinové struktury s dosud nevídanou přesností, což může potenciálně změnit vývoj léčiv a naše porozumění biologickým procesům.",
-            "Na Stanfordské univerzitě vyvinuli badatelé v oboru umělé inteligence nový strojový učící algoritmus, jenž může předvídat struktury bílkovin s bezprecedentní přesností, což by mohlo revolucionizovat objevování medikamentů a naše pochopení biologických jevů."
-          ]
+          "tgt": {
+            "model_B": "Vědci v oblasti umělé inteligence na Stanfordově univerzitě vyvinuli nový algoritmus strojového učení, který dokáže předpovídat struktury proteinů s nebývalou přesností, což by mohlo způsobit revoluci v objevování léků a v našem chápání biologických procesů.",
+            "model_C": "Výzkumníci umělé inteligence ze Stanfordské univerzity vytvořili nový algoritmus strojového učení schopný predikovat proteinové struktury s dosud nevídanou přesností, což může potenciálně změnit vývoj léčiv a naše porozumění biologickým procesům.",
+            "model_A": "Na Stanfordské univerzitě vyvinuli badatelé v oboru umělé inteligence nový strojový učící algoritmus, jenž může předvídat struktury bílkovin s bezprecedentní přesností, což by mohlo revolucionizovat objevování medikamentů a naše pochopení biologických jevů."
+          }
         }
       ]
     ],
@@ -46,23 +43,21 @@
       [
         {
           "doc_id": "literary_excerpt",
-          "models": ["model_C", "model_A", "model_B"],
           "src": "The old lighthouse keeper had spent forty years watching the sea, its moods changing like the expressions on a human face. He knew every rock, every current, every hidden danger that lurked beneath the surface of the cold, dark waters.",
-          "tgt": [
-            "Starý strážce majáku strávil čtyřicet let pozorováním moře, jehož nálady se měnily jako výrazy v lidské tváři. Znal každou skálu, každý proud, každé skryté nebezpečí, které se skrývalo pod povrchem studených, tmavých vod.",
-            "Stárnoucí hlídač majáku prožil čtyři dekády sledováním oceánu, jehož rozpoložení se proměňovalo jako mimika lidského obličeje. Věděl o každém útesu, každém proudu a každém tajném nebezpečenství číhajícím pod hladinou chladných, temných vod.",
-            "Letitý správce majáku věnoval čtyřicet let sledování moře, jehož atmosféra se střídala jako výrazy na lidském obličeji. Byl obeznámen s každým balvanem, každým mořským proudem, každou utajenou hrozbou schovávající se pod povrchem mrazivých, pochmurných vod."
-          ]
+          "tgt": {
+            "model_C": "Starý strážce majáku strávil čtyřicet let pozorováním moře, jehož nálady se měnily jako výrazy v lidské tváři. Znal každou skálu, každý proud, každé skryté nebezpečí, které se skrývalo pod povrchem studených, tmavých vod.",
+            "model_A": "Stárnoucí hlídač majáku prožil čtyři dekády sledováním oceánu, jehož rozpoložení se proměňovalo jako mimika lidského obličeje. Věděl o každém útesu, každém proudu a každém tajném nebezpečenství číhajícím pod hladinou chladných, temných vod.",
+            "model_B": "Letitý správce majáku věnoval čtyřicet let sledování moře, jehož atmosféra se střídala jako výrazy na lidském obličeji. Byl obeznámen s každým balvanem, každým mořským proudem, každou utajenou hrozbou schovávající se pod povrchem mrazivých, pochmurných vod."
+          }
         },
         {
           "doc_id": "literary_excerpt",
-          "models": ["model_C", "model_A", "model_B"],
           "src": "On stormy nights, when the wind howled like a wounded animal and waves crashed against the rocky shore with tremendous force, he would climb the narrow spiral staircase to ensure the light never failed those who depended on it.",
-          "tgt": [
-            "Za bouřlivých nocí, kdy vítr vyl jako zraněné zvíře a vlny se s obrovskou silou tříštily o skalnatý břeh, vystupoval po úzkém točitém schodišti, aby zajistil, že světlo nikdy nezklamá ty, kdo na něm záviseli.",
-            "V bouřlivých nocích, kdy vítr kvílel jako raněný tvor a vlny se mohutnou silou rozbíjely o kamenité pobřeží, on stoupal po úzkém spirálovitém schodišti, aby se ujistil, že světlo nikdy nezklame ty, kteří na něj spoléhali.",
-            "Během bouřkových nocí, když vítr skučel jako poraněné zvíře a příboj se s nesmírnou silou bořil do skalnatého břehu, šplhal po těsném šroubovitém schodišti, aby ověřil, že světlo nikdy neselže těm, co jsou na něm závislí."
-          ]
+          "tgt": {
+            "model_C": "Za bouřlivých nocí, kdy vítr vyl jako zraněné zvíře a vlny se s obrovskou silou tříštily o skalnatý břeh, vystupoval po úzkém točitém schodišti, aby zajistil, že světlo nikdy nezklamá ty, kdo na něm záviseli.",
+            "model_A": "V bouřlivých nocích, kdy vítr kvílel jako raněný tvor a vlny se mohutnou silou rozbíjely o kamenité pobřeží, on stoupal po úzkém spirálovitém schodišti, aby se ujistil, že světlo nikdy nezklame ty, kteří na něj spoléhali.",
+            "model_B": "Během bouřkových nocí, když vítr skučel jako poraněné zvíře a příboj se s nesmírnou silou bořil do skalnatého břehu, šplhal po těsném šroubovitém schodišti, aby ověřil, že světlo nikdy neselže těm, co jsou na něm závislí."
+          }
         }
       ]
     ]
