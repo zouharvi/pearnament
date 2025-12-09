@@ -330,6 +330,7 @@ assets_dir = f"{ROOT}/data/assets"
 os.makedirs(assets_dir, exist_ok=True)
 
 # Symlink built-in CSS and favicon from static/assets/ to data/assets/
+# These symlinks are created on every startup and persist after purge
 for asset_file in ["style.css", "favicon.svg"]:
     src_path = os.path.join(static_dir, "assets", asset_file)
     dest_path = os.path.join(assets_dir, asset_file)
