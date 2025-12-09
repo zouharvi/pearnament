@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, get_i_item, log_response } from './connector';
+import { get_next_item, get_i_item, log_response, submit_comment } from './connector';
 import {
     notify,
     ErrorSpan,
@@ -695,3 +695,33 @@ $("#settings_word_level").on("change", function () {
 })
 $("#settings_word_level").prop("checked", localStorage.getItem("setting_word_level") == "true")
 $("#settings_word_level").trigger("change")
+
+// comment submission handler
+$("#button_submit_comment").on("click", async function() {
+  const comment = $("#settings_comment").val() as string
+  if (!comment || comment.trim() === "") {
+    notify("Please enter a comment before submitting.")
+    return
+  }
+  
+  // Collect telemetry data
+  const telemetry = {
+    timestamp: Date.now(),
+    user_agent: navigator.userAgent,
+    screen_resolution: `${window.screen.width}x${window.screen.height}`,
+    viewport_size: `${window.innerWidth}x${window.innerHeight}`,
+    url: window.location.href,
+  }
+  
+  $("#comment_status").text("Submitting...")
+  const success = await submit_comment(comment, telemetry)
+  
+  if (success) {
+    $("#comment_status").text("✓ Submitted").css("color", "green")
+    $("#settings_comment").val("")
+    setTimeout(() => $("#comment_status").text(""), 3000)
+  } else {
+    $("#comment_status").text("✗ Failed").css("color", "red")
+    setTimeout(() => $("#comment_status").text(""), 3000)
+  }
+})

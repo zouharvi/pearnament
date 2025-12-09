@@ -326,6 +326,39 @@ async def _download_progress(
     )
 
 
+class SubmitCommentRequest(BaseModel):
+    campaign_id: str
+    user_id: str
+    comment: str
+    telemetry: dict[str, Any]
+
+
+@app.post("/submit-comment")
+async def _submit_comment(request: SubmitCommentRequest):
+    campaign_id = request.campaign_id
+    user_id = request.user_id
+    
+    if campaign_id not in progress_data:
+        return JSONResponse(content="Unknown campaign ID", status_code=400)
+    if user_id not in progress_data[campaign_id]:
+        return JSONResponse(content="Unknown user ID", status_code=400)
+    
+    # Save comment with telemetry to a separate log file
+    comment_data = {
+        "campaign_id": campaign_id,
+        "user_id": user_id,
+        "comment": request.comment,
+        "telemetry": request.telemetry,
+    }
+    
+    # Append to comments log
+    comments_path = f"{ROOT}/data/outputs/{campaign_id}_comments.jsonl"
+    with open(comments_path, "a") as f:
+        f.write(json.dumps(comment_data) + "\n")
+    
+    return JSONResponse(content="Comment submitted successfully", status_code=200)
+
+
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"
 if not os.path.exists(static_dir + "index.html"):
     raise FileNotFoundError(
