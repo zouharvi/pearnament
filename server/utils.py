@@ -3,7 +3,7 @@ import os
 
 ROOT = "."
 
-# Sentinel value to indicate a task reset - masks all prior annotations
+# Sentinel value to indicate a task reset - masks all prior annotation
 RESET_MARKER = "__RESET__"
 
 
@@ -94,7 +94,7 @@ def get_db_log_item(campaign_id: str, user_id: str | None, item_i: int | None) -
     # Find the last reset marker for this user (if any)
     last_reset_idx = -1
     for i, entry in enumerate(matching):
-        if entry.get("annotations") == RESET_MARKER:
+        if entry.get("annotation") == RESET_MARKER:
             last_reset_idx = i
     
     # Return only entries after the last reset

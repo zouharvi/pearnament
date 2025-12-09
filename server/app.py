@@ -211,15 +211,15 @@ async def _dashboard_results(request: DashboardResultsRequest):
     if token != tasks_data[campaign_id]["token"]:
         return JSONResponse(content="Invalid token", status_code=400)
 
-    # Compute model scores from annotations
+    # Compute model scores from annotation
     model_scores = collections.defaultdict(dict)
     
     # Iterate through all tasks to find items with 'model' field
     log = get_db_log(campaign_id)
     for entry in log:
-        if "item" not in entry or "annotations" not in entry:
+        if "item" not in entry or "annotation" not in entry:
             continue
-        for item, annotation in zip(entry["item"], entry["annotations"]):
+        for item, annotation in zip(entry["item"], entry["annotation"]):
             if "model" in item:
                 # pointwise
                 if "score" in annotation:
@@ -271,8 +271,8 @@ async def _reset_task(request: ResetTaskRequest):
     return response
 
 
-@app.get("/download-annotations")
-async def _download_annotations(
+@app.get("/download-annotation")
+async def _download_annotation(
     campaign_id: list[str] = Query(),
     # NOTE: currently not checking tokens for progress download as it is non-destructive
     # token: list[str] = Query()

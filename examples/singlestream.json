@@ -3,9 +3,9 @@
     "assignment": "single-stream",
     "template": "pointwise",
     "users": 10,
-    "protocol_score": true,
-    "protocol_error_spans": true,
-    "protocol_error_categories": false
+    "annotation_score": true,
+    "annotation_error_spans": true,
+    "annotation_error_categories": false
   },
   "campaign_id": "mock_singlestream",
   "data": [

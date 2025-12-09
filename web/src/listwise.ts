@@ -69,9 +69,9 @@ let settings_word_level = false
 let has_unsaved_work = false
 let skip_tutorial_mode = false
 // Protocol settings for check_unlock
-let protocol_score = false
-let protocol_error_spans = false
-let protocol_error_categories = false
+let annotation_score = false
+let annotation_error_spans = false
+let annotation_error_categories = false
 
 // Prevent accidental refresh/navigation when there is ongoing work
 window.addEventListener('beforeunload', (event) => {
@@ -98,11 +98,11 @@ function check_unlock() {
     }
 
     // Check if all error spans are complete (have required severity and category based on protocol)
-    if (protocol_error_spans || protocol_error_categories) {
+    if (annotation_error_spans || annotation_error_categories) {
         for (const doc_responses of response_log) {
             for (const r of doc_responses) {
                 for (const span of r.error_spans) {
-                    if (!isSpanComplete(span, protocol_error_categories)) {
+                    if (!isSpanComplete(span, annotation_error_categories)) {
                         $("#button_next").attr("disabled", "disabled")
                         $("#button_next").val("Next 🚧")
                         return
@@ -113,7 +113,7 @@ function check_unlock() {
     }
 
     // Check if all scores are set (if protocol requires scores)
-    if (protocol_score) {
+    if (annotation_score) {
         let all_done = response_log.every(doc_responses =>
             doc_responses.every(r => r.score != null)
         )
@@ -185,13 +185,13 @@ async function display_next_payload(response: DataPayload) {
         $("#button_skip_tutorial").hide()
     }
 
-    protocol_score = response.info.protocol_score
-    protocol_error_spans = response.info.protocol_error_spans
-    protocol_error_categories = response.info.protocol_error_categories
+    annotation_score = response.info.annotation_score
+    annotation_error_spans = response.info.annotation_error_spans
+    annotation_error_categories = response.info.annotation_error_categories
 
-    if (!protocol_score) $("#instructions_score").hide()
-    if (!protocol_error_spans) $("#instructions_spans").hide()
-    if (!protocol_error_categories) $("#instructions_categories").hide()
+    if (!annotation_score) $("#instructions_score").hide()
+    if (!annotation_error_spans) $("#instructions_spans").hide()
+    if (!annotation_error_categories) $("#instructions_categories").hide()
 
     $("#output_div").html("")
 
@@ -224,12 +224,12 @@ async function display_next_payload(response: DataPayload) {
         for (let cand_i = 0; cand_i < candidates.length; cand_i++) {
             let tgt = candidates[cand_i]
             let no_tgt_char = isMediaContent(tgt)
-            let tgt_chars = no_tgt_char ? tgt : (contentToCharSpans(tgt, "tgt_char") + (protocol_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
+            let tgt_chars = no_tgt_char ? tgt : (contentToCharSpans(tgt, "tgt_char") + (annotation_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
 
             let candidate_block = $(`
             <div class="output_candidate" data-candidate="${cand_i}">
               <div class="output_tgt">${tgt_chars}</div>
-              ${protocol_score ? _slider_html(item_i, cand_i) : ""}
+              ${annotation_score ? _slider_html(item_i, cand_i) : ""}
             </div>
             `)
 
@@ -247,7 +247,7 @@ async function display_next_payload(response: DataPayload) {
                 "word_end": idx < tgt_word_boundaries.length ? tgt_word_boundaries[idx][1] : idx,
             }))
             let state_i: null | number = null
-            let missing_i = protocol_error_spans ? tgt_chars_objs.findIndex(obj => obj.el.hasClass("char_missing")) : -1
+            let missing_i = annotation_error_spans ? tgt_chars_objs.findIndex(obj => obj.el.hasClass("char_missing")) : -1
 
             if (!no_tgt_char) {
                 tgt_chars_objs.forEach((obj, i) => {
@@ -260,7 +260,7 @@ async function display_next_payload(response: DataPayload) {
                         $(".tgt_char").removeClass("highlighted_active")
 
                         // highlight corresponding toolbox if error severity is set
-                        if (obj.error_span != null && obj.error_span.severity != null && (!protocol_error_categories || (obj.error_span.category != null && obj.error_span.category?.includes("/")))) {
+                        if (obj.error_span != null && obj.error_span.severity != null && (!annotation_error_categories || (obj.error_span.category != null && obj.error_span.category?.includes("/")))) {
                             tgt_chars_objs[i].toolbox?.css("display", "none")
                         }
                     })
@@ -320,7 +320,7 @@ async function display_next_payload(response: DataPayload) {
                     })
 
                     // add spans and toolbox only in case the protocol asks for it
-                    if (protocol_error_spans || protocol_error_categories) {
+                    if (annotation_error_spans || annotation_error_categories) {
                         $(obj.el).on("click", function () {
                             // In frozen mode, do not allow creating new error spans
                             if (frozenMode) return
@@ -362,7 +362,7 @@ async function display_next_payload(response: DataPayload) {
 
                                 // create toolbox
                                 let toolbox = createSpanToolbox(
-                                    protocol_error_categories,
+                                    annotation_error_categories,
                                     error_span,
                                     tgt_chars_objs,
                                     left_i,
@@ -387,7 +387,7 @@ async function display_next_payload(response: DataPayload) {
                                 // handle hover on toolbox
                                 toolbox.on("mouseleave", function () {
                                     // hide if severity is set for ESA or both severity and category are set for MQM
-                                    if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                                    if (error_span.severity != null && (!annotation_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
                                         toolbox.css("display", "none")
                                         check_unlock()
                                     }
@@ -426,7 +426,7 @@ async function display_next_payload(response: DataPayload) {
             const existingErrorSpans = response.payload_existing?.[item_i]?.[cand_i]?.error_spans
             const candidateSpans = existingErrorSpans || getErrorSpansForCandidate(item.error_spans, cand_i)
 
-            if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
+            if (!no_tgt_char && (annotation_error_spans || annotation_error_categories) && candidateSpans.length > 0) {
                 // Only reset if loading from payload_existing (to avoid duplicating pre-filled spans)
                 if (existingErrorSpans) {
                     response_log[item_i][cand_i].error_spans = []
@@ -438,7 +438,7 @@ async function display_next_payload(response: DataPayload) {
                     let error_span: ErrorSpan = { ...prefilled }
                     response_log[item_i][cand_i].error_spans.push(error_span)
 
-                    let toolbox = createSpanToolbox(protocol_error_categories, error_span, tgt_chars_objs, left_i, right_i, () => {
+                    let toolbox = createSpanToolbox(annotation_error_categories, error_span, tgt_chars_objs, left_i, right_i, () => {
                         response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(s => s != error_span)
                         action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
                         has_unsaved_work = true
@@ -446,7 +446,7 @@ async function display_next_payload(response: DataPayload) {
                     $("body").append(toolbox)
                     toolbox.on("mouseenter", () => { toolbox.css("display", "block"); check_unlock() })
                     toolbox.on("mouseleave", () => {
-                        if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                        if (error_span.severity != null && (!annotation_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
                             toolbox.css("display", "none"); check_unlock()
                         }
                     })
@@ -457,7 +457,7 @@ async function display_next_payload(response: DataPayload) {
                         tgt_chars_objs[j].toolbox = toolbox
                         tgt_chars_objs[j].error_span = error_span
                     }
-                    if (error_span.severity != null && (!protocol_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
+                    if (error_span.severity != null && (!annotation_error_categories || (error_span.category != null && error_span.category?.includes("/")))) {
                         toolbox.css("display", "none")
                     }
                 }
@@ -501,7 +501,7 @@ async function display_next_payload(response: DataPayload) {
 
             // Pre-fill score from payload_existing if available
             const existingScore = response.payload_existing?.[item_i]?.[cand_i]?.score
-            if (existingScore != null && protocol_score) {
+            if (existingScore != null && annotation_score) {
                 slider.val(existingScore)
                 label.text(`${existingScore}/100`)
                 response_log[item_i][cand_i].score = existingScore
@@ -650,7 +650,7 @@ $("#button_next").on("click", async function () {
     $("#button_next").val("Next 📶")
     action_log.push({ "time": Date.now() / 1000, "action": "submit" + (skip_tutorial_mode ? "_skip" : "") })
 
-    let payload_local = { "annotations": response_log, "actions": action_log, "item": payload?.payload, }
+    let payload_local = { "annotation": response_log, "actions": action_log, "item": payload?.payload, }
     if (!skip_tutorial_mode && validationResult!.length > 0) {
         // @ts-ignore
         payload_local["validations"] = validationResult

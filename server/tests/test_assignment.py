@@ -379,24 +379,24 @@ class TestSingleStream:
 class TestResetMasking:
     """Tests for reset masking functionality."""
 
-    def test_reset_marker_masks_existing_annotations(self):
-        """Test that reset marker masks all existing annotations."""
+    def test_reset_marker_masks_existing_annotation(self):
+        """Test that reset marker masks all existing annotation."""
         _clear_test_logs()
         campaign_id = "test_campaign_reset"
 
-        # Save some annotations
+        # Save some annotation
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": {"score": 80}
+            "annotation": {"score": 80}
         })
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": {"score": 90}
+            "annotation": {"score": 90}
         })
 
-        # Verify annotations exist
+        # Verify annotation exist
         items = get_db_log_item(campaign_id, "user1", 0)
         assert len(items) == 2
 
@@ -404,76 +404,76 @@ class TestResetMasking:
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": RESET_MARKER
+            "annotation": RESET_MARKER
         })
 
-        # Verify annotations are masked (no items returned after reset)
+        # Verify annotation are masked (no items returned after reset)
         items = get_db_log_item(campaign_id, "user1", 0)
         assert len(items) == 0
 
-    def test_annotations_after_reset_are_visible(self):
-        """Test that annotations after reset marker are visible."""
+    def test_annotation_after_reset_are_visible(self):
+        """Test that annotation after reset marker are visible."""
         _clear_test_logs()
         campaign_id = "test_campaign_after_reset"
 
-        # Save old annotations
+        # Save old annotation
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": {"score": 50}
+            "annotation": {"score": 50}
         })
 
         # Save reset marker
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": RESET_MARKER
+            "annotation": RESET_MARKER
         })
 
-        # Save new annotations after reset
+        # Save new annotation after reset
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": {"score": 75}
+            "annotation": {"score": 75}
         })
 
-        # Verify only new annotations are visible
+        # Verify only new annotation are visible
         items = get_db_log_item(campaign_id, "user1", 0)
         assert len(items) == 1
-        assert items[0]["annotations"] == {"score": 75}
+        assert items[0]["annotation"] == {"score": 75}
 
     def test_reset_marker_per_user_isolation(self):
         """Test that reset markers only affect the specific user."""
         _clear_test_logs()
         campaign_id = "test_campaign_user_isolation"
 
-        # Save annotations for user1 and user2
+        # Save annotation for user1 and user2
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": {"score": 60}
+            "annotation": {"score": 60}
         })
         save_db_payload(campaign_id, {
             "user_id": "user2",
             "item_i": 0,
-            "annotations": {"score": 70}
+            "annotation": {"score": 70}
         })
 
         # Reset only user1
         save_db_payload(campaign_id, {
             "user_id": "user1",
             "item_i": 0,
-            "annotations": RESET_MARKER
+            "annotation": RESET_MARKER
         })
 
-        # User1 should have no annotations
+        # User1 should have no annotation
         items_user1 = get_db_log_item(campaign_id, "user1", 0)
         assert len(items_user1) == 0
 
-        # User2 should still have annotations
+        # User2 should still have annotation
         items_user2 = get_db_log_item(campaign_id, "user2", 0)
         assert len(items_user2) == 1
-        assert items_user2[0]["annotations"] == {"score": 70}
+        assert items_user2[0]["annotation"] == {"score": 70}
 
 
 class TestValidationThreshold:

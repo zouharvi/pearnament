@@ -2,9 +2,9 @@
   "info": {
     "assignment": "task-based",
     "template": "pointwise",
-    "protocol_score": true,
-    "protocol_error_spans": true,
-    "protocol_error_categories": false
+    "annotation_score": true,
+    "annotation_error_spans": true,
+    "annotation_error_categories": false
   },
   "campaign_id": "esa_encs",
   "data": [

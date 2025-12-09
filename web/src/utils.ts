@@ -36,10 +36,10 @@ export type CharData = { el: JQuery<HTMLElement>, toolbox: JQuery<HTMLElement> |
  * For MQM protocol, category must contain "/" to indicate both main category and subcategory are set.
  * For ESA protocol (no categories), only severity is required.
  */
-export function isSpanComplete(span: ErrorSpan, protocol_error_categories: boolean): boolean {
+export function isSpanComplete(span: ErrorSpan, annotation_error_categories: boolean): boolean {
     if (span.severity == null) return false
     // MQM categories require format "MainCategory/SubCategory" (e.g., "Accuracy/Mistranslation")
-    if (protocol_error_categories && (span.category == null || !span.category.includes("/"))) return false
+    if (annotation_error_categories && (span.category == null || !span.category.includes("/"))) return false
     return true
 }
 
@@ -154,7 +154,7 @@ export function redrawProgress(current_i: number | null, progress: Array<boolean
  * Creates the span toolbox for error annotation
  */
 export function createSpanToolbox(
-    protocol_error_categories: boolean,
+    annotation_error_categories: boolean,
     error_span: ErrorSpan,
     tgt_chars_objs: Array<CharData>,
     left_i: number,
@@ -218,7 +218,7 @@ export function createSpanToolbox(
         }
     })
     
-    if (!protocol_error_categories) {
+    if (!annotation_error_categories) {
         // only MQM has neutral severity
         toolbox.find(".error_neutral").remove()
         toolbox.find(".span_toolbox_mqm").remove()
@@ -276,7 +276,7 @@ export function createSpanToolbox(
     })
     
     // Restore category from error_span if it exists (for previously saved annotations)
-    if (protocol_error_categories && error_span.category && error_span.category.includes("/")) {
+    if (annotation_error_categories && error_span.category && error_span.category.includes("/")) {
         const [cat1, cat2] = error_span.category.split("/")
         const cat1_select = toolbox.find("select").eq(0)
         const cat2_select = toolbox.find("select").eq(1)
@@ -294,7 +294,7 @@ export function createSpanToolbox(
             }
             cat2_select.val(cat2)
         }
-    } else if (protocol_error_categories && error_span.category && error_span.category !== "") {
+    } else if (annotation_error_categories && error_span.category && error_span.category !== "") {
         // Handle case where only category is set (no subcategory yet)
         const cat1_select = toolbox.find("select").eq(0)
         cat1_select.val(error_span.category)
@@ -442,7 +442,7 @@ export type DataFinished = {
 export type ProtocolInfo = {
     protocol_score: boolean,
     protocol_error_spans: boolean,
-    protocol_error_categories: boolean,
+    annotation_error_categories: boolean,
     item_i: number,
 }
 

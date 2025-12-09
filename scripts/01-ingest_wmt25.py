@@ -69,9 +69,9 @@ for langs, data in data_out.items():
                 "info": {
                     "assignment": "task-based",
                     "template": "pointwise",
-                    "protocol_score": config[0],
-                    "protocol_error_spans": config[1],
-                    "protocol_error_categories": config[2],
+                    "annotation_score": config[0],
+                    "annotation_error_spans": config[1],
+                    "annotation_error_categories": config[2],
                 },
                 "campaign_id": fname,
                 # just first 5 users to keep the size small

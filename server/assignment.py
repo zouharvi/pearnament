@@ -78,15 +78,15 @@ def get_i_item_taskbased(
     item_i: int,
 ) -> JSONResponse:
     """
-    Get specific item for task-based protocol.
+    Get specific item for task-based annotation.
     """
     user_progress = progress_data[campaign_id][user_id]
 
-    # try to get existing annotations if any
+    # try to get existing annotation if any
     items_existing = get_db_log_item(campaign_id, user_id, item_i)
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        payload_existing = items_existing[-1]["annotation"]
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"][user_id]):
         return JSONResponse(
@@ -104,7 +104,7 @@ def get_i_item_taskbased(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("annotation")
             },
             "payload": data_all[campaign_id]["data"][user_id][item_i]
         } | ({"payload_existing": payload_existing} if items_existing else {}),
@@ -124,12 +124,12 @@ def get_i_item_singlestream(
     """
     user_progress = progress_data[campaign_id][user_id]
 
-    # try to get existing annotations if any
+    # try to get existing annotation if any
     # note the None user_id since it is shared
     items_existing = get_db_log_item(campaign_id, None, item_i)
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        payload_existing = items_existing[-1]["annotation"]
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"]):
         return JSONResponse(
@@ -147,7 +147,7 @@ def get_i_item_singlestream(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("annotation")
             },
             "payload": data_all[campaign_id]["data"][item_i]
         } | ({"payload_existing": payload_existing} if items_existing else {}),
@@ -171,11 +171,11 @@ def get_next_item_taskbased(
     # find first incomplete item
     item_i = min([i for i, v in enumerate(user_progress["progress"]) if not v])
 
-    # try to get existing annotations if any
+    # try to get existing annotation if any
     items_existing = get_db_log_item(campaign_id, user_id, item_i)
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        payload_existing = items_existing[-1]["annotation"]
 
     return JSONResponse(
         content={
@@ -187,7 +187,7 @@ def get_next_item_taskbased(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("annotation")
             },
             "payload": data_all[campaign_id]["data"][user_id][item_i]
         } | ({"payload_existing": payload_existing} if items_existing else {}),
@@ -219,12 +219,12 @@ def get_next_item_singlestream(
     incomplete_indices = [i for i, v in enumerate(progress) if not v]
     item_i = random.choice(incomplete_indices)
 
-    # try to get existing annotations if any
+    # try to get existing annotation if any
     # note the None user_id since it is shared
     items_existing = get_db_log_item(campaign_id, None, item_i)
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        payload_existing = items_existing[-1]["annotation"]
 
     return JSONResponse(
         content={
@@ -236,7 +236,7 @@ def get_next_item_singlestream(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("annotation")
             },
             "payload": data_all[campaign_id]["data"][item_i]
         } | ({"payload_existing": payload_existing} if items_existing else {}),
@@ -266,17 +266,17 @@ def reset_task(
 ) -> JSONResponse:
     """
     Reset the task progress for the user in the specified campaign.
-    Saves a reset marker to mask existing annotations.
+    Saves a reset marker to mask existing annotation.
     """
     assignment = tasks_data[campaign_id]["info"]["assignment"]
     if assignment == "task-based":
-        # Save reset marker for this user to mask existing annotations
+        # Save reset marker for this user to mask existing annotation
         num_items = len(tasks_data[campaign_id]["data"][user_id])
         for item_i in range(num_items):
             save_db_payload(campaign_id, {
                 "user_id": user_id,
                 "item_i": item_i,
-                "annotations": RESET_MARKER
+                "annotation": RESET_MARKER
             })
         progress_data[campaign_id][user_id]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
@@ -288,7 +288,7 @@ def reset_task(
             save_db_payload(campaign_id, {
                 "user_id": None,
                 "item_i": item_i,
-                "annotations": RESET_MARKER
+                "annotation": RESET_MARKER
             })
         # for single-stream reset all progress
         for uid in progress_data[campaign_id]:
@@ -321,6 +321,6 @@ def update_progress(
             progress_data[campaign_id][uid]["progress"][item_i] = True
         return JSONResponse(content="ok", status_code=200)
     elif assignment == "dynamic":
-        return JSONResponse(content="Dynamic protocol logging not implemented yet.", status_code=400)
+        return JSONResponse(content="Dynamic annotation logging not implemented yet.", status_code=400)
     else:
         return JSONResponse(content="Unknown campaign assignment type", status_code=400)
