@@ -37,7 +37,10 @@ type DataPayload = {
     error_spans?: Array<ErrorSpan>,
     validation?: Validation,
   }>,
-  payload_existing?: Array<Response>,
+  payload_existing?: {
+    annotations: Array<Response>,
+    comment?: string
+  },
   info: ProtocolInfo
 }
 let response_log: Array<Response> = []
@@ -138,15 +141,22 @@ async function display_next_payload(response: DataPayload) {
   let data = response.payload
   // If payload_existing exists (previously submitted annotations), use it; otherwise initialize empty
   if (response.payload_existing) {
-    response_log = response.payload_existing.map(r => ({
+    response_log = response.payload_existing.annotations.map(r => ({
       "score": r.score,
       "error_spans": r.error_spans ? [...r.error_spans] : [],
     }))
+    // Reload comment if it exists
+    if (response.payload_existing.comment) {
+      $("#settings_comment").val(response.payload_existing.comment)
+    } else {
+      $("#settings_comment").val("")
+    }
   } else {
     response_log = data.map(_ => ({
       "score": null,
       "error_spans": [],
     }))
+    $("#settings_comment").val("")
   }
   validations = data.map(item => item.validation)
   output_blocks = []
@@ -368,7 +378,7 @@ async function display_next_payload(response: DataPayload) {
     }
 
     // Load error spans - use payload_existing if available, otherwise use item.error_spans
-    const existingErrorSpans = response.payload_existing?.[item_i]?.error_spans
+    const existingErrorSpans = response.payload_existing?.annotations[item_i]?.error_spans
     const errorSpansToLoad = existingErrorSpans || item.error_spans || []
 
     if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && errorSpansToLoad.length > 0) {
@@ -467,7 +477,7 @@ async function display_next_payload(response: DataPayload) {
     }
 
     // Pre-fill score from payload_existing if available
-    const existingScore = response.payload_existing?.[item_i]?.score
+    const existingScore = response.payload_existing?.annotations[item_i]?.score
     if (existingScore != null && protocol_score) {
       slider.val(existingScore)
       label.text(existingScore.toString())
