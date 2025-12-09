@@ -22,22 +22,25 @@ from .utils import (
 
 os.makedirs(f"{ROOT}/data/outputs", exist_ok=True)
 
+# Cache control headers to disable browser caching
+NO_CACHE_HEADERS = {
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    "Pragma": "no-cache",
+    "Expires": "0",
+}
+
 
 class NoCacheStaticFiles(StaticFiles):
     """Custom StaticFiles that disables browser caching for all static files."""
 
     async def __call__(self, scope, receive, send) -> None:
         if scope["type"] == "http":
-
             async def send_wrapper(message):
                 if message["type"] == "http.response.start":
                     headers = list(message.get("headers", []))
                     # Add cache-control headers to prevent browser caching
-                    headers.append(
-                        (b"cache-control", b"no-store, no-cache, must-revalidate, max-age=0")
-                    )
-                    headers.append((b"pragma", b"no-cache"))
-                    headers.append((b"expires", b"0"))
+                    for key, value in NO_CACHE_HEADERS.items():
+                        headers.append((key.lower().encode(), value.encode()))
                     message["headers"] = headers
                 await send(message)
 
@@ -61,9 +64,8 @@ async def add_no_cache_headers(request: Request, call_next):
     """Middleware to add no-cache headers to all API responses."""
     response = await call_next(request)
     # Add cache-control headers to prevent browser caching of API responses
-    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
+    for key, value in NO_CACHE_HEADERS.items():
+        response.headers[key] = value
     return response
 
 tasks_data = {}
