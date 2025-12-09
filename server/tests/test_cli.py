@@ -26,10 +26,9 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": assets_dir,
                     },
-                    "data": [[[{"src": "a", "tgt": "b"}]]]
+                    "data": [[[{"src": "a", "tgt": {"model_A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="Assets must be a dictionary"):
@@ -46,10 +45,9 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {"destination": "assets/my_videos"},
                     },
-                    "data": [[[{"src": "a", "tgt": "b"}]]]
+                    "data": [[[{"src": "a", "tgt": {"model_A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must contain 'source' and 'destination' keys"):
@@ -69,10 +67,9 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {"source": assets_dir},
                     },
-                    "data": [[[{"src": "a", "tgt": "b"}]]]
+                    "data": [[[{"src": "a", "tgt": {"model_A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must contain 'source' and 'destination' keys"):
@@ -92,13 +89,12 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {
                             "source": assets_dir,
                             "destination": "my_videos"
                         },
                     },
-                    "data": [[[{"src": "a", "tgt": "b"}]]]
+                    "data": [[[{"src": "a", "tgt": {"model_A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must start with 'assets/'"):
@@ -122,13 +118,12 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {
                             "source": "/nonexistent/path",
                             "destination": "assets/my_videos"
                         },
                     },
-                    "data": [[[{"src": "a", "tgt": "b"}]]]
+                    "data": [[[{"src": "a", "tgt": {"model_A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must be an existing directory"):
