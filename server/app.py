@@ -86,14 +86,13 @@ async def _log_response(request: LogResponseRequest):
             request.payload["validations"]
         )
 
-    # Handle comment submission with telemetry
+    # Handle comment submission
     if "comment" in request.payload and request.payload["comment"]:
         comment_data = {
             "campaign_id": campaign_id,
             "user_id": user_id,
             "item_i": item_i,
             "comment": request.payload["comment"],
-            "telemetry": request.payload.get("telemetry", {}),
         }
         # Append to comments log
         comments_path = f"{ROOT}/data/outputs/{campaign_id}_comments.jsonl"

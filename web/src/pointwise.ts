@@ -586,19 +586,11 @@ $("#button_next").on("click", async function () {
     payload_local["validations"] = validationResult
   }
   
-  // Include comment and telemetry if comment is provided
+  // Include comment if provided
   const comment = $("#settings_comment").val() as string
   if (comment && comment.trim() !== "") {
     // @ts-ignore
     payload_local["comment"] = comment.trim()
-    // @ts-ignore
-    payload_local["telemetry"] = {
-      timestamp: Date.now(),
-      user_agent: navigator.userAgent,
-      screen_resolution: `${window.screen.width}x${window.screen.height}`,
-      viewport_size: `${window.innerWidth}x${window.innerHeight}`,
-      url: window.location.href,
-    }
     // Clear comment after submission
     $("#settings_comment").val("")
   }
