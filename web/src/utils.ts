@@ -52,6 +52,7 @@ export type ValidationErrorSpan = {
 export type Validation = {
     warning?: string,  // Warning message to display on failure (attention check mode)
     score?: [number, number],  // [min, max] range for valid score
+    score_greaterthan?: number,  // For listwise: this candidate's score must be greater than score at this index
     error_spans?: Array<ValidationErrorSpan>,  // Expected error spans
     allow_skip?: boolean  // Show skip tutorial button
 }
@@ -412,6 +413,58 @@ export function validateResponse(
     }
 
     return true
+}
+
+/**
+ * Validate a listwise response array with score comparison support
+ * @param responses - Array of responses for all candidates
+ * @param validations - Array of validation rules for all candidates
+ * @param cand_i - Index of the candidate being validated
+ * @returns true if validation passes, false otherwise
+ */
+export function validateListwiseResponse(
+    responses: Response[],
+    validations: Validation[],
+    cand_i: number
+): boolean {
+    const response = responses[cand_i];
+    const validation = validations[cand_i];
+    
+    if (!validation) {
+        return true;
+    }
+
+    // First, perform standard validation (score range and error spans)
+    if (!validateResponse(response, validation)) {
+        return false;
+    }
+
+    console.log("A", response.score, validation);
+    // Check score_greaterthan condition if specified
+    if (validation.score_greaterthan !== undefined) {
+        const otherIndex = validation.score_greaterthan;
+        
+        // Validate the index is within bounds
+        if (otherIndex < 0 || otherIndex >= responses.length) {
+            console.error(`Invalid score_greaterthan index: ${otherIndex}`);
+            return false;
+        }
+        
+        const otherScore = responses[otherIndex].score;
+        console.log("B", response.score, otherScore);
+        // Both scores must be set (not null) to perform comparison
+        // Null scores indicate the user hasn't provided a score yet
+        if (response.score === null || otherScore === null) {
+            return false;
+        }
+        
+        // Verify this candidate's score is strictly greater than the other
+        if (response.score <= otherScore) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /**
