@@ -387,7 +387,7 @@ def main():
                 campaign_data = json.load(f)
             destination = campaign_data.get("info", {}).get("assets", {}).get("destination")
             if destination:
-                symlink_path = f"{STATIC_DIR}/{destination}".rstrip("/")
+                symlink_path = f"{ROOT}/data/{destination}".rstrip("/")
                 if os.path.islink(symlink_path):
                     os.remove(symlink_path)
                     print(f"Assets symlink removed: {symlink_path}")
