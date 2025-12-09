@@ -68,7 +68,6 @@ for langs, data in data_out.items():
             {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "protocol": config,
                 },
                 "campaign_id": fname,

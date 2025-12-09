@@ -55,9 +55,9 @@ def _run(args_unknown):
     )
 
 
-def _shuffle_listwise_document(doc, rng):
+def _shuffle_kway_document(doc, rng):
     """
-    Shuffle the order of models in a listwise document at the document level.
+    Shuffle the order of models in a k-way document at the document level.
     This shuffles entire columns rather than individual segments.
     
     Args:
@@ -160,7 +160,7 @@ def _add_single_campaign(data_file, overwrite, server):
     if "assignment" not in campaign_data["info"]:
         raise ValueError("Campaign 'info' must contain 'assignment' field.")
     
-    # Template is optional and defaults to 'basic' (formerly 'listwise')
+    # Template is optional and defaults to 'basic'
     assignment = campaign_data["info"]["assignment"]
     template = campaign_data["info"].get("template", "basic")
     # use random words for identifying users
@@ -198,7 +198,7 @@ def _add_single_campaign(data_file, overwrite, server):
                 for doc_i, doc in enumerate(task):
                     # Create a deterministic RNG for this specific document
                     doc_rng = random.Random(f"{campaign_data['campaign_id']}_task{task_i}_doc{doc_i}")
-                    tasks[task_i][doc_i] = _shuffle_listwise_document(doc, doc_rng)
+                    tasks[task_i][doc_i] = _shuffle_kway_document(doc, doc_rng)
         
         num_users = len(tasks)
     elif assignment == "single-stream":
@@ -221,7 +221,7 @@ def _add_single_campaign(data_file, overwrite, server):
             for doc_i, doc in enumerate(tasks):
                 # Create a deterministic RNG for this specific document
                 doc_rng = random.Random(f"{campaign_data['campaign_id']}_doc{doc_i}")
-                tasks[doc_i] = _shuffle_listwise_document(doc, doc_rng)
+                tasks[doc_i] = _shuffle_kway_document(doc, doc_rng)
         
         if isinstance(users_spec, int):
             num_users = users_spec
@@ -305,7 +305,7 @@ def _add_single_campaign(data_file, overwrite, server):
             "time_end": None,
             "time": 0,
             "url": (
-                f"basic.html"
+                f"{template}.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),

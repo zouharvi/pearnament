@@ -18,7 +18,6 @@
 - [Campaign Configuration](#campaign-configuration)
   - [Basic Structure](#basic-structure)
   - [Assignment Types](#assignment-types)
-  - [Protocol Templates](#protocol-templates)
 - [Advanced Features](#advanced-features)
   - [Pre-filled Error Spans (ESA<sup>AI</sup>)](#pre-filled-error-spans-esaai)
   - [Tutorial and Attention Checks](#tutorial-and-attention-checks)
@@ -235,7 +234,7 @@ So `"score_greaterthan": 0` in model_B's validation means "model_B must score hi
 
 **Note:** Dictionary keys are ordered consistently within a document (preserved through shuffling), so index references remain stable throughout annotation.
 
-See [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for a complete example.
+See [examples/tutorial_kway.json](examples/tutorial_kway.json) for a complete example.
 
 ### Single-stream Assignment
 
@@ -245,7 +244,6 @@ All annotators draw from a shared pool with random assignment:
     "campaign_id": "my campaign 6",
     "info": {
         "assignment": "single-stream",
-        "template": "pointwise",
         # DA: scores
         # MQM: error spans and categories
         # ESA: error spans and scores
@@ -359,9 +357,6 @@ See an example in [Campaign Management](#campaign-management)
   - **Score**: Numeric quality rating (0-100)
   - **Error Spans**: Text highlights marking errors
   - **Error Categories**: MQM taxonomy labels for errors
-- **Template**: The annotation interface type:
-  - **Pointwise**: Evaluate one output at a time
-  - **Listwise**: Compare multiple outputs simultaneously
 - **Assignment**: The method for distributing items to users:
   - **Task-based**: Each user has predefined items
   - **Single-stream**: Users draw from a shared pool with random assignment
@@ -369,7 +364,7 @@ See an example in [Campaign Management](#campaign-management)
 
 ## Development
 
-Server responds to data-only requests from frontend (no template coupling). Frontend served from pre-built `static/` on install.
+Server responds to data-only requests from frontend. Frontend served from pre-built `static/` on install.
 
 ### Local development:
 ```bash
@@ -386,13 +381,6 @@ pip3 install -e .
 pearmut add examples/wmt25_#_en-cs_CZ.json examples/wmt25_#_cs-de_DE.json
 pearmut run
 ```
-
-### Creating new protocols:
-1. Add HTML and TS files to `web/src`
-2. Add build rule to `webpack.config.js`
-3. Reference as `info->template` in campaign JSON
-
-See [web/src/pointwise.ts](web/src/pointwise.ts) for example.
 
 ### Deployment
 
