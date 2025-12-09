@@ -331,14 +331,14 @@ os.makedirs(assets_dir, exist_ok=True)
 
 # Symlink built-in CSS and favicon from static/assets/ to data/assets/
 for asset_file in ["style.css", "favicon.svg"]:
-    src_path = f"{static_dir}assets/{asset_file}"
-    dest_path = f"{assets_dir}/{asset_file}"
+    src_path = os.path.join(static_dir, "assets", asset_file)
+    dest_path = os.path.join(assets_dir, asset_file)
     if os.path.exists(src_path) and not os.path.lexists(dest_path):
         os.symlink(src_path, dest_path)
 
 app.mount(
     "/assets",
-    StaticFiles(directory=assets_dir, html=True, follow_symlink=True),
+    StaticFiles(directory=assets_dir, follow_symlink=True),
     name="assets",
 )
 
