@@ -57,9 +57,10 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
   "info": {
     "assignment": "task-based",
     "template": "pointwise",
-    "protocol_score": true,                 # we want scores [0...100] for each segment
-    "protocol_error_spans": true,           # we want error spans
-    "protocol_error_categories": false,     # we do not want error span categories
+    # DA: scores
+    # ESA: error spans and scores
+    # MQM: error spans, categories, and scores
+    "protocol": "ESA", 
   },
   "campaign_id": "wmt25_#_en-cs_CZ",
   "data": [
@@ -119,9 +120,7 @@ pearmut run
 ### Protocol Templates
 
 - **Pointwise**: Evaluate single output against single input
-  - `protocol_score`: Collect scores [0-100]
-  - `protocol_error_spans`: Collect error span highlights
-  - `protocol_error_categories`: Collect MQM category labels
+  - `protocol`: DA, MQM, or ESA
 - **Listwise**: Evaluate multiple outputs simultaneously
   - Same protocol options as pointwise
 
@@ -202,9 +201,10 @@ All annotators draw from a shared pool with random assignment:
     "info": {
         "assignment": "single-stream",
         "template": "pointwise",
-        "protocol_score": True,                # collect scores
-        "protocol_error_spans": True,          # collect error spans
-        "protocol_error_categories": False,    # do not collect MQM categories, so ESA
+        # DA: scores
+        # MQM: error spans and categories
+        # ESA: error spans and scores
+        "protocol": "ESA",
         "users": 50,                           # number of annotators (can also be a list, see below)
     },
     "data": [...], # list of all items (shared among all annotators)
@@ -285,7 +285,7 @@ Completion tokens are shown at annotation end for verification (download correct
 ### Model Results Display
 
 Add `&results` to dashboard URL to show model rankings (requires valid token).
-Items need `model` field (pointwise) or `models` field (listwise) and the `protocol_score` needs to be enable such that the `score` can be used for the ranking:
+Items need `model` field (pointwise) or `models` field (listwise):
 ```python
 {"doc_id": "1", "model": "CommandA", "src": "...", "tgt": "..."}
 {"doc_id": "2", "models": ["CommandA", "Claude"], "src": "...", "tgt": ["...", "..."]}

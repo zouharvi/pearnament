@@ -44,9 +44,9 @@ for doc_id, segments in documents.items():
 r = random.Random(0)
 
 LANGS_TO_CONFIG = {
-    "cs-de_DE": ("mqm_csde", [True, True, True]),
-    "en-cs_CZ": ("esa_encs", [True, True, False]),
-    "en-uk_UA": ("da_enuk", [True, False, False]),
+    "cs-de_DE": ("mqm_csde", "MQM"),
+    "en-cs_CZ": ("esa_encs", "ESA"),
+    "en-uk_UA": ("da_enuk", "DA"),
 }
 
 for langs, data in data_out.items():
@@ -69,9 +69,7 @@ for langs, data in data_out.items():
                 "info": {
                     "assignment": "task-based",
                     "template": "pointwise",
-                    "protocol_score": config[0],
-                    "protocol_error_spans": config[1],
-                    "protocol_error_categories": config[2],
+                    "protocol": config,
                 },
                 "campaign_id": fname,
                 # just first 5 users to keep the size small

@@ -38,7 +38,7 @@ type DataPayload = {
     validation?: Validation,
   }>,
   payload_existing?: {
-    annotations: Array<Response>,
+    annotation: Array<Response>,
     comment?: string
   },
   info: ProtocolInfo
@@ -52,7 +52,6 @@ let settings_word_level = false
 let has_unsaved_work = false
 let skip_tutorial_mode = false
 // Protocol settings for check_unlock
-let protocol_score = false
 let protocol_error_spans = false
 let protocol_error_categories = false
 
@@ -94,7 +93,7 @@ function check_unlock() {
   }
 
   // Check if all scores are set (if protocol requires scores)
-  if (protocol_score && !response_log.every(r => r.score != null)) {
+  if (!response_log.every(r => r.score != null)) {
     $("#button_next").attr("disabled", "disabled")
     $("#button_next").val("Next 🚧")
     return
@@ -141,7 +140,7 @@ async function display_next_payload(response: DataPayload) {
   let data = response.payload
   // If payload_existing exists (previously submitted annotations), use it; otherwise initialize empty
   if (response.payload_existing) {
-    response_log = response.payload_existing.annotations.map(r => ({
+    response_log = response.payload_existing.annotation.map(r => ({
       "score": r.score,
       "error_spans": r.error_spans ? [...r.error_spans] : [],
     }))
@@ -171,11 +170,9 @@ async function display_next_payload(response: DataPayload) {
     $("#button_skip_tutorial").hide()
   }
 
-  protocol_score = response.info.protocol_score
-  protocol_error_spans = response.info.protocol_error_spans
-  protocol_error_categories = response.info.protocol_error_categories
+  protocol_error_spans = response.info.protocol == "ESA" || response.info.protocol == "MQM"
+  protocol_error_categories = response.info.protocol == "MQM"
 
-  if (!protocol_score) $("#instructions_score").hide()
   if (!protocol_error_spans) $("#instructions_spans").hide()
   if (!protocol_error_categories) $("#instructions_categories").hide()
 
@@ -196,7 +193,7 @@ async function display_next_payload(response: DataPayload) {
         <div class="output_src">${src_chars}</div>
         <div class="output_tgt">${tgt_chars}</div>
       </div>
-      ${protocol_score ? _slider_html(item_i) : ""}
+      ${_slider_html(item_i)}
       </div>
     `)
 
@@ -378,7 +375,7 @@ async function display_next_payload(response: DataPayload) {
     }
 
     // Load error spans - use payload_existing if available, otherwise use item.error_spans
-    const existingErrorSpans = response.payload_existing?.annotations[item_i]?.error_spans
+    const existingErrorSpans = response.payload_existing?.annotation[item_i]?.error_spans
     const errorSpansToLoad = existingErrorSpans || item.error_spans || []
 
     if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && errorSpansToLoad.length > 0) {
@@ -477,8 +474,8 @@ async function display_next_payload(response: DataPayload) {
     }
 
     // Pre-fill score from payload_existing if available
-    const existingScore = response.payload_existing?.annotations[item_i]?.score
-    if (existingScore != null && protocol_score) {
+    const existingScore = response.payload_existing?.annotation[item_i]?.score
+    if (existingScore != null) {
       slider.val(existingScore)
       label.text(existingScore.toString())
       response_log[item_i].score = existingScore
@@ -590,7 +587,7 @@ $("#button_next").on("click", async function () {
   $("#button_next").val("Next 📶")
   action_log.push({ "time": Date.now() / 1000, "action": "submit" + (skip_tutorial_mode ? "_skip" : "") })
 
-  let payload_local = { "annotations": response_log, "actions": action_log, "item": payload?.payload, }
+  let payload_local = { "annotation": response_log, "actions": action_log, "item": payload?.payload, }
   if (!skip_tutorial_mode && validationResult!.length > 0) {
     // @ts-ignore
     payload_local["validations"] = validationResult

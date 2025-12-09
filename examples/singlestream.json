@@ -3,9 +3,7 @@
     "assignment": "single-stream",
     "template": "pointwise",
     "users": 10,
-    "protocol_score": true,
-    "protocol_error_spans": true,
-    "protocol_error_categories": false
+    "protocol": "ESA"
   },
   "campaign_id": "mock_singlestream",
   "data": [

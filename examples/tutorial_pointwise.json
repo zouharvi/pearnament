@@ -2,10 +2,7 @@
   "info": {
     "assignment": "task-based",
     "template": "pointwise",
-    "protocol_score": true,
-    "protocol_error_spans": true,
-    "protocol_error_categories": false,
-    "instructions": "This is a tutorial campaign. Complete the training items before proceeding to regular annotation."
+    "protocol": "ESA"
   },
   "campaign_id": "mock_tutorial",
   "data": [

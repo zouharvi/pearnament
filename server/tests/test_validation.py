@@ -353,7 +353,7 @@ class TestItemValidation:
                     "info": {
                         "assignment": "task-based",
                         "template": "listwise",
-                        "protocol_score": True,
+                        "protocol": "DA",
                     },
                     "data": [
                         [

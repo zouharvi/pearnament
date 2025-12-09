@@ -2,9 +2,7 @@
   "info": {
     "assignment": "task-based",
     "template": "pointwise",
-    "protocol_score": true,
-    "protocol_error_spans": false,
-    "protocol_error_categories": false
+    "protocol": "DA"
   },
   "campaign_id": "da_enuk",
   "data": [

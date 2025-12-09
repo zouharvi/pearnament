@@ -217,9 +217,9 @@ async def _dashboard_results(request: DashboardResultsRequest):
     # Iterate through all tasks to find items with 'model' field
     log = get_db_log(campaign_id)
     for entry in log:
-        if "item" not in entry or "annotations" not in entry:
+        if "item" not in entry or "annotation" not in entry:
             continue
-        for item, annotation in zip(entry["item"], entry["annotations"]):
+        for item, annotation in zip(entry["item"], entry["annotation"]):
             if "model" in item:
                 # pointwise
                 if "score" in annotation:

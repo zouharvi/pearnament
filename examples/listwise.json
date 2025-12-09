@@ -2,10 +2,7 @@
   "info": {
     "assignment": "task-based",
     "template": "listwise",
-    "protocol_score": true,
-    "protocol_error_spans": true,
-    "protocol_error_categories": false,
-    "instructions": "Evaluate and compare multiple translation candidates from English to Czech. Mark any errors you find and assign quality scores to each translation."
+    "protocol": "ESA"
   },
   "campaign_id": "mock_listwise",
   "data": [

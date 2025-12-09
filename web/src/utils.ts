@@ -493,9 +493,7 @@ export type DataFinished = {
 
 // Shared protocol info type
 export type ProtocolInfo = {
-    protocol_score: boolean,
-    protocol_error_spans: boolean,
-    protocol_error_categories: boolean,
+    protocol: "DA" | "ESA" | "MQM",
     item_i: number,
 }
 

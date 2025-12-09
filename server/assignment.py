@@ -88,7 +88,7 @@ def get_i_item_taskbased(
     if items_existing:
         # get the latest ones
         latest_item = items_existing[-1]
-        payload_existing = {"annotations": latest_item["annotations"]}
+        payload_existing = {"annotation": latest_item["annotation"]}
         if "comment" in latest_item:
             payload_existing["comment"] = latest_item["comment"]
 
@@ -135,7 +135,7 @@ def get_i_item_singlestream(
     if items_existing:
         # get the latest ones
         latest_item = items_existing[-1]
-        payload_existing = {"annotations": latest_item["annotations"]}
+        payload_existing = {"annotation": latest_item["annotation"]}
         if "comment" in latest_item:
             payload_existing["comment"] = latest_item["comment"]
 
@@ -185,7 +185,7 @@ def get_next_item_taskbased(
     if items_existing:
         # get the latest ones
         latest_item = items_existing[-1]
-        payload_existing = {"annotations": latest_item["annotations"]}
+        payload_existing = {"annotation": latest_item["annotation"]}
         if "comment" in latest_item:
             payload_existing["comment"] = latest_item["comment"]
 
@@ -238,7 +238,7 @@ def get_next_item_singlestream(
     if items_existing:
         # get the latest ones
         latest_item = items_existing[-1]
-        payload_existing = {"annotations": latest_item["annotations"]}
+        payload_existing = {"annotation": latest_item["annotation"]}
         if "comment" in latest_item:
             payload_existing["comment"] = latest_item["comment"]
 
@@ -292,7 +292,7 @@ def reset_task(
             save_db_payload(campaign_id, {
                 "user_id": user_id,
                 "item_i": item_i,
-                "annotations": RESET_MARKER
+                "annotation": RESET_MARKER
             })
         progress_data[campaign_id][user_id]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
@@ -304,7 +304,7 @@ def reset_task(
             save_db_payload(campaign_id, {
                 "user_id": None,
                 "item_i": item_i,
-                "annotations": RESET_MARKER
+                "annotation": RESET_MARKER
             })
         # for single-stream reset all progress
         for uid in progress_data[campaign_id]:
