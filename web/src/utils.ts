@@ -438,10 +438,10 @@ export type DataFinished = {
     token: string,
 }
 
-// Shared protocol info type
+// Shared annotation info type
 export type ProtocolInfo = {
-    protocol_score: boolean,
-    protocol_error_spans: boolean,
+    annotation_score: boolean,
+    annotation_error_spans: boolean,
     annotation_error_categories: boolean,
     item_i: number,
 }
