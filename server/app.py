@@ -1,6 +1,7 @@
 import collections
 import json
 import os
+import shutil
 import statistics
 from typing import Any
 
@@ -332,7 +333,6 @@ data_assets_path = os.path.abspath(f"{ROOT}/data/assets")
 if os.path.isdir(static_assets_path) and not os.path.islink(static_assets_path):
     # First run: static/assets is a real directory with built-in CSS/favicon
     # Move contents to data/assets and replace with symlink
-    import shutil
     os.makedirs(data_assets_path, exist_ok=True)
     for item in os.listdir(static_assets_path):
         src = os.path.join(static_assets_path, item)
