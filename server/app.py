@@ -1,7 +1,6 @@
 import collections
 import json
 import os
-import shutil
 import statistics
 from typing import Any
 
@@ -325,26 +324,15 @@ if not os.path.exists(static_dir + "index.html"):
         "Static directory not found. Please build the frontend first."
     )
 
-# Create symlink from static/assets to data/assets if not already a symlink
-# This allows user assets to persist across pip updates while keeping built-in assets accessible
-static_assets_path = os.path.join(static_dir, "assets")
-data_assets_path = os.path.abspath(f"{ROOT}/data/assets")
+# Mount user assets from data/assets/
+assets_dir = f"{ROOT}/data/assets"
+os.makedirs(assets_dir, exist_ok=True)
 
-if os.path.isdir(static_assets_path) and not os.path.islink(static_assets_path):
-    # First run: static/assets is a real directory with built-in CSS/favicon
-    # Move contents to data/assets and replace with symlink
-    os.makedirs(data_assets_path, exist_ok=True)
-    for item in os.listdir(static_assets_path):
-        src = os.path.join(static_assets_path, item)
-        dst = os.path.join(data_assets_path, item)
-        if not os.path.exists(dst):
-            shutil.move(src, dst)
-    shutil.rmtree(static_assets_path)
-    os.symlink(data_assets_path, static_assets_path)
-elif not os.path.exists(static_assets_path):
-    # static/assets doesn't exist yet, create symlink to data/assets
-    os.makedirs(data_assets_path, exist_ok=True)
-    os.symlink(data_assets_path, static_assets_path)
+app.mount(
+    "/assets",
+    StaticFiles(directory=assets_dir, follow_symlink=True),
+    name="assets",
+)
 
 app.mount(
     "/",
