@@ -324,6 +324,24 @@ if not os.path.exists(static_dir + "index.html"):
         "Static directory not found. Please build the frontend first."
     )
 
+# Mount user assets from data/assets/ before mounting static
+# Create data/assets directory and symlink built-in assets (CSS, favicon)
+assets_dir = f"{ROOT}/data/assets"
+os.makedirs(assets_dir, exist_ok=True)
+
+# Symlink built-in CSS and favicon from static/assets/ to data/assets/
+for asset_file in ["style.css", "favicon.svg"]:
+    src_path = f"{static_dir}assets/{asset_file}"
+    dest_path = f"{assets_dir}/{asset_file}"
+    if os.path.exists(src_path) and not os.path.lexists(dest_path):
+        os.symlink(src_path, dest_path)
+
+app.mount(
+    "/assets",
+    StaticFiles(directory=assets_dir, html=True, follow_symlink=True),
+    name="assets",
+)
+
 app.mount(
     "/",
     StaticFiles(directory=static_dir, html=True, follow_symlink=True),
