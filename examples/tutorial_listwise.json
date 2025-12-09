@@ -177,21 +177,22 @@
             "A": "Ceny energie rostou.",
             "B": "Náklady na energii stoupají."
           },
-          "instructions": "<b>Attention Check:</b> A: exactly 80. B: exactly 75.",
+          "instructions": "<b>Attention Check:</b> A must score 30-40 (has error). B must score 80-90 (correct) and higher than A.",
           "validation": {
             "A": {
-              "warning": "Attention check: A must be 80.",
+              "warning": "Attention check: A has error, score 30-40.",
               "score": [
-                80,
-                80
+                30,
+                40
               ]
             },
             "B": {
-              "warning": "Attention check: B must be 75.",
+              "warning": "Attention check: B is correct, score 80-90 and must be higher than A.",
               "score": [
-                75,
-                75
-              ]
+                80,
+                90
+              ],
+              "score_greaterthan": 0
             }
           }
         }

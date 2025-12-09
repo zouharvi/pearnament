@@ -226,9 +226,16 @@ Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for m
   }
 }
 ```
-The `score_greaterthan` field specifies the index of the candidate that must have a lower score than the current candidate.
 
-See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json), [examples/tutorial_listwise.json](examples/tutorial_listwise.json), and [examples/tutorial_listwise_score_greaterthan.json](examples/tutorial_listwise_score_greaterthan.json).
+The `score_greaterthan` field specifies the array index (after dictionary conversion) of the candidate that must have a lower score. In this example:
+- Index 0 = model_A (first key in the dict)
+- Index 1 = model_B (second key in the dict)
+
+So `"score_greaterthan": 0` in model_B's validation means "model_B must score higher than model_A (at index 0)".
+
+**Note:** Dictionary keys are ordered consistently within a document (preserved through shuffling), so index references remain stable throughout annotation.
+
+See [examples/tutorial_listwise.json](examples/tutorial_listwise.json) for a complete example.
 
 ### Single-stream Assignment
 

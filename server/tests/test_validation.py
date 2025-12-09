@@ -405,3 +405,45 @@ class TestItemValidation:
 
             # Should not raise
             _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_score_greaterthan_with_dict(self):
+        """Test that score_greaterthan validation works with dict format."""
+        from pearmut.cli import _add_single_campaign
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_score_greaterthan",
+                    "info": {
+                        "assignment": "task-based",
+                        "protocol": "DA",
+                    },
+                    "data": [
+                        [
+                            [
+                                {
+                                    "src": "AI transforms industries.",
+                                    "tgt": {
+                                        "model_A": "UI transformuje průmysly.",
+                                        "model_B": "Umělá inteligence mění obory."
+                                    },
+                                    "validation": {
+                                        "model_A": {
+                                            "warning": "A has error, score 20-40.",
+                                            "score": [20, 40]
+                                        },
+                                        "model_B": {
+                                            "warning": "B is correct and must score higher than A.",
+                                            "score": [70, 90],
+                                            "score_greaterthan": 0
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    ]
+                }, f)
+
+            # Should not raise - score_greaterthan validation should work with dict format
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
