@@ -209,7 +209,8 @@ async function display_next_payload(response: DataPayload) {
         } else {
             // Convert dict validation to array using model names
             const [_, model_names] = ensureCandidateArray(item.tgt)
-            return model_names.map(name => (item.validation as any)[name])
+            const validationDict = item.validation as Record<string, Validation>
+            return model_names.map(name => validationDict[name])
         }
     })
     output_blocks = []
