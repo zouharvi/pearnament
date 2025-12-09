@@ -64,8 +64,8 @@
       "score": [0, 10],
       "error_spans": [
         {
-          "start_i": ["missing"],
-          "end_i": ["missing"],
+          "start_i": "missing",
+          "end_i": "missing",
           "severity": "major"
         }
       ],
