@@ -1,0 +1,101 @@
+[
+  {
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": "The dog ran outside.",
+    "instructions": "<b>Tutorial 1 - Perfect Translation:</b><br>This translation is completely correct with no errors. Please set the quality score to <b>100%</b> (move the slider all the way to the right). Do not mark any error spans.",
+    "validation": {
+      "warning": "This is a perfect translation with no errors. Please set the score to 100% and do not mark any error spans.",
+      "score": [100, 100],
+      "error_spans": [],
+      "allow_skip": true
+    }
+  },
+  {
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": "The dog walked outside.",
+    "instructions": "<b>Tutorial 2 - Minor Error:</b><br>The word <u>\"walked\"</u> is incorrect - the German \"rausgerannt\" means \"ran\", not \"walked\". This is a <b>minor</b> error.<br><br><b>How to mark errors:</b><br>1. Click and drag to select \"walked\" in the translation<br>2. The selected text will be highlighted in <b>light pink</b> (minor severity)<br>3. Move the slider to approximately <b>80%</b> to reflect this minor issue",
+    "validation": {
+      "warning": "Please mark \"walked\" as a minor error (light pink) and set the score between 75-85%. Remember: Click and drag to select the word, it will be highlighted in light pink.",
+      "score": [75, 85],
+      "error_spans": [
+        {
+          "start_i": [8, 9],
+          "end_i": [13, 15],
+          "severity": "minor"
+        }
+      ],
+      "allow_skip": true
+    }
+  },
+  {
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": "The dog stayed inside.",
+    "instructions": "<b>Tutorial 3 - Major Error:</b><br>The words <u>\"stayed inside\"</u> are completely wrong - they mean the opposite of \"ran outside\". This is a <b>major</b> error.<br><br><b>How to mark major errors:</b><br>1. Click and drag to select \"stayed inside\"<br>2. Click on the highlighted text to change severity<br>3. Click again to cycle to <b>dark red</b> (major severity)<br>4. Move the slider to approximately <b>10%</b> to reflect this serious error",
+    "validation": {
+      "warning": "Please mark \"stayed inside\" as a major error (dark red) and set the score between 5-15%. To change severity: click on highlighted text to cycle through colors until you reach dark red.",
+      "score": [5, 15],
+      "error_spans": [
+        {
+          "start_i": [8, 9],
+          "end_i": [20, 22],
+          "severity": "major"
+        }
+      ],
+      "allow_skip": true
+    }
+  },
+  {
+    "src": "Obwohl die Katzen die Nacht draußen verbrachten, war ihnen nicht kalt.",
+    "tgt": "Although the cats were outside over the night, they did not get cold.",
+    "instructions": "<b>Tutorial 4 - Good but Unnatural:</b><br>While this translation is technically correct and conveys the meaning, it sounds somewhat unnatural in English (\"over the night\" is awkward phrasing). The translation is understandable but not optimal.<br><br><b>For stylistic issues without clear errors:</b> Don't mark specific error spans, but use the slider to evaluate overall quality at around <b>70%</b>.",
+    "validation": {
+      "warning": "This translation doesn't have clear errors to mark, but it's not perfect. Set the score between 65-75% to reflect the unnatural phrasing. No error spans needed.",
+      "score": [65, 75],
+      "allow_skip": true
+    }
+  },
+  {
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": "The walked outside.",
+    "instructions": "<b>Tutorial 5 - Missing Word (Major Error):</b><br>The word for <u>\"dog\"</u> (Hund) is completely missing from the translation. This is a <b>major</b> error because it changes the meaning significantly.<br><br><b>How to mark missing content:</b><br>1. Look for the <b>[MISSING]</b> placeholder at the end of the translation<br>2. Select it by clicking and dragging<br>3. Click to change severity to <b>dark red</b> (major)<br>4. Set the score to approximately <b>5%</b>",
+    "validation": {
+      "warning": "Please mark the [MISSING] text as a major error (dark red) and set the score between 0-10%. The missing word \"dog\" is a critical omission.",
+      "score": [0, 10],
+      "error_spans": [
+        {
+          "start_i": ["missing"],
+          "end_i": ["missing"],
+          "severity": "major"
+        }
+      ],
+      "allow_skip": true
+    }
+  },
+  {
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": "The dog ran outside.",
+    "instructions": "<b>Tutorial 6 - Removing Incorrect Annotations:</b><br>The word <u>\"ran\"</u> is mistakenly marked as a minor error, but it's actually correct. <br><br><b>How to remove error spans:</b><br>1. Click on the incorrectly highlighted word \"ran\"<br>2. Keep clicking to cycle through severities until it becomes <b>neutral</b> (no color)<br>3. Or click the trash icon if available to remove the annotation<br>4. Set the score to <b>100%</b> since there are no errors",
+    "error_spans": [
+      {
+        "start_i": 8,
+        "end_i": 11,
+        "severity": "minor"
+      }
+    ],
+    "validation": {
+      "warning": "Please remove the error marking from \"ran\" (make it neutral or delete it) and set the score to 100%. This is a perfect translation.",
+      "score": [100, 100],
+      "error_spans": [],
+      "allow_skip": true
+    }
+  },
+  {
+    "src": "Die Sonne scheint hell am Himmel.",
+    "tgt": "The sun shines bright in the sky.",
+    "instructions": "<b>Attention Check:</b><br>To verify you're paying attention, please set the score to exactly <b>50%</b> for this translation, regardless of its actual quality.",
+    "validation": {
+      "warning": "This is an attention check. Please set the score to exactly 50%.",
+      "score": [50, 50]
+    }
+  }
+]
