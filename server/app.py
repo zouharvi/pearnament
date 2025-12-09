@@ -343,6 +343,11 @@ async def _submit_comment(request: SubmitCommentRequest):
     if user_id not in progress_data[campaign_id]:
         return JSONResponse(content="Unknown user ID", status_code=400)
     
+    # Validate campaign_id to prevent path traversal (campaign_id is already validated to exist in progress_data)
+    # This check ensures the campaign_id doesn't contain path traversal characters
+    if ".." in campaign_id or "/" in campaign_id or "\\" in campaign_id:
+        return JSONResponse(content="Invalid campaign ID", status_code=400)
+    
     # Save comment with telemetry to a separate log file
     comment_data = {
         "campaign_id": campaign_id,

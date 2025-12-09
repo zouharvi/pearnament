@@ -3,6 +3,14 @@ import $ from 'jquery';
 
 let searchParams = new URLSearchParams(window.location.search)
 
+export interface Telemetry {
+  timestamp: number;
+  user_agent: string;
+  screen_resolution: string;
+  viewport_size: string;
+  url: string;
+}
+
 export async function get_next_item<T>(): Promise<T | null> {
   /* Fetch the next item for the user from the server. */
   let user_id = searchParams.get("user_id");
@@ -119,7 +127,7 @@ export async function get_i_item<T>(item_i: number): Promise<T | null> {
   }
 }
 
-export async function submit_comment(comment: string, telemetry: any): Promise<boolean> {
+export async function submit_comment(comment: string, telemetry: Telemetry): Promise<boolean> {
   /* Submit a user comment with telemetry data to the server. */
   let user_id = searchParams.get("user_id");
   let campaign_id = searchParams.get("campaign_id");

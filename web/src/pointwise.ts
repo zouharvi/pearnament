@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, get_i_item, log_response, submit_comment } from './connector';
+import { get_next_item, get_i_item, log_response, submit_comment, Telemetry } from './connector';
 import {
   notify,
   ErrorSpan,
@@ -635,7 +635,7 @@ $("#button_submit_comment").on("click", async function() {
   }
   
   // Collect telemetry data
-  const telemetry = {
+  const telemetry: Telemetry = {
     timestamp: Date.now(),
     user_agent: navigator.userAgent,
     screen_resolution: `${window.screen.width}x${window.screen.height}`,
