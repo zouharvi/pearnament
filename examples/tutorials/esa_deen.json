@@ -51,6 +51,7 @@
     "validation": {
       "warning": "This translation doesn't have clear errors to mark, but it's not perfect. Set the score between 65-75% to reflect the unnatural phrasing. No error spans needed.",
       "score": [65, 75],
+      "error_spans": [],
       "allow_skip": true
     }
   },
@@ -95,7 +96,8 @@
     "instructions": "<b>Attention Check:</b><br>To verify you're paying attention, please set the score to exactly <b>50%</b> for this translation, regardless of its actual quality.",
     "validation": {
       "warning": "This is an attention check. Please set the score to exactly 50%.",
-      "score": [50, 50]
+      "score": [50, 50],
+      "error_spans": []
     }
   }
 ]
