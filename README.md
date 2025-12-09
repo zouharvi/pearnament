@@ -56,11 +56,7 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
 {
   "info": {
     "assignment": "task-based",
-    "template": "pointwise",
-    # DA: scores
-    # ESA: error spans and scores
-    # MQM: error spans, categories, and scores
-    "protocol": "ESA", 
+    "protocol": "ESA",  # DA: scores only, ESA: error spans + scores, MQM: error spans + categories + scores
   },
   "campaign_id": "wmt25_#_en-cs_CZ",
   "data": [
@@ -69,17 +65,23 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
       [
         # each evaluation item is a document
         {
-          "instructions": "Evaluate translation from en to cs_CZ",  # message to show to users above the first item
+          "instructions": "Evaluate translations from English to Czech",
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",
-          "tgt": "Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ..."
+          "tgt": {
+            "model_A": "Tohle bude rok, kdy Guinness přijde o svůj „cool" faktor. Na zdraví!",
+            "model_B": "Tento rok ztratí Guinness svou skvělost. Na to připijme!"
+          }
         },
         {
-          "src": "I'm not sure I can remember exactly when I sensed it. Maybe it was when some...",
-          "tgt": "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!"
+          "src": "I'm not sure I can remember exactly when I sensed it.",
+          "tgt": {
+            "model_A": "Nevím přesně, kdy jsem to poprvé zaznamenal.",
+            "model_B": "Nejsem si jist, kdy přesně jsem to vycítil."
+          }
         }
         ...
       ],
-      # more document
+      # more documents
       ...
     ],
     # data for second task/user
@@ -90,24 +92,15 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
   ]
 }
 ```
-Task items are protocol-specific. For ESA/DA/MQM protocols, each item is a dictionary representing a document unit:
 
-**Pointwise** template (single translation per item):
-```python
-[
-  {
-    "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.",  # required
-    "tgt": "And suddenly all the water became full of other people and other people."  # required
-  },
-  {
-    "src": "toto je pokračování stejného dokumentu",
-    "tgt": "this is a continuation of the same document"
-    # Additional keys stored for analysis
-  }
-]
-```
+Each item is a dictionary representing a document unit with:
+- **`src`** (required): Source text string
+- **`tgt`** (required): Dictionary mapping model names to translations
+  - Model names cannot be number-only (e.g., `"1"`, `"2"`) to avoid ordering issues
+  - For single-model evaluation, use any meaningful name (e.g., `{"default": "translation"}`)
+- **Additional keys**: Stored for analysis (e.g., `doc_id`, `instructions`, `validation`)
 
-**Listwise** template (multiple translations per item):
+Example document:
 ```python
 [
   {
@@ -141,59 +134,73 @@ pearmut run
 - **`single-stream`**: All users draw from a shared pool (random assignment)
 - **`dynamic`**: work in progress ⚠️
 
-### Protocol Templates
+### Protocol Options
 
-- **Pointwise**: Evaluate single output against single input
-  - `protocol`: DA, MQM, or ESA
-- **Listwise**: Evaluate multiple outputs simultaneously
-  - Same protocol options as pointwise
-  - `tgt` is a dictionary mapping model names to translations
-  - Model names cannot be number-only (e.g., `"1"`, `"2"`) to avoid ordering issues
-  - Set `shuffle: false` in `info` to disable automatic shuffling (default is `true`)
-  - Shuffling is applied at document level to shuffle entire columns consistently
+- **DA**: Score-based evaluation (0-100 scale)
+- **ESA**: Error spans + scores
+- **MQM**: Error spans + MQM categories + scores
+
+**Shuffling**: Model order is automatically shuffled at document level (entire columns) to avoid positional bias. Set `shuffle: false` in `info` to disable.
 
 ## Advanced Features
 
 ### Pre-filled Error Spans (ESA<sup>AI</sup>)
 
-Include `error_spans` to pre-fill annotations that users can review, modify, or delete:
+Include `error_spans` to pre-fill annotations that users can review, modify, or delete. Use a dictionary mapping model names to error span arrays:
 
 ```python
 {
   "src": "The quick brown fox jumps over the lazy dog.",
-  "tgt": "Rychlá hnědá liška skáče přes líného psa.",
-  "error_spans": [
-    {
-      "start_i": 0,         # character index start (inclusive)
-      "end_i": 5,           # character index end (inclusive)
-      "severity": "minor",  # "minor", "major", "neutral", or null
-      "category": null      # MQM category string or null
-    },
-    {
-      "start_i": 27,
-      "end_i": 32,
-      "severity": "major",
-      "category": null
-    }
-  ]
+  "tgt": {
+    "model_A": "Rychlá hnědá liška skáče přes líného psa.",
+    "model_B": "Rychlý hnědý liščák skákal přes lenivého psa."
+  },
+  "error_spans": {
+    "model_A": [
+      {
+        "start_i": 0,         # character index start (inclusive)
+        "end_i": 5,           # character index end (inclusive)
+        "severity": "minor",  # "minor", "major", "neutral", or null
+        "category": null      # MQM category string or null
+      }
+    ],
+    "model_B": [
+      {
+        "start_i": 27,
+        "end_i": 32,
+        "severity": "major",
+        "category": null
+      }
+    ]
+  }
 }
 ```
 
-For **listwise** template, `error_spans` is a 2D array (one per candidate). See [examples/esaai_prefilled.json](examples/esaai_prefilled.json).
+See [examples/esaai_prefilled.json](examples/esaai_prefilled.json).
 
 ### Tutorial and Attention Checks
 
-Add `validation` rules for tutorials or attention checks:
+Add `validation` rules for tutorials or attention checks. Use a dictionary mapping model names to validation rules:
 
 ```python
 {
   "src": "The quick brown fox jumps.",
-  "tgt": "Rychlá hnědá liška skáče.",
+  "tgt": {
+    "model_A": "Rychlá hnědá liška skáče.",
+    "model_B": "Hbitá hnědá liška poskakuje."
+  },
   "validation": {
-    "warning": "Please set score between 70-80.",  # shown on failure (omit for silent logging)
-    "score": [70, 80],                             # required score range [min, max]
-    "error_spans": [{"start_i": [0, 2], "end_i": [4, 8], "severity": "minor"}],  # expected spans
-    "allow_skip": true                             # show "skip tutorial" button
+    "model_A": {
+      "warning": "Please set score between 70-80.",  # shown on failure (omit for silent logging)
+      "score": [70, 80],                             # required score range [min, max]
+      "error_spans": [{"start_i": [0, 2], "end_i": [4, 8], "severity": "minor"}],  # expected spans
+      "allow_skip": true                             # show "skip tutorial" button
+    },
+    "model_B": {
+      "warning": "Please set score between 80-90.",
+      "score": [80, 90],
+      "allow_skip": true
+    }
   }
 }
 ```
@@ -203,17 +210,20 @@ Add `validation` rules for tutorials or attention checks:
 - **Loud attention checks**: Include `warning` without `allow_skip` to force retry
 - **Silent attention checks**: Omit `warning` to log failures without notification (quality control)
 
-For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
+Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
 
-**Listwise score comparison:** Use `score_greaterthan` to ensure one candidate scores higher than another:
+**Score comparison:** Use `score_greaterthan` to ensure one model scores higher than another:
 ```python
 {
   "src": "AI transforms industries.",
-  "tgt": ["UI transformuje průmysly.", "Umělá inteligence mění obory."],
-  "validation": [
-    {"warning": "A has error, score 20-40.", "score": [20, 40]},
-    {"warning": "B is correct and must score higher than A.", "score": [70, 90], "score_greaterthan": 0}
-  ]
+  "tgt": {
+    "model_A": "UI transformuje průmysly.",
+    "model_B": "Umělá inteligence mění obory."
+  },
+  "validation": {
+    "model_A": {"warning": "A has error, score 20-40.", "score": [20, 40]},
+    "model_B": {"warning": "B is correct and must score higher than A.", "score": [70, 90], "score_greaterthan": 0}
+  }
 }
 ```
 The `score_greaterthan` field specifies the index of the candidate that must have a lower score than the current candidate.
@@ -312,14 +322,9 @@ Completion tokens are shown at annotation end for verification (download correct
 
 ### Model Results Display
 
-Add `&results` to dashboard URL to show model rankings (requires valid token).
-Items need `model` field (pointwise) or model names as keys in `tgt` dict (listwise):
+Add `&results` to dashboard URL to show model rankings (requires valid token). Model names are automatically extracted from `tgt` dict keys:
 ```python
-# Pointwise
-{"doc_id": "1", "model": "CommandA", "src": "...", "tgt": "..."}
-
-# Listwise (model names are automatically extracted from tgt dict keys)
-{"doc_id": "2", "src": "...", "tgt": {"CommandA": "...", "Claude": "..."}}
+{"doc_id": "1", "src": "...", "tgt": {"CommandA": "...", "Claude": "...", "GPT-4": "..."}}
 ```
 See an example in [Campaign Management](#campaign-management)
 

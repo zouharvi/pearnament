@@ -35,11 +35,11 @@ type DataPayload = {
     time: number,
     payload: Array<{
         src: string,
-        tgt: string | Array<string> | Record<string, string>,  // Single, array, or dictionary of translation candidates
+        tgt: Record<string, string>,  // Dictionary of model_name -> translation
         checks?: any,
         instructions?: string,
-        error_spans?: Array<Array<ErrorSpan>> | Record<string, Array<ErrorSpan>>,  // Pre-filled error spans (array or dict)
-        validation?: Validation[] | Record<string, Validation> | undefined,  // Validation rules for this item
+        error_spans?: Record<string, Array<ErrorSpan>>,  // Pre-filled error spans (dict by model name)
+        validation?: Record<string, Validation> | undefined,  // Validation rules for this item
     }>,
     payload_existing?: {
         annotation: Array<DocumentResponse>,  // Always an array indexed by item and candidate
@@ -49,34 +49,20 @@ type DataPayload = {
 }
 
 /**
- * Ensures tgt is always an array of candidates and returns model names
+ * Converts tgt dictionary to arrays of candidates and model names
  */
-function ensureCandidateArray(tgt: string | Array<string> | Record<string, string>): [Array<string>, Array<string>] {
-    if (typeof tgt === 'string') {
-        return [[tgt], ['default']]
-    } else if (Array.isArray(tgt)) {
-        // Legacy format: array of candidates
-        return [tgt, tgt.map((_, i) => `candidate_${i}`)]
-    } else {
-        // New format: dictionary of model_name -> candidate
-        const model_names = Object.keys(tgt)
-        const candidates = model_names.map(name => tgt[name])
-        return [candidates, model_names]
-    }
+function ensureCandidateArray(tgt: Record<string, string>): [Array<string>, Array<string>] {
+    const model_names = Object.keys(tgt)
+    const candidates = model_names.map(name => tgt[name])
+    return [candidates, model_names]
 }
 
 /**
- * Gets error spans for a specific candidate
+ * Gets error spans for a specific candidate by model name
  */
-function getErrorSpansForCandidate(error_spans: Array<Array<ErrorSpan>> | Record<string, Array<ErrorSpan>> | undefined, cand_i: number, model_name: string): Array<ErrorSpan> {
+function getErrorSpansForCandidate(error_spans: Record<string, Array<ErrorSpan>> | undefined, model_name: string): Array<ErrorSpan> {
     if (!error_spans) return []
-    if (Array.isArray(error_spans)) {
-        // Legacy format: array indexed by position
-        return error_spans[cand_i] || []
-    } else {
-        // New format: dictionary indexed by model name
-        return error_spans[model_name] || []
-    }
+    return error_spans[model_name] || []
 }
 
 let response_log: Array<DocumentResponse> = []
@@ -201,17 +187,11 @@ async function display_next_payload(response: DataPayload) {
     // Store model names for each item
     model_names_per_item = data.map(item => ensureCandidateArray(item.tgt)[1])
     
-    // Handle validations (can be array or dict)
+    // Handle validations - convert dict validation to array using model names
     validations = data.map(item => {
         if (!item.validation) return undefined
-        if (Array.isArray(item.validation)) {
-            return item.validation
-        } else {
-            // Convert dict validation to array using model names
-            const [_, model_names] = ensureCandidateArray(item.tgt)
-            const validationDict = item.validation as Record<string, Validation>
-            return model_names.map(name => validationDict[name])
-        }
+        const [_, model_names] = ensureCandidateArray(item.tgt)
+        return model_names.map(name => item.validation![name])
     })
     output_blocks = []
     action_log = [{ "time": Date.now() / 1000, "action": "load" }]
@@ -463,7 +443,7 @@ async function display_next_payload(response: DataPayload) {
 
             // Load error spans - use payload_existing if available, otherwise use item.error_spans
             const existingErrorSpans = response.payload_existing?.annotation[item_i]?.[cand_i]?.error_spans
-            const candidateSpans = existingErrorSpans || getErrorSpansForCandidate(item.error_spans, cand_i, model_name)
+            const candidateSpans = existingErrorSpans || getErrorSpansForCandidate(item.error_spans, model_name)
 
             if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
                 // Only reset if loading from payload_existing (to avoid duplicating pre-filled spans)

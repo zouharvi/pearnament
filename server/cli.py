@@ -96,14 +96,13 @@ def _shuffle_listwise_document(doc, rng):
     return shuffled_doc
 
 
-def _validate_item_structure(items, template):
+def _validate_item_structure(items):
     """
     Validate that items have the correct structure.
     Items should be lists of dictionaries with 'src' and 'tgt' keys.
     
     Args:
         items: List of item dictionaries to validate
-        template: Template type ('pointwise' or 'listwise') for type validation
     """
     if not isinstance(items, list):
         raise ValueError("Items must be a list")
@@ -118,30 +117,20 @@ def _validate_item_structure(items, template):
         if not isinstance(item['src'], str):
             raise ValueError("Item 'src' must be a string")
         
-        # Validate tgt type based on template
-        if template == 'listwise':
-            # Accept both dict (new format) and list (legacy format)
-            if isinstance(item['tgt'], dict):
-                # New format: dictionary
-                # Check that all keys are strings and not number-only
-                for key in item['tgt'].keys():
-                    if not isinstance(key, str):
-                        raise ValueError("All model names in 'tgt' dict must be strings")
-                    if key.isdigit():
-                        raise ValueError(f"Model name '{key}' cannot be number-only (would cause ordering issues in JavaScript)")
-                # Check that all values in tgt dict are strings
-                if not all(isinstance(v, str) for v in item['tgt'].values()):
-                    raise ValueError("All values in 'tgt' dict must be strings for listwise template")
-            elif isinstance(item['tgt'], list):
-                # Legacy format: list (kept for backward compatibility)
-                # Check that all elements in tgt list are strings
-                if not all(isinstance(t, str) for t in item['tgt']):
-                    raise ValueError("All elements in 'tgt' list must be strings for listwise template")
-            else:
-                raise ValueError("Item 'tgt' must be a dictionary or list for listwise template")
-        elif template == 'pointwise':
-            if not isinstance(item['tgt'], str):
-                raise ValueError("Item 'tgt' must be a string for pointwise template")
+        # Validate tgt is always a dictionary
+        if not isinstance(item['tgt'], dict):
+            raise ValueError("Item 'tgt' must be a dictionary mapping model names to translations")
+        
+        # Check that all keys are strings and not number-only
+        for key in item['tgt'].keys():
+            if not isinstance(key, str):
+                raise ValueError("All model names in 'tgt' dict must be strings")
+            if key.isdigit():
+                raise ValueError(f"Model name '{key}' cannot be number-only (would cause ordering issues in JavaScript)")
+        
+        # Check that all values in tgt dict are strings
+        if not all(isinstance(v, str) for v in item['tgt'].values()):
+            raise ValueError("All values in 'tgt' dict must be strings")
 
 
 def _add_single_campaign(data_file, overwrite, server):
@@ -170,11 +159,10 @@ def _add_single_campaign(data_file, overwrite, server):
         raise ValueError("Campaign data must contain 'data' field.")
     if "assignment" not in campaign_data["info"]:
         raise ValueError("Campaign 'info' must contain 'assignment' field.")
-    if "template" not in campaign_data["info"]:
-        raise ValueError("Campaign 'info' must contain 'template' field.")
-
+    
+    # Template is optional and defaults to 'basic' (formerly 'listwise')
     assignment = campaign_data["info"]["assignment"]
-    template = campaign_data["info"]["template"]
+    template = campaign_data["info"].get("template", "basic")
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
@@ -183,9 +171,9 @@ def _add_single_campaign(data_file, overwrite, server):
     users_spec = campaign_data["info"].get("users")
     user_tokens = {}  # user_id -> {"pass": ..., "fail": ...}
 
-    # Get shuffle setting (default is True for listwise)
+    # Get shuffle setting (default is True)
     shuffle = campaign_data["info"].get("shuffle", True)
-    if template == "listwise" and not isinstance(shuffle, bool):
+    if not isinstance(shuffle, bool):
         raise ValueError("'shuffle' parameter in info must be a boolean")
     
     if assignment == "task-based":
@@ -200,12 +188,12 @@ def _add_single_campaign(data_file, overwrite, server):
         for task_i, task in enumerate(tasks):
             for doc_i, doc in enumerate(task):
                 try:
-                    _validate_item_structure(doc, template)
+                    _validate_item_structure(doc)
                 except ValueError as e:
                     raise ValueError(f"Task {task_i}, document {doc_i}: {e}")
         
-        # Apply shuffling for listwise templates if enabled
-        if template == "listwise" and shuffle:
+        # Apply shuffling if enabled
+        if shuffle:
             for task_i, task in enumerate(tasks):
                 for doc_i, doc in enumerate(task):
                     # Create a deterministic RNG for this specific document
@@ -224,12 +212,12 @@ def _add_single_campaign(data_file, overwrite, server):
         # Validate item structure for single-stream
         for doc_i, doc in enumerate(tasks):
             try:
-                _validate_item_structure(doc, template)
+                _validate_item_structure(doc)
             except ValueError as e:
                 raise ValueError(f"Document {doc_i}: {e}")
         
-        # Apply shuffling for listwise templates if enabled
-        if template == "listwise" and shuffle:
+        # Apply shuffling if enabled
+        if shuffle:
             for doc_i, doc in enumerate(tasks):
                 # Create a deterministic RNG for this specific document
                 doc_rng = random.Random(f"{campaign_data['campaign_id']}_doc{doc_i}")
@@ -317,7 +305,7 @@ def _add_single_campaign(data_file, overwrite, server):
             "time_end": None,
             "time": 0,
             "url": (
-                f"{campaign_data["info"]["template"]}.html"
+                f"basic.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),
