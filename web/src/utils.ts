@@ -471,13 +471,11 @@ export function validateKwayResponse(
  * Check if any validation has allow_skip enabled
  * Handles both simple validations and arrays of validations
  */
-export function hasAllowSkip(validations: (Validation | Validation[] | undefined)[]): boolean {
+export function hasAllowSkip(validations: (Validation[] | undefined)[]): boolean {
     for (const v of validations) {
         if (!v) continue;
         if (Array.isArray(v)) {
             if (v.some(vv => vv?.allow_skip === true)) return true;
-        } else {
-            if (v.allow_skip === true) return true;
         }
     }
     return false;
