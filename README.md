@@ -313,7 +313,7 @@ If you use this work in your paper, please cite as following.
     author={Vilém Zouhar},
     title={Pearmut: Platform for Evaluating and Reviewing of Multilingual Tasks},
     url={https://github.com/zouharvi/pearmut/},
-    year={2025},
+    year={2026},
 }
 ```
 

@@ -41,7 +41,7 @@ jobs:
     permissions:
       # this permission is mandatory for trusted publishing
       id-token: write
-
+      
     # Dedicated environments with protections for publishing are strongly recommended.
     environment:
       name: pypi
@@ -58,3 +58,30 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+
+  tag-release:
+    needs: pypi-publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Create and push tag
+        run: |
+          # Parse version from pyproject.toml using python (safe for quotes/spaces)
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          
+          echo "Detected version: $VERSION"
+          
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create and push tag
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
