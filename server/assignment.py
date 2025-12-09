@@ -84,9 +84,13 @@ def get_i_item_taskbased(
 
     # try to get existing annotations if any
     items_existing = get_db_log_item(campaign_id, user_id, item_i)
+    payload_existing = None
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        latest_item = items_existing[-1]
+        payload_existing = {"annotations": latest_item["annotations"]}
+        if "comment" in latest_item:
+            payload_existing["comment"] = latest_item["comment"]
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"][user_id]):
         return JSONResponse(
@@ -107,7 +111,7 @@ def get_i_item_taskbased(
                 if k.startswith("protocol")
             },
             "payload": data_all[campaign_id]["data"][user_id][item_i]
-        } | ({"payload_existing": payload_existing} if items_existing else {}),
+        } | ({"payload_existing": payload_existing} if payload_existing else {}),
         status_code=200
     )
 
@@ -127,9 +131,13 @@ def get_i_item_singlestream(
     # try to get existing annotations if any
     # note the None user_id since it is shared
     items_existing = get_db_log_item(campaign_id, None, item_i)
+    payload_existing = None
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        latest_item = items_existing[-1]
+        payload_existing = {"annotations": latest_item["annotations"]}
+        if "comment" in latest_item:
+            payload_existing["comment"] = latest_item["comment"]
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"]):
         return JSONResponse(
@@ -150,7 +158,7 @@ def get_i_item_singlestream(
                 if k.startswith("protocol")
             },
             "payload": data_all[campaign_id]["data"][item_i]
-        } | ({"payload_existing": payload_existing} if items_existing else {}),
+        } | ({"payload_existing": payload_existing} if payload_existing else {}),
         status_code=200
     )
 
@@ -173,9 +181,13 @@ def get_next_item_taskbased(
 
     # try to get existing annotations if any
     items_existing = get_db_log_item(campaign_id, user_id, item_i)
+    payload_existing = None
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        latest_item = items_existing[-1]
+        payload_existing = {"annotations": latest_item["annotations"]}
+        if "comment" in latest_item:
+            payload_existing["comment"] = latest_item["comment"]
 
     return JSONResponse(
         content={
@@ -190,7 +202,7 @@ def get_next_item_taskbased(
                 if k.startswith("protocol")
             },
             "payload": data_all[campaign_id]["data"][user_id][item_i]
-        } | ({"payload_existing": payload_existing} if items_existing else {}),
+        } | ({"payload_existing": payload_existing} if payload_existing else {}),
         status_code=200
     )
 
@@ -222,9 +234,13 @@ def get_next_item_singlestream(
     # try to get existing annotations if any
     # note the None user_id since it is shared
     items_existing = get_db_log_item(campaign_id, None, item_i)
+    payload_existing = None
     if items_existing:
         # get the latest ones
-        payload_existing = items_existing[-1]["annotations"]
+        latest_item = items_existing[-1]
+        payload_existing = {"annotations": latest_item["annotations"]}
+        if "comment" in latest_item:
+            payload_existing["comment"] = latest_item["comment"]
 
     return JSONResponse(
         content={
@@ -239,7 +255,7 @@ def get_next_item_singlestream(
                 if k.startswith("protocol")
             },
             "payload": data_all[campaign_id]["data"][item_i]
-        } | ({"payload_existing": payload_existing} if items_existing else {}),
+        } | ({"payload_existing": payload_existing} if payload_existing else {}),
         status_code=200
     )
 

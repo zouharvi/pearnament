@@ -41,7 +41,10 @@ type DataPayload = {
         error_spans?: Array<Array<ErrorSpan>>,  // Pre-filled error spans (2D array, one per candidate)
         validation?: Validation[] | undefined,  // Validation rules for this item
     }>,
-    payload_existing?: Array<DocumentResponse>,
+    payload_existing?: {
+        annotations: Array<DocumentResponse>,
+        comment?: string
+    },
     info: ProtocolInfo
 }
 
@@ -158,12 +161,18 @@ async function display_next_payload(response: DataPayload) {
     let data = response.payload
     // Initialize response log - use payload_existing if available
     if (response.payload_existing) {
-        response_log = response.payload_existing.map(docResponses =>
+        response_log = response.payload_existing.annotations.map(docResponses =>
             docResponses.map(r => ({
                 "score": r.score,
                 "error_spans": r.error_spans ? [...r.error_spans] : [],
             }))
         )
+        // Reload comment if it exists
+        if (response.payload_existing.comment) {
+            $("#settings_comment").val(response.payload_existing.comment)
+        } else {
+            $("#settings_comment").val("")
+        }
     } else {
         response_log = data.map(item =>
             ensureCandidateArray(item.tgt).map(_ => ({
@@ -171,6 +180,7 @@ async function display_next_payload(response: DataPayload) {
                 "error_spans": [],
             }))
         )
+        $("#settings_comment").val("")
     }
     validations = data.map(item => item.validation)
     output_blocks = []
@@ -423,7 +433,7 @@ async function display_next_payload(response: DataPayload) {
             }
 
             // Load error spans - use payload_existing if available, otherwise use item.error_spans
-            const existingErrorSpans = response.payload_existing?.[item_i]?.[cand_i]?.error_spans
+            const existingErrorSpans = response.payload_existing?.annotations[item_i]?.[cand_i]?.error_spans
             const candidateSpans = existingErrorSpans || getErrorSpansForCandidate(item.error_spans, cand_i)
 
             if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
@@ -500,7 +510,7 @@ async function display_next_payload(response: DataPayload) {
             }
 
             // Pre-fill score from payload_existing if available
-            const existingScore = response.payload_existing?.[item_i]?.[cand_i]?.score
+            const existingScore = response.payload_existing?.annotations[item_i]?.[cand_i]?.score
             if (existingScore != null && protocol_score) {
                 slider.val(existingScore)
                 label.text(`${existingScore}/100`)
@@ -656,6 +666,16 @@ $("#button_next").on("click", async function () {
         // @ts-ignore
         payload_local["validations"] = validationResult
     }
+    
+    // Include comment if provided
+    const comment = $("#settings_comment").val() as string
+    if (comment && comment.trim() !== "") {
+        // @ts-ignore
+        payload_local["comment"] = comment.trim()
+        // Clear comment after submission
+        $("#settings_comment").val("")
+    }
+    
     let outcome = await log_response(payload_local, payload!.info.item_i)
     if (outcome == null || outcome == false) {
         notify("Error submitting the annotations. Please try again.")
