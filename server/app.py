@@ -86,6 +86,20 @@ async def _log_response(request: LogResponseRequest):
             request.payload["validations"]
         )
 
+    # Handle comment submission with telemetry
+    if "comment" in request.payload and request.payload["comment"]:
+        comment_data = {
+            "campaign_id": campaign_id,
+            "user_id": user_id,
+            "item_i": item_i,
+            "comment": request.payload["comment"],
+            "telemetry": request.payload.get("telemetry", {}),
+        }
+        # Append to comments log
+        comments_path = f"{ROOT}/data/outputs/{campaign_id}_comments.jsonl"
+        with open(comments_path, "a") as f:
+            f.write(json.dumps(comment_data) + "\n")
+
     update_progress(
         campaign_id, user_id, tasks_data, progress_data, request.item_i, request.payload
     )
@@ -324,44 +338,6 @@ async def _download_progress(
         status_code=200,
         headers={"Content-Disposition": 'inline; filename="progress.json"'}
     )
-
-
-class SubmitCommentRequest(BaseModel):
-    campaign_id: str
-    user_id: str
-    comment: str
-    telemetry: dict[str, Any]
-
-
-@app.post("/submit-comment")
-async def _submit_comment(request: SubmitCommentRequest):
-    campaign_id = request.campaign_id
-    user_id = request.user_id
-    
-    if campaign_id not in progress_data:
-        return JSONResponse(content="Unknown campaign ID", status_code=400)
-    if user_id not in progress_data[campaign_id]:
-        return JSONResponse(content="Unknown user ID", status_code=400)
-    
-    # Validate campaign_id to prevent path traversal (campaign_id is already validated to exist in progress_data)
-    # This check ensures the campaign_id doesn't contain path traversal characters
-    if ".." in campaign_id or "/" in campaign_id or "\\" in campaign_id:
-        return JSONResponse(content="Invalid campaign ID", status_code=400)
-    
-    # Save comment with telemetry to a separate log file
-    comment_data = {
-        "campaign_id": campaign_id,
-        "user_id": user_id,
-        "comment": request.comment,
-        "telemetry": request.telemetry,
-    }
-    
-    # Append to comments log
-    comments_path = f"{ROOT}/data/outputs/{campaign_id}_comments.jsonl"
-    with open(comments_path, "a") as f:
-        f.write(json.dumps(comment_data) + "\n")
-    
-    return JSONResponse(content="Comment submitted successfully", status_code=200)
 
 
 static_dir = f"{os.path.dirname(os.path.abspath(__file__))}/static/"

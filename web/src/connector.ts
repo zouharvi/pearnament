@@ -3,14 +3,6 @@ import $ from 'jquery';
 
 let searchParams = new URLSearchParams(window.location.search)
 
-export interface Telemetry {
-  timestamp: number;
-  user_agent: string;
-  screen_resolution: string;
-  viewport_size: string;
-  url: string;
-}
-
 export async function get_next_item<T>(): Promise<T | null> {
   /* Fetch the next item for the user from the server. */
   let user_id = searchParams.get("user_id");
@@ -124,42 +116,5 @@ export async function get_i_item<T>(item_i: number): Promise<T | null> {
     delay *= 2
     // if more than 2 minutes, give up
     if (delay > 120) return null
-  }
-}
-
-export async function submit_comment(comment: string, telemetry: Telemetry): Promise<boolean> {
-  /* Submit a user comment with telemetry data to the server. */
-  let user_id = searchParams.get("user_id");
-  let campaign_id = searchParams.get("campaign_id");
-
-  try {
-    await new Promise<void>((resolve, reject) => {
-      $.ajax({
-        url: `/submit-comment`,
-        method: "POST",
-        data: JSON.stringify({ 
-          "campaign_id": campaign_id, 
-          "user_id": user_id, 
-          "comment": comment,
-          "telemetry": telemetry
-        }),
-        contentType: "application/json",
-        dataType: "json",
-        success: (x) => resolve(),
-        error: (XMLHttpRequest, textStatus, errorThrown) => {
-          console.error("Error submitting comment:", textStatus, errorThrown);
-          if (XMLHttpRequest.status === 0) {
-            reject("Can't reach server.");
-            return;
-          }
-          reject(`${XMLHttpRequest.status}: ${XMLHttpRequest.responseText}`);
-        },
-      });
-    });
-    return true;
-  } catch (e) {
-    console.log("Error submitting comment:", e);
-    notify(`Error submitting comment: ${e}`);
-    return false;
   }
 }

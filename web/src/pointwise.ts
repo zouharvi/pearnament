@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import { get_next_item, get_i_item, log_response, submit_comment, Telemetry } from './connector';
+import { get_next_item, get_i_item, log_response } from './connector';
 import {
   notify,
   ErrorSpan,
@@ -585,6 +585,24 @@ $("#button_next").on("click", async function () {
     // @ts-ignore
     payload_local["validations"] = validationResult
   }
+  
+  // Include comment and telemetry if comment is provided
+  const comment = $("#settings_comment").val() as string
+  if (comment && comment.trim() !== "") {
+    // @ts-ignore
+    payload_local["comment"] = comment.trim()
+    // @ts-ignore
+    payload_local["telemetry"] = {
+      timestamp: Date.now(),
+      user_agent: navigator.userAgent,
+      screen_resolution: `${window.screen.width}x${window.screen.height}`,
+      viewport_size: `${window.innerWidth}x${window.innerHeight}`,
+      url: window.location.href,
+    }
+    // Clear comment after submission
+    $("#settings_comment").val("")
+  }
+  
   let outcome = await log_response(payload_local, payload!.info.item_i)
   if (outcome == null || outcome == false) {
     notify("Error submitting the annotations. Please try again.")
@@ -625,33 +643,3 @@ $("#settings_word_level").on("change", function () {
 })
 $("#settings_word_level").prop("checked", localStorage.getItem("setting_word_level") == "true")
 $("#settings_word_level").trigger("change")
-
-// comment submission handler
-$("#button_submit_comment").on("click", async function() {
-  const comment = $("#settings_comment").val() as string
-  if (!comment || comment.trim() === "") {
-    notify("Please enter a comment before submitting.")
-    return
-  }
-  
-  // Collect telemetry data
-  const telemetry: Telemetry = {
-    timestamp: Date.now(),
-    user_agent: navigator.userAgent,
-    screen_resolution: `${window.screen.width}x${window.screen.height}`,
-    viewport_size: `${window.innerWidth}x${window.innerHeight}`,
-    url: window.location.href,
-  }
-  
-  $("#comment_status").text("Submitting...")
-  const success = await submit_comment(comment, telemetry)
-  
-  if (success) {
-    $("#comment_status").text("✓ Submitted").css("color", "green")
-    $("#settings_comment").val("")
-    setTimeout(() => $("#comment_status").text(""), 3000)
-  } else {
-    $("#comment_status").text("✗ Failed").css("color", "red")
-    setTimeout(() => $("#comment_status").text(""), 3000)
-  }
-})
