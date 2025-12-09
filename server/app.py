@@ -86,19 +86,6 @@ async def _log_response(request: LogResponseRequest):
             request.payload["validations"]
         )
 
-    # Handle comment submission
-    if "comment" in request.payload and request.payload["comment"]:
-        comment_data = {
-            "campaign_id": campaign_id,
-            "user_id": user_id,
-            "item_i": item_i,
-            "comment": request.payload["comment"],
-        }
-        # Append to comments log
-        comments_path = f"{ROOT}/data/outputs/{campaign_id}_comments.jsonl"
-        with open(comments_path, "a") as f:
-            f.write(json.dumps(comment_data) + "\n")
-
     update_progress(
         campaign_id, user_id, tasks_data, progress_data, request.item_i, request.payload
     )
