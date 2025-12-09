@@ -52,7 +52,7 @@ export type ValidationErrorSpan = {
 export type Validation = {
     warning?: string,  // Warning message to display on failure (attention check mode)
     score?: [number, number],  // [min, max] range for valid score
-    score_gt?: number,  // For listwise: this candidate's score must be greater than score at this index
+    score_greaterthan?: number,  // For listwise: this candidate's score must be greater than score at this index
     error_spans?: Array<ValidationErrorSpan>,  // Expected error spans
     allow_skip?: boolean  // Show skip tutorial button
 }
@@ -439,23 +439,19 @@ export function validateListwiseResponse(
         return false;
     }
 
-    // Check score_gt condition if specified
-    if (validation.score_gt !== undefined) {
-        const otherIndex = validation.score_gt;
+    console.log("A", response.score, validation);
+    // Check score_greaterthan condition if specified
+    if (validation.score_greaterthan !== undefined) {
+        const otherIndex = validation.score_greaterthan;
         
         // Validate the index is within bounds
         if (otherIndex < 0 || otherIndex >= responses.length) {
-            console.error(`Invalid score_gt index: ${otherIndex}`);
-            return false;
-        }
-        
-        // Check for self-reference (candidate comparing with itself)
-        if (otherIndex === cand_i) {
-            console.error(`score_gt cannot reference itself (index ${cand_i})`);
+            console.error(`Invalid score_greaterthan index: ${otherIndex}`);
             return false;
         }
         
         const otherScore = responses[otherIndex].score;
+        console.log("B", response.score, otherScore);
         // Both scores must be set (not null) to perform comparison
         // Null scores indicate the user hasn't provided a score yet
         if (response.score === null || otherScore === null) {

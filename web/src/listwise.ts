@@ -9,7 +9,6 @@ import {
     createSpanToolbox,
     updateToolboxPosition,
     Validation,
-    validateResponse,
     validateListwiseResponse,
     hasAllowSkip,
     DataFinished,
@@ -607,7 +606,7 @@ async function performValidation(): Promise<Array<boolean> | null> {
             if (validations[item_ij] == undefined) {
                 continue
             }
-            // Use validateListwiseResponse to support score_gt conditions
+            // Use validateListwiseResponse to support score_greaterthan conditions
             const result = validateListwiseResponse(response_log[item_ij], validations[item_ij]!, cand_i)
 
 

@@ -341,15 +341,15 @@ class TestItemValidation:
             with pytest.raises(ValueError, match="All elements in 'tgt' list must be strings"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
-    def test_listwise_with_score_gt_validation(self):
-        """Test that listwise campaigns with score_gt validation can be loaded."""
+    def test_listwise_with_score_greaterthan_validation(self):
+        """Test that listwise campaigns with score_greaterthan validation can be loaded."""
         from pearmut.cli import _add_single_campaign
 
         with tempfile.TemporaryDirectory() as tmpdir:
             campaign_file = os.path.join(tmpdir, "campaign.json")
             with open(campaign_file, "w") as f:
                 json.dump({
-                    "campaign_id": "test_listwise_score_gt",
+                    "campaign_id": "test_listwise_score_greaterthan",
                     "info": {
                         "assignment": "task-based",
                         "template": "listwise",
@@ -365,7 +365,7 @@ class TestItemValidation:
                                         {
                                             "warning": "A must score higher than B.",
                                             "score": [80, 100],
-                                            "score_gt": 1
+                                            "score_greaterthan": 1
                                         },
                                         {
                                             "warning": "B should score lower.",
@@ -378,5 +378,5 @@ class TestItemValidation:
                     ]
                 }, f)
 
-            # Should not raise - the score_gt field is valid
+            # Should not raise - the score_greaterthan field is valid
             _add_single_campaign(campaign_file, True, "http://localhost:8001")
