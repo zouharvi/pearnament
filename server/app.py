@@ -4,7 +4,7 @@ import os
 import statistics
 from typing import Any
 
-from fastapi import FastAPI, Query, Request, Response
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
