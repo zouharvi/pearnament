@@ -78,15 +78,11 @@ def _validate_item_structure(items, template):
             raise ValueError("Item 'src' must be a string")
         
         # Validate tgt type based on template
-        if template == 'listwise':
-            if not isinstance(item['tgt'], list):
-                raise ValueError("Item 'tgt' must be a list for listwise template")
-            # Check that all elements in tgt list are strings
-            if not all(isinstance(t, str) for t in item['tgt']):
-                raise ValueError("All elements in 'tgt' list must be strings for listwise template")
-        elif template == 'pointwise':
-            if not isinstance(item['tgt'], str):
-                raise ValueError("Item 'tgt' must be a string for pointwise template")
+        if not isinstance(item['tgt'], list):
+            raise ValueError("Item 'tgt' must be a list for listwise template")
+        # Check that all elements in tgt list are strings
+        if not all(isinstance(t, str) for t in item['tgt']):
+            raise ValueError("All elements in 'tgt' list must be strings for listwise template")
 
 
 def _add_single_campaign(data_file, overwrite, server):
@@ -240,7 +236,7 @@ def _add_single_campaign(data_file, overwrite, server):
             "time_end": None,
             "time": 0,
             "url": (
-                f"{campaign_data["info"]["template"]}.html"
+                f"{campaign_data['info'].get("template", "basic")}.html"
                 f"?campaign_id={urllib.parse.quote_plus(campaign_data['campaign_id'])}"
                 f"&user_id={user_id}"
             ),

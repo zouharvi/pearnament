@@ -1,14 +1,14 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "pointwise",
+    
     "protocol": "DA"
   },
   "campaign_id": "da_enuk",
   "data": [
     [
       [
-        {
+    "template": "",
           "doc_id": "en-uk_UA_#_news_#_guardian.231311_#_0",
           "model": "ONLINE-B",
           "src": "I am a tweakment holdout. When will wrinkles, bad teeth and big pores be back in fashion?\nTotally neutral question, no right or wrong answer: how do you feel about salmon sperm?",

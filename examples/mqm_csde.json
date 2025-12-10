@@ -1,14 +1,14 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "pointwise",
+    
     "protocol": "MQM"
   },
   "campaign_id": "mqm_csde",
   "data": [
     [
       [
-        {
+    "template": "",
           "doc_id": "cs-de_DE_#_edu_#_edu03620_#_0",
           "model": "Shy",
           "src": "Pracuj s turistickou mapou a rozhodni, zda tvrzení je nebo není pravdivé, případně doplň správně větu.\n(Mapu si můžeš zvětšit kliknutím.)\nVe výřezu mapy jsou vrstvenice znázorněné po 20 metrech.\nVe výřezu mapy jsou vrstvenice znázorněné po 10 metrech.\nNejvyšším bodem na výřezu mapy je Babí lom.\nLeží v nadmořské výšce 450 m n. m. NE\nVrchol Babí lom – rozhledna leží v nadmořské výšce 521 metrů.\nModrá turistická značka nevede ve vyšší nadmořské výšce než 400 m n. m. NE\nRozcestí U studánky leží v nadmořské výšce 480 metrů.\nModrá turistická značka vede přes vrstvenici označující nadmořskou výšku 500 m n. m. ANO\nVrcholem, označeným kótou 438 m n. m. prochází modrá turistická značka.\nCesta po modré turistické značce od rozcestí U Studánky k rozcestí Babí lom bude stoupat.\nCesta po modré turistické značce od rozcestí U Studánky k rozcestí Pod Babím lomem povede po rovině.\nklesat\ndo kopce\nz kopce",

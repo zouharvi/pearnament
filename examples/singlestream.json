@@ -1,7 +1,7 @@
 {
   "info": {
     "assignment": "single-stream",
-    "template": "pointwise",
+    
     "users": 10,
     "protocol": "ESA"
   },
@@ -9,7 +9,7 @@
   "data": [
     [
       {
-        "doc_id": "cs-de_DE_#_edu_#_edu03620_#_0",
+    "template": "",
         "model": "Shy",
         "src": "Pracuj s turistickou mapou a rozhodni, zda tvrzení je nebo není pravdivé, případně doplň správně větu.\n(Mapu si můžeš zvětšit kliknutím.)\nVe výřezu mapy jsou vrstvenice znázorněné po 20 metrech.\nVe výřezu mapy jsou vrstvenice znázorněné po 10 metrech.\nNejvyšším bodem na výřezu mapy je Babí lom.\nLeží v nadmořské výšce 450 m n. m. NE\nVrchol Babí lom – rozhledna leží v nadmořské výšce 521 metrů.\nModrá turistická značka nevede ve vyšší nadmořské výšce než 400 m n. m. NE\nRozcestí U studánky leží v nadmořské výšce 480 metrů.\nModrá turistická značka vede přes vrstvenici označující nadmořskou výšku 500 m n. m. ANO\nVrcholem, označeným kótou 438 m n. m. prochází modrá turistická značka.\nCesta po modré turistické značce od rozcestí U Studánky k rozcestí Babí lom bude stoupat.\nCesta po modré turistické značce od rozcestí U Studánky k rozcestí Pod Babím lomem povede po rovině.\nklesat\ndo kopce\nz kopce",
         "tgt": "Arbeite mit der Wanderkarte und entscheide, ob die Aussage wahr oder falsch ist, oder ergänze den Satz richtig.  \n(Du kannst die Karte durch Klicken vergrößern.)  \nIm Kartenausschnitt sind die Höhenlinien im Abstand von 10 Metern eingezeichnet.  \nDer höchste Punkt im Kartenausschnitt ist der Babí lom.  \nEr liegt auf einer Höhe von 521 m ü. M.  \nDie Wegkreuzung „U Studánky“ liegt auf einer Höhe von 480 Metern.  \nDer blaue Wanderweg führt über die Höhenlinie mit der Höheangabe 500 m ü. M.  \nDer blaue Wanderweg verläuft nicht in einer Höhe über 400 m ü. M.  \nDer Gipfel, der mit der Höhenangabe 438 m ü. M. gekennzeichnet ist, wird vom blauen Wanderweg überquert.  \nDer Weg entlang der blauen Wandermarkierung von der Wegkreuzung „U Studánky“ zur Wegkreuzung „Babí lom“ verläuft bergauf.  \nDer Weg entlang der blauen Wandermarkierung von der Wegkreuzung „U Studánky“ zur Wegkreuzung „Pod Babím lomem“ verläuft auf ebenem Gelände.  \n**Mögliche Ergänzungen:**  \n– bergauf  \n– bergab  \n– auf ebenem Gelände",

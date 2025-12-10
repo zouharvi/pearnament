@@ -21,7 +21,6 @@ class TestItemValidation:
                     "campaign_id": "test_valid",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [
@@ -73,7 +72,6 @@ class TestItemValidation:
                     "campaign_id": "test_valid_ss",
                     "info": {
                         "assignment": "single-stream",
-                        "template": "pointwise",
                         "users": 2,
                     },
                     "data": [
@@ -98,7 +96,6 @@ class TestItemValidation:
                     "campaign_id": "test_missing_src",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [
@@ -123,7 +120,6 @@ class TestItemValidation:
                     "campaign_id": "test_missing_tgt",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [
@@ -148,7 +144,6 @@ class TestItemValidation:
                     "campaign_id": "test_not_dict",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [
@@ -173,7 +168,6 @@ class TestItemValidation:
                     "campaign_id": "test_doc_not_list",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [
@@ -196,7 +190,6 @@ class TestItemValidation:
                     "campaign_id": "test_ss_missing_src",
                     "info": {
                         "assignment": "single-stream",
-                        "template": "pointwise",
                         "users": 2,
                     },
                     "data": [
@@ -220,7 +213,6 @@ class TestItemValidation:
                     "campaign_id": "test_extra_keys",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [
@@ -252,7 +244,6 @@ class TestItemValidation:
                     "campaign_id": "test_src_not_string",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [
@@ -277,7 +268,6 @@ class TestItemValidation:
                     "campaign_id": "test_pointwise_tgt_not_string",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                     },
                     "data": [
                         [

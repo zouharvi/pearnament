@@ -1,14 +1,14 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "pointwise",
+    
     "protocol": "ESA"
   },
   "campaign_id": "esa_encs",
   "data": [
     [
       [
-        {
+    "template": "",
           "doc_id": "en-cs_CZ_#_news_#_guardian.228996_#_0",
           "model": "DeepSeek-V3",
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",

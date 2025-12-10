@@ -1,14 +1,14 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "pointwise",
+    
     "protocol": "ESA"
   },
   "campaign_id": "esaai_demo",
   "data": [
     [
       [
-        {
+    "template": "",
           "doc_id": "esaai_demo_1",
           "model": "System-A",
           "src": "The quick brown fox jumps over the lazy dog.",

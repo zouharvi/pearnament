@@ -18,7 +18,6 @@
 - [Campaign Configuration](#campaign-configuration)
   - [Basic Structure](#basic-structure)
   - [Assignment Types](#assignment-types)
-  - [Protocol Templates](#protocol-templates)
 - [Advanced Features](#advanced-features)
   - [Pre-filled Error Spans (ESA<sup>AI</sup>)](#pre-filled-error-spans-esaai)
   - [Tutorial and Attention Checks](#tutorial-and-attention-checks)
@@ -56,7 +55,6 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
 {
   "info": {
     "assignment": "task-based",
-    "template": "pointwise",
     # DA: scores
     # ESA: error spans and scores
     # MQM: error spans, categories, and scores
@@ -116,13 +114,6 @@ pearmut run
 - **`task-based`**: Each user has predefined items
 - **`single-stream`**: All users draw from a shared pool (random assignment)
 - **`dynamic`**: work in progress ⚠️
-
-### Protocol Templates
-
-- **Pointwise**: Evaluate single output against single input
-  - `protocol`: DA, MQM, or ESA
-- **Listwise**: Evaluate multiple outputs simultaneously
-  - Same protocol options as pointwise
 
 ## Advanced Features
 

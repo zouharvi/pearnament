@@ -52,7 +52,7 @@ export type ValidationErrorSpan = {
 export type Validation = {
     warning?: string,  // Warning message to display on failure (attention check mode)
     score?: [number, number],  // [min, max] range for valid score
-    score_greaterthan?: number,  // For listwise: this candidate's score must be greater than score at this index
+    score_greaterthan?: number,
     error_spans?: Array<ValidationErrorSpan>,  // Expected error spans
     allow_skip?: boolean  // Show skip tutorial button
 }
@@ -61,7 +61,7 @@ export type ValidationResult = {
     failed_items: number[],  // indices of failed items
 }
 
-// MQM Error Categories shared between pointwise and listwise
+// MQM Error Categories
 export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
     "": [],
     "Terminology": [
@@ -416,7 +416,7 @@ export function validateResponse(
 }
 
 /**
- * Validate a listwise response array with score comparison support
+ * Validate a response array with score comparison support
  * @param responses - Array of responses for all candidates
  * @param validations - Array of validation rules for all candidates
  * @param cand_i - Index of the candidate being validated
@@ -483,7 +483,7 @@ export function hasAllowSkip(validations: (Validation | Validation[] | undefined
     return false;
 }
 
-// Shared type for finished/completed response (used by both pointwise and listwise)
+// Shared type for finished/completed response
 export type DataFinished = {
     status: string,
     progress: Array<boolean>,

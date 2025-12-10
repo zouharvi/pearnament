@@ -26,7 +26,6 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": assets_dir,
                     },
                     "data": [[[{"src": "a", "tgt": "b"}]]]
@@ -46,7 +45,6 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {"destination": "assets/my_videos"},
                     },
                     "data": [[[{"src": "a", "tgt": "b"}]]]
@@ -69,7 +67,6 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {"source": assets_dir},
                     },
                     "data": [[[{"src": "a", "tgt": "b"}]]]
@@ -92,7 +89,6 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {
                             "source": assets_dir,
                             "destination": "my_videos"
@@ -122,7 +118,6 @@ class TestAssetsValidation:
                     "campaign_id": "test_campaign",
                     "info": {
                         "assignment": "task-based",
-                        "template": "pointwise",
                         "assets": {
                             "source": "/nonexistent/path",
                             "destination": "assets/my_videos"

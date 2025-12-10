@@ -7,8 +7,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 module.exports = (env, argv) => {
   return {
     entry: {
-      pointwise: './src/pointwise.ts',
-      listwise: './src/listwise.ts',
+      basic: './src/basic.ts',
       dashboard: './src/dashboard.ts',
     },
     output: {
@@ -49,14 +48,9 @@ module.exports = (env, argv) => {
         chunks: [],
       }),
       new HtmlWebpackPlugin({
-        template: './src/pointwise.html',
-        filename: 'pointwise.html',
-        chunks: ['pointwise'],
-      }),
-      new HtmlWebpackPlugin({
-        template: './src/listwise.html',
-        filename: 'listwise.html',
-        chunks: ['listwise'],
+        template: './src/basic.html',
+        filename: 'basic.html',
+        chunks: ['basic'],
       }),
       new HtmlWebpackPlugin({
         template: './src/dashboard.html',
