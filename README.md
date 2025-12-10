@@ -116,8 +116,7 @@ pearmut run
 
 ### Shuffling Model Translations
 
-By default, Pearmut randomly shuffles which model's translation is used for each document when loading campaigns. This ensures unbiased evaluation by preventing systematic ordering effects.
-
+By default, Pearmut randomly shuffles the order in which models are shown per each item in order to avoid positional bias.
 The `shuffle` parameter in campaign `info` controls this behavior:
 ```python
 {
@@ -128,33 +127,6 @@ The `shuffle` parameter in campaign `info` controls this behavior:
   },
   "campaign_id": "my_campaign",
   "data": [...]
-}
-```
-
-**Key Features:**
-- **Document-level shuffling**: All segments within a document are translated by the same model, maintaining coherence
-- **Consistent across segments**: If a document has multiple segments, they all use the same randomly selected model
-- **Deterministic randomness**: Uses campaign ID as seed, so the same campaign always shuffles the same way
-- **Preserves related data**: `error_spans` and `validation` rules are shuffled along with translations
-
-**Example:**
-```python
-{
-  "src": "Hello world",
-  "tgt": {
-    "model_A": "Hola mundo",
-    "model_B": "Bonjour monde",
-    "model_C": "Ciao mondo"
-  }
-}
-```
-After shuffling, each document randomly gets one model's translation, e.g.:
-```python
-{
-  "src": "Hello world",
-  "tgt": {
-    "model_B": "Bonjour monde"  # Randomly selected
-  }
 }
 ```
 
