@@ -106,10 +106,7 @@ class TestAssetsValidation:
 
     def test_assets_source_must_exist(self):
         """Test that assets source directory must exist."""
-        from pearmut.cli import ROOT, STATIC_DIR, _add_single_campaign
-
-        # Create static directory for this test
-        os.makedirs(f"{STATIC_DIR}/assets", exist_ok=True)
+        from pearmut.cli import ROOT, _add_single_campaign
 
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create data directory
