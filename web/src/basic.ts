@@ -412,19 +412,29 @@ async function display_next_payload(response: DataPayload) {
                 })
             }
 
-            // Load error spans - use payload_existing if available, otherwise use item.error_spans
-
-            console.log(response)
-            console.log(response.payload_existing)
-            const existingSpans = response.payload[item_i]?.error_spans[model];
-            const candidateSpans = response.payload_existing?.annotation[item_i][model].error_spans
+            // Load error spans - use existing if available, otherwise use pre-filled from item
+            const existingErrorSpans = response.payload_existing?.annotation[item_i]?.[model]?.error_spans
+            const itemErrorSpans = item.error_spans?.[model]
+            
+            // If we have existing spans, they're already in response_log, just display them
+            // Otherwise, add pre-filled spans from item.error_spans to response_log
+            const candidateSpans = existingErrorSpans || itemErrorSpans || []
 
             if (!no_tgt_char && protocol_error_spans && candidateSpans.length > 0) {
+                // Only push to response_log if these are pre-filled spans (not existing annotations)
+                if (!existingErrorSpans && itemErrorSpans) {
+                    response_log[item_i][model].error_spans = []
+                }
+                
                 for (const prefilled of candidateSpans) {
                     const left_i = prefilled.start_i, right_i = prefilled.end_i
                     if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
                     let error_span: ErrorSpan = { ...prefilled }
-                    response_log[item_i][model].error_spans.push(error_span)
+                    
+                    // Only add to response_log if these are pre-filled (not existing)
+                    if (!existingErrorSpans && itemErrorSpans) {
+                        response_log[item_i][model].error_spans.push(error_span)
+                    }
 
                     let toolbox = createSpanToolbox(protocol_error_categories, error_span, tgt_chars_objs, left_i, right_i, () => {
                         response_log[item_i][model].error_spans = response_log[item_i][model].error_spans.filter(s => s != error_span)
