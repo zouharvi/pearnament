@@ -113,7 +113,7 @@ def _validate_item_structure(items):
 
 def _shuffle_campaign_data(campaign_data, rng):
     """
-    Shuffle campaign data at the document level.
+    Shuffle campaign data at the document level in-place
     
     For each document, randomly selects which model's translation to use,
     but keeps all segments within the same document using the same model.
@@ -121,82 +121,31 @@ def _shuffle_campaign_data(campaign_data, rng):
     Args:
         campaign_data: The campaign data dictionary
         rng: Random number generator with campaign-specific seed
-    
-    Returns:
-        Modified campaign_data with shuffled translations
     """
     def shuffle_document(doc):
         """Shuffle a single document (list of items) by picking a random model."""
-        # Return as-is if doc is not a list (validation will catch it later)
-        if not isinstance(doc, list):
-            return doc
-        
-        if not doc:
-            return doc
-        
         # Get all model names from the first item's tgt dict
-        first_item = doc[0]
-        if 'tgt' not in first_item or not isinstance(first_item['tgt'], dict):
-            return doc
-        
-        model_names = list(first_item['tgt'].keys())
-        if len(model_names) == 0:
-            # No models available, return as-is
-            return doc
-        if len(model_names) == 1:
-            # No shuffling needed if there's only one model
-            return doc
-        
-        # Randomly select one model for this entire document
-        selected_model = rng.choice(model_names)
+        model_names = list(doc[0]['tgt'].keys())
+        rng.shuffle(model_names)
         
         # Create new document with only the selected model's translations
-        shuffled_doc = []
         for item in doc:
-            new_item = dict(item)
-            if 'tgt' in new_item and isinstance(new_item['tgt'], dict):
-                # Keep only the selected model's translation if it exists
-                if selected_model in new_item['tgt']:
-                    new_item['tgt'] = {selected_model: new_item['tgt'][selected_model]}
-                else:
-                    # If selected model is not in this item, skip shuffling for this item
-                    # This maintains the original tgt structure
-                    pass
-            
-            # Shuffle error_spans if present
-            if 'error_spans' in new_item and isinstance(new_item['error_spans'], dict):
-                if selected_model in new_item['error_spans']:
-                    new_item['error_spans'] = {selected_model: new_item['error_spans'][selected_model]}
-                else:
-                    # If selected model doesn't have error_spans, remove the field
-                    del new_item['error_spans']
-            
-            # Shuffle validation if present
-            if 'validation' in new_item and isinstance(new_item['validation'], dict):
-                if selected_model in new_item['validation']:
-                    new_item['validation'] = {selected_model: new_item['validation'][selected_model]}
-                else:
-                    # If selected model doesn't have validation, remove the field
-                    del new_item['validation']
-            
-            shuffled_doc.append(new_item)
-        
-        return shuffled_doc
+            item["tgt"] = {
+                model: item["tgt"][model]
+                for model in model_names
+            }
     
     assignment = campaign_data["info"]["assignment"]
     
     if assignment == "task-based":
         # Shuffle each task's documents
-        shuffled_tasks = []
         for task in campaign_data["data"]:
-            shuffled_task = [shuffle_document(doc) for doc in task]
-            shuffled_tasks.append(shuffled_task)
-        campaign_data["data"] = shuffled_tasks
+            for doc in task:
+                shuffle_document(doc)
     elif assignment == "single-stream":
         # Shuffle each document in the shared pool
-        campaign_data["data"] = [shuffle_document(doc) for doc in campaign_data["data"]]
-    
-    return campaign_data
+        for doc in campaign_data["data"]:
+            shuffle_document(doc)
 
 
 def _add_single_campaign(data_file, overwrite, server):
@@ -313,12 +262,6 @@ def _add_single_campaign(data_file, overwrite, server):
     else:
         raise ValueError("'users' must be an integer or a list.")
 
-    # Shuffle data if shuffle parameter is true (defaults to true)
-    # This happens after validation to ensure we're working with valid data
-    should_shuffle = campaign_data["info"].get("shuffle", True)
-    if should_shuffle:
-        campaign_data = _shuffle_campaign_data(campaign_data, rng)
-
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
     if assignment == "task-based":
@@ -420,6 +363,11 @@ def _add_single_campaign(data_file, overwrite, server):
         os.symlink(assets_real_path, symlink_path, target_is_directory=True)
         print(f"Assets symlinked: {symlink_path} -> {assets_real_path}")
 
+
+    # Shuffle data if shuffle parameter is true (defaults to true)
+    should_shuffle = campaign_data["info"].get("shuffle", True)
+    if should_shuffle:
+        _shuffle_campaign_data(campaign_data, rng)
 
     # commit to transaction
     with open(f"{ROOT}/data/tasks/{campaign_data['campaign_id']}.json", "w") as f:

@@ -29,6 +29,7 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
+                    "shuffle": False,
                 },
                 "data": {
                     "user1": [
@@ -61,6 +62,7 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
+                    "shuffle": False,
                 },
                 "data": {
                     "user1": [
@@ -92,6 +94,7 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
+                    "shuffle": False,
                 }
             }
         }
@@ -212,6 +215,7 @@ class TestSingleStream:
             "campaign1": {
                 "info": {
                     "assignment": "single-stream",
+                    "shuffle": False,
                 },
                 "data": [
                     [{"src": "a", "tgt": "b"}],
