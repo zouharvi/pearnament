@@ -78,10 +78,9 @@ def _validate_item_structure(items):
             raise ValueError("Item 'src' must be a string")
         
         # Validate tgt is a dictionary (basic template with model names)
-        # For backward compatibility, also accept strings for single-candidate items
         if isinstance(item['tgt'], str):
-            # Single string is OK for backward compatibility
-            pass
+            # String not allowed - suggest using dictionary
+            raise ValueError(f"Item 'tgt' must be a dictionary mapping model names to translations. For single translation, use {{\"default\": \"{item['tgt']}\"}}")
         elif isinstance(item['tgt'], dict):
             # Dictionary mapping model names to translations
             # Validate that model names don't contain only numbers (JavaScript ordering issue)
@@ -93,7 +92,7 @@ def _validate_item_structure(items):
                 if not isinstance(translation, str):
                     raise ValueError(f"Translation for model '{model_name}' must be a string")
         else:
-            raise ValueError("Item 'tgt' must be a dictionary mapping model names to translations, or a single string")
+            raise ValueError("Item 'tgt' must be a dictionary mapping model names to translations")
         
         # Validate error_spans structure if present
         if 'error_spans' in item:

@@ -35,7 +35,7 @@ type DataPayload = {
     time: number,
     payload: Array<{
         src: string,
-        tgt: string | Record<string, string>,  // Single string or dictionary of model->translation
+        tgt: Record<string, string>,  // Dictionary of model->translation
         checks?: any,
         instructions?: string,
         error_spans?: Record<string, Array<ErrorSpan>>,  // Pre-filled error spans keyed by model name
@@ -49,12 +49,15 @@ type DataPayload = {
 }
 
 /**
- * Ensures tgt is always a Record mapping model names to translations
- * For backward compatibility, single string becomes {"default": string}
+ * Ensures tgt is a Record mapping model names to translations
+ * Throws error if tgt is not a dictionary
  */
 function ensureCandidateRecord(tgt: string | Record<string, string>): Record<string, string> {
     if (typeof tgt === 'string') {
-        return { "default": tgt }
+        throw new Error('Item "tgt" must be a dictionary mapping model names to translations. For single translation, use {"default": "' + tgt + '"}')
+    }
+    if (typeof tgt !== 'object' || Array.isArray(tgt)) {
+        throw new Error('Item "tgt" must be a dictionary mapping model names to translations')
     }
     return tgt
 }

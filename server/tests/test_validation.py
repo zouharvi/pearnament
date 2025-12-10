@@ -244,14 +244,14 @@ class TestItemValidation:
 
 
 
-    def test_tgt_must_be_dict_or_string(self):
-        """Test that tgt must be a dictionary or string (basic template)."""
+    def test_tgt_must_be_dict_only(self):
+        """Test that tgt must be a dictionary (no longer accepts strings)."""
         from pearmut.cli import _add_single_campaign
 
         with tempfile.TemporaryDirectory() as tmpdir:
             campaign_file = os.path.join(tmpdir, "campaign.json")
             
-            # Test with string - should work for backward compatibility
+            # Test with string - should now fail with helpful error
             with open(campaign_file, "w") as f:
                 json.dump({
                     "campaign_id": "test_tgt_string",
@@ -267,8 +267,9 @@ class TestItemValidation:
                         ]
                     ]
                 }, f)
-            # Should not raise
-            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+            # Should fail with suggestion to use {"default": "..."}
+            with pytest.raises(ValueError, match='For single translation, use \\{"default": "single translation"\\}'):
+                _add_single_campaign(campaign_file, True, "http://localhost:8001")
             
             # Test with invalid type - should fail
             with open(campaign_file, "w") as f:
@@ -287,7 +288,7 @@ class TestItemValidation:
                     ]
                 }, f)
 
-            with pytest.raises(ValueError, match="'tgt' must be a dictionary mapping model names to translations, or a single string"):
+            with pytest.raises(ValueError, match="'tgt' must be a dictionary mapping model names to translations"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_tgt_elements_must_be_strings(self):
