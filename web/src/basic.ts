@@ -49,14 +49,6 @@ type DataPayload = {
 }
 
 /**
- * Ensures tgt is a Record mapping model names to translations
- * Assumes data has been validated by backend
- */
-function ensureCandidateRecord(tgt: Record<string, string>): Record<string, string> {
-    return tgt
-}
-
-/**
  * Gets error spans for a specific model
  */
 function getErrorSpansForModel(error_spans: Record<string, Array<ErrorSpan>> | undefined, model: string): Array<ErrorSpan> {
@@ -177,9 +169,8 @@ async function display_next_payload(response: DataPayload) {
         }
     } else {
         response_log = data.map(item => {
-            const candidates = ensureCandidateRecord(item.tgt)
             const result: DocumentResponse = {}
-            for (const model of Object.keys(candidates)) {
+            for (const model of Object.keys(item.tgt)) {
                 result[model] = {
                     "score": null,
                     "error_spans": [],
@@ -212,10 +203,6 @@ async function display_next_payload(response: DataPayload) {
 
     for (let item_i = 0; item_i < data.length; item_i++) {
         let item = data[item_i]
-        // Ensure tgt is a Record mapping model names to translations
-        let candidates = ensureCandidateRecord(item.tgt)
-        let modelNames = Object.keys(candidates)
-
         // character-level stuff won't work on media tags
         let no_src_char = isMediaContent(item.src)
 
@@ -237,7 +224,7 @@ async function display_next_payload(response: DataPayload) {
         // Add each candidate
         let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
 
-        for (const [model, tgt] of Object.entries(candidates)) {
+        for (const [model, tgt] of Object.entries(item.tgt)) {
             let no_tgt_char = isMediaContent(tgt)
             let tgt_chars = no_tgt_char ? tgt : (contentToCharSpans(tgt, "tgt_char") + (protocol_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
 
