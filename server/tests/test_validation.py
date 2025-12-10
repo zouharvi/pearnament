@@ -11,7 +11,7 @@ class TestItemValidation:
     """Tests for item structure validation."""
 
     def test_valid_basic_task_based(self):
-        """Test that valid basic (listwise) task-based campaign passes validation."""
+        """Test that valid basic task-based campaign passes validation."""
         from pearmut.cli import _add_single_campaign
 
         with tempfile.TemporaryDirectory() as tmpdir:

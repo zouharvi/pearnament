@@ -180,8 +180,7 @@ The `validation` field is an array (one per candidate). Dashboard shows ✅/❌ 
 }
 ```
 The `score_greaterthan` field specifies the index of the candidate that must have a lower score than the current candidate.
-
-See [examples/tutorial_listwise.json](examples/tutorial_listwise.json) and [examples/tutorial_listwise_score_greaterthan.json](examples/tutorial_listwise_score_greaterthan.json).
+See [examples/tutorial_kway.json](examples/tutorial_kway.json).
 
 ### Single-stream Assignment
 

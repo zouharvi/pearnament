@@ -59,7 +59,7 @@ def _validate_item_structure(items):
     """
     Validate that items have the correct structure.
     Items should be lists of dictionaries with 'src' and 'tgt' keys.
-    All items use the basic template format with tgt as an array.
+    All items now use the basic template format with tgt as an array.
     
     Args:
         items: List of item dictionaries to validate
