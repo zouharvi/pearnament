@@ -12,9 +12,6 @@ import psutil
 
 from .utils import ROOT, load_progress_data, save_progress_data
 
-# Static directory path (constant for consistency)
-STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 load_progress_data(warn=None)
 
