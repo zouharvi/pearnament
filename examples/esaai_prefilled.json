@@ -14,20 +14,22 @@
             "System-A": "Rychlá hnědá liška skáče přes líného psa."
           },
           "instructions": "Review the translation. Pre-filled error spans show potential issues.",
-          "error_spans": [
-            {
-              "start_i": 0,
-              "end_i": 5,
-              "severity": "minor",
-              "category": null
-            },
-            {
-              "start_i": 27,
-              "end_i": 32,
-              "severity": "major",
-              "category": null
-            }
-          ]
+          "error_spans": {
+            "System-A": [
+              {
+                "start_i": 0,
+                "end_i": 5,
+                "severity": "minor",
+                "category": null
+              },
+              {
+                "start_i": 27,
+                "end_i": 32,
+                "severity": "major",
+                "category": null
+              }
+            ]
+          }
         },
         {
           "doc_id": "esaai_demo_2",
@@ -36,14 +38,16 @@
             "System-A": "Strojový překlad se v posledních letech výrazně zlepšil."
           },
           "instructions": "This sentence has one pre-filled error span for review.",
-          "error_spans": [
-            {
-              "start_i": 9,
-              "end_i": 15,
-              "severity": "minor",
-              "category": null
-            }
-          ]
+          "error_spans": {
+            "System-A": [
+              {
+                "start_i": 9,
+                "end_i": 15,
+                "severity": "minor",
+                "category": null
+              }
+            ]
+          }
         }
       ],
       [

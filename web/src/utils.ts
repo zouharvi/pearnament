@@ -423,13 +423,10 @@ export function validateResponse(
  * @returns true if validation passes, false otherwise
  */
 export function validateKwayResponse(
+    response: Response,
     responses: Record<string, Response>,
-    validations: Record<string, Validation>,
-    model_name: string
+    validation: Validation | undefined,
 ): boolean {
-    const response = responses[model_name];
-    const validation = validations[model_name];
-    
     if (!validation) {
         return true;
     }
@@ -439,7 +436,6 @@ export function validateKwayResponse(
         return false;
     }
 
-    console.log("A", response.score, validation);
     // Check score_greaterthan condition if specified
     if (validation.score_greaterthan !== undefined) {
         const other_model_name = validation.score_greaterthan;
@@ -451,7 +447,6 @@ export function validateKwayResponse(
         }
         
         const otherScore = responses[other_model_name].score;
-        console.log("B", response.score, otherScore);
         // Both scores must be set (not null) to perform comparison
         // Null scores indicate the user hasn't provided a score yet
         if (response.score === null || otherScore === null) {
@@ -471,12 +466,11 @@ export function validateKwayResponse(
  * Check if any validation has allow_skip enabled
  * Handles both simple validations and arrays of validations
  */
-export function hasAllowSkip(validations: (Validation[] | undefined)[]): boolean {
-    for (const v of validations) {
-        if (!v) continue;
-        if (Array.isArray(v)) {
-            if (v.some(vv => vv?.allow_skip === true)) return true;
-        }
+export function hasAllowSkip(validations: (Record<string, Validation> | undefined)[]): boolean {
+    for (const validation of validations) {
+        if (!validation) continue;
+        if (Object.values(validation).some(v => v.allow_skip))
+            return true;
     }
     return false;
 }
