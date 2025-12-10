@@ -140,7 +140,10 @@ def _shuffle_campaign_data(campaign_data, rng):
             return doc
         
         model_names = list(first_item['tgt'].keys())
-        if len(model_names) <= 1:
+        if len(model_names) == 0:
+            # No models available, return as-is
+            return doc
+        if len(model_names) == 1:
             # No shuffling needed if there's only one model
             return doc
         
@@ -152,8 +155,13 @@ def _shuffle_campaign_data(campaign_data, rng):
         for item in doc:
             new_item = dict(item)
             if 'tgt' in new_item and isinstance(new_item['tgt'], dict):
-                # Keep only the selected model's translation
-                new_item['tgt'] = {selected_model: new_item['tgt'][selected_model]}
+                # Keep only the selected model's translation if it exists
+                if selected_model in new_item['tgt']:
+                    new_item['tgt'] = {selected_model: new_item['tgt'][selected_model]}
+                else:
+                    # If selected model is not in this item, skip shuffling for this item
+                    # This maintains the original tgt structure
+                    pass
             
             # Shuffle error_spans if present
             if 'error_spans' in new_item and isinstance(new_item['error_spans'], dict):

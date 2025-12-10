@@ -316,7 +316,7 @@ class TestShuffleData:
         """Test that different documents can be assigned different models."""
         from pearmut.cli import _shuffle_campaign_data
         
-        # Use a seed that will give us different models for different documents
+        # Use a specific seed for reproducibility
         rng = random.Random(12345)
         campaign_data = {
             "info": {"assignment": "task-based"},
@@ -345,8 +345,9 @@ class TestShuffleData:
         for doc in result["data"][0]:
             models.append(list(doc[0]["tgt"].keys())[0])
         
-        # With 4 documents and 2 models, we should likely see both models used
-        # (though theoretically all could be the same due to randomness)
-        # At minimum, check that valid models are selected
+        # Check that valid models are selected
         for model in models:
             assert model in ["model_A", "model_B"]
+        
+        # Verify each document has only one model
+        assert all(len(doc[0]["tgt"]) == 1 for doc in result["data"][0])
