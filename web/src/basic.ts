@@ -700,7 +700,10 @@ $("#settings_approximate_alignment").on("change", function () {
     settings_show_alignment = $("#settings_approximate_alignment").is(":checked")
     localStorage.setItem("setting_approximate_alignment", settings_show_alignment.toString())
 })
-$("#settings_approximate_alignment").prop("checked", localStorage.getItem("setting_approximate_alignment") == "true")
+if (localStorage.getItem("setting_approximate_alignment") != null) {
+    settings_show_alignment = localStorage.getItem("setting_approximate_alignment") == "true"
+}
+$("#settings_approximate_alignment").prop("checked", settings_show_alignment)
 $("#settings_approximate_alignment").trigger("change")
 
 // word-level annotation setting
@@ -708,5 +711,8 @@ $("#settings_word_level").on("change", function () {
     settings_word_level = $("#settings_word_level").is(":checked")
     localStorage.setItem("setting_word_level", settings_word_level.toString())
 })
-$("#settings_word_level").prop("checked", localStorage.getItem("setting_word_level") == "true")
+if (localStorage.getItem("setting_word_level") != null) {
+    settings_word_level = localStorage.getItem("setting_word_level") == "true"
+}
+$("#settings_word_level").prop("checked", settings_word_level)
 $("#settings_word_level").trigger("change")
