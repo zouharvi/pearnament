@@ -69,11 +69,11 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
         {
           "instructions": "Evaluate translation from en to cs_CZ",  # message to show to users above the first item
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",
-          "tgt": "Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ..."
+          "tgt": ["Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ..."]
         },
         {
           "src": "I'm not sure I can remember exactly when I sensed it. Maybe it was when some...",
-          "tgt": "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!"
+          "tgt": ["Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!"]
         }
         ...
       ],
@@ -93,11 +93,11 @@ Task items are protocol-specific. For ESA/DA/MQM protocols, each item is a dicti
 [
   {
     "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.",  # required
-    "tgt": "And suddenly all the water became full of other people and other people."  # required
+    "tgt": ["And suddenly all the water became full of other people and other people."]  # required (array)
   },
   {
     "src": "toto je pokračování stejného dokumentu",
-    "tgt": "this is a continuation of the same document"
+    "tgt": ["this is a continuation of the same document"]
     # Additional keys stored for analysis
   }
 ]
@@ -124,20 +124,22 @@ Include `error_spans` to pre-fill annotations that users can review, modify, or 
 ```python
 {
   "src": "The quick brown fox jumps over the lazy dog.",
-  "tgt": "Rychlá hnědá liška skáče přes líného psa.",
+  "tgt": ["Rychlá hnědá liška skáče přes líného psa."],
   "error_spans": [
-    {
-      "start_i": 0,         # character index start (inclusive)
-      "end_i": 5,           # character index end (inclusive)
-      "severity": "minor",  # "minor", "major", "neutral", or null
-      "category": null      # MQM category string or null
-    },
-    {
-      "start_i": 27,
-      "end_i": 32,
-      "severity": "major",
-      "category": null
-    }
+    [
+      {
+        "start_i": 0,         # character index start (inclusive)
+        "end_i": 5,           # character index end (inclusive)
+        "severity": "minor",  # "minor", "major", "neutral", or null
+        "category": null      # MQM category string or null
+      },
+      {
+        "start_i": 27,
+        "end_i": 32,
+        "severity": "major",
+        "category": null
+      }
+    ]
   ]
 }
 ```
@@ -151,13 +153,15 @@ Add `validation` rules for tutorials or attention checks:
 ```python
 {
   "src": "The quick brown fox jumps.",
-  "tgt": "Rychlá hnědá liška skáče.",
-  "validation": {
-    "warning": "Please set score between 70-80.",  # shown on failure (omit for silent logging)
-    "score": [70, 80],                             # required score range [min, max]
-    "error_spans": [{"start_i": [0, 2], "end_i": [4, 8], "severity": "minor"}],  # expected spans
-    "allow_skip": true                             # show "skip tutorial" button
-  }
+  "tgt": ["Rychlá hnědá liška skáče."],
+  "validation": [
+    {
+      "warning": "Please set score between 70-80.",  # shown on failure (omit for silent logging)
+      "score": [70, 80],                             # required score range [min, max]
+      "error_spans": [{"start_i": [0, 2], "end_i": [4, 8], "severity": "minor"}],  # expected spans
+      "allow_skip": true                             # show "skip tutorial" button
+    }
+  ]
 }
 ```
 
