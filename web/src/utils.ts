@@ -52,7 +52,7 @@ export type ValidationErrorSpan = {
 export type Validation = {
     warning?: string,  // Warning message to display on failure (attention check mode)
     score?: [number, number],  // [min, max] range for valid score
-    score_greaterthan?: number,  // For kway: this candidate's score must be greater than score at this index
+    score_greaterthan?: string,  // For kway: this candidate's score must be greater than the score of this model name
     error_spans?: Array<ValidationErrorSpan>,  // Expected error spans
     allow_skip?: boolean  // Show skip tutorial button
 }
@@ -416,19 +416,19 @@ export function validateResponse(
 }
 
 /**
- * Validate a kway response array with score comparison support
- * @param responses - Array of responses for all candidates
- * @param validations - Array of validation rules for all candidates
- * @param cand_i - Index of the candidate being validated
+ * Validate a kway response dictionary with score comparison support
+ * @param responses - Dictionary of responses for all candidates (model_name -> response)
+ * @param validations - Dictionary of validation rules for all candidates (model_name -> validation)
+ * @param model_name - Name of the model/candidate being validated
  * @returns true if validation passes, false otherwise
  */
 export function validateKwayResponse(
-    responses: Response[],
-    validations: Validation[],
-    cand_i: number
+    responses: Record<string, Response>,
+    validations: Record<string, Validation>,
+    model_name: string
 ): boolean {
-    const response = responses[cand_i];
-    const validation = validations[cand_i];
+    const response = responses[model_name];
+    const validation = validations[model_name];
     
     if (!validation) {
         return true;
@@ -442,15 +442,15 @@ export function validateKwayResponse(
     console.log("A", response.score, validation);
     // Check score_greaterthan condition if specified
     if (validation.score_greaterthan !== undefined) {
-        const otherIndex = validation.score_greaterthan;
+        const other_model_name = validation.score_greaterthan;
         
-        // Validate the index is within bounds
-        if (otherIndex < 0 || otherIndex >= responses.length) {
-            console.error(`Invalid score_greaterthan index: ${otherIndex}`);
+        // Validate the other model exists
+        if (!(other_model_name in responses)) {
+            console.error(`Invalid score_greaterthan model name: ${other_model_name}`);
             return false;
         }
         
-        const otherScore = responses[otherIndex].score;
+        const otherScore = responses[other_model_name].score;
         console.log("B", response.score, otherScore);
         // Both scores must be set (not null) to perform comparison
         // Null scores indicate the user hasn't provided a score yet

@@ -83,10 +83,6 @@ def _shuffle_kway_document(doc, rng):
     # Apply the same shuffling to all items in the document
     shuffled_doc = []
     for item in doc:
-        if not isinstance(item, dict) or 'tgt' not in item or not isinstance(item['tgt'], dict):
-            shuffled_doc.append(item)
-            continue
-        
         # Create a new dict with the shuffled order
         shuffled_tgt = {name: item['tgt'][name] for name in shuffled_model_names if name in item['tgt']}
         shuffled_item = item.copy()
