@@ -5,7 +5,6 @@ let searchParams = new URLSearchParams(window.location.search)
 
 let campaign_ids = searchParams.getAll("campaign_id")
 let tokens = searchParams.getAll("token")
-let showResults = searchParams.has("results")
 
 // verify that tokens length is either 0 or same as campaign_ids length
 if (tokens.length != 0 && tokens.length != campaign_ids.length) {
@@ -42,7 +41,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
 
     // Fetch results if requested and token is available
     let resultsData = null;
-    if (showResults && token !== null && token !== undefined) {
+    if (token !== null && token !== undefined) {
         try {
             resultsData = await $.ajax({
                 url: `/dashboard-results`,
@@ -73,7 +72,6 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         // sum
         let progress_count = (data[user_id]["progress"] as Array<boolean>).reduce((a, b) => a + (b ? 1 : 0), 0)
         let progress_total = (data[user_id]["progress"] as Array<boolean>).length
-        let failed_checks = data[user_id]["failed_checks"] || 0
         let threshold_passed = data[user_id]["threshold_passed"]
         let status = ''
         if (data[user_id]["time"] == 0)
@@ -154,7 +152,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     }
 
     // link to campaign-specific dashboard
-    let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}${showResults ? '&results' : ''}`
+    let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}`
     let el = $(`
         <div class="white-box">
         <h3>${campaign_id} <a href="${dashboard_url}">🔗</a></h3>

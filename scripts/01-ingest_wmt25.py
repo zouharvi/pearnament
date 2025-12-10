@@ -75,7 +75,6 @@ for langs, data in data_out.items():
             {
                 "info": {
                     "assignment": "task-based",
-                    "template": "basic",
                     "protocol": config,
                 },
                 "campaign_id": fname,

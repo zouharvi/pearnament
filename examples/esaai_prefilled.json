@@ -1,7 +1,6 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "basic",
     "protocol": "ESA"
   },
   "campaign_id": "esaai_demo",
@@ -11,12 +10,12 @@
         {
           "doc_id": "esaai_demo_1",
           "src": "The quick brown fox jumps over the lazy dog.",
-          "tgt": [
-            "Rychlá hnědá liška skáče přes líného psa."
-          ],
+          "tgt": {
+            "System-A": "Rychlá hnědá liška skáče přes líného psa."
+          },
           "instructions": "Review the translation. Pre-filled error spans show potential issues.",
-          "error_spans": [
-            [
+          "error_spans": {
+            "System-A": [
               {
                 "start_i": 0,
                 "end_i": 5,
@@ -30,20 +29,17 @@
                 "category": null
               }
             ]
-          ],
-          "models": [
-            "System-A"
-          ]
+          }
         },
         {
           "doc_id": "esaai_demo_2",
           "src": "Machine translation has improved significantly in recent years.",
-          "tgt": [
-            "Strojový překlad se v posledních letech výrazně zlepšil."
-          ],
+          "tgt": {
+            "System-A": "Strojový překlad se v posledních letech výrazně zlepšil."
+          },
           "instructions": "This sentence has one pre-filled error span for review.",
-          "error_spans": [
-            [
+          "error_spans": {
+            "System-A": [
               {
                 "start_i": 9,
                 "end_i": 15,
@@ -51,23 +47,17 @@
                 "category": null
               }
             ]
-          ],
-          "models": [
-            "System-A"
-          ]
+          }
         }
       ],
       [
         {
           "doc_id": "esaai_demo_3",
           "src": "Artificial intelligence is transforming how we work and live.",
-          "tgt": [
-            "Umělá inteligence mění způsob, jakým pracujeme a žijeme."
-          ],
-          "instructions": "No pre-filled errors - annotate from scratch.",
-          "models": [
-            "System-B"
-          ]
+          "tgt": {
+            "System-B": "Umělá inteligence mění způsob, jakým pracujeme a žijeme."
+          },
+          "instructions": "No pre-filled errors - annotate from scratch."
         }
       ]
     ]

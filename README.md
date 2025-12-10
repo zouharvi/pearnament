@@ -1,6 +1,6 @@
 # Pearmut 🍐
 
-**Platform for Evaluation and Reviewing of Multilingual Tasks** — Evaluate model outputs for translation and NLP tasks with support for multimodal data (text, video, audio, images) and multiple annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437), and more!).
+**Platform for Evaluation and Reviewing of Multilingual Tasks**: Evaluate model outputs for translation and NLP tasks with support for multimodal data (text, video, audio, images) and multiple annotation protocols ([DA](https://aclanthology.org/N15-1124/), [ESA](https://aclanthology.org/2024.wmt-1.131/), [ESA<sup>AI</sup>](https://aclanthology.org/2025.naacl-long.255/), [MQM](https://doi.org/10.1162/tacl_a_00437), and more!).
 
 [![PyPi version](https://badgen.net/pypi/v/pearmut/)](https://pypi.org/project/pearmut)
 &nbsp;
@@ -30,19 +30,16 @@
 - [Development](#development)
 - [Citation](#citation)
 
-
-**Error Span** — A highlighted segment of text marked as containing an error, with optional severity (`minor`, `major`, `neutral`) and MQM category labels.
-
 ## Quick Start
 
 Install and run locally without cloning:
 ```bash
 pip install pearmut
 # Download example campaigns
-wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/esa_encs.json
-wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/da_enuk.json
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/esa.json
+wget https://raw.githubusercontent.com/zouharvi/pearmut/refs/heads/main/examples/da.json
 # Load and start
-pearmut add esa_encs.json da_enuk.json
+pearmut add esa.json da.json
 pearmut run
 ```
 
@@ -194,7 +191,6 @@ All annotators draw from a shared pool with random assignment:
     "campaign_id": "my campaign 6",
     "info": {
         "assignment": "single-stream",
-        "template": "basic",
         # DA: scores
         # MQM: error spans and categories
         # ESA: error spans and scores
@@ -276,16 +272,7 @@ Completion tokens are shown at annotation end for verification (download correct
 
 <img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
 
-### Model Results Display
-
-Add `&results` to dashboard URL to show model rankings (requires valid token).
-Items need `models` field to display results:
-```python
-{"doc_id": "1", "models": ["CommandA"], "src": "...", "tgt": ["..."]}
-{"doc_id": "2", "models": ["CommandA", "Claude"], "src": "...", "tgt": ["...", "..."]}
-```
-See an example in [Campaign Management](#campaign-management)
-
+When tokens are supplied, the dashboard will try to show model rankings based on the names in the dictionaries.
 
 ## Terminology
 
@@ -293,13 +280,13 @@ See an example in [Campaign Management](#campaign-management)
   - **Campaign File**: A JSON file that defines the campaign configuration, including the campaign ID, assignment type, protocol settings, and annotation data.
   - **Campaign ID**: A unique identifier for a campaign (e.g., `"wmt25_#_en-cs_CZ"`). Used to reference and manage specific campaigns.
 - **Task**: A unit of work assigned to a user. In task-based assignment, each task consists of a predefined set of items for a specific user.
-- **Item** — A single annotation unit within a task. For translation evaluation, an item typically represents a document (source text and target translation). Items can contain text, images, audio, or video.
-- **Document** — A collection of one or more segments (sentence pairs or text units) that are evaluated together as a single item.
+- **Item**: A single annotation unit within a task. For translation evaluation, an item typically represents a document (source text and target translation). Items can contain text, images, audio, or video.
+- **Document**: A collection of one or more segments (sentence pairs or text units) that are evaluated together as a single item.
 - **User** / **Annotator**: A person who performs annotations in a campaign. Each user is identified by a unique user ID and accesses the campaign through a unique URL.
-- **Attention Check** — A validation item with known correct answers used to ensure annotator quality. Can be:
+- **Attention Check**: A validation item with known correct answers used to ensure annotator quality. Can be:
   - **Loud**: Shows warning message and forces retry on failure
   - **Silent**: Logs failures without notifying the user (for quality control analysis)
-  - **Token** — A completion code shown to users when they finish their annotations. Tokens verify the completion and whether the user passed quality control checks:
+  - **Token**: A completion code shown to users when they finish their annotations. Tokens verify the completion and whether the user passed quality control checks:
     - **Pass Token** (`token_pass`): Shown when user meets validation thresholds
     - **Fail Token** (`token_fail`): Shown when user fails to meet validation requirements
 - **Tutorial**: An instructional validation item that teaches users how to annotate. Includes `allow_skip: true` to let users skip if they have seen it before.
@@ -308,7 +295,7 @@ See an example in [Campaign Management](#campaign-management)
 - **Dashboard**: The management interface that shows campaign progress, annotator statistics, access links, and allows downloading annotations. Accessed via a special management URL with token authentication.
 - **Protocol**: The annotation scheme defining what data is collected:
   - **Score**: Numeric quality rating (0-100)
-  - **Error Spans**: Text highlights marking errors
+  - **Error Spans**: Text highlights marking errors with severity (`minor`, `major`)
   - **Error Categories**: MQM taxonomy labels for errors
 - **Template**: The annotation interface type. The `basic` template supports comparing multiple outputs simultaneously.
 - **Assignment**: The method for distributing items to users:

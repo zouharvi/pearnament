@@ -59,7 +59,7 @@ def _validate_item_structure(items):
     """
     Validate that items have the correct structure.
     Items should be lists of dictionaries with 'src' and 'tgt' keys.
-    All items now use the basic template format with tgt as an array.
+    The 'tgt' field should be a dictionary mapping model names to translations.
     
     Args:
         items: List of item dictionaries to validate
@@ -77,12 +77,38 @@ def _validate_item_structure(items):
         if not isinstance(item['src'], str):
             raise ValueError("Item 'src' must be a string")
         
-        # Validate tgt is a list (basic template)
-        if not isinstance(item['tgt'], list):
-            raise ValueError("Item 'tgt' must be a list")
-        # Check that all elements in tgt list are strings
-        if not all(isinstance(t, str) for t in item['tgt']):
-            raise ValueError("All elements in 'tgt' list must be strings")
+        # Validate tgt is a dictionary (basic template with model names)
+        if isinstance(item['tgt'], str):
+            # String not allowed - suggest using dictionary (don't include user input to prevent injection)
+            raise ValueError("Item 'tgt' must be a dictionary mapping model names to translations. For single translation, use {\"default\": \"your_translation\"}")
+        elif isinstance(item['tgt'], dict):
+            # Dictionary mapping model names to translations
+            # Validate that model names don't contain only numbers (JavaScript ordering issue)
+            for model_name, translation in item['tgt'].items():
+                if not isinstance(model_name, str):
+                    raise ValueError("Model names in 'tgt' dictionary must be strings")
+                if model_name.isdigit():
+                    raise ValueError(f"Model name '{model_name}' cannot be only numeric digits (would cause issues in JS/TS)")
+                if not isinstance(translation, str):
+                    raise ValueError(f"Translation for model '{model_name}' must be a string")
+        else:
+            raise ValueError("Item 'tgt' must be a dictionary mapping model names to translations")
+        
+        # Validate error_spans structure if present
+        if 'error_spans' in item:
+            if not isinstance(item['error_spans'], dict):
+                raise ValueError("'error_spans' must be a dictionary mapping model names to error span lists")
+            for model_name, spans in item['error_spans'].items():
+                if not isinstance(spans, list):
+                    raise ValueError(f"Error spans for model '{model_name}' must be a list")
+        
+        # Validate validation structure if present
+        if 'validation' in item:
+            if not isinstance(item['validation'], dict):
+                raise ValueError("'validation' must be a dictionary mapping model names to validation rules")
+            for model_name, val_rule in item['validation'].items():
+                if not isinstance(val_rule, dict):
+                    raise ValueError(f"Validation rule for model '{model_name}' must be a dictionary")
 
 
 def _add_single_campaign(data_file, overwrite, server):
@@ -111,11 +137,10 @@ def _add_single_campaign(data_file, overwrite, server):
         raise ValueError("Campaign data must contain 'data' field.")
     if "assignment" not in campaign_data["info"]:
         raise ValueError("Campaign 'info' must contain 'assignment' field.")
-    if "template" not in campaign_data["info"]:
-        raise ValueError("Campaign 'info' must contain 'template' field.")
-
+    
+    # Template defaults to "basic" if not specified
     assignment = campaign_data["info"]["assignment"]
-    template = campaign_data["info"]["template"]
+    template = campaign_data["info"].get("template", "basic")
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
