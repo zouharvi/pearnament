@@ -26,14 +26,18 @@ for doc_id, segments in documents.items():
     langs = doc_id.split("_#_")[0]
     lang1, lang2 = langs.split("-")
     segments.sort(key=lambda x: x[0])
-    for model in segments[0][1]["tgt_text"].keys():
+    # Get all models for this document
+    models = list(segments[0][1]["tgt_text"].keys())
+    
+    # Group by models - create one document task per model for basic (listwise) template
+    for model in models:
         document_task = []
         for seg_i, seg in segments:
             document_task.append({
                 "doc_id": f"{doc_id}_#_{seg_i}",
-                "model": model,
+                "models": [model],  # Now models field instead of model
                 "src": seg["src_text"],
-                "tgt": seg["tgt_text"][model],
+                "tgt": [seg["tgt_text"][model]],  # Now tgt is array
             } | (
                 {} if seg_i != "0" else {
                     "instructions": f"Evaluate translation from {LANG_TO_NAME.get(lang1, lang1)} to {LANG_TO_NAME.get(lang2, lang2)}.",
@@ -68,7 +72,7 @@ for langs, data in data_out.items():
             {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
+                    "template": "basic",
                     "protocol": config,
                 },
                 "campaign_id": fname,

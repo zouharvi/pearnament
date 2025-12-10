@@ -142,7 +142,7 @@ Include `error_spans` to pre-fill annotations that users can review, modify, or 
 }
 ```
 
-For **listwise** template, `error_spans` is a 2D array (one per candidate). See [examples/esaai_prefilled.json](examples/esaai_prefilled.json).
+The `error_spans` field is a 2D array (one per candidate). See [examples/esaai_prefilled.json](examples/esaai_prefilled.json).
 
 ### Tutorial and Attention Checks
 
@@ -166,9 +166,9 @@ Add `validation` rules for tutorials or attention checks:
 - **Loud attention checks**: Include `warning` without `allow_skip` to force retry
 - **Silent attention checks**: Omit `warning` to log failures without notification (quality control)
 
-For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
+The `validation` field is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
 
-**Listwise score comparison:** Use `score_greaterthan` to ensure one candidate scores higher than another:
+**Score comparison:** Use `score_greaterthan` to ensure one candidate scores higher than another:
 ```python
 {
   "src": "AI transforms industries.",
@@ -181,7 +181,7 @@ For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/
 ```
 The `score_greaterthan` field specifies the index of the candidate that must have a lower score than the current candidate.
 
-See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json), [examples/tutorial_listwise.json](examples/tutorial_listwise.json), and [examples/tutorial_listwise_score_greaterthan.json](examples/tutorial_listwise_score_greaterthan.json).
+See [examples/tutorial_listwise.json](examples/tutorial_listwise.json) and [examples/tutorial_listwise_score_greaterthan.json](examples/tutorial_listwise_score_greaterthan.json).
 
 ### Single-stream Assignment
 
@@ -191,7 +191,7 @@ All annotators draw from a shared pool with random assignment:
     "campaign_id": "my campaign 6",
     "info": {
         "assignment": "single-stream",
-        "template": "pointwise",
+        "template": "basic",
         # DA: scores
         # MQM: error spans and categories
         # ESA: error spans and scores
@@ -276,9 +276,9 @@ Completion tokens are shown at annotation end for verification (download correct
 ### Model Results Display
 
 Add `&results` to dashboard URL to show model rankings (requires valid token).
-Items need `model` field (pointwise) or `models` field (listwise):
+Items need `models` field to display results:
 ```python
-{"doc_id": "1", "model": "CommandA", "src": "...", "tgt": "..."}
+{"doc_id": "1", "models": ["CommandA"], "src": "...", "tgt": ["..."]}
 {"doc_id": "2", "models": ["CommandA", "Claude"], "src": "...", "tgt": ["...", "..."]}
 ```
 See an example in [Campaign Management](#campaign-management)
@@ -307,9 +307,7 @@ See an example in [Campaign Management](#campaign-management)
   - **Score**: Numeric quality rating (0-100)
   - **Error Spans**: Text highlights marking errors
   - **Error Categories**: MQM taxonomy labels for errors
-- **Template**: The annotation interface type:
-  - **Pointwise**: Evaluate one output at a time
-  - **Listwise**: Compare multiple outputs simultaneously
+- **Template**: The annotation interface type. The `basic` template supports comparing multiple outputs simultaneously.
 - **Assignment**: The method for distributing items to users:
   - **Task-based**: Each user has predefined items
   - **Single-stream**: Users draw from a shared pool with random assignment
@@ -340,7 +338,7 @@ pearmut run
 2. Add build rule to `webpack.config.js`
 3. Reference as `info->template` in campaign JSON
 
-See [web/src/pointwise.ts](web/src/pointwise.ts) for example.
+See [web/src/basic.ts](web/src/basic.ts) for example.
 
 ### Deployment
 
