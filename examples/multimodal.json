@@ -1,7 +1,6 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "basic",
     "protocol": "ESA"
   },
   "campaign_id": "mock_multimodal",

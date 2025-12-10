@@ -1,7 +1,6 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "basic",
     "protocol": "MQM"
   },
   "campaign_id": "mqm_csde",

@@ -1,7 +1,6 @@
 {
   "info": {
     "assignment": "single-stream",
-    "template": "basic",
     "users": 10,
     "protocol": "ESA"
   },

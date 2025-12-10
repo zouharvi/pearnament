@@ -89,7 +89,7 @@ def _validate_item_structure(items):
                 if not isinstance(model_name, str):
                     raise ValueError("Model names in 'tgt' dictionary must be strings")
                 if model_name.isdigit():
-                    raise ValueError(f"Model name '{model_name}' cannot be only numeric digits (JavaScript ordering constraint)")
+                    raise ValueError(f"Model name '{model_name}' cannot be only numeric digits (would cause issues in JS/TS)")
                 if not isinstance(translation, str):
                     raise ValueError(f"Translation for model '{model_name}' must be a string")
         else:

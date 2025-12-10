@@ -1,10 +1,9 @@
 {
   "info": {
     "assignment": "task-based",
-    "template": "basic",
     "protocol": "ESA"
   },
-  "campaign_id": "mock_listwise",
+  "campaign_id": "mock_kwise",
   "data": [
     [
       [

@@ -143,10 +143,10 @@ function cleanupPreviousItem(): void {
     $(window).off('resize.toolbox')
 }
 
-function _slider_html(item_i: number, candidate_i: number): string {
+function _slider_html(item_i: number, model: string): string {
     return `
     <div class="output_response">
-      <input type="range" min="0" max="100" value="-1" id="response_${item_i}_${candidate_i}">
+      <input type="range" min="0" max="100" value="-1" id="response_${item_i}_${model}">
       <span class="slider_label">? / 100</span>
     </div>
     `
@@ -240,16 +240,14 @@ async function display_next_payload(response: DataPayload) {
         // Add each candidate
         let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
 
-        for (let cand_i = 0; cand_i < modelNames.length; cand_i++) {
-            let model = modelNames[cand_i]
-            let tgt = candidates[model]
+        for (const [model, tgt] of Object.entries(candidates)) {
             let no_tgt_char = isMediaContent(tgt)
             let tgt_chars = no_tgt_char ? tgt : (contentToCharSpans(tgt, "tgt_char") + (protocol_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
 
             let candidate_block = $(`
-            <div class="output_candidate" data-candidate="${cand_i}" data-model="${model}">
+            <div class="output_candidate" data-candidate="${model}" data-model="${model}">
               <div class="output_tgt">${tgt_chars}</div>
-              ${_slider_html(item_i, cand_i)}
+              ${_slider_html(item_i, model)}
             </div>
             `)
 
@@ -299,7 +297,7 @@ async function display_next_payload(response: DataPayload) {
                             let relative_pos = i / tgt_chars_objs.length
                             // if not our candidate
                             output_block.find(".output_candidate").each(function () {
-                                if (parseInt($(this).attr("data-candidate")!) == cand_i) {
+                                if ($(this).attr("data-candidate")! == model) {
                                     return
                                 }
                                 let other_tgt_chars = $(this).find(".tgt_char")
