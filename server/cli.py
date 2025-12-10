@@ -127,6 +127,10 @@ def _shuffle_campaign_data(campaign_data, rng):
     """
     def shuffle_document(doc):
         """Shuffle a single document (list of items) by picking a random model."""
+        # Return as-is if doc is not a list (validation will catch it later)
+        if not isinstance(doc, list):
+            return doc
+        
         if not doc:
             return doc
         
@@ -220,11 +224,6 @@ def _add_single_campaign(data_file, overwrite, server):
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
 
-    # Shuffle data if shuffle parameter is true (defaults to true)
-    should_shuffle = campaign_data["info"].get("shuffle", True)
-    if should_shuffle:
-        campaign_data = _shuffle_campaign_data(campaign_data, rng)
-
     # Parse users specification from info
     users_spec = campaign_data["info"].get("users")
     user_tokens = {}  # user_id -> {"pass": ..., "fail": ...}
@@ -305,6 +304,12 @@ def _add_single_campaign(data_file, overwrite, server):
             raise ValueError("'users' list must contain all strings or all dicts.")
     else:
         raise ValueError("'users' must be an integer or a list.")
+
+    # Shuffle data if shuffle parameter is true (defaults to true)
+    # This happens after validation to ensure we're working with valid data
+    should_shuffle = campaign_data["info"].get("shuffle", True)
+    if should_shuffle:
+        campaign_data = _shuffle_campaign_data(campaign_data, rng)
 
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
