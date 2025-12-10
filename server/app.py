@@ -206,33 +206,23 @@ async def _dashboard_results(request: DashboardResultsRequest):
 
     if campaign_id not in progress_data:
         return JSONResponse(content="Unknown campaign ID", status_code=400)
-    
+
     # Check if token is valid
     if token != tasks_data[campaign_id]["token"]:
         return JSONResponse(content="Invalid token", status_code=400)
 
     # Compute model scores from annotations
     model_scores = collections.defaultdict(dict)
-    
-    # Iterate through all tasks to find items with 'model' field
+
+    # Iterate through all tasks to find items with 'models' field (basic template)
     log = get_db_log(campaign_id)
     for entry in log:
         if "item" not in entry or "annotation" not in entry:
             continue
         for item, annotation in zip(entry["item"], entry["annotation"]):
-            if "model" in item:
-                # pointwise
+            for model, annotation in annotation.items():
                 if "score" in annotation:
-                    # make sure to only keep the latest score for each item
-                    # json.dumps(item) creates a unique item key
-                    model_scores[item["model"]][json.dumps(item)] = annotation["score"]
-            elif "models" in item:
-                # listwise
-                for model, annotation_cand in zip(item["models"], annotation):
-                    if "score" in annotation_cand:
-                        model_scores[model][json.dumps(item)] = (
-                            annotation_cand["score"]
-                        )
+                    model_scores[model][json.dumps(item)] = annotation["score"]
 
     results = [
         {
@@ -294,7 +284,7 @@ async def _download_annotations(
     return JSONResponse(
         content=output,
         status_code=200,
-        headers={"Content-Disposition": 'inline; filename="annotations.json"'}
+        headers={"Content-Disposition": 'inline; filename="annotations.json"'},
     )
 
 
@@ -322,7 +312,7 @@ async def _download_progress(
     return JSONResponse(
         content=output,
         status_code=200,
-        headers={"Content-Disposition": 'inline; filename="progress.json"'}
+        headers={"Content-Disposition": 'inline; filename="progress.json"'},
     )
 
 

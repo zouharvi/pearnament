@@ -52,7 +52,7 @@ export type ValidationErrorSpan = {
 export type Validation = {
     warning?: string,  // Warning message to display on failure (attention check mode)
     score?: [number, number],  // [min, max] range for valid score
-    score_greaterthan?: number,  // For listwise: this candidate's score must be greater than score at this index
+    score_greaterthan?: string,  // Model name that this score must be greater than
     error_spans?: Array<ValidationErrorSpan>,  // Expected error spans
     allow_skip?: boolean  // Show skip tutorial button
 }
@@ -61,7 +61,7 @@ export type ValidationResult = {
     failed_items: number[],  // indices of failed items
 }
 
-// MQM Error Categories shared between pointwise and listwise
+// MQM Error Categories
 export const MQM_ERROR_CATEGORIES: { [key: string]: string[] } = {
     "": [],
     "Terminology": [
@@ -416,19 +416,19 @@ export function validateResponse(
 }
 
 /**
- * Validate a listwise response array with score comparison support
- * @param responses - Array of responses for all candidates
- * @param validations - Array of validation rules for all candidates
- * @param cand_i - Index of the candidate being validated
+ * Validate a response dictionary with score comparison support
+ * @param responses - Record of responses for all models
+ * @param validations - Record of validation rules for all models
+ * @param model - Model name being validated
  * @returns true if validation passes, false otherwise
  */
-export function validateListwiseResponse(
-    responses: Response[],
-    validations: Validation[],
-    cand_i: number
+export function validateKwayResponse(
+    responses: Record<string, Response>,
+    validations: Record<string, Validation>,
+    model: string
 ): boolean {
-    const response = responses[cand_i];
-    const validation = validations[cand_i];
+    const response = responses[model];
+    const validation = validations[model];
     
     if (!validation) {
         return true;
@@ -439,26 +439,24 @@ export function validateListwiseResponse(
         return false;
     }
 
-    console.log("A", response.score, validation);
     // Check score_greaterthan condition if specified
     if (validation.score_greaterthan !== undefined) {
-        const otherIndex = validation.score_greaterthan;
+        const otherModel = validation.score_greaterthan as string;
         
-        // Validate the index is within bounds
-        if (otherIndex < 0 || otherIndex >= responses.length) {
-            console.error(`Invalid score_greaterthan index: ${otherIndex}`);
+        // Validate the other model exists in responses
+        if (!responses[otherModel]) {
+            console.error(`Invalid score_greaterthan model: ${otherModel}`);
             return false;
         }
         
-        const otherScore = responses[otherIndex].score;
-        console.log("B", response.score, otherScore);
+        const otherScore = responses[otherModel].score;
         // Both scores must be set (not null) to perform comparison
         // Null scores indicate the user hasn't provided a score yet
         if (response.score === null || otherScore === null) {
             return false;
         }
         
-        // Verify this candidate's score is strictly greater than the other
+        // Verify this model's score is strictly greater than the other
         if (response.score <= otherScore) {
             return false;
         }
@@ -469,21 +467,27 @@ export function validateListwiseResponse(
 
 /**
  * Check if any validation has allow_skip enabled
- * Handles both simple validations and arrays of validations (for listwise)
+ * Handles both Record validations and single Validation objects
  */
-export function hasAllowSkip(validations: (Validation | Validation[] | undefined)[]): boolean {
+export function hasAllowSkip(validations: (Validation | Record<string, Validation> | undefined)[]): boolean {
     for (const v of validations) {
         if (!v) continue;
-        if (Array.isArray(v)) {
-            if (v.some(vv => vv?.allow_skip === true)) return true;
-        } else {
-            if (v.allow_skip === true) return true;
+        if (typeof v === 'object' && !Array.isArray(v)) {
+            // Check if it's a single Validation object (has allow_skip property directly)
+            if ('allow_skip' in v && v.allow_skip === true) {
+                return true;
+            }
+            // Otherwise treat as Record and check nested validations
+            if (!('allow_skip' in v) && !('warning' in v) && !('score' in v)) {
+                // It's a Record<string, Validation>
+                if (Object.values(v).some(vv => vv?.allow_skip === true)) return true;
+            }
         }
     }
     return false;
 }
 
-// Shared type for finished/completed response (used by both pointwise and listwise)
+// Shared type for finished/completed response
 export type DataFinished = {
     status: string,
     progress: Array<boolean>,

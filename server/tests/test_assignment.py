@@ -29,7 +29,7 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
+                    "shuffle": False,
                 },
                 "data": {
                     "user1": [
@@ -62,7 +62,7 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
+                    "shuffle": False,
                 },
                 "data": {
                     "user1": [
@@ -94,7 +94,7 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
+                    "shuffle": False,
                 }
             }
         }
@@ -115,7 +115,6 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                 },
                 "data": {
                     "user1": [
@@ -148,7 +147,6 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                 },
                 "data": {
                     "user1": [
@@ -183,7 +181,6 @@ class TestTaskBased:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                 },
                 "data": {
                     "user1": [
@@ -218,7 +215,7 @@ class TestSingleStream:
             "campaign1": {
                 "info": {
                     "assignment": "single-stream",
-                    "template": "pointwise",
+                    "shuffle": False,
                 },
                 "data": [
                     [{"src": "a", "tgt": "b"}],
@@ -250,7 +247,6 @@ class TestSingleStream:
             "campaign1": {
                 "info": {
                     "assignment": "single-stream",
-                    "template": "pointwise",
                 },
                 "data": [
                     [{"src": "a", "tgt": "b"}],
@@ -280,7 +276,6 @@ class TestSingleStream:
             "campaign1": {
                 "info": {
                     "assignment": "single-stream",
-                    "template": "pointwise",
                 },
                 "data": [
                     [{"src": "a", "tgt": "b"}],
@@ -322,7 +317,6 @@ class TestSingleStream:
             "campaign1": {
                 "info": {
                     "assignment": "single-stream",
-                    "template": "pointwise",
                 }
             }
         }
@@ -349,7 +343,6 @@ class TestSingleStream:
             "campaign1": {
                 "info": {
                     "assignment": "single-stream",
-                    "template": "pointwise",
                 },
                 "data": [
                     [{"src": "a", "tgt": "b"}],
@@ -485,7 +478,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     # No validation_threshold set - defaults to 0
                 }
             }
@@ -512,7 +504,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 0,
                 }
             }
@@ -534,7 +525,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 0,
                 }
             }
@@ -556,7 +546,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 2,
                 }
             }
@@ -583,7 +572,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 0.5,  # Allow up to 50% failures
                 }
             }
@@ -610,7 +598,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 0.0,  # 0% failures allowed (same as 0 integer)
                 }
             }
@@ -637,7 +624,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 1.5,  # Above 1, always fail
                 }
             }
@@ -659,7 +645,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 0,
                 }
             }
@@ -679,7 +664,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 0,
                 }
             }
@@ -699,7 +683,6 @@ class TestValidationThreshold:
             "campaign1": {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "validation_threshold": 2,  # Allow up to 2 failures
                 }
             }

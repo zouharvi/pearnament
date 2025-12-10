@@ -59,8 +59,6 @@ label {
     box-shadow: 0 4px 6px #0000001a
 }
 
-/* Shared annotation styles for pointwise and listwise */
-
 .output_block {
     margin-bottom: 30pt;
 }

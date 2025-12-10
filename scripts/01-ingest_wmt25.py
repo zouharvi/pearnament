@@ -26,14 +26,21 @@ for doc_id, segments in documents.items():
     langs = doc_id.split("_#_")[0]
     lang1, lang2 = langs.split("-")
     segments.sort(key=lambda x: x[0])
-    for model in segments[0][1]["tgt_text"].keys():
+    # Get all models for this document
+    models = list(segments[0][1]["tgt_text"].keys())
+    
+    # Create one document task per model for the basic template
+    # Note: Each model gets its own task with a single-item array.
+    # This maintains compatibility with the existing WMT25 data structure
+    # where each model's output is evaluated separately.
+    for model in models:
         document_task = []
         for seg_i, seg in segments:
             document_task.append({
                 "doc_id": f"{doc_id}_#_{seg_i}",
-                "model": model,
+                "models": [model],
                 "src": seg["src_text"],
-                "tgt": seg["tgt_text"][model],
+                "tgt": [seg["tgt_text"][model]],
             } | (
                 {} if seg_i != "0" else {
                     "instructions": f"Evaluate translation from {LANG_TO_NAME.get(lang1, lang1)} to {LANG_TO_NAME.get(lang2, lang2)}.",
@@ -68,7 +75,6 @@ for langs, data in data_out.items():
             {
                 "info": {
                     "assignment": "task-based",
-                    "template": "pointwise",
                     "protocol": config,
                 },
                 "campaign_id": fname,
