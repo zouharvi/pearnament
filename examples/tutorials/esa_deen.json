@@ -1,0 +1,195 @@
+[
+  {
+    "doc_id": "de-en-tutorial-1",
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": {
+      "Translation": "The dog ran outside."
+    },
+    "instructions": "<b>Welcome to the Error Span Annotation Tutorial!</b><br><br>In this task, you will evaluate translations from <b>German to English</b>. You will identify translation errors by <b>marking error spans</b> in the target text and rate the <b>overall translation quality</b> using a slider (0-100).<br><br><b>How to mark errors:</b><br>1. <b>Select text</b> in the translation that contains an error<br>2. Click on the highlighted text to <b>toggle severity</b>: <span style='background-color:#ffcccc'>minor (light pink)</span> or <span style='background-color:#ff9999'>major (dark pink)</span><br>3. Click again to <b>remove</b> the marking<br><br><b>This translation is completely correct.</b><br>Please use the slider to set the quality to <b>100%</b>.",
+    "validation": {
+      "Translation": {
+        "warning": "This translation is perfect! Please set the score to 100%.",
+        "score": [95, 100],
+        "error_spans": [],
+        "allow_skip": true
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-tutorial-2",
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": {
+      "Translation": "The dog walked outside."
+    },
+    "instructions": "<b>Good! Now let's practice marking errors.</b><br><br>The word <u>\"walked\"</u> is incorrect in this translation. The German word \"rausgerannt\" means \"ran out\" not \"walked\".<br><br><b>Your task:</b><br>1. <b>Select and mark</b> the word \"walked\" as a <b>minor error</b> (light pink)<br>2. Move the <b>slider to around 75-85%</b> to reflect the reduced quality",
+    "validation": {
+      "Translation": {
+        "warning": "Please mark the word \"walked\" as a minor error (light pink) and set the score to 75-85%.",
+        "score": [75, 85],
+        "error_spans": [
+          {
+            "start_i": 8,
+            "end_i": 14,
+            "severity": "minor"
+          }
+        ],
+        "allow_skip": true
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-tutorial-3",
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": {
+      "Translation": "The dog stayed inside."
+    },
+    "instructions": "<b>Excellent! Now let's mark a major error.</b><br><br>The words <u>\"stayed inside\"</u> are completely wrong - they mean the opposite of the German \"rausgerannt\" (ran outside).<br><br><b>Your task:</b><br>1. <b>Select and mark</b> \"stayed inside\" as an error<br>2. Click on it again to <b>change severity to major</b> (dark pink)<br>3. Move the slider to <b>10-20%</b> due to the serious error",
+    "validation": {
+      "Translation": {
+        "warning": "Please mark \"stayed inside\" as a major error (dark pink) and set the score to 10-20%.",
+        "score": [10, 20],
+        "error_spans": [
+          {
+            "start_i": 8,
+            "end_i": 21,
+            "severity": "major"
+          }
+        ],
+        "allow_skip": true
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-tutorial-4",
+    "src": "Obwohl die Katzen die Nacht draußen verbrachten, war ihnen nicht kalt.",
+    "tgt": {
+      "Translation": "Although the cats were outside over the night, they did not get cold."
+    },
+    "instructions": "<b>Great job! Let's try a longer sentence.</b><br><br>This translation is technically correct but sounds <b>slightly unnatural</b> in English. The phrase \"over the night\" is awkward - native speakers would say \"overnight\" or \"during the night\".<br><br><b>Your task:</b><br>Since this is a minor stylistic issue affecting naturalness (not a clear error), <b>don't mark any error spans</b>, but use the slider to rate the quality at around <b>70-80%</b>.",
+    "validation": {
+      "Translation": {
+        "warning": "This translation has no clear errors to mark, but it's slightly unnatural. Please don't mark any error spans and set the score to 70-80%.",
+        "score": [70, 80],
+        "error_spans": [],
+        "allow_skip": true
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-tutorial-5",
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": {
+      "Translation": "The walked outside."
+    },
+    "instructions": "<b>Now let's practice marking missing content.</b><br><br>The word for <u>\"dog\"</u> is missing from this translation!<br><br><b>Your task:</b><br>1. Look for the text <b>[MISSING]</b> at the end of the translation<br>2. <b>Mark [MISSING]</b> as a <b>major error</b> (dark pink)<br>3. Set the score to <b>5-15%</b> because critical content is missing",
+    "validation": {
+      "Translation": {
+        "warning": "Please mark the [MISSING] text as a major error and set the score to 5-15%.",
+        "score": [5, 15],
+        "error_spans": [
+          {
+            "start_i": "missing",
+            "end_i": "missing",
+            "severity": "major"
+          }
+        ],
+        "allow_skip": true
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-tutorial-6",
+    "src": "Der Hund ist rausgerannt.",
+    "tgt": {
+      "Translation": "The dog ran outside."
+    },
+    "error_spans": {
+      "Translation": [
+        {
+          "start_i": 8,
+          "end_i": 11,
+          "severity": "minor"
+        }
+      ]
+    },
+    "instructions": "<b>Final practice: Correcting mistakes.</b><br><br>Someone has <b>incorrectly</b> marked the word <u>\"ran\"</u> as an error (it's highlighted). But this word is actually correct!<br><br><b>Your task:</b><br>1. <b>Click on the highlighted \"ran\"</b> to remove the incorrect error marking<br>2. Set the score to <b>100%</b> since the translation is now correct",
+    "validation": {
+      "Translation": {
+        "warning": "Please remove the incorrect error marking on \"ran\" and set the score to 100%.",
+        "score": [95, 100],
+        "error_spans": [],
+        "allow_skip": true
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-attention-check-1",
+    "src": "Die Sonne scheint hell am Himmel.",
+    "tgt": {
+      "Translation": "The sun shines brightly in the sky."
+    },
+    "instructions": "<b>Attention Check</b><br><br>Please evaluate this translation carefully.",
+    "validation": {
+      "Translation": {
+        "warning": "Attention check: This translation is excellent. Please don't mark any errors and set the score to 95-100%.",
+        "score": [95, 100],
+        "error_spans": []
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-attention-check-2",
+    "src": "Das Buch liegt auf dem Tisch.",
+    "tgt": {
+      "Translation": "The book is under the chair."
+    },
+    "instructions": "<b>Attention Check</b><br><br>Please evaluate this translation carefully.",
+    "validation": {
+      "Translation": {
+        "warning": "Attention check: This translation contains serious errors. The book's location is completely wrong. Please mark the errors and rate accordingly (0-25%).",
+        "score": [0, 25],
+        "error_spans": [
+          {
+            "start_i": 12,
+            "end_i": 29,
+            "severity": "major"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-silent-check-1",
+    "src": "Der Regen fällt sanft auf die Erde.",
+    "tgt": {
+      "Translation": "The rain falls gently on the earth."
+    },
+    "instructions": "Please evaluate this translation.",
+    "validation": {
+      "Translation": {
+        "score": [90, 100],
+        "error_spans": []
+      }
+    }
+  },
+  {
+    "doc_id": "de-en-silent-check-2",
+    "src": "Die Blumen blühen im Frühling.",
+    "tgt": {
+      "Translation": "The flowers bloom in winter."
+    },
+    "instructions": "Please evaluate this translation.",
+    "validation": {
+      "Translation": {
+        "score": [0, 30],
+        "error_spans": [
+          {
+            "start_i": 26,
+            "end_i": 32,
+            "severity": "major"
+          }
+        ]
+      }
+    }
+  }
+]
