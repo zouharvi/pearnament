@@ -1,14 +1,14 @@
 {
   "info": {
     "assignment": "task-based",
-    
+    "template": "basic",
     "protocol": "ESA"
   },
   "campaign_id": "mock_tutorial_listwise",
   "data": [
     [
       [
-    "template": "",
+        {
           "doc_id": "tutorial_1",
           "src": "The quick brown fox jumps over the lazy dog.",
           "tgt": [

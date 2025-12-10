@@ -1,16 +1,20 @@
 {
   "info": {
     "assignment": "task-based",
-    
+    "template": "basic",
     "protocol": "ESA"
   },
   "campaign_id": "mock_listwise",
   "data": [
     [
       [
-    "template": "",
+        {
           "doc_id": "news_article_1",
-          "models" : ["model_A", "model_B", "model_C"],
+          "models": [
+            "model_A",
+            "model_B",
+            "model_C"
+          ],
           "src": "The European Central Bank announced on Thursday that it would raise interest rates by 0.25 percentage points, marking the tenth consecutive increase since July 2022 as policymakers continue their efforts to combat persistent inflation in the eurozone.",
           "tgt": [
             "Evropská centrální banka ve čtvrtek oznámila, že zvýší úrokové sazby o 0,25 procentního bodu, což je desáté po sobě jdoucí zvýšení od července 2022, kdy tvůrci politik pokračují ve svém úsilí bojovat proti přetrvávající inflaci v eurozóně.",
@@ -20,7 +24,11 @@
         },
         {
           "doc_id": "news_article_1",
-          "models": ["model_A", "model_B", "model_C"],
+          "models": [
+            "model_A",
+            "model_B",
+            "model_C"
+          ],
           "src": "The decision comes despite growing concerns about the impact of higher borrowing costs on economic growth, with several economists warning that further rate hikes could push the region into a recession.",
           "tgt": [
             "Rozhodnutí přichází navzdory rostoucím obavám o dopad vyšších nákladů na půjčky na ekonomický růst, přičemž několik ekonomů varuje, že další zvyšování sazeb by mohlo region přivést do recese.",
@@ -32,7 +40,11 @@
       [
         {
           "doc_id": "technology_review",
-          "models": ["model_B", "model_C", "model_A"],
+          "models": [
+            "model_B",
+            "model_C",
+            "model_A"
+          ],
           "src": "Artificial intelligence researchers at Stanford University have developed a new machine learning algorithm that can predict protein structures with unprecedented accuracy, potentially revolutionizing drug discovery and our understanding of biological processes.",
           "tgt": [
             "Vědci v oblasti umělé inteligence na Stanfordově univerzitě vyvinuli nový algoritmus strojového učení, který dokáže předpovídat struktury proteinů s nebývalou přesností, což by mohlo způsobit revoluci v objevování léků a v našem chápání biologických procesů.",
@@ -46,7 +58,11 @@
       [
         {
           "doc_id": "literary_excerpt",
-          "models": ["model_C", "model_A", "model_B"],
+          "models": [
+            "model_C",
+            "model_A",
+            "model_B"
+          ],
           "src": "The old lighthouse keeper had spent forty years watching the sea, its moods changing like the expressions on a human face. He knew every rock, every current, every hidden danger that lurked beneath the surface of the cold, dark waters.",
           "tgt": [
             "Starý strážce majáku strávil čtyřicet let pozorováním moře, jehož nálady se měnily jako výrazy v lidské tváři. Znal každou skálu, každý proud, každé skryté nebezpečí, které se skrývalo pod povrchem studených, tmavých vod.",
@@ -56,7 +72,11 @@
         },
         {
           "doc_id": "literary_excerpt",
-          "models": ["model_C", "model_A", "model_B"],
+          "models": [
+            "model_C",
+            "model_A",
+            "model_B"
+          ],
           "src": "On stormy nights, when the wind howled like a wounded animal and waves crashed against the rocky shore with tremendous force, he would climb the narrow spiral staircase to ensure the light never failed those who depended on it.",
           "tgt": [
             "Za bouřlivých nocí, kdy vítr vyl jako zraněné zvíře a vlny se s obrovskou silou tříštily o skalnatý břeh, vystupoval po úzkém točitém schodišti, aby zajistil, že světlo nikdy nezklamá ty, kdo na něm záviseli.",

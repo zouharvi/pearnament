@@ -69,11 +69,11 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
         {
           "instructions": "Evaluate translation from en to cs_CZ",  # message to show to users above the first item
           "src": "This will be the year that Guinness loses its cool. Cheers to that!",
-          "tgt": "Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ..."
+          "tgt": ["Nevím přesně, kdy jsem to poprvé zaznamenal. Možná to bylo ve chvíli, ..."]
         },
         {
           "src": "I'm not sure I can remember exactly when I sensed it. Maybe it was when some...",
-          "tgt": "Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!"
+          "tgt": ["Tohle bude rok, kdy Guinness přijde o svůj „cool“ faktor. Na zdraví!"]
         }
         ...
       ],
@@ -93,11 +93,11 @@ Task items are protocol-specific. For ESA/DA/MQM protocols, each item is a dicti
 [
   {
     "src": "A najednou se všechna tato voda naplnila dalšími lidmi a dalšími věcmi.",  # required
-    "tgt": "And suddenly all the water became full of other people and other people."  # required
+    "tgt": ["And suddenly all the water became full of other people and other people."]  # required (array)
   },
   {
     "src": "toto je pokračování stejného dokumentu",
-    "tgt": "this is a continuation of the same document"
+    "tgt": ["this is a continuation of the same document"]
     # Additional keys stored for analysis
   }
 ]
@@ -124,25 +124,27 @@ Include `error_spans` to pre-fill annotations that users can review, modify, or 
 ```python
 {
   "src": "The quick brown fox jumps over the lazy dog.",
-  "tgt": "Rychlá hnědá liška skáče přes líného psa.",
+  "tgt": ["Rychlá hnědá liška skáče přes líného psa."],
   "error_spans": [
-    {
-      "start_i": 0,         # character index start (inclusive)
-      "end_i": 5,           # character index end (inclusive)
-      "severity": "minor",  # "minor", "major", "neutral", or null
-      "category": null      # MQM category string or null
-    },
-    {
-      "start_i": 27,
-      "end_i": 32,
-      "severity": "major",
-      "category": null
-    }
+    [
+      {
+        "start_i": 0,         # character index start (inclusive)
+        "end_i": 5,           # character index end (inclusive)
+        "severity": "minor",  # "minor", "major", "neutral", or null
+        "category": null      # MQM category string or null
+      },
+      {
+        "start_i": 27,
+        "end_i": 32,
+        "severity": "major",
+        "category": null
+      }
+    ]
   ]
 }
 ```
 
-For **listwise** template, `error_spans` is a 2D array (one per candidate). See [examples/esaai_prefilled.json](examples/esaai_prefilled.json).
+The `error_spans` field is a 2D array (one per candidate). See [examples/esaai_prefilled.json](examples/esaai_prefilled.json).
 
 ### Tutorial and Attention Checks
 
@@ -151,13 +153,15 @@ Add `validation` rules for tutorials or attention checks:
 ```python
 {
   "src": "The quick brown fox jumps.",
-  "tgt": "Rychlá hnědá liška skáče.",
-  "validation": {
-    "warning": "Please set score between 70-80.",  # shown on failure (omit for silent logging)
-    "score": [70, 80],                             # required score range [min, max]
-    "error_spans": [{"start_i": [0, 2], "end_i": [4, 8], "severity": "minor"}],  # expected spans
-    "allow_skip": true                             # show "skip tutorial" button
-  }
+  "tgt": ["Rychlá hnědá liška skáče."],
+  "validation": [
+    {
+      "warning": "Please set score between 70-80.",  # shown on failure (omit for silent logging)
+      "score": [70, 80],                             # required score range [min, max]
+      "error_spans": [{"start_i": [0, 2], "end_i": [4, 8], "severity": "minor"}],  # expected spans
+      "allow_skip": true                             # show "skip tutorial" button
+    }
+  ]
 }
 ```
 
@@ -166,9 +170,9 @@ Add `validation` rules for tutorials or attention checks:
 - **Loud attention checks**: Include `warning` without `allow_skip` to force retry
 - **Silent attention checks**: Omit `warning` to log failures without notification (quality control)
 
-For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
+The `validation` field is an array (one per candidate). Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for max failed count, float \[0,1\) for max proportion, default 0).
 
-**Listwise score comparison:** Use `score_greaterthan` to ensure one candidate scores higher than another:
+**Score comparison:** Use `score_greaterthan` to ensure one candidate scores higher than another:
 ```python
 {
   "src": "AI transforms industries.",
@@ -180,8 +184,7 @@ For listwise, `validation` is an array (one per candidate). Dashboard shows ✅/
 }
 ```
 The `score_greaterthan` field specifies the index of the candidate that must have a lower score than the current candidate.
-
-See [examples/tutorial_pointwise.json](examples/tutorial_pointwise.json), [examples/tutorial_listwise.json](examples/tutorial_listwise.json), and [examples/tutorial_listwise_score_greaterthan.json](examples/tutorial_listwise_score_greaterthan.json).
+See [examples/tutorial_kway.json](examples/tutorial_kway.json).
 
 ### Single-stream Assignment
 
@@ -191,7 +194,7 @@ All annotators draw from a shared pool with random assignment:
     "campaign_id": "my campaign 6",
     "info": {
         "assignment": "single-stream",
-        "template": "pointwise",
+        "template": "basic",
         # DA: scores
         # MQM: error spans and categories
         # ESA: error spans and scores
@@ -276,9 +279,9 @@ Completion tokens are shown at annotation end for verification (download correct
 ### Model Results Display
 
 Add `&results` to dashboard URL to show model rankings (requires valid token).
-Items need `model` field (pointwise) or `models` field (listwise):
+Items need `models` field to display results:
 ```python
-{"doc_id": "1", "model": "CommandA", "src": "...", "tgt": "..."}
+{"doc_id": "1", "models": ["CommandA"], "src": "...", "tgt": ["..."]}
 {"doc_id": "2", "models": ["CommandA", "Claude"], "src": "...", "tgt": ["...", "..."]}
 ```
 See an example in [Campaign Management](#campaign-management)
@@ -307,9 +310,7 @@ See an example in [Campaign Management](#campaign-management)
   - **Score**: Numeric quality rating (0-100)
   - **Error Spans**: Text highlights marking errors
   - **Error Categories**: MQM taxonomy labels for errors
-- **Template**: The annotation interface type:
-  - **Pointwise**: Evaluate one output at a time
-  - **Listwise**: Compare multiple outputs simultaneously
+- **Template**: The annotation interface type. The `basic` template supports comparing multiple outputs simultaneously.
 - **Assignment**: The method for distributing items to users:
   - **Task-based**: Each user has predefined items
   - **Single-stream**: Users draw from a shared pool with random assignment
@@ -340,7 +341,7 @@ pearmut run
 2. Add build rule to `webpack.config.js`
 3. Reference as `info->template` in campaign JSON
 
-See [web/src/pointwise.ts](web/src/pointwise.ts) for example.
+See [web/src/basic.ts](web/src/basic.ts) for example.
 
 ### Deployment
 

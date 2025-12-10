@@ -9,7 +9,7 @@ import {
     createSpanToolbox,
     updateToolboxPosition,
     Validation,
-    validateListwiseResponse,
+    validateKwayResponse,
     hasAllowSkip,
     DataFinished,
     ProtocolInfo,
@@ -611,8 +611,8 @@ async function performValidation(): Promise<Array<boolean> | null> {
             if (validations[item_ij] == undefined) {
                 continue
             }
-            // Use validateListwiseResponse to support score_greaterthan conditions
-            const result = validateListwiseResponse(response_log[item_ij], validations[item_ij]!, cand_i)
+            // Use validateKwayResponse to support score_greaterthan conditions
+            const result = validateKwayResponse(response_log[item_ij], validations[item_ij]!, cand_i)
 
 
             // if we fail and there's a message, prevent loading next item and show warning

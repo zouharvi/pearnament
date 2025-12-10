@@ -422,7 +422,7 @@ export function validateResponse(
  * @param cand_i - Index of the candidate being validated
  * @returns true if validation passes, false otherwise
  */
-export function validateListwiseResponse(
+export function validateKwayResponse(
     responses: Response[],
     validations: Validation[],
     cand_i: number
@@ -469,7 +469,7 @@ export function validateListwiseResponse(
 
 /**
  * Check if any validation has allow_skip enabled
- * Handles both simple validations and arrays of validations (for listwise)
+ * Handles both simple validations and arrays of validations
  */
 export function hasAllowSkip(validations: (Validation | Validation[] | undefined)[]): boolean {
     for (const v of validations) {

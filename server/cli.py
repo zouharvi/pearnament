@@ -55,14 +55,14 @@ def _run(args_unknown):
     )
 
 
-def _validate_item_structure(items, template):
+def _validate_item_structure(items):
     """
     Validate that items have the correct structure.
     Items should be lists of dictionaries with 'src' and 'tgt' keys.
+    All items now use the basic template format with tgt as an array.
     
     Args:
         items: List of item dictionaries to validate
-        template: Template type ('pointwise' or 'listwise') for type validation
     """
     if not isinstance(items, list):
         raise ValueError("Items must be a list")
@@ -77,12 +77,12 @@ def _validate_item_structure(items, template):
         if not isinstance(item['src'], str):
             raise ValueError("Item 'src' must be a string")
         
-        # Validate tgt type based on template
+        # Validate tgt is a list (basic template)
         if not isinstance(item['tgt'], list):
-            raise ValueError("Item 'tgt' must be a list for listwise template")
+            raise ValueError("Item 'tgt' must be a list")
         # Check that all elements in tgt list are strings
         if not all(isinstance(t, str) for t in item['tgt']):
-            raise ValueError("All elements in 'tgt' list must be strings for listwise template")
+            raise ValueError("All elements in 'tgt' list must be strings")
 
 
 def _add_single_campaign(data_file, overwrite, server):
@@ -136,7 +136,7 @@ def _add_single_campaign(data_file, overwrite, server):
         for task_i, task in enumerate(tasks):
             for doc_i, doc in enumerate(task):
                 try:
-                    _validate_item_structure(doc, template)
+                    _validate_item_structure(doc)
                 except ValueError as e:
                     raise ValueError(f"Task {task_i}, document {doc_i}: {e}")
         num_users = len(tasks)
@@ -151,7 +151,7 @@ def _add_single_campaign(data_file, overwrite, server):
         # Validate item structure for single-stream
         for doc_i, doc in enumerate(tasks):
             try:
-                _validate_item_structure(doc, template)
+                _validate_item_structure(doc)
             except ValueError as e:
                 raise ValueError(f"Document {doc_i}: {e}")
         if isinstance(users_spec, int):

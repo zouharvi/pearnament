@@ -214,20 +214,14 @@ async def _dashboard_results(request: DashboardResultsRequest):
     # Compute model scores from annotations
     model_scores = collections.defaultdict(dict)
     
-    # Iterate through all tasks to find items with 'model' field
+    # Iterate through all tasks to find items with 'models' field (basic template)
     log = get_db_log(campaign_id)
     for entry in log:
         if "item" not in entry or "annotation" not in entry:
             continue
         for item, annotation in zip(entry["item"], entry["annotation"]):
-            if "model" in item:
-                # pointwise
-                if "score" in annotation:
-                    # make sure to only keep the latest score for each item
-                    # json.dumps(item) creates a unique item key
-                    model_scores[item["model"]][json.dumps(item)] = annotation["score"]
-            elif "models" in item:
-                # listwise
+            if "models" in item:
+                # basic template
                 for model, annotation_cand in zip(item["models"], annotation):
                     if "score" in annotation_cand:
                         model_scores[model][json.dumps(item)] = (
