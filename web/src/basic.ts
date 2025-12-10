@@ -26,8 +26,8 @@ const frozenMode = searchParams.has("frozen")
 
 // Each candidate has its own response
 type CandidateResponse = { score: number | null, error_spans: Array<ErrorSpan> }
-// Response for a document with multiple candidates
-type DocumentResponse = Array<CandidateResponse>
+// Response for a document with multiple candidates - now keyed by model name
+type DocumentResponse = Record<string, CandidateResponse>
 
 type DataPayload = {
     status: string,
@@ -35,11 +35,11 @@ type DataPayload = {
     time: number,
     payload: Array<{
         src: string,
-        tgt: string | Array<string>,  // Single or multiple translation candidates
+        tgt: string | Record<string, string>,  // Single string or dictionary of model->translation
         checks?: any,
         instructions?: string,
-        error_spans?: Array<Array<ErrorSpan>>,  // Pre-filled error spans (2D array, one per candidate)
-        validation?: Validation[] | undefined,  // Validation rules for this item
+        error_spans?: Record<string, Array<ErrorSpan>>,  // Pre-filled error spans keyed by model name
+        validation?: Record<string, Validation> | undefined,  // Validation rules keyed by model name
     }>,
     payload_existing?: {
         annotation: Array<DocumentResponse>,
@@ -49,23 +49,27 @@ type DataPayload = {
 }
 
 /**
- * Ensures tgt is always an array of candidates
+ * Ensures tgt is always a Record mapping model names to translations
+ * For backward compatibility, single string becomes {"default": string}
  */
-function ensureCandidateArray(tgt: string | Array<string>): Array<string> {
-    return Array.isArray(tgt) ? tgt : [tgt]
+function ensureCandidateRecord(tgt: string | Record<string, string>): Record<string, string> {
+    if (typeof tgt === 'string') {
+        return { "default": tgt }
+    }
+    return tgt
 }
 
 /**
- * Gets error spans for a specific candidate index
+ * Gets error spans for a specific model
  */
-function getErrorSpansForCandidate(error_spans: Array<Array<ErrorSpan>> | undefined, cand_i: number): Array<ErrorSpan> {
-    if (!error_spans || error_spans.length === 0) return []
-    return error_spans[cand_i] || []
+function getErrorSpansForModel(error_spans: Record<string, Array<ErrorSpan>> | undefined, model: string): Array<ErrorSpan> {
+    if (!error_spans) return []
+    return error_spans[model] || []
 }
 
 let response_log: Array<DocumentResponse> = []
 let action_log: Array<any> = []
-let validations: Array<Array<Validation> | undefined> = []
+let validations: Array<Record<string, Validation> | undefined> = []
 let output_blocks: Array<JQuery<HTMLElement>> = []
 let settings_show_alignment = true
 let settings_word_level = false
@@ -102,7 +106,7 @@ function check_unlock() {
     // Check if all error spans are complete (have required severity and category based on protocol)
     if (protocol_error_spans || protocol_error_categories) {
         for (const doc_responses of response_log) {
-            for (const r of doc_responses) {
+            for (const r of Object.values(doc_responses)) {
                 for (const span of r.error_spans) {
                     if (!isSpanComplete(span, protocol_error_categories)) {
                         $("#button_next").attr("disabled", "disabled")
@@ -116,7 +120,7 @@ function check_unlock() {
 
     // Check if all scores are set (if protocol requires scores)
     let all_done = response_log.every(doc_responses =>
-        doc_responses.every(r => r.score != null)
+        Object.values(doc_responses).every(r => r.score != null)
     )
     if (!all_done) {
         $("#button_next").attr("disabled", "disabled")
@@ -158,12 +162,16 @@ async function display_next_payload(response: DataPayload) {
     let data = response.payload
     // Initialize response log - use payload_existing if available
     if (response.payload_existing) {
-        response_log = response.payload_existing.annotation.map(docResponses =>
-            docResponses.map(r => ({
-                "score": r.score,
-                "error_spans": r.error_spans ? [...r.error_spans] : [],
-            }))
-        )
+        response_log = response.payload_existing.annotation.map(docResponses => {
+            const result: DocumentResponse = {}
+            for (const [model, r] of Object.entries(docResponses)) {
+                result[model] = {
+                    "score": r.score,
+                    "error_spans": r.error_spans ? [...r.error_spans] : [],
+                }
+            }
+            return result
+        })
         // Reload comment if it exists
         if (response.payload_existing.comment) {
             $("#settings_comment").val(response.payload_existing.comment)
@@ -171,12 +179,17 @@ async function display_next_payload(response: DataPayload) {
             $("#settings_comment").val("")
         }
     } else {
-        response_log = data.map(item =>
-            ensureCandidateArray(item.tgt).map(_ => ({
-                "score": null,
-                "error_spans": [],
-            }))
-        )
+        response_log = data.map(item => {
+            const candidates = ensureCandidateRecord(item.tgt)
+            const result: DocumentResponse = {}
+            for (const model of Object.keys(candidates)) {
+                result[model] = {
+                    "score": null,
+                    "error_spans": [],
+                }
+            }
+            return result
+        })
         $("#settings_comment").val("")
     }
     validations = data.map(item => item.validation)
@@ -202,8 +215,9 @@ async function display_next_payload(response: DataPayload) {
 
     for (let item_i = 0; item_i < data.length; item_i++) {
         let item = data[item_i]
-        // Ensure tgt is an array of candidates
-        let candidates = ensureCandidateArray(item.tgt)
+        // Ensure tgt is a Record mapping model names to translations
+        let candidates = ensureCandidateRecord(item.tgt)
+        let modelNames = Object.keys(candidates)
 
         // character-level stuff won't work on media tags
         let no_src_char = isMediaContent(item.src)
@@ -226,13 +240,14 @@ async function display_next_payload(response: DataPayload) {
         // Add each candidate
         let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
 
-        for (let cand_i = 0; cand_i < candidates.length; cand_i++) {
-            let tgt = candidates[cand_i]
+        for (let cand_i = 0; cand_i < modelNames.length; cand_i++) {
+            let model = modelNames[cand_i]
+            let tgt = candidates[model]
             let no_tgt_char = isMediaContent(tgt)
             let tgt_chars = no_tgt_char ? tgt : (contentToCharSpans(tgt, "tgt_char") + (protocol_error_spans ? ' <span class="tgt_char char_missing">[missing]</span>' : ""))
 
             let candidate_block = $(`
-            <div class="output_candidate" data-candidate="${cand_i}">
+            <div class="output_candidate" data-candidate="${cand_i}" data-model="${model}">
               <div class="output_tgt">${tgt_chars}</div>
               ${_slider_html(item_i, cand_i)}
             </div>
@@ -355,7 +370,7 @@ async function display_next_payload(response: DataPayload) {
                                     "severity": null,
                                 }
 
-                                if (response_log[item_i][cand_i].error_spans.some(span => {
+                                if (response_log[item_i][model].error_spans.some(span => {
                                     return (
                                         (left_i <= span.start_i && right_i >= span.start_i) ||
                                         (left_i <= span.end_i && right_i >= span.end_i)
@@ -374,8 +389,8 @@ async function display_next_payload(response: DataPayload) {
                                     right_i,
                                     () => {
                                         // onDelete callback
-                                        response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(span => span != error_span)
-                                        action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
+                                        response_log[item_i][model].error_spans = response_log[item_i][model].error_spans.filter(span => span != error_span)
+                                        action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "model": model, "start_i": left_i, "end_i": right_i })
                                         has_unsaved_work = true
                                     },
                                     frozenMode
@@ -403,8 +418,8 @@ async function display_next_payload(response: DataPayload) {
                                 updateToolboxPosition(toolbox, $(tgt_chars_objs[left_i].el))
 
                                 // store error span
-                                response_log[item_i][cand_i].error_spans.push(error_span)
-                                action_log.push({ "time": Date.now() / 1000, "action": "create_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
+                                response_log[item_i][model].error_spans.push(error_span)
+                                action_log.push({ "time": Date.now() / 1000, "action": "create_span", "index": item_i, "model": model, "start_i": left_i, "end_i": right_i })
                                 has_unsaved_work = true
                                 for (let j = left_i; j <= right_i; j++) {
                                     $(tgt_chars_objs[j].el).addClass("error_unknown")
@@ -413,7 +428,7 @@ async function display_next_payload(response: DataPayload) {
                                 }
                             } else {
                                 // check if we are in existing span
-                                if (response_log[item_i][cand_i].error_spans.some(span => i >= span.start_i && i <= span.end_i)) {
+                                if (response_log[item_i][model].error_spans.some(span => i >= span.start_i && i <= span.end_i)) {
                                     notify("Cannot create overlapping error spans")
                                     $(".src_char").removeClass("highlighted")
                                     candidate_block.find(".tgt_char").removeClass("highlighted")
@@ -428,24 +443,24 @@ async function display_next_payload(response: DataPayload) {
             }
 
             // Load error spans - use payload_existing if available, otherwise use item.error_spans
-            const existingErrorSpans = response.payload_existing?.annotation[item_i]?.[cand_i]?.error_spans
-            const candidateSpans = existingErrorSpans || getErrorSpansForCandidate(item.error_spans, cand_i)
+            const existingErrorSpans = response.payload_existing?.annotation[item_i]?.[model]?.error_spans
+            const candidateSpans = existingErrorSpans || getErrorSpansForModel(item.error_spans, model)
 
             if (!no_tgt_char && (protocol_error_spans || protocol_error_categories) && candidateSpans.length > 0) {
                 // Only reset if loading from payload_existing (to avoid duplicating pre-filled spans)
                 if (existingErrorSpans) {
-                    response_log[item_i][cand_i].error_spans = []
+                    response_log[item_i][model].error_spans = []
                 }
 
                 for (const prefilled of candidateSpans) {
                     const left_i = prefilled.start_i, right_i = prefilled.end_i
                     if (left_i < 0 || right_i >= tgt_chars_objs.length || left_i > right_i) continue
                     let error_span: ErrorSpan = { ...prefilled }
-                    response_log[item_i][cand_i].error_spans.push(error_span)
+                    response_log[item_i][model].error_spans.push(error_span)
 
                     let toolbox = createSpanToolbox(protocol_error_categories, error_span, tgt_chars_objs, left_i, right_i, () => {
-                        response_log[item_i][cand_i].error_spans = response_log[item_i][cand_i].error_spans.filter(s => s != error_span)
-                        action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "candidate": cand_i, "start_i": left_i, "end_i": right_i })
+                        response_log[item_i][model].error_spans = response_log[item_i][model].error_spans.filter(s => s != error_span)
+                        action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "model": model, "start_i": left_i, "end_i": right_i })
                         has_unsaved_work = true
                     }, frozenMode)
                     $("body").append(toolbox)
@@ -480,10 +495,10 @@ async function display_next_payload(response: DataPayload) {
 
                 // val == 0 is the only case when 'change' does not fire
                 if (val == 0) {
-                    response_log[item_i][cand_i].score = val
+                    response_log[item_i][model].score = val
                     has_unsaved_work = true
                     check_unlock()
-                    action_log.push({ "time": Date.now() / 1000, "action": "score", "index": item_i, "candidate": cand_i, "value": val })
+                    action_log.push({ "time": Date.now() / 1000, "action": "score", "index": item_i, "model": model, "value": val })
                 }
             })
             slider.on("change", function () {
@@ -492,11 +507,11 @@ async function display_next_payload(response: DataPayload) {
 
                 let val = parseInt((<HTMLInputElement>this).value)
                 label.text(`${val}/100`)
-                response_log[item_i][cand_i].score = val
+                response_log[item_i][model].score = val
                 has_unsaved_work = true
                 check_unlock()
                 // push only for change which happens just once
-                action_log.push({ "time": Date.now() / 1000, "action": "score", "index": item_i, "candidate": cand_i, "value": val })
+                action_log.push({ "time": Date.now() / 1000, "action": "score", "index": item_i, "model": model, "value": val })
             })
 
             // Disable slider in frozen mode
@@ -505,11 +520,11 @@ async function display_next_payload(response: DataPayload) {
             }
 
             // Pre-fill score from payload_existing if available
-            const existingScore = response.payload_existing?.annotation[item_i]?.[cand_i]?.score
+            const existingScore = response.payload_existing?.annotation[item_i]?.[model]?.score
             if (existingScore != null) {
                 slider.val(existingScore)
                 label.text(`${existingScore}/100`)
-                response_log[item_i][cand_i].score = existingScore
+                response_log[item_i][model].score = existingScore
             }
         }
 
@@ -604,28 +619,30 @@ async function performValidation(): Promise<Array<boolean> | null> {
 
     let results: Array<boolean> = []
 
-    // Validate each item and each candidate
+    // Validate each item and each model
     for (let item_ij = 0; item_ij < response_log.length; item_ij++) {
         let results_local = []
-        for (let cand_i = 0; cand_i < response_log[item_ij].length; cand_i++) {
+        const modelNames = Object.keys(response_log[item_ij])
+        
+        for (let model of modelNames) {
             if (validations[item_ij] == undefined) {
                 continue
             }
             // Use validateKwayResponse to support score_greaterthan conditions
-            const result = validateKwayResponse(response_log[item_ij], validations[item_ij]!, cand_i)
+            const result = validateKwayResponse(response_log[item_ij], validations[item_ij]!, model)
 
 
             // if we fail and there's a message, prevent loading next item and show warning
-            if (!result && validations[item_ij]![cand_i].warning) {
+            if (!result && validations[item_ij]![model]?.warning) {
                 // Scroll to the block
                 if (output_blocks[item_ij] && output_blocks[item_ij].offset()) {
                     $('html, body').animate({ scrollTop: output_blocks[item_ij].offset()!.top - 100 }, 500)
                 }
                 // Show warning indicator
                 output_blocks[item_ij].find(".validation_warning").remove()
-                const warningEl = $(`<span class="validation_warning" title="${validations[item_ij]![cand_i].warning || 'Validation failed'}">⚠️</span>`)
+                const warningEl = $(`<span class="validation_warning" title="${validations[item_ij]![model]?.warning || 'Validation failed'}">⚠️</span>`)
                 output_blocks[item_ij].prepend(warningEl)
-                notify(validations[item_ij]![cand_i].warning as string)
+                notify(validations[item_ij]![model]!.warning as string)
                 return null
             }
 
