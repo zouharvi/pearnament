@@ -469,14 +469,21 @@ export function validateKwayResponse(
 
 /**
  * Check if any validation has allow_skip enabled
- * Handles both Record validations and legacy formats
+ * Handles both Record validations and single Validation objects
  */
 export function hasAllowSkip(validations: (Validation | Record<string, Validation> | undefined)[]): boolean {
     for (const v of validations) {
         if (!v) continue;
-        // Check if it's a Record (object with string keys)
         if (typeof v === 'object' && !Array.isArray(v)) {
-            if (Object.values(v).some(vv => vv?.allow_skip === true)) return true;
+            // Check if it's a single Validation object (has allow_skip property directly)
+            if ('allow_skip' in v && v.allow_skip === true) {
+                return true;
+            }
+            // Otherwise treat as Record and check nested validations
+            if (!('allow_skip' in v) && !('warning' in v) && !('score' in v)) {
+                // It's a Record<string, Validation>
+                if (Object.values(v).some(vv => vv?.allow_skip === true)) return true;
+            }
         }
     }
     return false;
