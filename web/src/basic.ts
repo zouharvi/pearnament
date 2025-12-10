@@ -138,31 +138,24 @@ async function display_next_payload(response: DataPayload) {
 
     redrawProgress(response.info.item_i, response.progress, navigate_to_item)
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
-    $("#settings_comment").val("")
-
-    let data = response.payload
-    // Initialize response log and model names - use payload_existing if available
-    if (response.payload_existing) {
-        // Use existing annotations in-place
-        response_log = response.payload_existing.annotation
-
-        // Reload comment if it exists
-        if (response.payload_existing.comment) {
-            $("#settings_comment").val(response.payload_existing.comment)
-        }
+    if (response.payload_existing?.comment) {
+        $("#settings_comment").val(response.payload_existing?.comment)
     } else {
-        response_log = data.map(segment => {
-            return Object.fromEntries(
-                Object.keys(segment.tgt).map(model_name => [
-                    model_name,
-                    {
-                        score: null,
-                        error_spans: [] as ErrorSpan[],
-                    },
-                ])
-            ) as SegmentResponse
-        })
+        $("#settings_comment").val("")
     }
+    let data = response.payload
+    response_log = data.map(segment => {
+        return Object.fromEntries(
+            Object.keys(segment.tgt).map(model_name => [
+                model_name,
+                {
+                    score: null,
+                    error_spans: [] as ErrorSpan[],
+                },
+            ])
+        ) as SegmentResponse
+    })
+
 
     // Handle validations - convert dict validation to array using model names
     validations = data.map(item => item.validation)
@@ -412,17 +405,27 @@ async function display_next_payload(response: DataPayload) {
                 })
             }
 
+            // Set existing score
+            const existingScore = response.payload_existing?.annotation[item_i]?.[model]?.score
+            if (existingScore != null) {
+                const slider = candidate_block.find("input[type='range']")
+                const label = candidate_block.find(".slider_label")
+                slider.val(existingScore.toString())
+                label.text(`${existingScore}/100`)
+            }
+
             // Load error spans - use existing if available, otherwise use pre-filled from item
             const existingErrorSpans = response.payload_existing?.annotation[item_i]?.[model]?.error_spans
-            const itemErrorSpans = item.error_spans?.[model]
+            const defaultErrorSpans = item.error_spans?.[model]
+            console.log(existingErrorSpans, defaultErrorSpans);
             
             // If we have existing spans, they're already in response_log, just display them
             // Otherwise, add pre-filled spans from item.error_spans to response_log
-            const candidateSpans = existingErrorSpans || itemErrorSpans || []
+            const candidateSpans = existingErrorSpans || defaultErrorSpans  || []
 
             if (!no_tgt_char && protocol_error_spans && candidateSpans.length > 0) {
                 // Only push to response_log if these are pre-filled spans (not existing annotations)
-                if (!existingErrorSpans && itemErrorSpans) {
+                if (!existingErrorSpans && defaultErrorSpans) {
                     response_log[item_i][model].error_spans = []
                 }
                 
@@ -432,12 +435,13 @@ async function display_next_payload(response: DataPayload) {
                     let error_span: ErrorSpan = { ...prefilled }
                     
                     // Only add to response_log if these are pre-filled (not existing)
-                    if (!existingErrorSpans && itemErrorSpans) {
+                    if (!existingErrorSpans && defaultErrorSpans) {
                         response_log[item_i][model].error_spans.push(error_span)
                     }
 
                     let toolbox = createSpanToolbox(protocol_error_categories, error_span, tgt_chars_objs, left_i, right_i, () => {
                         response_log[item_i][model].error_spans = response_log[item_i][model].error_spans.filter(s => s != error_span)
+                        console.log(response_log[item_i][model]);
                         action_log.push({ "time": Date.now() / 1000, "action": "delete_span", "index": item_i, "model": model, "start_i": left_i, "end_i": right_i })
                         has_unsaved_work = true
                     }, frozenMode)
