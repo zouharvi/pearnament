@@ -115,31 +115,38 @@ def _shuffle_campaign_data(campaign_data, rng):
     """
     Shuffle campaign data at the document level in-place
     
-    For each document, randomly selects which model's translation to use,
-    but keeps all segments within the same document using the same model.
+    For each document, randomly shuffles the order of models in the tgt dictionary.
     
     Args:
         campaign_data: The campaign data dictionary
         rng: Random number generator with campaign-specific seed
     """
     def shuffle_document(doc):
-        """Shuffle a single document (list of items) by picking a random model."""
+        """Shuffle a single document (list of items) by reordering models in tgt dict."""
+        if not doc or not isinstance(doc, list):
+            return
+        
         # Get all model names from the first item's tgt dict
-        model_names = list(doc[0]['tgt'].keys())
+        first_item = doc[0]
+        if 'tgt' not in first_item or not isinstance(first_item['tgt'], dict):
+            return
+        
+        model_names = list(first_item['tgt'].keys())
         rng.shuffle(model_names)
         
-        # Create new document with only the selected model's translations
+        # Reorder tgt dict for all items in the document
         for item in doc:
-            item["tgt"] = {
-                model: item["tgt"][model]
-                for model in model_names
-            }
+            if 'tgt' in item and isinstance(item['tgt'], dict):
+                item["tgt"] = {
+                    model: item["tgt"][model]
+                    for model in model_names
+                }
     
     assignment = campaign_data["info"]["assignment"]
     
     if assignment == "task-based":
-        # Shuffle each task's documents
-        for task in campaign_data["data"]:
+        # After transformation, data is a dict mapping user_id -> tasks
+        for user_id, task in campaign_data["data"].items():
             for doc in task:
                 shuffle_document(doc)
     elif assignment == "single-stream":
