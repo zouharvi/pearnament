@@ -26,8 +26,8 @@ class TestItemValidation:
                     "data": [
                         [
                             [
-                                {"src": "hello", "tgt": ["hola", "ola"]},
-                                {"src": "world", "tgt": ["mundo", "munda"]}
+                                {"src": "hello", "tgt": {"A": "hola", "B": "ola"}},
+                                {"src": "world", "tgt": {"A": "mundo", "B": "munda"}}
                             ]
                         ]
                     ]
@@ -54,8 +54,8 @@ class TestItemValidation:
                     },
                     "data": [
                         [
-                            {"src": "hello", "tgt": ["hola", "ola"]},
-                            {"src": "world", "tgt": ["mundo", "munda"]}
+                            {"src": "hello", "tgt": {"A": "hola", "B": "ola"}},
+                            {"src": "world", "tgt": {"A": "mundo", "B": "munda"}}
                         ]
                     ]
                 }, f)
@@ -79,7 +79,7 @@ class TestItemValidation:
                     "data": [
                         [
                             [
-                                {"tgt": ["hola"]}  # Missing 'src'
+                                {"tgt": {"A": "hola"}}  # Missing 'src'
                             ]
                         ]
                     ]
@@ -153,7 +153,7 @@ class TestItemValidation:
                     },
                     "data": [
                         [
-                            {"src": "hello", "tgt": ["hola"]}  # Should be list of items
+                            {"src": "hello", "tgt": {"A": "hola"}}  # Should be list of items
                         ]
                     ]
                 }, f)
@@ -177,7 +177,7 @@ class TestItemValidation:
                     },
                     "data": [
                         [
-                            {"tgt": ["hola"]}  # Missing 'src'
+                            {"tgt": {"A": "hola"}}  # Missing 'src'
                         ]
                     ]
                 }, f)
@@ -203,11 +203,11 @@ class TestItemValidation:
                             [
                                 {
                                     "src": "hello",
-                                    "tgt": ["hola", "ola"],
+                                    "tgt": {"A": "hola", "B": "ola"},
                                     "doc_id": "123",
                                     "model": "system1",
                                     "instructions": "Translate this",
-                                    "validation": {"score": [70, 80]}
+                                    "validation": {"A": {"score": [70, 80]}}
                                 }
                             ]
                         ]
@@ -233,7 +233,7 @@ class TestItemValidation:
                     "data": [
                         [
                             [
-                                {"src": 123, "tgt": ["hello"]}  # src is not a string
+                                {"src": 123, "tgt": {"A": "hello"}}  # src is not a string
                             ]
                         ]
                     ]
@@ -244,15 +244,17 @@ class TestItemValidation:
 
 
 
-    def test_tgt_must_be_list(self):
-        """Test that tgt must be a list (basic template)."""
+    def test_tgt_must_be_dict_or_string(self):
+        """Test that tgt must be a dictionary or string (basic template)."""
         from pearmut.cli import _add_single_campaign
 
         with tempfile.TemporaryDirectory() as tmpdir:
             campaign_file = os.path.join(tmpdir, "campaign.json")
+            
+            # Test with string - should work for backward compatibility
             with open(campaign_file, "w") as f:
                 json.dump({
-                    "campaign_id": "test_tgt_not_list",
+                    "campaign_id": "test_tgt_string",
                     "info": {
                         "assignment": "task-based",
                         "template": "basic",
@@ -260,13 +262,32 @@ class TestItemValidation:
                     "data": [
                         [
                             [
-                                {"src": "hello", "tgt": "not a list"}
+                                {"src": "hello", "tgt": "single translation"}
+                            ]
+                        ]
+                    ]
+                }, f)
+            # Should not raise
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+            
+            # Test with invalid type - should fail
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_tgt_invalid",
+                    "info": {
+                        "assignment": "task-based",
+                        "template": "basic",
+                    },
+                    "data": [
+                        [
+                            [
+                                {"src": "hello", "tgt": 123}  # Invalid: number
                             ]
                         ]
                     ]
                 }, f)
 
-            with pytest.raises(ValueError, match="'tgt' must be a list"):
+            with pytest.raises(ValueError, match="'tgt' must be a dictionary mapping model names to translations, or a single string"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_tgt_elements_must_be_strings(self):
@@ -285,13 +306,13 @@ class TestItemValidation:
                     "data": [
                         [
                             [
-                                {"src": "hello", "tgt": ["valid", 123, "another"]}
+                                {"src": "hello", "tgt": {"A": "valid", "B": 123, "C": "another"}}
                             ]
                         ]
                     ]
                 }, f)
 
-            with pytest.raises(ValueError, match="All elements in 'tgt' list must be strings"):
+            with pytest.raises(ValueError, match="Translation for model 'B' must be a string"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
 
     def test_basic_with_score_greaterthan_validation(self):
@@ -313,18 +334,18 @@ class TestItemValidation:
                             [
                                 {
                                     "src": "Test source text.",
-                                    "tgt": ["Translation A", "Translation B"],
-                                    "validation": [
-                                        {
+                                    "tgt": {"A": "Translation A", "B": "Translation B"},
+                                    "validation": {
+                                        "A": {
                                             "warning": "A must score higher than B.",
                                             "score": [80, 100],
-                                            "score_greaterthan": 1
+                                            "score_greaterthan": "B"
                                         },
-                                        {
+                                        "B": {
                                             "warning": "B should score lower.",
                                             "score": [40, 70]
                                         }
-                                    ]
+                                    }
                                 }
                             ]
                         ]

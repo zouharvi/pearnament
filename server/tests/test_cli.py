@@ -29,7 +29,7 @@ class TestAssetsValidation:
                         "template": "basic",
                         "assets": assets_dir,
                     },
-                    "data": [[[{"src": "a", "tgt": ["b"]}]]]
+                    "data": [[[{"src": "a", "tgt": {"A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="Assets must be a dictionary"):
@@ -49,7 +49,7 @@ class TestAssetsValidation:
                         "template": "basic",
                         "assets": {"destination": "assets/my_videos"},
                     },
-                    "data": [[[{"src": "a", "tgt": ["b"]}]]]
+                    "data": [[[{"src": "a", "tgt": {"A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must contain 'source' and 'destination' keys"):
@@ -72,7 +72,7 @@ class TestAssetsValidation:
                         "template": "basic",
                         "assets": {"source": assets_dir},
                     },
-                    "data": [[[{"src": "a", "tgt": ["b"]}]]]
+                    "data": [[[{"src": "a", "tgt": {"A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must contain 'source' and 'destination' keys"):
@@ -98,7 +98,7 @@ class TestAssetsValidation:
                             "destination": "my_videos"
                         },
                     },
-                    "data": [[[{"src": "a", "tgt": ["b"]}]]]
+                    "data": [[[{"src": "a", "tgt": {"A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must start with 'assets/'"):
@@ -128,7 +128,7 @@ class TestAssetsValidation:
                             "destination": "assets/my_videos"
                         },
                     },
-                    "data": [[[{"src": "a", "tgt": ["b"]}]]]
+                    "data": [[[{"src": "a", "tgt": {"A": "b"}}]]]
                 }, f)
 
             with pytest.raises(ValueError, match="must be an existing directory"):
