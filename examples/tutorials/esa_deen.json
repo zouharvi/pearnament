@@ -81,10 +81,10 @@
     "tgt": {
       "Translation": "The walked outside."
     },
-    "instructions": "<b>Now let's practice marking missing content.</b><br><br>The word for <u>\"dog\"</u> is missing from this translation!<br><br><b>Your task:</b><br>1. Look for the text <b>[MISSING]</b> at the end of the translation<br>2. <b>Mark [MISSING]</b> as a <b>major error</b> (dark pink)<br>3. Set the score to <b>5-15%</b> because critical content is missing",
+    "instructions": "<b>Now let's practice marking missing content.</b><br><br>The word for <u>\"dog\"</u> (Hund) is completely missing from this translation!<br><br><b>Your task:</b><br>1. Scroll to the end of the translation and find the <b>[missing]</b> marker (shown in a box)<br>2. <b>Click on [missing]</b> to mark it as an error<br>3. Click again to change it to <b>major severity</b> (dark pink)<br>4. Set the score to <b>5-15%</b> because critical content is missing",
     "validation": {
       "Translation": {
-        "warning": "Please mark the [MISSING] text as a major error and set the score to 5-15%.",
+        "warning": "Please mark the [missing] marker as a major error (dark pink) and set the score to 5-15%.",
         "score": [5, 15],
         "error_spans": [
           {
