@@ -4,7 +4,7 @@
     "users": 10,
     "protocol": "ESA"
   },
-  "campaign_id": "mock_singlestream",
+  "campaign_id": "example_singlestream",
   "data": [
     [
       {

@@ -114,6 +114,22 @@ pearmut run
 
 ## Advanced Features
 
+### Shuffling Model Translations
+
+By default, Pearmut randomly shuffles the order in which models are shown per each item in order to avoid positional bias.
+The `shuffle` parameter in campaign `info` controls this behavior:
+```python
+{
+  "info": {
+    "assignment": "task-based",
+    "protocol": "ESA",
+    "shuffle": true  # Default: true. Set to false to disable shuffling.
+  },
+  "campaign_id": "my_campaign",
+  "data": [...]
+}
+```
+
 ### Pre-filled Error Spans (ESA<sup>AI</sup>)
 
 Include `error_spans` to pre-fill annotations that users can review, modify, or delete:
@@ -278,7 +294,7 @@ When tokens are supplied, the dashboard will try to show model rankings based on
 
 - **Campaign**: An annotation project that contains configuration, data, and user assignments. Each campaign has a unique identifier and is defined in a JSON file.
   - **Campaign File**: A JSON file that defines the campaign configuration, including the campaign ID, assignment type, protocol settings, and annotation data.
-  - **Campaign ID**: A unique identifier for a campaign (e.g., `"wmt25_#_en-cs_CZ"`). Used to reference and manage specific campaigns.
+  - **Campaign ID**: A unique identifier for a campaign (e.g., `"wmt25_#_en-cs_CZ"`). Used to reference and manage specific campaigns. Typically a campaign is created for a specific language and domain.
 - **Task**: A unit of work assigned to a user. In task-based assignment, each task consists of a predefined set of items for a specific user.
 - **Item**: A single annotation unit within a task. For translation evaluation, an item typically represents a document (source text and target translation). Items can contain text, images, audio, or video.
 - **Document**: A collection of one or more segments (sentence pairs or text units) that are evaluated together as a single item.

@@ -22,6 +22,7 @@ class TestItemValidation:
                     "info": {
                         "assignment": "task-based",
                         "template": "basic",
+                        "shuffle": False,
                     },
                     "data": [
                         [
@@ -51,6 +52,7 @@ class TestItemValidation:
                         "assignment": "single-stream",
                         "template": "basic",
                         "users": 2,
+                        "shuffle": False,
                     },
                     "data": [
                         [

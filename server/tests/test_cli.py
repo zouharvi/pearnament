@@ -2,6 +2,7 @@
 
 import json
 import os
+import random
 import tempfile
 
 import pytest
@@ -130,3 +131,43 @@ class TestAssetsValidation:
 
             with pytest.raises(ValueError, match="must be an existing directory"):
                 _add_single_campaign(campaign_file, False, "http://localhost:8001")
+
+
+class TestShuffleData:
+    """Tests for shuffle functionality in campaigns."""
+
+    def test_shuffle_reorders_models(self):
+        """Test that shuffle reorders model names in tgt dictionary."""
+        from pearmut.cli import _shuffle_campaign_data
+        
+        rng = random.Random(42)
+        campaign_data = {
+            "info": {"assignment": "task-based"},
+            "data": {
+                "user1": [
+                    [  # Document 1
+                        {"src": "hello", "tgt": {"model_A": "hola", "model_B": "bonjour", "model_C": "ciao"}},
+                        {"src": "world", "tgt": {"model_A": "mundo", "model_B": "monde", "model_C": "mondo"}}
+                    ]
+                ]
+            }
+        }
+        
+        # Get original order
+        original_order = list(campaign_data["data"]["user1"][0][0]["tgt"].keys())
+        
+        # Shuffle
+        _shuffle_campaign_data(campaign_data, rng)
+        
+        # Get new order
+        new_order = list(campaign_data["data"]["user1"][0][0]["tgt"].keys())
+        
+        # Order should be different (with seed 42 and 3 models, it will be shuffled)
+        assert new_order != original_order
+        
+        # All models should still be present
+        assert set(new_order) == set(original_order)
+        
+        # Both items in the document should have the same order
+        doc = campaign_data["data"]["user1"][0]
+        assert list(doc[0]["tgt"].keys()) == list(doc[1]["tgt"].keys())

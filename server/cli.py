@@ -108,6 +108,50 @@ def _validate_item_structure(items):
                     raise ValueError(f"Validation rule for model '{model_name}' must be a dictionary")
 
 
+def _shuffle_campaign_data(campaign_data, rng):
+    """
+    Shuffle campaign data at the document level in-place
+    
+    For each document, randomly shuffles the order of models in the tgt dictionary.
+    
+    Args:
+        campaign_data: The campaign data dictionary
+        rng: Random number generator with campaign-specific seed
+    """
+    def shuffle_document(doc):
+        """Shuffle a single document (list of items) by reordering models in tgt dict."""
+        if not doc or not isinstance(doc, list):
+            return
+        
+        # Get all model names from the first item's tgt dict
+        first_item = doc[0]
+        if 'tgt' not in first_item or not isinstance(first_item['tgt'], dict):
+            return
+        
+        model_names = list(first_item['tgt'].keys())
+        rng.shuffle(model_names)
+        
+        # Reorder tgt dict for all items in the document
+        for item in doc:
+            if 'tgt' in item and isinstance(item['tgt'], dict):
+                item["tgt"] = {
+                    model: item["tgt"][model]
+                    for model in model_names
+                }
+    
+    assignment = campaign_data["info"]["assignment"]
+    
+    if assignment == "task-based":
+        # After transformation, data is a dict mapping user_id -> tasks
+        for user_id, task in campaign_data["data"].items():
+            for doc in task:
+                shuffle_document(doc)
+    elif assignment == "single-stream":
+        # Shuffle each document in the shared pool
+        for doc in campaign_data["data"]:
+            shuffle_document(doc)
+
+
 def _add_single_campaign(data_file, overwrite, server):
     """
     Add a single campaign from a JSON data file.
@@ -323,6 +367,11 @@ def _add_single_campaign(data_file, overwrite, server):
         os.symlink(assets_real_path, symlink_path, target_is_directory=True)
         print(f"Assets symlinked: {symlink_path} -> {assets_real_path}")
 
+
+    # Shuffle data if shuffle parameter is true (defaults to true)
+    should_shuffle = campaign_data["info"].get("shuffle", True)
+    if should_shuffle:
+        _shuffle_campaign_data(campaign_data, rng)
 
     # commit to transaction
     with open(f"{ROOT}/data/tasks/{campaign_data['campaign_id']}.json", "w") as f:
