@@ -137,11 +137,10 @@ def _add_single_campaign(data_file, overwrite, server):
         raise ValueError("Campaign data must contain 'data' field.")
     if "assignment" not in campaign_data["info"]:
         raise ValueError("Campaign 'info' must contain 'assignment' field.")
-    if "template" not in campaign_data["info"]:
-        raise ValueError("Campaign 'info' must contain 'template' field.")
-
+    
+    # Template defaults to "basic" if not specified
     assignment = campaign_data["info"]["assignment"]
-    template = campaign_data["info"]["template"]
+    template = campaign_data["info"].get("template", "basic")
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
