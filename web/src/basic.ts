@@ -54,7 +54,8 @@ type DataPayload = {
  */
 function ensureCandidateRecord(tgt: string | Record<string, string>): Record<string, string> {
     if (typeof tgt === 'string') {
-        throw new Error('Item "tgt" must be a dictionary mapping model names to translations. For single translation, use {"default": "' + tgt + '"}')
+        // Don't include user input in error message to prevent injection
+        throw new Error('Item "tgt" must be a dictionary mapping model names to translations. For single translation, use {"default": "your_translation"}')
     }
     if (typeof tgt !== 'object' || Array.isArray(tgt)) {
         throw new Error('Item "tgt" must be a dictionary mapping model names to translations')

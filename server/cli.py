@@ -79,8 +79,8 @@ def _validate_item_structure(items):
         
         # Validate tgt is a dictionary (basic template with model names)
         if isinstance(item['tgt'], str):
-            # String not allowed - suggest using dictionary
-            raise ValueError(f"Item 'tgt' must be a dictionary mapping model names to translations. For single translation, use {{\"default\": \"{item['tgt']}\"}}")
+            # String not allowed - suggest using dictionary (don't include user input to prevent injection)
+            raise ValueError("Item 'tgt' must be a dictionary mapping model names to translations. For single translation, use {\"default\": \"your_translation\"}")
         elif isinstance(item['tgt'], dict):
             # Dictionary mapping model names to translations
             # Validate that model names don't contain only numbers (JavaScript ordering issue)

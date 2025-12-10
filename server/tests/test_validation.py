@@ -268,7 +268,7 @@ class TestItemValidation:
                     ]
                 }, f)
             # Should fail with suggestion to use {"default": "..."}
-            with pytest.raises(ValueError, match='For single translation, use \\{"default": "single translation"\\}'):
+            with pytest.raises(ValueError, match='For single translation, use \\{"default": "your_translation"\\}'):
                 _add_single_campaign(campaign_file, True, "http://localhost:8001")
             
             # Test with invalid type - should fail
