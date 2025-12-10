@@ -59,7 +59,7 @@ def _validate_item_structure(items):
     """
     Validate that items have the correct structure.
     Items should be lists of dictionaries with 'src' and 'tgt' keys.
-    All items now use the basic (listwise) template format with tgt as an array.
+    All items use the basic template format with tgt as an array.
     
     Args:
         items: List of item dictionaries to validate
@@ -77,7 +77,7 @@ def _validate_item_structure(items):
         if not isinstance(item['src'], str):
             raise ValueError("Item 'src' must be a string")
         
-        # Validate tgt is a list (basic/listwise template)
+        # Validate tgt is a list (basic template)
         if not isinstance(item['tgt'], list):
             raise ValueError("Item 'tgt' must be a list")
         # Check that all elements in tgt list are strings

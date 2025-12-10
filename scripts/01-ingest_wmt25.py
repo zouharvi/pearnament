@@ -29,15 +29,18 @@ for doc_id, segments in documents.items():
     # Get all models for this document
     models = list(segments[0][1]["tgt_text"].keys())
     
-    # Group by models - create one document task per model for basic (listwise) template
+    # Create one document task per model for the basic template
+    # Note: Each model gets its own task with a single-item array.
+    # This maintains compatibility with the existing WMT25 data structure
+    # where each model's output is evaluated separately.
     for model in models:
         document_task = []
         for seg_i, seg in segments:
             document_task.append({
                 "doc_id": f"{doc_id}_#_{seg_i}",
-                "models": [model],  # Now models field instead of model
+                "models": [model],
                 "src": seg["src_text"],
-                "tgt": [seg["tgt_text"][model]],  # Now tgt is array
+                "tgt": [seg["tgt_text"][model]],
             } | (
                 {} if seg_i != "0" else {
                     "instructions": f"Evaluate translation from {LANG_TO_NAME.get(lang1, lang1)} to {LANG_TO_NAME.get(lang2, lang2)}.",
