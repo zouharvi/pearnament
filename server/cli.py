@@ -111,6 +111,82 @@ def _validate_item_structure(items):
                     raise ValueError(f"Validation rule for model '{model_name}' must be a dictionary")
 
 
+def _shuffle_campaign_data(campaign_data, rng):
+    """
+    Shuffle campaign data at the document level.
+    
+    For each document, randomly selects which model's translation to use,
+    but keeps all segments within the same document using the same model.
+    
+    Args:
+        campaign_data: The campaign data dictionary
+        rng: Random number generator with campaign-specific seed
+    
+    Returns:
+        Modified campaign_data with shuffled translations
+    """
+    def shuffle_document(doc):
+        """Shuffle a single document (list of items) by picking a random model."""
+        if not doc:
+            return doc
+        
+        # Get all model names from the first item's tgt dict
+        first_item = doc[0]
+        if 'tgt' not in first_item or not isinstance(first_item['tgt'], dict):
+            return doc
+        
+        model_names = list(first_item['tgt'].keys())
+        if len(model_names) <= 1:
+            # No shuffling needed if there's only one model
+            return doc
+        
+        # Randomly select one model for this entire document
+        selected_model = rng.choice(model_names)
+        
+        # Create new document with only the selected model's translations
+        shuffled_doc = []
+        for item in doc:
+            new_item = dict(item)
+            if 'tgt' in new_item and isinstance(new_item['tgt'], dict):
+                # Keep only the selected model's translation
+                new_item['tgt'] = {selected_model: new_item['tgt'][selected_model]}
+            
+            # Shuffle error_spans if present
+            if 'error_spans' in new_item and isinstance(new_item['error_spans'], dict):
+                if selected_model in new_item['error_spans']:
+                    new_item['error_spans'] = {selected_model: new_item['error_spans'][selected_model]}
+                else:
+                    # If selected model doesn't have error_spans, remove the field
+                    del new_item['error_spans']
+            
+            # Shuffle validation if present
+            if 'validation' in new_item and isinstance(new_item['validation'], dict):
+                if selected_model in new_item['validation']:
+                    new_item['validation'] = {selected_model: new_item['validation'][selected_model]}
+                else:
+                    # If selected model doesn't have validation, remove the field
+                    del new_item['validation']
+            
+            shuffled_doc.append(new_item)
+        
+        return shuffled_doc
+    
+    assignment = campaign_data["info"]["assignment"]
+    
+    if assignment == "task-based":
+        # Shuffle each task's documents
+        shuffled_tasks = []
+        for task in campaign_data["data"]:
+            shuffled_task = [shuffle_document(doc) for doc in task]
+            shuffled_tasks.append(shuffled_task)
+        campaign_data["data"] = shuffled_tasks
+    elif assignment == "single-stream":
+        # Shuffle each document in the shared pool
+        campaign_data["data"] = [shuffle_document(doc) for doc in campaign_data["data"]]
+    
+    return campaign_data
+
+
 def _add_single_campaign(data_file, overwrite, server):
     """
     Add a single campaign from a JSON data file.
@@ -143,6 +219,11 @@ def _add_single_campaign(data_file, overwrite, server):
     # use random words for identifying users
     rng = random.Random(campaign_data["campaign_id"])
     rword = wonderwords.RandomWord(rng=rng)
+
+    # Shuffle data if shuffle parameter is true (defaults to true)
+    should_shuffle = campaign_data["info"].get("shuffle", True)
+    if should_shuffle:
+        campaign_data = _shuffle_campaign_data(campaign_data, rng)
 
     # Parse users specification from info
     users_spec = campaign_data["info"].get("users")
