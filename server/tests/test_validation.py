@@ -436,7 +436,7 @@ class TestItemValidation:
                                         "model_B": {
                                             "warning": "B is correct and must score higher than A.",
                                             "score": [70, 90],
-                                            "score_greaterthan": 0
+                                            "score_greaterthan": "model_A"
                                         }
                                     }
                                 }

@@ -221,20 +221,12 @@ Dashboard shows ✅/❌ based on `validation_threshold` in `info` (integer for m
   },
   "validation": {
     "model_A": {"warning": "A has error, score 20-40.", "score": [20, 40]},
-    "model_B": {"warning": "B is correct and must score higher than A.", "score": [70, 90], "score_greaterthan": 0}
+    "model_B": {"warning": "B is correct and must score higher than A.", "score": [70, 90], "score_greaterthan": "model_A"}
   }
 }
 ```
 
-The `score_greaterthan` field specifies the array index (after dictionary conversion) of the candidate that must have a lower score. In this example:
-- Index 0 = model_A (first key in the dict)
-- Index 1 = model_B (second key in the dict)
-
-So `"score_greaterthan": 0` in model_B's validation means "model_B must score higher than model_A (at index 0)".
-
-**Note:** Dictionary keys are ordered consistently within a document (preserved through shuffling), so index references remain stable throughout annotation.
-
-See [examples/tutorial_kway.json](examples/tutorial_kway.json) for a complete example.
+The `score_greaterthan` field specifies the model name that must have a lower score. In this example, `"score_greaterthan": "model_A"` in model_B's validation means "model_B must score higher than model_A".
 
 ### Single-stream Assignment
 
