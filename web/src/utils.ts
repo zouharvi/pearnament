@@ -439,7 +439,6 @@ export function validateKwayResponse(
         return false;
     }
 
-    console.log("A", response.score, validation);
     // Check score_greaterthan condition if specified
     if (validation.score_greaterthan !== undefined) {
         const otherModel = validation.score_greaterthan as string;
@@ -451,14 +450,13 @@ export function validateKwayResponse(
         }
         
         const otherScore = responses[otherModel].score;
-        console.log("B", response.score, otherScore);
         // Both scores must be set (not null) to perform comparison
         // Null scores indicate the user hasn't provided a score yet
         if (response.score === null || otherScore === null) {
             return false;
         }
         
-        // Verify this candidate's score is strictly greater than the other
+        // Verify this model's score is strictly greater than the other
         if (response.score <= otherScore) {
             return false;
         }

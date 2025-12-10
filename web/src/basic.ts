@@ -24,9 +24,9 @@ import {
 const searchParams = new URLSearchParams(window.location.search)
 const frozenMode = searchParams.has("frozen")
 
-// Each candidate has its own response
+// Each model has its own response
 type CandidateResponse = { score: number | null, error_spans: Array<ErrorSpan> }
-// Response for a document with multiple candidates - now keyed by model name
+// Response for a document with multiple models - keyed by model name
 type DocumentResponse = Record<string, CandidateResponse>
 
 type DataPayload = {
@@ -221,7 +221,7 @@ async function display_next_payload(response: DataPayload) {
             output_block.find("#instructions_message").html(item.instructions)
         }
 
-        // Add each candidate
+        // Add each model's output
         let src_chars_els = no_src_char ? [] : output_block.find(".src_char").toArray()
 
         for (const [model, tgt] of Object.entries(item.tgt)) {
@@ -237,7 +237,7 @@ async function display_next_payload(response: DataPayload) {
 
             output_block.find(".output_srctgt").append(candidate_block)
 
-            // Setup character-level interactions for this candidate
+            // Setup character-level interactions for this model's output
             // Compute word boundaries for the target text
             let _tgt_chars_els = candidate_block.find(".tgt_char").toArray()
             let tgt_word_boundaries = no_tgt_char ? [] : computeWordBoundaries(_tgt_chars_els.map(el => $(el).text()))
@@ -465,7 +465,7 @@ async function display_next_payload(response: DataPayload) {
                 }
             }
 
-            // Setup slider for this candidate
+            // Setup slider for this model
             let slider = candidate_block.find("input[type='range']")
             let label = candidate_block.find(".slider_label")
             slider.on("input", function () {
@@ -630,7 +630,7 @@ async function performValidation(): Promise<Array<boolean> | null> {
 
             results_local.push(result)
         }
-        // check if all candidates passed
+        // check if all models passed
         if (results_local.length > 0) results.push(results_local.every(r => r))
     }
 
