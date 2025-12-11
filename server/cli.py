@@ -182,7 +182,7 @@ def _add_single_campaign(data_file, overwrite, server):
     # Template defaults to "basic" if not specified
     assignment = campaign_data["info"]["assignment"]
     # use random words for identifying users
-    rng = random.Random(campaign_data["campaign_id"])
+    rng = random.Random()
     rword = wonderwords.RandomWord(rng=rng)
 
     # Parse users specification from info
