@@ -265,6 +265,10 @@ def _add_single_campaign(data_file, overwrite, server):
             raise ValueError("'users' list must contain all strings or all dicts.")
     else:
         raise ValueError("'users' must be an integer or a list.")
+    
+    if "protocol" not in campaign_data["info"]:
+        campaign_data["info"]["protocol"] = "ESA"
+        print("Warning: 'protocol' not specified in campaign info. Defaulting to 'ESA'.")
 
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
