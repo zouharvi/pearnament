@@ -121,7 +121,7 @@ def _validate_document_models(doc):
     Raises:
         ValueError: If items have different model outputs
     """
-    if not doc or not isinstance(doc, list) or len(doc) == 0:
+    if not doc or not isinstance(doc, list):
         return
     
     # Get model names from the first item
