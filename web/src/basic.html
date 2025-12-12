@@ -81,6 +81,29 @@
 
     input[type=range] {
       height: 16px;
+      position: relative;
+    }
+
+    /* Slider anchors at 33% and 66% */
+    .output_response::before,
+    .output_response::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 10px;
+      background-color: rgba(0, 0, 0, 0.15);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .output_response::before {
+      left: 33%;
+    }
+
+    .output_response::after {
+      left: 66%;
     }
   </style>
 </head>
