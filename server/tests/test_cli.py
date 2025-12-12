@@ -171,3 +171,100 @@ class TestShuffleData:
         # Both items in the document should have the same order
         doc = campaign_data["data"]["user1"][0]
         assert list(doc[0]["tgt"].keys()) == list(doc[1]["tgt"].keys())
+
+    def test_shuffle_refuses_different_models_in_document(self):
+        """Test that shuffle raises an error when items have different model outputs."""
+        from pearmut.cli import _shuffle_campaign_data
+        
+        rng = random.Random(42)
+        campaign_data = {
+            "info": {"assignment": "task-based"},
+            "data": {
+                "user1": [
+                    [  # Document with different models per item
+                        {"src": "hello", "tgt": {"model_A": "hola", "model_B": "bonjour"}},
+                        {"src": "world", "tgt": {"model_A": "mundo", "model_C": "monde"}}  # Different model!
+                    ]
+                ]
+            }
+        }
+        
+        # Should raise ValueError with helpful message
+        with pytest.raises(ValueError, match="Document contains items with different model outputs"):
+            _shuffle_campaign_data(campaign_data, rng)
+        
+        # Error message should mention setting shuffle to false
+        with pytest.raises(ValueError, match="set 'shuffle': false"):
+            _shuffle_campaign_data(campaign_data, rng)
+
+    def test_shuffle_refuses_different_models_single_stream(self):
+        """Test that shuffle raises an error for single-stream with different models."""
+        from pearmut.cli import _shuffle_campaign_data
+        
+        rng = random.Random(42)
+        campaign_data = {
+            "info": {"assignment": "single-stream"},
+            "data": [
+                [  # Document with different models per item
+                    {"src": "hello", "tgt": {"model_A": "hola", "model_B": "bonjour"}},
+                    {"src": "world", "tgt": {"model_A": "mundo", "model_C": "monde"}}
+                ]
+            ]
+        }
+        
+        # Should raise ValueError
+        with pytest.raises(ValueError, match="Document contains items with different model outputs"):
+            _shuffle_campaign_data(campaign_data, rng)
+
+    def test_add_campaign_with_different_models_and_shuffle_disabled(self):
+        """Test that campaigns with different models can be added if shuffle is disabled."""
+        from pearmut.cli import _add_single_campaign
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_mixed_models",
+                    "info": {
+                        "assignment": "task-based",
+                        "shuffle": False  # Explicitly disable shuffle
+                    },
+                    "data": [
+                        [  # Task with document containing different models
+                            [
+                                {"src": "hello", "tgt": {"model_A": "hola", "model_B": "bonjour"}},
+                                {"src": "world", "tgt": {"model_A": "mundo", "model_C": "monde"}}
+                            ]
+                        ]
+                    ]
+                }, f)
+            
+            # Should not raise an error
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+
+    def test_add_campaign_with_different_models_and_shuffle_enabled(self):
+        """Test that campaigns with different models fail when shuffle is enabled."""
+        from pearmut.cli import _add_single_campaign
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": "test_mixed_models_fail",
+                    "info": {
+                        "assignment": "task-based",
+                        "shuffle": True  # Shuffle enabled (or omitted, defaults to True)
+                    },
+                    "data": [
+                        [  # Task with document containing different models
+                            [
+                                {"src": "hello", "tgt": {"model_A": "hola", "model_B": "bonjour"}},
+                                {"src": "world", "tgt": {"model_A": "mundo", "model_C": "monde"}}
+                            ]
+                        ]
+                    ]
+                }, f)
+            
+            # Should raise ValueError with helpful message
+            with pytest.raises(ValueError, match="Document contains items with different model outputs"):
+                _add_single_campaign(campaign_file, True, "http://localhost:8001")
