@@ -34,21 +34,20 @@ def _run(args_unknown):
 
     # print access dashboard URL for all campaigns
     if tasks_data:
-        print(
-            args.server + "/dashboard.html?" + "&".join([
-                f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
-                for campaign_id, campaign_data in tasks_data.items()
-            ]),
-            # this is important to flush
-            flush=True,
-        )
+        dashboard_url = args.server + "/dashboard.html?" + "&".join([
+            f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
+            for campaign_id, campaign_data in tasks_data.items()
+        ])
+        print("\033[92mNow serving Tearmut, use the following URL to access the everything-dashboard:\033[0m")
+        print(dashboard_url, flush=True)
 
     uvicorn.run(
         app,
         host="0.0.0.0",
         port=args.port,
         reload=False,
-        # log_level="info",
+        log_config=None,
+        access_log=False,
     )
 
 
