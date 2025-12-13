@@ -39,7 +39,7 @@ def _run(args_unknown):
             for campaign_id, campaign_data in tasks_data.items()
         ])
         print("\033[92mNow serving Pearmut, use the following URL to access the everything-dashboard:\033[0m")
-        print(dashboard_url+"\n", flush=True)
+        print("🍐", dashboard_url+"\n", flush=True)
     
     # disable startup message
     uvicorn.config.LOGGING_CONFIG["loggers"]["uvicorn.error"]["level"] = "WARNING"
@@ -112,6 +112,38 @@ def _validate_item_structure(items):
                     raise ValueError(f"Validation rule for model '{model_name}' must be a dictionary")
 
 
+def _validate_document_models(doc):
+    """
+    Validate that all items in a document have the same model outputs.
+    
+    Args:
+        doc: List of items in a document
+        
+    Returns:
+        None if valid
+        
+    Raises:
+        ValueError: If items have different model outputs
+    """
+    # Get model names from the first item
+    first_item = doc[0]
+    first_models = set(first_item['tgt'].keys())
+    
+    # Check all other items have the same model names
+    for i, item in enumerate(doc[1:], start=1):
+        if 'tgt' not in item or not isinstance(item['tgt'], dict):
+            continue
+        
+        item_models = set(item['tgt'].keys())
+        if item_models != first_models:
+            raise ValueError(
+                f"Document contains items with different model outputs. "
+                f"Item 0 has models {sorted(first_models)}, but item {i} has models {sorted(item_models)}. "
+                f"This is fine, but we can't shuffle (on by default). "
+                f"To fix this, set 'shuffle': false in the campaign 'info' section. "
+            )
+
+
 def _shuffle_campaign_data(campaign_data, rng):
     """
     Shuffle campaign data at the document level in-place
@@ -124,14 +156,11 @@ def _shuffle_campaign_data(campaign_data, rng):
     """
     def shuffle_document(doc):
         """Shuffle a single document (list of items) by reordering models in tgt dict."""
-        if not doc or not isinstance(doc, list):
-            return
+        # Validate that all items have the same models
+        _validate_document_models(doc)
         
         # Get all model names from the first item's tgt dict
         first_item = doc[0]
-        if 'tgt' not in first_item or not isinstance(first_item['tgt'], dict):
-            return
-        
         model_names = list(first_item['tgt'].keys())
         rng.shuffle(model_names)
         
@@ -399,7 +428,7 @@ def _add_single_campaign(data_file, overwrite, server):
     )
     for user_id, user_val in user_progress.items():
         # point to the protocol URL
-        print(f'{server}/{user_val["url"]}')
+        print(f'🧑 {server}/{user_val["url"]}')
     print()
 
 
@@ -473,10 +502,14 @@ def main():
             help='Optional campaign name to purge (purges all if not specified)'
         )
         purge_args = purge_args.parse_args(args_unknown)
+        progress_data = load_progress_data()
 
         if purge_args.campaign is not None:
             # Purge specific campaign
             campaign_id = purge_args.campaign
+            if campaign_id not in progress_data:
+                print(f"Campaign '{campaign_id}' does not exist.")
+                return
             confirm = input(
                 f"Are you sure you want to purge campaign '{campaign_id}'? This action cannot be undone. [y/n] "
             )
@@ -506,7 +539,6 @@ def main():
             )
             if confirm.lower() == 'y':
                 # Unlink all assets first
-                progress_data = load_progress_data()
                 for campaign_id in progress_data.keys():
                     _unlink_assets(campaign_id)
                 shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)
