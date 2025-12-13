@@ -38,16 +38,21 @@ def _run(args_unknown):
             f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
             for campaign_id, campaign_data in tasks_data.items()
         ])
-        print("\033[92mNow serving Tearmut, use the following URL to access the everything-dashboard:\033[0m")
-        print(dashboard_url, flush=True)
-
+        print("\033[92mNow serving Pearmut, use the following URL to access the everything-dashboard:\033[0m")
+        print(dashboard_url+"\n", flush=True)
+    
+    # disable startup message
+    uvicorn.config.LOGGING_CONFIG["loggers"]["uvicorn.error"]["level"] = "WARNING"
+    # set time logging
+    uvicorn.config.LOGGING_CONFIG["formatters"]["access"]["datefmt"] = "%Y-%m-%d %H:%M"
+    uvicorn.config.LOGGING_CONFIG["formatters"]["access"]["fmt"] = (
+        '%(asctime)s %(levelprefix)s %(client_addr)s - %(request_line)s %(status_code)s'
+    )
     uvicorn.run(
         app,
         host="0.0.0.0",
         port=args.port,
         reload=False,
-        log_config=None,
-        access_log=False,
     )
 
 
