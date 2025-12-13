@@ -10,7 +10,7 @@ import urllib.parse
 
 import psutil
 
-from .utils import ROOT, load_progress_data, save_progress_data
+from .utils import ROOT, load_progress_data, save_progress_data, _logs
 
 os.makedirs(f"{ROOT}/data/tasks", exist_ok=True)
 load_progress_data(warn=None)
@@ -308,6 +308,8 @@ def _add_single_campaign(data_file, overwrite, server):
         output_file = f"{ROOT}/data/outputs/{campaign_data['campaign_id']}.jsonl"
         if os.path.exists(output_file):
             os.remove(output_file)
+        # Clear the in-memory cache to prevent stale data
+        _logs.pop(campaign_data['campaign_id'], None)
 
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
