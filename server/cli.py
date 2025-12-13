@@ -179,7 +179,7 @@ def _shuffle_campaign_data(campaign_data, rng):
         for user_id, task in campaign_data["data"].items():
             for doc in task:
                 shuffle_document(doc)
-    elif assignment == "single-stream":
+    elif assignment in ["single-stream", "dynamic"]:
         # Shuffle each document in the shared pool
         for doc in campaign_data["data"]:
             shuffle_document(doc)
@@ -259,8 +259,30 @@ def _add_single_campaign(data_file, overwrite, server):
         else:
             raise ValueError("'users' must be an integer or a list.")
     elif assignment == "dynamic":
-        raise NotImplementedError(
-            "Dynamic campaign assignment is not yet implemented.")
+        tasks = campaign_data["data"]
+        if users_spec is None:
+            raise ValueError(
+                "Dynamic campaigns must specify 'users' in info.")
+        if not isinstance(campaign_data["data"], list):
+            raise ValueError(
+                "Dynamic campaign 'data' must be a list of items.")
+        # Validate item structure for dynamic
+        for doc_i, doc in enumerate(tasks):
+            try:
+                _validate_item_structure(doc)
+            except ValueError as e:
+                raise ValueError(f"Document {doc_i}: {e}")
+        if isinstance(users_spec, int):
+            num_users = users_spec
+        elif isinstance(users_spec, list):
+            num_users = len(users_spec)
+        else:
+            raise ValueError("'users' must be an integer or a list.")
+        # Validate dynamic-specific parameters
+        if "dynamic_top" not in campaign_data["info"]:
+            raise ValueError("Dynamic campaigns must specify 'dynamic_top' in info.")
+        if "dynamic_first" not in campaign_data["info"]:
+            raise ValueError("Dynamic campaigns must specify 'dynamic_first' in info.")
     else:
         raise ValueError(f"Unknown campaign assignment type: {assignment}")
 
@@ -304,13 +326,13 @@ def _add_single_campaign(data_file, overwrite, server):
         print("Warning: 'protocol' not specified in campaign info. Defaulting to 'ESA'.")
 
     # For task-based, data is a dict mapping user_id -> tasks
-    # For single-stream, data is a flat list (shared among all users)
+    # For single-stream and dynamic, data is a flat list (shared among all users)
     if assignment == "task-based":
         campaign_data["data"] = {
             user_id: task
             for user_id, task in zip(user_ids, tasks)
         }
-    elif assignment == "single-stream":
+    elif assignment == "single-stream" or assignment == "dynamic":
         campaign_data["data"] = tasks
 
     # generate a token for dashboard access if not present
@@ -331,7 +353,7 @@ def _add_single_campaign(data_file, overwrite, server):
             # TODO: progress tracking could be based on the assignment type
             "progress": (
                 [False]*len(campaign_data["data"][user_id]) if assignment == "task-based"
-                else [False]*len(campaign_data["data"]) if assignment == "single-stream"
+                else [False]*len(campaign_data["data"]) if assignment in ["single-stream", "dynamic"]
                 else []
             ),
             "time_start": None,

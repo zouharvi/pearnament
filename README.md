@@ -110,7 +110,7 @@ pearmut run
 
 - **`task-based`**: Each user has predefined items
 - **`single-stream`**: All users draw from a shared pool (random assignment)
-- **`dynamic`**: work in progress ⚠️
+- **`dynamic`**: Items are dynamically assigned based on current model performance (see [Dynamic Assignment](#dynamic-assignment))
 
 ## Advanced Features
 
@@ -223,6 +223,30 @@ All annotators draw from a shared pool with random assignment:
 }
 ```
 
+### Dynamic Assignment
+
+The `dynamic` assignment type intelligently selects items based on current model performance to focus annotation effort on top-performing models:
+```python
+{
+    "campaign_id": "my campaign dynamic",
+    "info": {
+        "assignment": "dynamic",
+        "protocol": "ESA",
+        "users": 10,                           # number of annotators
+        "dynamic_top": 2,                      # how many top models to prioritize (required)
+        "dynamic_first": 5,                    # items per model before dynamic kicks in (required)
+        "dynamic_backoff": 0.1,                # probability of uniform sampling (optional, default: 0)
+    },
+    "data": [...], # list of all items (shared among all annotators)
+}
+```
+
+**How it works:**
+1. **Initial phase**: Each model gets at least `dynamic_first` items annotated for baseline evaluation
+2. **Dynamic phase**: After the initial phase, items containing the top `dynamic_top` models (by average score) are prioritized
+3. **Backoff**: With probability `dynamic_backoff`, uniform random selection is used instead to maintain exploration
+
+This approach efficiently focuses annotation resources on distinguishing between the best-performing models while ensuring all models get adequate baseline coverage.
 
 ### Pre-defined User IDs and Tokens
 
@@ -323,7 +347,7 @@ When tokens are supplied, the dashboard will try to show model rankings based on
 - **Assignment**: The method for distributing items to users:
   - **Task-based**: Each user has predefined items
   - **Single-stream**: Users draw from a shared pool with random assignment
-  - **Dynamic**: Work in progress
+  - **Dynamic**: Items are intelligently assigned based on model performance to focus on top models
 
 ## Development
 
