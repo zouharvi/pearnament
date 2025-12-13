@@ -204,6 +204,12 @@ def _add_single_campaign(data_file, overwrite, server):
             f"Campaign {campaign_data['campaign_id']} already exists.\n"
             "Use -o to overwrite."
         )
+    
+    # Remove output file when overwriting
+    if overwrite and campaign_data['campaign_id'] in progress_data:
+        output_file = f"{ROOT}/data/outputs/{campaign_data['campaign_id']}.jsonl"
+        if os.path.exists(output_file):
+            os.remove(output_file)
 
     if "info" not in campaign_data:
         raise ValueError("Campaign data must contain 'info' field.")
