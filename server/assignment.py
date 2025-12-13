@@ -290,11 +290,11 @@ def get_next_item_dynamic(
     dynamic_first = campaign_data["info"].get("dynamic_first", 0)
     dynamic_backoff = campaign_data["info"].get("dynamic_backoff", 0)
     
-    # Count how many items each model has been evaluated on
-    model_counts = {}
+    # Get all unique models in the campaign
+    all_models = set()
     for item in campaign_data["data"]:
-        for model_name in item[0]["tgt"].keys():
-            model_counts[model_name] = model_counts.get(model_name, 0)
+        if item and len(item) > 0:
+            all_models.update(item[0]["tgt"].keys())
     
     # Count annotations per model to determine if we're in the first phase
     annotations = get_db_log(campaign_id)
@@ -314,7 +314,7 @@ def get_next_item_dynamic(
                     model_annotation_counts[model_name] = model_annotation_counts.get(model_name, 0) + 1
     
     # Check if we're still in the first phase (collecting initial data)
-    in_first_phase = any(model_annotation_counts.get(model, 0) < dynamic_first for model in model_counts.keys())
+    in_first_phase = any(model_annotation_counts.get(model, 0) < dynamic_first for model in all_models)
     
     # Determine which models to sample from
     if in_first_phase or random.random() < dynamic_backoff:
@@ -357,7 +357,7 @@ def get_next_item_dynamic(
             top_models = set([model for model, score in sorted_models[:dynamic_top]])
         else:
             # If no scores yet, use all models
-            top_models = set(model_counts.keys())
+            top_models = all_models
         
         # Find incomplete items that contain at least one top model
         incomplete_indices = [
@@ -375,6 +375,7 @@ def get_next_item_dynamic(
         item_i = random.choice(incomplete_indices)
     
     # Try to get existing annotations if any
+    # note the None user_id since items are shared in the pool
     items_existing = get_db_log_item(campaign_id, None, item_i)
     payload_existing = None
     if items_existing:
