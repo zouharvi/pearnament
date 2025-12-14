@@ -203,7 +203,8 @@ The `validation` field is an array (one per candidate). Dashboard shows ✅/❌ 
 }
 ```
 The `score_greaterthan` field specifies the index of the candidate that must have a lower score than the current candidate.
-See [examples/tutorial_kway.json](examples/tutorial_kway.json).
+See [examples/tutorial/esa_deen.json](examples/tutorial/esa_deen.json) for a mock campaign with a fully prepared ESA tutorial.
+To use it, simply extract the `data` attribute and prefix it to each task in your campaign.
 
 ### Single-stream Assignment
 

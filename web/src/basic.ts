@@ -210,7 +210,7 @@ async function display_next_payload(response: DataPayload) {
 
         let output_block = $(`
         <div class="output_block">
-          <span id="instructions_message"></span>
+          <span class="instructions_message"></span>
           <div class="output_srctgt">
             <div class="output_src">${src_chars}</div>
           </div>
@@ -218,7 +218,7 @@ async function display_next_payload(response: DataPayload) {
         `)
 
         if (item.instructions) {
-            output_block.find("#instructions_message").html(item.instructions)
+            output_block.find(".instructions_message").html(item.instructions)
         }
 
         // Add each model's output
@@ -623,7 +623,7 @@ async function performValidation(): Promise<Array<boolean> | null> {
                 // Show warning indicator
                 output_blocks[item_ij].find(".validation_warning").remove()
                 const warningEl = $(`<span class="validation_warning" title="${validations[item_ij]![model]?.warning || 'Validation failed'}">⚠️</span>`)
-                output_blocks[item_ij].prepend(warningEl)
+                output_blocks[item_ij].find(".instructions_message").append(warningEl)
                 notify(validations[item_ij]![model]!.warning as string)
                 return null
             }

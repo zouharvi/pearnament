@@ -384,6 +384,7 @@ function spanMatches(userSpan: ErrorSpan, validationSpan: ValidationErrorSpan): 
 /**
  * Validate user responses against validation rules
  * Returns validation result with failed items
+ * TODO: merge with validteKwayResponse since everything is Kway
  */
 export function validateResponse(
     response: Response,
@@ -401,6 +402,7 @@ export function validateResponse(
         }
     }
     
+    console.log(validation.error_spans, response.error_spans)
     // Validate error spans if specified
     if (validation.error_spans !== undefined && validation.error_spans.length > 0) {
         // Each expected span must be matched by at least one user span
