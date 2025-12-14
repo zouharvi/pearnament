@@ -286,9 +286,6 @@ async def _download_annotations(
         status_code=200,
         headers={
             "Content-Disposition": 'attachment; filename="annotations.json"',
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0",
         },
     )
 
@@ -319,9 +316,6 @@ async def _download_progress(
         status_code=200,
         headers={
             "Content-Disposition": 'attachment; filename="progress.json"',
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0",
         },
     )
 
