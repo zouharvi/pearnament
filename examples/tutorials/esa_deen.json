@@ -113,8 +113,8 @@
               ],
               "error_spans": [
                 {
-                  "start_i": "missing",
-                  "end_i": "missing",
+                  "start_i": 19,
+                  "end_i": 19,
                   "severity": "major"
                 }
               ],
@@ -131,8 +131,8 @@
           "error_spans": {
             "model-tutorial": [
               {
-                "start_i": [7, 9],
-                "end_i": [9, 11],
+                "start_i": 8,
+                "end_i": 10,
                 "severity": "minor"
               }
             ]
@@ -158,7 +158,7 @@
           "tgt": {
             "model-tutorial": "The sun shines brightly in the sky."
           },
-          "instructions": "<b>Attention Check</b><br><br>Please evaluate this translation carefully.",
+          "instructions": "<b>Attention Check:</b> Please evaluate this translation carefully.",
           "validation": {
             "model-tutorial": {
               "warning": "Attention check: This translation is excellent. Please don't mark any errors and set the score to 95-100%.",
@@ -176,7 +176,7 @@
           "tgt": {
             "model-tutorial": "The book is under the chair."
           },
-          "instructions": "<b>Attention Check</b><br><br>Please evaluate this translation carefully.",
+          "instructions": "<b>Attention Check:</b> Please evaluate this translation carefully.",
           "validation": {
             "model-tutorial": {
               "warning": "Attention check: This translation contains serious errors. The book's location is completely wrong. Please mark the errors and rate accordingly (0-25%).",
@@ -186,8 +186,8 @@
               ],
               "error_spans": [
                 {
-                  "start_i": [12, 14],
-                  "end_i": [28, 30],
+                  "start_i": [11, 14],
+                  "end_i": [26, 30],
                   "severity": "major"
                 }
               ]

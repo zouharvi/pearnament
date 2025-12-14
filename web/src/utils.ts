@@ -402,7 +402,6 @@ export function validateResponse(
         }
     }
     
-    console.log(validation.error_spans, response.error_spans)
     // Validate error spans if specified
     if (validation.error_spans !== undefined && validation.error_spans.length > 0) {
         // Each expected span must be matched by at least one user span
