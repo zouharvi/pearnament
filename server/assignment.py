@@ -344,12 +344,8 @@ def get_next_item_dynamic(
         }
         
         # Get top N models
-        if model_avg_scores:
-            sorted_models = sorted(model_avg_scores.items(), key=lambda x: x[1], reverse=True)
-            top_models = set([model for model, score in sorted_models[:dynamic_top]])
-        else:
-            # If no scores yet, use all models
-            top_models = all_models
+        sorted_models = sorted(model_avg_scores.items(), key=lambda x: x[1], reverse=True)
+        top_models = set([model for model, score in sorted_models[:dynamic_top]])
         
         # Find incomplete items that contain at least one top model
         incomplete_indices = [
