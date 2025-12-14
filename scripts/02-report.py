@@ -323,6 +323,7 @@ annotations_tool = {
 results = collections.defaultdict(lambda: collections.defaultdict(list))
 for user in responses_data["times"].keys():
     for tool in ["appraise", "pearmut"]:
+        src_len_avg = statistics.mean([len(item["src"]) for doc in annotations_tool[tool][user] for item in doc])
         results["Time/item (s)"][tool].append(
             statistics.mean(times_by_user[user][tool])
         )
@@ -342,7 +343,8 @@ for user in responses_data["times"].keys():
         results["Time/error (s)"][tool].append(
             statistics.mean(times_by_user[user][tool])
             / statistics.mean(
-                len(item["error_spans"].get(model, []))
+                # turn into expected errors per normalize segment length
+                len(item["error_spans"].get(model, []))/len(item["src"])*src_len_avg
                 for doc in annotations_tool[tool][user]
                 for item in doc
                 for model in item["error_spans"]
@@ -358,10 +360,11 @@ for user in responses_data["times"].keys():
                     if model in item["score"]
                 )
             )
+
         for model in ["A", "B", "C"]:
             results[f"Model {model} errors/item"][tool].append(
                 statistics.mean(
-                    len(item["error_spans"].get(model, []))
+                    len(item["error_spans"].get(model, []))/len(item["src"])*src_len_avg
                     for doc in annotations_tool[tool][user]
                     for item in doc
                     if model in item["error_spans"]
