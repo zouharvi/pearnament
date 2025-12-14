@@ -187,6 +187,19 @@ import glob
 import copy
 import itertools
 
+
+LANG2_TO_LANG3 = {
+    "cs": "ces",
+    "hi": "hin",
+    "ko": "kor",
+    "pl": "plk",
+    "es": "spa",
+    "en": "eng",
+    "de": "deu",
+    "sk": "slk",
+}
+
+
 data_pearmut = {}
 for fname in glob.glob("abc_data/pearmut/*.json"):
     with open(fname, "r") as f:
@@ -381,7 +394,7 @@ for quantity in results:
         if "errors" in quantity:
             print(f"[{avg:>10.1f}]", end=", ")
         elif "0 to 10" in quantity:
-            print(f"point11({avg:.0f})", end=", ")
+            print(f"point11({avg:.1f})", end=", ")
         else:
             print(f"[{avg:>10.2f}]", end=", ")
     print()
