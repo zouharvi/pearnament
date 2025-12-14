@@ -282,7 +282,6 @@ def _add_single_campaign(data_file, overwrite, server):
         if "dynamic_top" not in campaign_data["info"]:
             raise ValueError("Dynamic campaigns must specify 'dynamic_top' in info.")
         if "dynamic_first" not in campaign_data["info"]:
-            print("Warning: 'dynamic_first' not specified in campaign info. Defaulting to 5.")
             campaign_data["info"]["dynamic_first"] = 5
         # Validate that dynamic_first is at least 1
         assert campaign_data["info"]["dynamic_first"] >= 1, "dynamic_first must be at least 1"
