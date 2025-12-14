@@ -284,7 +284,10 @@ async def _download_annotations(
     return JSONResponse(
         content=output,
         status_code=200,
-        headers={"Content-Disposition": 'inline; filename="annotations.json"'},
+        headers={
+            "Content-Disposition": 'inline; filename="annotations.json"',
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
     )
 
 
@@ -312,7 +315,10 @@ async def _download_progress(
     return JSONResponse(
         content=output,
         status_code=200,
-        headers={"Content-Disposition": 'inline; filename="progress.json"'},
+        headers={
+            "Content-Disposition": 'inline; filename="progress.json"',
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
     )
 
 
