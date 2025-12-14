@@ -303,6 +303,12 @@ def _add_single_campaign(data_file, overwrite, server):
         campaign_data["info"]["protocol"] = "ESA"
         print("Warning: 'protocol' not specified in campaign info. Defaulting to 'ESA'.")
 
+    # Remove output file when overwriting (after all validations pass)
+    if overwrite and campaign_data['campaign_id'] in progress_data:
+        output_file = f"{ROOT}/data/outputs/{campaign_data['campaign_id']}.jsonl"
+        if os.path.exists(output_file):
+            os.remove(output_file)
+
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
     if assignment == "task-based":
