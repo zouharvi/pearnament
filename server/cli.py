@@ -34,21 +34,25 @@ def _run(args_unknown):
 
     # print access dashboard URL for all campaigns
     if tasks_data:
-        print(
-            args.server + "/dashboard.html?" + "&".join([
-                f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
-                for campaign_id, campaign_data in tasks_data.items()
-            ]),
-            # this is important to flush
-            flush=True,
-        )
-
+        dashboard_url = args.server + "/dashboard.html?" + "&".join([
+            f"campaign_id={urllib.parse.quote_plus(campaign_id)}&token={campaign_data["token"]}"
+            for campaign_id, campaign_data in tasks_data.items()
+        ])
+        print("\033[92mNow serving Pearmut, use the following URL to access the everything-dashboard:\033[0m")
+        print("🍐", dashboard_url+"\n", flush=True)
+    
+    # disable startup message
+    uvicorn.config.LOGGING_CONFIG["loggers"]["uvicorn.error"]["level"] = "WARNING"
+    # set time logging
+    uvicorn.config.LOGGING_CONFIG["formatters"]["access"]["datefmt"] = "%Y-%m-%d %H:%M"
+    uvicorn.config.LOGGING_CONFIG["formatters"]["access"]["fmt"] = (
+        '%(asctime)s %(levelprefix)s %(client_addr)s - %(request_line)s %(status_code)s'
+    )
     uvicorn.run(
         app,
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=args.port,
         reload=False,
-        # log_level="info",
     )
 
 
@@ -108,6 +112,38 @@ def _validate_item_structure(items):
                     raise ValueError(f"Validation rule for model '{model_name}' must be a dictionary")
 
 
+def _validate_document_models(doc):
+    """
+    Validate that all items in a document have the same model outputs.
+    
+    Args:
+        doc: List of items in a document
+        
+    Returns:
+        None if valid
+        
+    Raises:
+        ValueError: If items have different model outputs
+    """
+    # Get model names from the first item
+    first_item = doc[0]
+    first_models = set(first_item['tgt'].keys())
+    
+    # Check all other items have the same model names
+    for i, item in enumerate(doc[1:], start=1):
+        if 'tgt' not in item or not isinstance(item['tgt'], dict):
+            continue
+        
+        item_models = set(item['tgt'].keys())
+        if item_models != first_models:
+            raise ValueError(
+                f"Document contains items with different model outputs. "
+                f"Item 0 has models {sorted(first_models)}, but item {i} has models {sorted(item_models)}. "
+                f"This is fine, but we can't shuffle (on by default). "
+                f"To fix this, set 'shuffle': false in the campaign 'info' section. "
+            )
+
+
 def _shuffle_campaign_data(campaign_data, rng):
     """
     Shuffle campaign data at the document level in-place
@@ -120,14 +156,11 @@ def _shuffle_campaign_data(campaign_data, rng):
     """
     def shuffle_document(doc):
         """Shuffle a single document (list of items) by reordering models in tgt dict."""
-        if not doc or not isinstance(doc, list):
-            return
+        # Validate that all items have the same models
+        _validate_document_models(doc)
         
         # Get all model names from the first item's tgt dict
         first_item = doc[0]
-        if 'tgt' not in first_item or not isinstance(first_item['tgt'], dict):
-            return
-        
         model_names = list(first_item['tgt'].keys())
         rng.shuffle(model_names)
         
@@ -182,7 +215,7 @@ def _add_single_campaign(data_file, overwrite, server):
     # Template defaults to "basic" if not specified
     assignment = campaign_data["info"]["assignment"]
     # use random words for identifying users
-    rng = random.Random(campaign_data["campaign_id"])
+    rng = random.Random()
     rword = wonderwords.RandomWord(rng=rng)
 
     # Parse users specification from info
@@ -265,6 +298,10 @@ def _add_single_campaign(data_file, overwrite, server):
             raise ValueError("'users' list must contain all strings or all dicts.")
     else:
         raise ValueError("'users' must be an integer or a list.")
+    
+    if "protocol" not in campaign_data["info"]:
+        campaign_data["info"]["protocol"] = "ESA"
+        print("Warning: 'protocol' not specified in campaign info. Defaulting to 'ESA'.")
 
     # For task-based, data is a dict mapping user_id -> tasks
     # For single-stream, data is a flat list (shared among all users)
@@ -391,7 +428,7 @@ def _add_single_campaign(data_file, overwrite, server):
     )
     for user_id, user_val in user_progress.items():
         # point to the protocol URL
-        print(f'{server}/{user_val["url"]}')
+        print(f'🧑 {server}/{user_val["url"]}')
     print()
 
 
@@ -465,10 +502,14 @@ def main():
             help='Optional campaign name to purge (purges all if not specified)'
         )
         purge_args = purge_args.parse_args(args_unknown)
+        progress_data = load_progress_data()
 
         if purge_args.campaign is not None:
             # Purge specific campaign
             campaign_id = purge_args.campaign
+            if campaign_id not in progress_data:
+                print(f"Campaign '{campaign_id}' does not exist.")
+                return
             confirm = input(
                 f"Are you sure you want to purge campaign '{campaign_id}'? This action cannot be undone. [y/n] "
             )
@@ -498,7 +539,6 @@ def main():
             )
             if confirm.lower() == 'y':
                 # Unlink all assets first
-                progress_data = load_progress_data()
                 for campaign_id in progress_data.keys():
                     _unlink_assets(campaign_id)
                 shutil.rmtree(f"{ROOT}/data/tasks", ignore_errors=True)
