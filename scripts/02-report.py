@@ -106,7 +106,7 @@ for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende"]:
     data_pearmut = data_1st + data_2nd
     data_appraise = data_2nd + data_1st
     assert len(data_pearmut) == len(data_appraise)
-    assert len(data_pearmut) + len(data_appraise) == len(data_flat)*2
+    assert len(data_pearmut) + len(data_appraise) == len(data_flat) * 2
 
     # create campaign for pearmut, how easy!
     campaign = {
@@ -339,22 +339,13 @@ for user in responses_data["times"].keys():
             )
         )
 
-        # time per error (number of error spans)
-        def zero_div(x, y):
-            return x / y if y != 0 else 0
-
         results["Time/error (s)"][tool].append(
-            statistics.mean(
-                zero_div(
-                    t,
-                    sum(
-                        len(item["error_spans"].get(model, ""))
-                        for doc in annotations_tool[tool][user]
-                        for item in doc
-                        for model in item["score"].keys()
-                    ),
-                )
-                for t in times_by_user[user][tool]
+            statistics.mean(times_by_user[user][tool])
+            / statistics.mean(
+                len(item["error_spans"].get(model, []))
+                for doc in annotations_tool[tool][user]
+                for item in doc
+                for model in item["error_spans"]
             )
         )
 
@@ -373,7 +364,7 @@ for user in responses_data["times"].keys():
                     len(item["error_spans"].get(model, []))
                     for doc in annotations_tool[tool][user]
                     for item in doc
-                    if model in item["score"]
+                    if model in item["error_spans"]
                 )
             )
 
@@ -449,6 +440,7 @@ import time
 import statistics
 import scipy.stats
 
+
 def measure_average_response(
     url,
     payload=None,
@@ -491,6 +483,7 @@ def measure_average_response(
         scale=scipy.stats.sem(response_times),
     )
     print(f"  ±{(ci[1]-ci[0])/2*1000:.1f}ms (99% CI)")
+
 
 # %%
 
@@ -558,6 +551,7 @@ measure_average_response(
 
 # %%
 
+
 def measure_average_response_chill(*args, **kwargs):
     time.sleep(10)  # wait for server/connector to chill
     return measure_average_response(*args, **kwargs)
@@ -621,13 +615,19 @@ measure_average_response_chill(
 # run bash command 100 times
 
 import subprocess
+
 start_time = time.perf_counter()
 subprocess.run(
     "cd ~/Appraise; for _ in {1..100}; do python3 manage.py ExportSystemScoresToCSV abc24 > /dev/null; done",
     shell=True,
-    check=True
+    check=True,
 )
-print("Appraise export", f"{(time.perf_counter() - start_time)/100*1000:.1f}ms", "", sep="\n")
+print(
+    "Appraise export",
+    f"{(time.perf_counter() - start_time)/100*1000:.1f}ms",
+    "",
+    sep="\n",
+)
 
 
 # %%
@@ -650,7 +650,7 @@ papers = []
 for entry in library.entries:
     title = entry["title"].replace("{", "").replace("}", "")
     if "translation" in title.lower():
-        papers.append((title, entry["url"].removesuffix("/")+".pdf"))
-        
+        papers.append((title, entry["url"].removesuffix("/") + ".pdf"))
+
 print(len(papers))
 print(papers)
