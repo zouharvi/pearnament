@@ -242,9 +242,9 @@ The `dynamic` assignment type intelligently selects items based on current model
 ```
 
 **How it works:**
-1. **Initial phase**: Each model gets at least `dynamic_first` items annotated for baseline evaluation
-2. **Dynamic phase**: After the initial phase, items containing the top `dynamic_top` models (by average score) are prioritized
-3. **Backoff**: With probability `dynamic_backoff`, uniform random selection is used instead to maintain exploration
+1. Initial phase: Each model gets at least `dynamic_first` items annotated for baseline evaluation
+2. Dynamic phase: After the initial phase, items containing the top `dynamic_top` models (by average score) are prioritized
+3. Backoff: With probability `dynamic_backoff`, uniform random selection is used instead to maintain exploration
 
 This approach efficiently focuses annotation resources on distinguishing between the best-performing models while ensuring all models get adequate baseline coverage.
 

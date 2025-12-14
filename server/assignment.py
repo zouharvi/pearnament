@@ -1,4 +1,6 @@
+import collections
 import random
+import statistics
 from typing import Any
 
 from fastapi.responses import JSONResponse
@@ -323,32 +325,22 @@ def get_next_item_dynamic(
         item_i = random.choice(incomplete_indices)
     else:
         # Calculate model scores from annotations
-        model_scores = {}
+        model_scores = collections.defaultdict(list)
         for annotation in annotations:
-            if "annotation" not in annotation:
-                continue
             ann_data = annotation.get("annotation", {})
-            if not isinstance(ann_data, dict):
-                continue
             item_i_ann = annotation.get("item_i")
             if item_i_ann is not None and item_i_ann < len(campaign_data["data"]):
                 item = campaign_data["data"][item_i_ann]
                 if item and len(item) > 0:
                     # Get scores for each model in this annotation
                     for model_name in item[0]["tgt"].keys():
-                        if model_name in ann_data:
-                            model_ann = ann_data.get(model_name, {})
-                            if isinstance(model_ann, dict) and "score" in model_ann:
-                                score = model_ann["score"]
-                                if model_name not in model_scores:
-                                    model_scores[model_name] = []
-                                model_scores[model_name].append(score)
+                        if model_name in ann_data and "score" in ann_data[model_name]:
+                            model_scores[model_name].append(ann_data[model_name]["score"])
         
         # Calculate average scores
         model_avg_scores = {
-            model: sum(scores) / len(scores)
+            model: statistics.mean(scores)
             for model, scores in model_scores.items()
-            if len(scores) > 0
         }
         
         # Get top N models
