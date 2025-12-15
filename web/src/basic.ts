@@ -137,7 +137,7 @@ function _slider_html(item_i: number, model: string): string {
     return `
     <div class="output_response">
       <input type="range" min="0" max="100" value="-1" id="response_${item_i}_${model}">
-      <span class="slider_label">? / 100</span>
+      <span class="slider_label">❓/100</span>
     </div>
     `
 }
