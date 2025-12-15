@@ -1,3 +1,4 @@
+import './style.css';
 import $ from 'jquery';
 
 import { get_next_item, get_i_item, log_response } from './connector';

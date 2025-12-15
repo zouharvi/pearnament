@@ -1,3 +1,4 @@
+import './style.css';
 import { notify } from "./utils"
 import $ from 'jquery';
 
