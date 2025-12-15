@@ -469,15 +469,14 @@ async function display_next_payload(response: DataPayload) {
             // Setup slider for this model
             let slider = candidate_block.find("input[type='range']")
             let label = candidate_block.find(".slider_label")
-            slider.on("input", function () {
+            slider.on("click input", function () {
                 // In frozen mode, do not allow changing scores
                 if (frozenMode) return
 
                 let val = parseInt((<HTMLInputElement>this).value)
                 label.text(`${val}/100`)
 
-                // val == 0 is the only case when 'change' does not fire
-                if (val == 0) {
+                if (response_log[item_i][model].score == null) {
                     response_log[item_i][model].score = val
                     has_unsaved_work = true
                     check_unlock()
