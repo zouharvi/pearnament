@@ -67,6 +67,8 @@ LANG2_TO_LANG3 = {
     "en": "eng",
     "de": "deu",
     "sk": "slk",
+    "it": "ita",
+    "fa": "fas",
 }
 
 
@@ -76,7 +78,7 @@ def shuffled(lst, rng=random.Random()):
     return lst
 
 
-for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende"]:
+for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende", "enit", "enfa"]:
     lang1, lang2 = langs[:2], langs[2:]
     with open(f"abc_data/raw_src/{langs}.json", "r") as f:
         data = json.load(f)
@@ -156,8 +158,12 @@ for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende"]:
 
 """
 python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest.json \
-    --batches-json ~/pearmut/scripts/abc_data/appraise/en{cs,hi,ko,pl,es,sk,de}.json \
+    --batches-json ~/pearmut/scripts/abc_data/appraise/en{cs,hi,ko,pl,es,sk,de,it}.json \
     --csv-output ~/pearmut/scripts/abc_data/appraise/accounts.csv
+
+python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_it.json \
+    --batches-json ~/pearmut/scripts/abc_data/appraise/enit.json \
+    --csv-output ~/pearmut/scripts/abc_data/appraise/accounts_it.csv
 
 APPRAISE_ALLOWED_HOSTS=alani-unpleadable-vindicatedly.ngrok-free.dev,localhost APPRAISE_CSRF_TRUSTED_ORIGINS=https://alani-unpleadable-vindicatedly.ngrok-free.dev python3 manage.py runserver 
 
@@ -175,6 +181,7 @@ ngrok http --url=pearmut.ngrok.io 8001
 # gather Appraise data and convert them to Pearmut annotation data format
 """
 python3 manage.py ExportSystemScoresToCSV abc24 > ~/pearmut/scripts/abc_data/results/appraise_raw.csv
+python3 manage.py ExportSystemScoresToCSV abc26 > ~/pearmut/scripts/abc_data/results/appraise_raw_enit.csv
 
 mv ~/Downloads/annotations.json ./scripts/abc_data/results/pearmut_raw.json
 """
@@ -197,6 +204,7 @@ LANG2_TO_LANG3 = {
     "en": "eng",
     "de": "deu",
     "sk": "slk",
+    "it": "ita",
 }
 
 
@@ -227,55 +235,62 @@ for fname in glob.glob("abc_data/pearmut/*.json"):
 
 LANG3_TO_LANG2 = {v: k for k, v in LANG2_TO_LANG3.items()}
 
+text_raw = []
 with open("abc_data/results/appraise_raw_enhi.csv", "r") as f1:
-    with open("abc_data/results/appraise_raw.csv", "r") as f2:
-        header = [
-            "user_id",
-            "model",
-            "campaign_id",
-            "_",
-            "lang1",
-            "lang2",
-            "score",
-            "document_id",
-            "_",
-            "error_spans",
-            "start_time",
-            "end_time",
-        ]
-        data = list(csv.DictReader(itertools.chain(f1, f2), fieldnames=header))
+    text_raw.extend(f1.readlines())
+with open("abc_data/results/appraise_raw_enit.csv", "r") as f1:
+    text_raw.extend(f1.readlines())
+with open("abc_data/results/appraise_raw.csv", "r") as f1:
+    text_raw.extend(f1.readlines())
+header = [
+    "user_id",
+    "model",
+    "campaign_id",
+    "_",
+    "lang1",
+    "lang2",
+    "score",
+    "document_id",
+    "_",
+    "error_spans",
+    "start_time",
+    "end_time",
+]
+data = list(csv.DictReader(text_raw, fieldnames=header))
 
-    data_appraise = copy.deepcopy(data_pearmut)
-    for item in data:
-        lang1, lang2 = item["lang1"], item["lang2"]
-        langs2 = f"{LANG3_TO_LANG2[lang1]}{LANG3_TO_LANG2[lang2]}"
+data_appraise = copy.deepcopy(data_pearmut)
+for item in data:
+    lang1, lang2 = item["lang1"], item["lang2"]
+    langs2 = f"{LANG3_TO_LANG2[lang1]}{LANG3_TO_LANG2[lang2]}"
 
-        item["model"] = item["model"].removeprefix("abc.ref")
+    item["model"] = item["model"].removeprefix("abc.ref")
 
-        found_doc = False
-        for doc in data_appraise[langs2]:
-            for doc_item in doc:
-                if (
-                    doc_item["doc_id"].split("_#_")[0] == item["document_id"]
-                    and item["model"] not in doc_item["score"]
-                    and item["model"] in doc_item["tgt"]
-                ):
-                    doc_item["score"][item["model"]] = float(item["score"])
-                    doc_item["error_spans"][item["model"]] = json.loads(
-                        item["error_spans"]
-                    )
-                    found_doc = True
-                    break
-            if found_doc:
+    found_doc = False
+    for doc in data_appraise[langs2]:
+        for doc_item in doc:
+            if (
+                doc_item["doc_id"].split("_#_")[0] == item["document_id"]
+                and item["model"] not in doc_item["score"]
+                and item["model"] in doc_item["tgt"]
+            ):
+                doc_item["score"][item["model"]] = float(item["score"])
+                doc_item["error_spans"][item["model"]] = json.loads(
+                    item["error_spans"]
+                )
+                found_doc = True
                 break
-        if not found_doc:
-            print("WARNING: document not found:", item["document_id"])
-            continue
+        if found_doc:
+            break
+    if not found_doc:
+        print("WARNING: document not found:", item["document_id"])
+        continue
 
 # load pearmut, so easy!
 with open("abc_data/results/pearmut_raw.json", "r") as f:
     data = json.load(f)
 for campaign_id, data in data.items():
+    if  not campaign_id.startswith("abc_"):
+        continue
     langs = campaign_id.removeprefix("abc_")
     for line in data:
         found_doc = False
@@ -311,7 +326,7 @@ def str_to_seconds(s):
 
 
 times_by_user = {
-    user: {tool: [str_to_seconds(t) for t in times] for tool, times in times.items()}
+    user: {tool: [str_to_seconds(t) for t in times.split(",")] for tool, times in times.items()}
     for user, times in responses_data["times"].items()
 }
 
@@ -323,7 +338,9 @@ annotations_tool = {
 results = collections.defaultdict(lambda: collections.defaultdict(list))
 for user in responses_data["times"].keys():
     for tool in ["appraise", "pearmut"]:
-        src_len_avg = statistics.mean([len(item["src"]) for doc in annotations_tool[tool][user] for item in doc])
+        src_len_avg = statistics.mean(
+            [len(item["src"]) for doc in annotations_tool[tool][user] for item in doc]
+        )
         results["Time/item (s)"][tool].append(
             statistics.mean(times_by_user[user][tool])
         )
@@ -344,7 +361,7 @@ for user in responses_data["times"].keys():
             statistics.mean(times_by_user[user][tool])
             / statistics.mean(
                 # turn into expected errors per normalize segment length
-                len(item["error_spans"].get(model, []))/len(item["src"])*src_len_avg
+                len(item["error_spans"].get(model, [])) / len(item["src"]) * src_len_avg
                 for doc in annotations_tool[tool][user]
                 for item in doc
                 for model in item["error_spans"]
@@ -364,7 +381,9 @@ for user in responses_data["times"].keys():
         for model in ["A", "B", "C"]:
             results[f"Model {model} errors/item"][tool].append(
                 statistics.mean(
-                    len(item["error_spans"].get(model, []))/len(item["src"])*src_len_avg
+                    len(item["error_spans"].get(model, []))
+                    / len(item["src"])
+                    * src_len_avg
                     for doc in annotations_tool[tool][user]
                     for item in doc
                     if model in item["error_spans"]
@@ -376,7 +395,7 @@ for i, quality in enumerate(["Speed", "Clarity", "Effort"]):
     for user in responses_data["quality"]:
         for tool in ["appraise", "pearmut"]:
             results[quality + " (0 to 10)"][tool].append(
-                responses_data["quality"][user][tool][i]
+                float(responses_data["quality"][user][tool].split(",")[i])
             )
 
 for quantity in results:
