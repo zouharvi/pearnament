@@ -10,7 +10,8 @@
 &nbsp;
 [![build status](https://github.com/zouharvi/pearmut/actions/workflows/test.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/test.yml)
 
-<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/4fb9a1cb-78ac-47e0-99cd-0870a368a0ad" />
+<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/71334238-300b-4ffc-b777-7f3c242b1630" />
+
 
 ## Table of Contents
 
