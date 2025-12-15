@@ -221,7 +221,7 @@ async def _dashboard_results(request: DashboardResultsRequest):
             continue
         for item, annotation in zip(entry["item"], entry["annotation"]):
             for model, annotation in annotation.items():
-                if "score" in annotation:
+                if "score" in annotation and annotation["score"] is not None:
                     model_scores[model][json.dumps(item)] = annotation["score"]
 
     results = [
