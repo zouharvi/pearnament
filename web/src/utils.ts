@@ -545,7 +545,7 @@ export function displayWelcomeScreen(response: DataWelcome, navigate_to_item: (i
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
     $("#button_next").prop("disabled", true)
     $("#button_next").val("Next ▶️")
-    
+
     // When user clicks "Start Annotations", proceed to the first item
     $("#button_start").on("click", proceed_callback)
 }

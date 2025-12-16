@@ -11,6 +11,22 @@ from .utils import (
 )
 
 
+def _should_show_welcome(
+    campaign_info: dict,
+    progress: list[bool]
+) -> bool:
+    """
+    Check if welcome screen should be shown.
+    Returns True if user has no progress and instructions_welcome is defined.
+    """
+    has_instructions = (
+        "instructions_welcome" in campaign_info and
+        campaign_info["instructions_welcome"] is not None
+    )
+    has_no_progress = not any(progress)
+    return has_instructions and has_no_progress
+
+
 def _completed_response(
     tasks_data: dict,
     progress_data: dict,
@@ -176,8 +192,8 @@ def get_next_item_taskbased(
     if all(user_progress["progress"]):
         return _completed_response(data_all, progress_data, campaign_id, user_id)
 
-    # Check if user has no activity and instructions_welcome is defined
-    if not any(user_progress["progress"]) and "instructions_welcome" in data_all[campaign_id]["info"] and data_all[campaign_id]["info"]["instructions_welcome"] is not None:
+    # Check if welcome screen should be shown
+    if _should_show_welcome(data_all[campaign_id]["info"], user_progress["progress"]):
         return JSONResponse(
             content={
                 "status": "welcome",
@@ -239,8 +255,8 @@ def get_next_item_singlestream(
     if all(progress):
         return _completed_response(data_all, progress_data, campaign_id, user_id)
 
-    # Check if user has no activity and instructions_welcome is defined
-    if not any(progress) and "instructions_welcome" in data_all[campaign_id]["info"] and data_all[campaign_id]["info"]["instructions_welcome"] is not None:
+    # Check if welcome screen should be shown
+    if _should_show_welcome(data_all[campaign_id]["info"], progress):
         return JSONResponse(
             content={
                 "status": "welcome",
