@@ -26,6 +26,7 @@
   - [Multimodal Annotations](#multimodal-annotations)
   - [Hosting Assets](#hosting-assets)
 - [Campaign Management](#campaign-management)
+  - [Custom Completion Messages](#custom-completion-messages)
 - [CLI Commands](#cli-commands)
 - [Terminology](#terminology)
 - [Development](#development)
@@ -297,6 +298,37 @@ Completion tokens are shown at annotation end for verification (download correct
 <img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
 
 When tokens are supplied, the dashboard will try to show model rankings based on the names in the dictionaries.
+
+### Custom Completion Messages
+
+You can customize the goodbye message shown to users when they complete all annotations using the `instructions_goodbye` field in campaign info:
+
+```python
+{
+    "info": {
+        "instructions_goodbye": "Thank you ${USER_ID}! Your completion code is: <b>${TOKEN}</b>"
+    },
+    ...
+}
+```
+
+**Features:**
+- Supports arbitrary HTML for styling and formatting
+- Variable replacement:
+  - `${TOKEN}`: Replaced with the user's completion token (correct or incorrect based on validation)
+  - `${USER_ID}`: Replaced with the user's ID
+- Default message if not specified: `"If someone asks you for a token of completion, show them: ${TOKEN}"`
+- Can include automatic redirects using HTML (e.g., `<meta http-equiv="refresh" ...>`)
+
+**Example with redirect:**
+```python
+{
+    "info": {
+        "instructions_goodbye": 'Thank you! Your token is: <strong>${TOKEN}</strong><br><meta http-equiv="refresh" content="5;url=https://example.com/survey?token=${TOKEN}">'
+    },
+    ...
+}
+```
 
 ## Terminology
 
