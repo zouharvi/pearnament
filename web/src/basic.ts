@@ -623,15 +623,16 @@ async function display_next_item() {
     if (response.status == "completed") {
         displayCompletionScreen(response as DataFinished, navigate_to_item)
     } else if (response.status == "ok") {
-        payload = response as DataPayload
+        const dataPayload = response as DataPayload
+        payload = dataPayload
         
         // Check if we should show welcome screen (only for first item and if not shown yet)
-        if (!welcome_screen_shown && response.info.item_i === 0 && response.info.instructions_welcome) {
-            display_welcome_screen(response.info.instructions_welcome)
+        if (!welcome_screen_shown && dataPayload.info.item_i === 0 && dataPayload.info.instructions_welcome) {
+            display_welcome_screen(dataPayload.info.instructions_welcome)
             return
         }
         
-        display_next_payload(response as DataPayload)
+        display_next_payload(dataPayload)
     } else {
         console.error("Non-ok response", response)
     }
