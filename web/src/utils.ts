@@ -504,13 +504,24 @@ export type ProtocolInfo = {
 }
 
 /**
+ * HTML-escape a string to prevent XSS attacks
+ */
+function escapeHtml(text: string): string {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
+}
+
+/**
  * Display completion screen when all annotations are done
  */
 export function displayCompletionScreen(response: DataFinished, navigate_to_item: (i: number) => void): void {
-    // Use instructions_goodbye if provided, otherwise use default message
+    // Use instructions_goodbye if provided, otherwise use default message with escaped token
+    // Note: instructions_goodbye is expected to come from trusted campaign creators and may contain HTML.
+    // The backend escapes ${TOKEN} and ${USER_ID} variables before sending them to the frontend.
     const goodbyeMessage = response.instructions_goodbye || 
         `If someone asks you for a token of completion, show them
-        <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response.token}</span>`
+        <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${escapeHtml(response.token)}</span>`
     
     $("#output_div").html(`
     <div class='white-box' style='width: max-content'>
