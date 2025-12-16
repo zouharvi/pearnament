@@ -575,16 +575,23 @@ async function navigate_to_item(item_i: number) {
 }
 
 function display_welcome_screen(instructions: string) {
+    // List of UI elements to hide during welcome screen
+    const mainUIElements = [
+        "#instructions_global",
+        "#time",
+        "#button_settings",
+        "#progress",
+        "#button_next",
+        "#button_skip_tutorial",
+        "#settings_div"
+    ]
+    
     // Hide the main UI elements
-    $("#instructions_global").hide()
-    $("#time").hide()
-    $("#button_settings").hide()
-    $("#progress").hide()
-    $("#button_next").hide()
-    $("#button_skip_tutorial").hide()
-    $("#settings_div").hide()
+    mainUIElements.forEach(selector => $(selector).hide())
     
     // Display the welcome message
+    // Note: instructions HTML is intentionally not sanitized as it comes from campaign
+    // definition (controlled by campaign manager, not user input)
     $("#output_div").html(`
         <div class="white-box" style="max-width: 800px; margin: 50px auto; padding: 30px; background-color: #e7e2cf;">
             <div style="font-size: 14pt; line-height: 1.6;">
@@ -601,11 +608,7 @@ function display_welcome_screen(instructions: string) {
     $("#button_start_welcome").on("click", function() {
         welcome_screen_shown = true
         // Show the main UI elements again
-        $("#instructions_global").show()
-        $("#time").show()
-        $("#button_settings").show()
-        $("#progress").show()
-        $("#button_next").show()
+        mainUIElements.forEach(selector => $(selector).show())
         // Load the first item
         display_next_item()
     })
