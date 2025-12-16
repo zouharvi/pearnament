@@ -273,10 +273,14 @@ def get_next_item_dynamic(
     """
     Get the next item for dynamic assignment based on model performance.
     
+    NOTE: All items must contain all model outputs for this assignment type to work.
+    
     In this mode, items are selected based on the current performance of models:
-    1. First, each model gets `dynamic_first` items for baseline evaluation
-    2. After that, items are selected from top `dynamic_top` performing models
-    3. With probability `dynamic_backoff`, uniformly random selection is used instead
+    1. K-way comparison: `dynamic_kway` models are randomly selected and shown per item
+    2. First phase: Each model gets `dynamic_first` annotations with fully random selection
+    3. After first phase: Top `dynamic_top` models are identified, K randomly selected from them
+    4. Items with least annotations for the selected models are prioritized
+    5. With probability `dynamic_backoff`, uniformly random selection is used instead
     """
     import random
     
@@ -289,53 +293,47 @@ def get_next_item_dynamic(
     
     # Get configuration parameters
     dynamic_top = campaign_data["info"].get("dynamic_top", 1)
-    dynamic_first = campaign_data["info"].get("dynamic_first", 0)
+    dynamic_first = campaign_data["info"].get("dynamic_first", 5)
+    dynamic_kway = campaign_data["info"].get("dynamic_kway", 1)
     dynamic_backoff = campaign_data["info"].get("dynamic_backoff", 0)
     
-    # Get all unique models in the campaign
+    # Get all unique models in the campaign (all items must have all models)
     all_models = set()
     for item in campaign_data["data"]:
         if item and len(item) > 0:
             all_models.update(item[0]["tgt"].keys())
+    all_models = list(all_models)
     
-    # Count annotations per model to determine if we're in the first phase
+    # Count annotations per (model, item) pair to track coverage
     annotations = get_db_log(campaign_id)
-    model_annotation_counts = {}
+    model_item_counts = collections.defaultdict(int)  # (model, item_i) -> count
+    model_total_counts = collections.defaultdict(int)  # model -> total count
+    
     for annotation in annotations:
-        if "annotation" not in annotation:
-            continue
         ann_data = annotation.get("annotation", {})
-        if not isinstance(ann_data, dict):
-            continue
-        # Count annotations for each model in this item
         item_i = annotation.get("item_i")
         if item_i is not None and item_i < len(campaign_data["data"]):
-            item = campaign_data["data"][item_i]
-            if item and len(item) > 0:
-                for model_name in item[0]["tgt"].keys():
-                    model_annotation_counts[model_name] = model_annotation_counts.get(model_name, 0) + 1
+            # Count which models were annotated in this annotation
+            for model_name in all_models:
+                if model_name in ann_data:
+                    model_item_counts[(model_name, item_i)] += 1
+                    model_total_counts[model_name] += 1
     
     # Check if we're still in the first phase (collecting initial data)
-    in_first_phase = any(model_annotation_counts.get(model, 0) < dynamic_first for model in all_models)
+    in_first_phase = any(model_total_counts.get(model, 0) < dynamic_first for model in all_models)
     
-    # Determine which models to sample from
+    # Select which models to show
     if in_first_phase or random.random() < dynamic_backoff:
-        # Sample uniformly from incomplete items
-        incomplete_indices = [i for i, v in enumerate(user_progress["progress"]) if not v]
-        item_i = random.choice(incomplete_indices)
+        # First phase or backoff: select K models randomly from all models
+        selected_models = random.sample(all_models, min(dynamic_kway, len(all_models)))
     else:
         # Calculate model scores from annotations
         model_scores = collections.defaultdict(list)
         for annotation in annotations:
             ann_data = annotation.get("annotation", {})
-            item_i_ann = annotation.get("item_i")
-            if item_i_ann is not None and item_i_ann < len(campaign_data["data"]):
-                item = campaign_data["data"][item_i_ann]
-                if item and len(item) > 0:
-                    # Get scores for each model in this annotation
-                    for model_name in item[0]["tgt"].keys():
-                        if model_name in ann_data and "score" in ann_data[model_name]:
-                            model_scores[model_name].append(ann_data[model_name]["score"])
+            for model_name in all_models:
+                if model_name in ann_data and "score" in ann_data[model_name]:
+                    model_scores[model_name].append(ann_data[model_name]["score"])
         
         # Calculate average scores
         model_avg_scores = {
@@ -345,22 +343,52 @@ def get_next_item_dynamic(
         
         # Get top N models
         sorted_models = sorted(model_avg_scores.items(), key=lambda x: x[1], reverse=True)
-        top_models = set([model for model, score in sorted_models[:dynamic_top]])
+        top_models = [model for model, score in sorted_models[:dynamic_top]]
         
-        # Find incomplete items that contain at least one top model
-        incomplete_indices = [
-            i for i, v in enumerate(user_progress["progress"])
-            if not v and any(
-                model in top_models
-                for model in campaign_data["data"][i][0]["tgt"].keys()
-            )
-        ]
-        
-        if not incomplete_indices:
-            # Fallback to any incomplete item
-            incomplete_indices = [i for i, v in enumerate(user_progress["progress"]) if not v]
-        
-        item_i = random.choice(incomplete_indices)
+        # From top N, randomly select K models
+        selected_models = random.sample(top_models, min(dynamic_kway, len(top_models)))
+    
+    # Find incomplete items, prioritizing those with least annotations for selected models
+    incomplete_indices = [i for i, v in enumerate(user_progress["progress"]) if not v]
+    
+    # Calculate total annotations for selected models on each incomplete item
+    item_annotation_counts = {}
+    for item_i in incomplete_indices:
+        total_annotations = sum(model_item_counts[(model, item_i)] for model in selected_models)
+        item_annotation_counts[item_i] = total_annotations
+    
+    # Select item with minimum annotations (with random tiebreaking)
+    min_annotations = min(item_annotation_counts.values())
+    items_with_min = [item_i for item_i, count in item_annotation_counts.items() 
+                      if count == min_annotations]
+    item_i = random.choice(items_with_min)
+    
+    # Prune the payload to only include selected models
+    original_item = campaign_data["data"][item_i]
+    pruned_item = []
+    for doc_segment in original_item:
+        pruned_segment = doc_segment.copy()
+        # Filter tgt to only include selected models
+        pruned_segment["tgt"] = {
+            model: doc_segment["tgt"][model]
+            for model in selected_models
+            if model in doc_segment["tgt"]
+        }
+        # Also filter error_spans if present
+        if "error_spans" in doc_segment:
+            pruned_segment["error_spans"] = {
+                model: doc_segment["error_spans"][model]
+                for model in selected_models
+                if model in doc_segment.get("error_spans", {})
+            }
+        # Also filter validation if present
+        if "validation" in doc_segment:
+            pruned_segment["validation"] = {
+                model: doc_segment["validation"][model]
+                for model in selected_models
+                if model in doc_segment.get("validation", {})
+            }
+        pruned_item.append(pruned_segment)
     
     # Try to get existing annotations if any
     # note the None user_id since items are shared in the pool
@@ -384,7 +412,7 @@ def get_next_item_dynamic(
                 for k, v in campaign_data["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": campaign_data["data"][item_i]
+            "payload": pruned_item
         } | ({"payload_existing": payload_existing} if payload_existing else {}),
         status_code=200
     )

@@ -283,8 +283,13 @@ def _add_single_campaign(data_file, overwrite, server):
             raise ValueError("Dynamic campaigns must specify 'dynamic_top' in info.")
         if "dynamic_first" not in campaign_data["info"]:
             campaign_data["info"]["dynamic_first"] = 5
+        if "dynamic_kway" not in campaign_data["info"]:
+            campaign_data["info"]["dynamic_kway"] = 1
         # Validate that dynamic_first is at least 1
         assert campaign_data["info"]["dynamic_first"] >= 1, "dynamic_first must be at least 1"
+        # Validate that dynamic_kway is at most dynamic_top
+        assert campaign_data["info"]["dynamic_kway"] <= campaign_data["info"]["dynamic_top"], \
+            "dynamic_kway must be at most dynamic_top"
     else:
         raise ValueError(f"Unknown campaign assignment type: {assignment}")
 
