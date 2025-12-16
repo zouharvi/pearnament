@@ -494,6 +494,7 @@ export type DataFinished = {
     progress: Array<boolean>,
     time: number,
     token: string,
+    instructions_goodbye?: string,
 }
 
 // Shared protocol info type
@@ -506,12 +507,16 @@ export type ProtocolInfo = {
  * Display completion screen when all annotations are done
  */
 export function displayCompletionScreen(response: DataFinished, navigate_to_item: (i: number) => void): void {
+    // Use instructions_goodbye if provided, otherwise use default message
+    const goodbyeMessage = response.instructions_goodbye || 
+        `If someone asks you for a token of completion, show them
+    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response.token}</span>`
+    
     $("#output_div").html(`
     <div class='white-box' style='width: max-content'>
     <h2>🎉 All done, thank you for your annotations!</h2>
 
-    If someone asks you for a token of completion, show them
-    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response.token}</span>
+    ${goodbyeMessage}
     <br>
     <br>
     </div>
