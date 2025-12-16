@@ -500,6 +500,7 @@ export type DataFinished = {
 export type ProtocolInfo = {
     protocol: "DA" | "ESA" | "MQM",
     item_i: number,
+    instructions_welcome?: string | null,
 }
 
 /**

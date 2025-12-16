@@ -65,6 +65,7 @@ let settings_show_alignment = true
 let settings_word_level = false
 let has_unsaved_work = false
 let skip_tutorial_mode = false
+let welcome_screen_shown = false
 // Protocol settings for check_unlock
 let protocol_error_spans = false
 let protocol_error_categories = false
@@ -573,6 +574,43 @@ async function navigate_to_item(item_i: number) {
     }
 }
 
+function display_welcome_screen(instructions: string) {
+    // Hide the main UI elements
+    $("#instructions_global").hide()
+    $("#time").hide()
+    $("#button_settings").hide()
+    $("#progress").hide()
+    $("#button_next").hide()
+    $("#button_skip_tutorial").hide()
+    $("#settings_div").hide()
+    
+    // Display the welcome message
+    $("#output_div").html(`
+        <div class="white-box" style="max-width: 800px; margin: 50px auto; padding: 30px; background-color: #e7e2cf;">
+            <div style="font-size: 14pt; line-height: 1.6;">
+                ${instructions}
+            </div>
+            <br>
+            <div style="text-align: center;">
+                <input type="button" value="Start" id="button_start_welcome" style="width: 200px; height: 3em; font-size: 14pt; cursor: pointer;">
+            </div>
+        </div>
+    `)
+    
+    // Add click handler for the start button
+    $("#button_start_welcome").on("click", function() {
+        welcome_screen_shown = true
+        // Show the main UI elements again
+        $("#instructions_global").show()
+        $("#time").show()
+        $("#button_settings").show()
+        $("#progress").show()
+        $("#button_next").show()
+        // Load the first item
+        display_next_item()
+    })
+}
+
 async function display_next_item() {
     let response = await get_next_item<DataPayload | DataFinished>()
     has_unsaved_work = false
@@ -586,6 +624,13 @@ async function display_next_item() {
         displayCompletionScreen(response as DataFinished, navigate_to_item)
     } else if (response.status == "ok") {
         payload = response as DataPayload
+        
+        // Check if we should show welcome screen (only for first item and if not shown yet)
+        if (!welcome_screen_shown && response.info.item_i === 0 && response.info.instructions_welcome) {
+            display_welcome_screen(response.info.instructions_welcome)
+            return
+        }
+        
         display_next_payload(response as DataPayload)
     } else {
         console.error("Non-ok response", response)

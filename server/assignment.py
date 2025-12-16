@@ -108,7 +108,7 @@ def get_i_item_taskbased(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("protocol") or k == "instructions_welcome"
             },
             "payload": data_all[campaign_id]["data"][user_id][item_i]
         } | ({"payload_existing": payload_existing} if payload_existing else {}),
@@ -155,7 +155,7 @@ def get_i_item_singlestream(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("protocol") or k == "instructions_welcome"
             },
             "payload": data_all[campaign_id]["data"][item_i]
         } | ({"payload_existing": payload_existing} if payload_existing else {}),
@@ -199,7 +199,7 @@ def get_next_item_taskbased(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("protocol") or k == "instructions_welcome"
             },
             "payload": data_all[campaign_id]["data"][user_id][item_i]
         } | ({"payload_existing": payload_existing} if payload_existing else {}),
@@ -252,7 +252,7 @@ def get_next_item_singlestream(
             } | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
-                if k.startswith("protocol")
+                if k.startswith("protocol") or k == "instructions_welcome"
             },
             "payload": data_all[campaign_id]["data"][item_i]
         } | ({"payload_existing": payload_existing} if payload_existing else {}),
