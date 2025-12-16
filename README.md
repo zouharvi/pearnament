@@ -358,7 +358,7 @@ See [web/src/basic.ts](web/src/basic.ts) for example.
 
 Run on public server or tunnel local port to public IP/domain and run locally.
 
-## Misc.
+## Citation
 
 If you use this work in your paper, please cite as following.
 ```bibtex
