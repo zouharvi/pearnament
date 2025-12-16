@@ -221,7 +221,7 @@ async def _dashboard_results(request: DashboardResultsRequest):
             continue
         for item, annotation in zip(entry["item"], entry["annotation"]):
             for model, annotation in annotation.items():
-                if "score" in annotation:
+                if "score" in annotation and annotation["score"] is not None:
                     model_scores[model][json.dumps(item)] = annotation["score"]
 
     results = [
@@ -284,7 +284,9 @@ async def _download_annotations(
     return JSONResponse(
         content=output,
         status_code=200,
-        headers={"Content-Disposition": 'inline; filename="annotations.json"'},
+        headers={
+            "Content-Disposition": 'attachment; filename="annotations.json"',
+        },
     )
 
 
@@ -312,7 +314,9 @@ async def _download_progress(
     return JSONResponse(
         content=output,
         status_code=200,
-        headers={"Content-Disposition": 'inline; filename="progress.json"'},
+        headers={
+            "Content-Disposition": 'attachment; filename="progress.json"',
+        },
     )
 
 

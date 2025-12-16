@@ -10,7 +10,8 @@
 &nbsp;
 [![build status](https://github.com/zouharvi/pearmut/actions/workflows/test.yml/badge.svg)](https://github.com/zouharvi/pearmut/actions/workflows/test.yml)
 
-<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/4fb9a1cb-78ac-47e0-99cd-0870a368a0ad" />
+<img width="1000" alt="Screenshot of ESA/MQM interface" src="https://github.com/user-attachments/assets/71334238-300b-4ffc-b777-7f3c242b1630" />
+
 
 ## Table of Contents
 
@@ -203,7 +204,8 @@ The `validation` field is an array (one per candidate). Dashboard shows ✅/❌ 
 }
 ```
 The `score_greaterthan` field specifies the index of the candidate that must have a lower score than the current candidate.
-See [examples/tutorial_kway.json](examples/tutorial_kway.json).
+See [examples/tutorial/esa_deen.json](examples/tutorial/esa_deen.json) for a mock campaign with a fully prepared ESA tutorial.
+To use it, simply extract the `data` attribute and prefix it to each task in your campaign.
 
 ### Single-stream Assignment
 

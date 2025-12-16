@@ -2,11 +2,13 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 // Change module.exports to an arrow function
 module.exports = (env, argv) => {
   return {
     entry: {
+      index: './src/index.ts',
       basic: './src/basic.ts',
       dashboard: './src/dashboard.ts',
     },
@@ -36,31 +38,40 @@ module.exports = (env, argv) => {
           use: 'ts-loader',
           exclude: /node_modules/,
         },
+        {
+          test: /\.css$/,
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
       ],
     },
     resolve: {
       extensions: ['.ts', '.js'],
     },
     plugins: [
+      new MiniCssExtractPlugin({
+        filename: "style.css",
+      }),
       new HtmlWebpackPlugin({
         template: './src/index.html',
         filename: 'index.html',
-        chunks: [],
+        chunks: ['index'],
+        hash: true,
       }),
       new HtmlWebpackPlugin({
         template: './src/basic.html',
         filename: 'basic.html',
         chunks: ['basic'],
+        hash: true,
       }),
       new HtmlWebpackPlugin({
         template: './src/dashboard.html',
         filename: 'dashboard.html',
         chunks: ['dashboard'],
+        hash: true,
       }),
       new CopyWebpackPlugin({
         patterns: [
           { from: 'src/favicon.svg', to: '.' },
-          { from: 'src/style.css', to: '.' },
         ],
       }),
     ],

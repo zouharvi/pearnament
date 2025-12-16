@@ -8,6 +8,57 @@ import tempfile
 import pytest
 
 
+class TestOverwriteData:
+    """Tests for overwrite functionality."""
+
+    def test_overwrite_removes_output_file(self):
+        """Test that overwrite removes existing output file (annotations)."""
+        from pearmut.cli import ROOT, _add_single_campaign
+        from pearmut.utils import load_progress_data, save_progress_data
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create campaign file
+            campaign_file = os.path.join(tmpdir, "campaign.json")
+            campaign_id = "test_overwrite_campaign"
+            
+            with open(campaign_file, "w") as f:
+                json.dump({
+                    "campaign_id": campaign_id,
+                    "info": {
+                        "assignment": "task-based",
+                        "protocol": "ESA",
+                    },
+                    "data": [[[{"src": "hello", "tgt": {"A": "world"}}]]]
+                }, f)
+            
+            # Add campaign for the first time
+            _add_single_campaign(campaign_file, False, "http://localhost:8001")
+            
+            # Create a mock output file with annotations
+            output_file = f"{ROOT}/data/outputs/{campaign_id}.jsonl"
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            with open(output_file, "w") as f:
+                f.write('{"annotation": "test data"}\n')
+            
+            # Verify output file exists
+            assert os.path.exists(output_file)
+            
+            # Add campaign again with overwrite
+            _add_single_campaign(campaign_file, True, "http://localhost:8001")
+            
+            # Verify output file was removed
+            assert not os.path.exists(output_file)
+            
+            # Clean up
+            progress_data = load_progress_data()
+            if campaign_id in progress_data:
+                del progress_data[campaign_id]
+                save_progress_data(progress_data)
+            task_file = f"{ROOT}/data/tasks/{campaign_id}.json"
+            if os.path.exists(task_file):
+                os.remove(task_file)
+
+
 class TestAssetsValidation:
     """Tests for assets validation in add command."""
 

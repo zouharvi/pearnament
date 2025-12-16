@@ -1,0 +1,678 @@
+"""
+This script creates small annotation campaigns, speed test, and bibliography study used in the Pearmut report.
+"""
+
+# %%
+
+"""
+###################
+1. Annotation study
+###################
+"""
+
+# get English source data
+
+import subset2evaluate.utils
+import collections
+import json
+
+data_raw = subset2evaluate.utils.load_data_wmt(
+    "wmt25", "en-cs_CZ", normalize=False, include_human=True, include_ref=True
+)
+data_doc = collections.defaultdict(list)
+
+for item in data_raw:
+    data_doc[item["doc"]].append(item["src"])
+
+# exactly 3 segments per document
+data_doc = {k: v[:3] for k, v in data_doc.items() if len(v) >= 3}
+# sort by shortest
+data_doc = list(data_doc.items())
+data_doc.sort(key=lambda x: sum(len(s) for s in x[1]))
+data_doc = [
+    [
+        {
+            "doc_id": f"doc_{i:02d}_#_{j}",
+            "src": vj,
+        }
+        for j, vj in enumerate(v)
+    ]
+    for i, (k, v) in enumerate(data_doc)
+]
+
+
+print(len(data_doc))
+print(json.dumps(data_doc, indent=2, ensure_ascii=False))
+
+"""
+Translate the following JSON data into Czech. For each source, output 3 translations: (A) a perfect translation, (B) a poor translation with minor mistakes, and (C) a translation with major mistakes.
+Output the data in the same JSON format, just adding the translations into the "tgt" key as:
+"tgt": {
+    "A": "perfect translation",
+    "B": "translation with slight mistakes",
+    "C": "translation with noticeable mistakes"
+}
+"""
+
+# %%
+import random
+import json
+
+LANG2_TO_LANG3 = {
+    "cs": "ces",
+    "hi": "hin",
+    "ko": "kor",
+    "pl": "pol",
+    "es": "spa",
+    "en": "eng",
+    "de": "deu",
+    "sk": "slk",
+    "it": "ita",
+    "fa": "fas",
+}
+
+
+def shuffled(lst, rng=random.Random()):
+    lst = list(lst)
+    rng.shuffle(lst)
+    return lst
+
+
+for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende", "enit", "enfa"]:
+    lang1, lang2 = langs[:2], langs[2:]
+    with open(f"abc_data/raw_src/{langs}.json", "r") as f:
+        data = json.load(f)
+    rng = random.Random(langs)
+    data_flat = [
+        [
+            {
+                "doc_id": segment["doc_id"],
+                "src": segment["src"].replace("\\n", "\n"),
+                "tgt": {model: segment["tgt"][model].replace("\\n", "\n")},
+            }
+            for segment in doc
+        ]
+        for doc in data
+        # shuffle order of good and bad models
+        for model in shuffled(["A", "B", "C"], rng)
+    ]
+
+    data_1st = []
+    data_2nd = []
+    for doc in data_flat:
+        doc_id = int(doc[0]["doc_id"].split("_#_")[0].removeprefix("doc_"))
+        if doc_id % 2 == 0:
+            data_1st.append(doc)
+        else:
+            data_2nd.append(doc)
+    data_pearmut = data_1st + data_2nd
+    data_appraise = data_2nd + data_1st
+    assert len(data_pearmut) == len(data_appraise)
+    assert len(data_pearmut) + len(data_appraise) == len(data_flat) * 2
+
+    # create campaign for pearmut, how easy!
+    campaign = {
+        "campaign_id": f"abc_{langs}",
+        "info": {
+            "protocol": "ESA",
+            "assignment": "task-based",
+            "users": [f"{langs}{i}" for i in range(1, 6)],
+        },
+        "data": [data_pearmut] * 5,
+    }
+    with open(f"abc_data/pearmut/{langs}.json", "w") as f:
+        json.dump(campaign, f, indent=2, ensure_ascii=False)
+
+    # create campaign for appraise, more complex
+    campaign = [
+        {
+            "items": [
+                {
+                    "mqm": [],
+                    "documentID": item["doc_id"].split("_#_")[0],
+                    "sourceID": "abc",
+                    "targetID": "abc.ref" + list(item["tgt"].keys())[0],
+                    "sourceText": item["src"],
+                    "targetText": list(item["tgt"].values())[0],
+                    "itemType": "TGT",
+                    "_item": item["doc_id"] + " | " + list(item["tgt"].keys())[0],
+                    "itemID": item_i + doc_i * 3 + 1,
+                    "isCompleteDocument": False,
+                }
+                for doc_i, doc in enumerate(data_appraise)
+                for item_i, item in enumerate(doc)
+            ],
+            "task": {
+                "batchNo": 1,
+                "randomSeed": 123456,
+                "requiredAnnotations": 1,
+                "sourceLanguage": "eng",
+                "targetLanguage": LANG2_TO_LANG3[lang2],
+            },
+        }
+    ]
+
+    with open(f"abc_data/appraise/{langs}.json", "w") as f:
+        json.dump(campaign, f, indent=2, ensure_ascii=False)
+
+
+"""
+python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest.json \
+    --batches-json ~/pearmut/scripts/abc_data/appraise/en{cs,hi,ko,pl,es,sk,de,it}.json \
+    --csv-output ~/pearmut/scripts/abc_data/appraise/accounts.csv
+
+python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_it.json \
+    --batches-json ~/pearmut/scripts/abc_data/appraise/enit.json \
+    --csv-output ~/pearmut/scripts/abc_data/appraise/accounts_it.csv
+
+APPRAISE_ALLOWED_HOSTS=alani-unpleadable-vindicatedly.ngrok-free.dev,localhost APPRAISE_CSRF_TRUSTED_ORIGINS=https://alani-unpleadable-vindicatedly.ngrok-free.dev python3 manage.py runserver 
+
+ngrok http 8000 --url https://alani-unpleadable-vindicatedly.ngrok-free.dev
+
+pearmut purge
+pearmut add scripts/abc_data/pearmut/en*.json
+pearmut run --port 8001 --server https://pearmut.ngrok.io
+
+ngrok http --url=pearmut.ngrok.io 8001
+"""
+
+# %%
+
+# gather Appraise data and convert them to Pearmut annotation data format
+"""
+python3 manage.py ExportSystemScoresToCSV abc24 > ~/pearmut/scripts/abc_data/results/appraise_raw.csv
+python3 manage.py ExportSystemScoresToCSV abc26 > ~/pearmut/scripts/abc_data/results/appraise_raw_enit.csv
+
+mv ~/Downloads/annotations.json ./scripts/abc_data/results/pearmut_raw.json
+"""
+
+import csv
+import collections
+import json
+import statistics
+import glob
+import copy
+import itertools
+
+
+LANG2_TO_LANG3 = {
+    "cs": "ces",
+    "hi": "hin",
+    "ko": "kor",
+    "pl": "plk",
+    "es": "spa",
+    "en": "eng",
+    "de": "deu",
+    "sk": "slk",
+    "it": "ita",
+}
+
+
+data_pearmut = {}
+for fname in glob.glob("abc_data/pearmut/*.json"):
+    with open(fname, "r") as f:
+        data = json.load(f)["data"][0]
+    langs = fname.split("/")[-1].removesuffix(".json")
+    data_new = []
+    for doc in data:
+        for item in doc:
+            item |= {"score": {}, "error_spans": {}}
+            # try to find the document in data_by_doc and update the TGT there
+            found_doc = False
+            for doc2 in data_new:
+                for item2 in doc2:
+                    if item["doc_id"] == item2["doc_id"]:
+                        item2["tgt"] |= item["tgt"]
+                        found_doc = True
+                        break
+                if found_doc:
+                    break
+
+        if not found_doc:
+            data_new.append(doc)
+
+    data_pearmut[langs] = data_new
+
+LANG3_TO_LANG2 = {v: k for k, v in LANG2_TO_LANG3.items()}
+
+text_raw = []
+with open("abc_data/results/appraise_raw_enhi.csv", "r") as f1:
+    text_raw.extend(f1.readlines())
+with open("abc_data/results/appraise_raw_enit.csv", "r") as f1:
+    text_raw.extend(f1.readlines())
+with open("abc_data/results/appraise_raw.csv", "r") as f1:
+    text_raw.extend(f1.readlines())
+header = [
+    "user_id",
+    "model",
+    "campaign_id",
+    "_",
+    "lang1",
+    "lang2",
+    "score",
+    "document_id",
+    "_",
+    "error_spans",
+    "start_time",
+    "end_time",
+]
+data = list(csv.DictReader(text_raw, fieldnames=header))
+
+data_appraise = copy.deepcopy(data_pearmut)
+for item in data:
+    lang1, lang2 = item["lang1"], item["lang2"]
+    langs2 = f"{LANG3_TO_LANG2[lang1]}{LANG3_TO_LANG2[lang2]}"
+
+    item["model"] = item["model"].removeprefix("abc.ref")
+
+    found_doc = False
+    for doc in data_appraise[langs2]:
+        for doc_item in doc:
+            if (
+                doc_item["doc_id"].split("_#_")[0] == item["document_id"]
+                and item["model"] not in doc_item["score"]
+                and item["model"] in doc_item["tgt"]
+            ):
+                doc_item["score"][item["model"]] = float(item["score"])
+                doc_item["error_spans"][item["model"]] = json.loads(
+                    item["error_spans"]
+                )
+                found_doc = True
+                break
+        if found_doc:
+            break
+    if not found_doc:
+        print("WARNING: document not found:", item["document_id"])
+        continue
+
+# load pearmut, so easy!
+with open("abc_data/results/pearmut_raw.json", "r") as f:
+    data = json.load(f)
+for campaign_id, data in data.items():
+    if  not campaign_id.startswith("abc_"):
+        continue
+    langs = campaign_id.removeprefix("abc_")
+    for line in data:
+        found_doc = False
+        for item, annotation in zip(line["item"], line["annotation"]):
+            # try to find the document in data_pearmut
+            for doc in data_pearmut[langs]:
+                for doc_item in doc:
+                    if doc_item["doc_id"] == item["doc_id"]:
+                        for model, annotation in annotation.items():
+                            doc_item["score"][model] = annotation["score"]
+                            doc_item["error_spans"][model] = annotation["error_spans"]
+                        found_doc = True
+                        break
+                if found_doc:
+                    break
+            if not found_doc:
+                print("WARNING: document not found in pearmut results:", item)
+                continue
+
+# %%
+
+# Render results
+
+with open("abc_data/responses.json", "r") as f:
+    responses_data = json.load(f)
+
+
+def str_to_seconds(s):
+    if ":" not in s:
+        return int(s)
+    m, s = s.split(":")
+    return int(m) * 60 + int(s)
+
+
+times_by_user = {
+    user: {tool: [str_to_seconds(t) for t in times.split(",")] for tool, times in times.items()}
+    for user, times in responses_data["times"].items()
+}
+
+annotations_tool = {
+    "pearmut": data_pearmut,
+    "appraise": data_appraise,
+}
+
+results = collections.defaultdict(lambda: collections.defaultdict(list))
+for user in responses_data["times"].keys():
+    for tool in ["appraise", "pearmut"]:
+        src_len_avg = statistics.mean(
+            [len(item["src"]) for doc in annotations_tool[tool][user] for item in doc]
+        )
+        results["Time/item (s)"][tool].append(
+            statistics.mean(times_by_user[user][tool])
+        )
+        results["Time/char (ms)"][tool].append(
+            statistics.mean(
+                t
+                / sum(
+                    len(item["src"])
+                    for doc in annotations_tool[tool][user]
+                    for item in doc
+                )
+                * 1000
+                for t in times_by_user[user][tool]
+            )
+        )
+
+        results["Time/error (s)"][tool].append(
+            statistics.mean(times_by_user[user][tool])
+            / statistics.mean(
+                # turn into expected errors per normalize segment length
+                len(item["error_spans"].get(model, [])) / len(item["src"]) * src_len_avg
+                for doc in annotations_tool[tool][user]
+                for item in doc
+                for model in item["error_spans"]
+            )
+        )
+
+        for model in ["A", "B", "C"]:
+            results[f"Model {model} score"][tool].append(
+                statistics.mean(
+                    item["score"][model]
+                    for doc in annotations_tool[tool][user]
+                    for item in doc
+                    if model in item["score"]
+                )
+            )
+
+        for model in ["A", "B", "C"]:
+            results[f"Model {model} errors/item"][tool].append(
+                statistics.mean(
+                    len(item["error_spans"].get(model, []))
+                    / len(item["src"])
+                    * src_len_avg
+                    for doc in annotations_tool[tool][user]
+                    for item in doc
+                    if model in item["error_spans"]
+                )
+            )
+
+# store qualitative responses
+for i, quality in enumerate(["Speed", "Clarity", "Effort"]):
+    for user in responses_data["quality"]:
+        for tool in ["appraise", "pearmut"]:
+            results[quality + " (0 to 10)"][tool].append(
+                float(responses_data["quality"][user][tool].split(",")[i])
+            )
+
+for quantity in results:
+    print(f"[{quantity:<20}]", end=", ")
+    for tool in ["appraise", "pearmut"]:
+        avg = statistics.mean(results[quantity][tool])
+        if ">" in quantity:
+            print(f"[{avg:>10.2%}]", end=", ")
+        if "errors" in quantity:
+            print(f"[{avg:>10.1f}]", end=", ")
+        elif "0 to 10" in quantity:
+            print(f"point11({avg:.1f})", end=", ")
+        else:
+            print(f"[{avg:>10.2f}]", end=", ")
+    print()
+    if quantity in {
+        "Model C errors/item",
+        "Model C score",
+        "Time/error (s)",
+    }:
+        print(r"v(-1mm), v(-5mm), v(-10mm),")
+
+
+# %%
+
+"""
+###################
+2. Researcher study
+###################
+"""
+
+"""
+Average the columns in this table (that are not commented out).
+For the time, take only the Total time. Still use the same macro.
+
+```
+XXX
+```
+
+Fill this in this other table, with #failcount number of times a user has failed.
+Keep the numbers in the macros (#pointM for the first column and #point11 for the rest).
+
+```
+XXX
+```
+"""
+
+
+# %%
+
+
+"""
+#############
+3. Speed test
+#############
+
+This tests Pearmut and Appraise speeds, used in the Pearmut report.
+"""
+
+# pearmut
+
+import requests
+import time
+import statistics
+import scipy.stats
+
+
+def measure_average_response(
+    url,
+    payload=None,
+    method="post",
+    iterations=1,
+    cookies=None,
+):
+    response_times = []
+
+    # Use a Session to persist the TCP connection (keep-alive)
+    with requests.Session() as session:
+        if cookies:
+            session.cookies.update(cookies)
+
+        for i in range(iterations):
+            start_time = time.perf_counter()
+
+            # Perform the POST request
+            if method.lower() == "get":
+                response = session.get(url, params=payload)
+            elif method.lower() == "post":
+                response = session.post(url, json=payload)
+            else:
+                raise ValueError(f"Unsupported method: {method}")
+
+            assert (
+                response.status_code == 200
+            ), f"Request failed with status code {response.status_code}"
+            response_times.append(time.perf_counter() - start_time)
+
+    # Calculate results
+    print(url)
+    mean = statistics.mean(response_times)
+    print(f"{mean*1000:.1f}ms")
+    # compute 95% confidence interval
+    ci = scipy.stats.t.interval(
+        0.99,
+        len(response_times) - 1,
+        loc=mean,
+        scale=scipy.stats.sem(response_times),
+    )
+    print(f"  ±{(ci[1]-ci[0])/2*1000:.1f}ms (99% CI)")
+
+
+# %%
+
+appraise_csrf_cookie = input()
+pearmut_token_ensk = input()
+
+# %%
+
+measure_average_response(
+    url="http://localhost:8001/basic.html",
+    method="get",
+    iterations=100,
+)
+
+measure_average_response(
+    url="http://localhost:8001/get-next-item",
+    payload={"campaign_id": "abc_ensk", "user_id": "ensk1"},
+    iterations=100,
+)
+
+
+measure_average_response(
+    url="http://localhost:8001/dashboard.html",
+    method="get",
+    iterations=100,
+)
+
+measure_average_response(
+    url="http://localhost:8001/dashboard-data",
+    method="post",
+    payload={"campaign_id": "abc_ensk", "token": pearmut_token_ensk},
+    iterations=100,
+)
+
+measure_average_response(
+    url="http://localhost:8001/dashboard-results",
+    method="post",
+    payload={"campaign_id": "abc_ensk", "token": pearmut_token_ensk},
+    iterations=100,
+)
+
+measure_average_response(
+    url="http://localhost:8001/download-annotations",
+    method="get",
+    payload={"campaign_id": "abc_ensk", "token": pearmut_token_ensk},
+    iterations=100,
+)
+
+# %%
+
+
+measure_average_response(
+    url="http://localhost:8000/direct-assessment-document/",
+    method="get",
+    iterations=100,
+    cookies={"csrftoken": appraise_csrf_cookie},
+)
+
+
+measure_average_response(
+    url="http://localhost:8000/campaign-status/abc24/",
+    method="get",
+    iterations=100,
+)
+
+# %%
+
+
+def measure_average_response_chill(*args, **kwargs):
+    time.sleep(10)  # wait for server/connector to chill
+    return measure_average_response(*args, **kwargs)
+
+
+measure_average_response_chill(
+    url="https://pearmut.ngrok.io/basic.html",
+    method="get",
+    iterations=100,
+)
+
+measure_average_response_chill(
+    url="https://pearmut.ngrok.io/get-next-item",
+    payload={"campaign_id": "abc_ensk", "user_id": "ensk1"},
+    iterations=100,
+)
+
+measure_average_response_chill(
+    url="https://pearmut.ngrok.io/dashboard.html",
+    method="get",
+    iterations=100,
+)
+
+measure_average_response_chill(
+    url="https://pearmut.ngrok.io/dashboard-data",
+    method="post",
+    payload={"campaign_id": "abc_ensk", "token": pearmut_token_ensk},
+    iterations=100,
+)
+
+measure_average_response_chill(
+    url="https://pearmut.ngrok.io/dashboard-results",
+    method="post",
+    payload={"campaign_id": "abc_ensk", "token": pearmut_token_ensk},
+    iterations=100,
+)
+
+# %%
+
+measure_average_response_chill(
+    url="https://pearmut.ngrok.io/download-annotations",
+    method="get",
+    payload={"campaign_id": "abc_ensk", "token": pearmut_token_ensk},
+    iterations=100,
+)
+
+measure_average_response_chill(
+    url="https://alani-unpleadable-vindicatedly.ngrok-free.dev/direct-assessment-document/",
+    cookies={"csrftoken": appraise_csrf_cookie},
+    method="get",
+    iterations=100,
+)
+
+measure_average_response_chill(
+    url="https://alani-unpleadable-vindicatedly.ngrok-free.dev/campaign-status/abc24/",
+    method="get",
+    iterations=100,
+)
+
+# %%
+# run bash command 100 times
+
+import subprocess
+
+start_time = time.perf_counter()
+subprocess.run(
+    "cd ~/Appraise; for _ in {1..100}; do python3 manage.py ExportSystemScoresToCSV abc24 > /dev/null; done",
+    shell=True,
+    check=True,
+)
+print(
+    "Appraise export",
+    f"{(time.perf_counter() - start_time)/100*1000:.1f}ms",
+    "",
+    sep="\n",
+)
+
+
+# %%
+
+"""
+######################
+4. Bibiliography study
+######################
+
+Download bibliographies from https://aclanthology.org/
+"""
+
+# cat ~/Downloads/*.bib > ~/Downloads/all.bib
+
+import bibtexparser
+
+library = bibtexparser.parse_file("/home/vilda/Downloads/all.bib")
+
+papers = []
+for entry in library.entries:
+    title = entry["title"].replace("{", "").replace("}", "")
+    if "translation" in title.lower():
+        papers.append((title, entry["url"].removesuffix("/") + ".pdf"))
+
+print(len(papers))
+print(papers)

@@ -4,6 +4,7 @@ data/
 data_*/
 server/static/
 examples/
+scripts/abc_data/
 
 __pycache__
 

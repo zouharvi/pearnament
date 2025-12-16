@@ -1,3 +1,4 @@
+import './style.css';
 import $ from 'jquery';
 
 import { get_next_item, get_i_item, log_response } from './connector';
@@ -136,7 +137,7 @@ function _slider_html(item_i: number, model: string): string {
     return `
     <div class="output_response">
       <input type="range" min="0" max="100" value="-1" id="response_${item_i}_${model}">
-      <span class="slider_label">? / 100</span>
+      <span class="slider_label">❓/100</span>
     </div>
     `
 }
@@ -210,7 +211,7 @@ async function display_next_payload(response: DataPayload) {
 
         let output_block = $(`
         <div class="output_block">
-          <span id="instructions_message"></span>
+          <span class="instructions_message"></span>
           <div class="output_srctgt">
             <div class="output_src">${src_chars}</div>
           </div>
@@ -218,7 +219,7 @@ async function display_next_payload(response: DataPayload) {
         `)
 
         if (item.instructions) {
-            output_block.find("#instructions_message").html(item.instructions)
+            output_block.find(".instructions_message").html(item.instructions)
         }
 
         // Add each model's output
@@ -468,15 +469,14 @@ async function display_next_payload(response: DataPayload) {
             // Setup slider for this model
             let slider = candidate_block.find("input[type='range']")
             let label = candidate_block.find(".slider_label")
-            slider.on("input", function () {
+            slider.on("click input", function () {
                 // In frozen mode, do not allow changing scores
                 if (frozenMode) return
 
                 let val = parseInt((<HTMLInputElement>this).value)
                 label.text(`${val}/100`)
 
-                // val == 0 is the only case when 'change' does not fire
-                if (val == 0) {
+                if (response_log[item_i][model].score == null) {
                     response_log[item_i][model].score = val
                     has_unsaved_work = true
                     check_unlock()
@@ -623,7 +623,7 @@ async function performValidation(): Promise<Array<boolean> | null> {
                 // Show warning indicator
                 output_blocks[item_ij].find(".validation_warning").remove()
                 const warningEl = $(`<span class="validation_warning" title="${validations[item_ij]![model]?.warning || 'Validation failed'}">⚠️</span>`)
-                output_blocks[item_ij].prepend(warningEl)
+                output_blocks[item_ij].find(".instructions_message").append(warningEl)
                 notify(validations[item_ij]![model]!.warning as string)
                 return null
             }

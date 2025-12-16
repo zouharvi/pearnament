@@ -384,6 +384,7 @@ function spanMatches(userSpan: ErrorSpan, validationSpan: ValidationErrorSpan): 
 /**
  * Validate user responses against validation rules
  * Returns validation result with failed items
+ * TODO: merge with validteKwayResponse since everything is Kway
  */
 export function validateResponse(
     response: Response,
