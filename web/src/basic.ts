@@ -13,8 +13,10 @@ import {
     validateKwayResponse,
     hasAllowSkip,
     DataFinished,
+    DataWelcome,
     ProtocolInfo,
     displayCompletionScreen,
+    displayWelcomeScreen,
     isMediaContent,
     contentToCharSpans,
     isSpanComplete,
@@ -555,7 +557,7 @@ async function navigate_to_item(item_i: number) {
     }
 
     // Fetch and display a specific item by index
-    let response = await get_i_item<DataPayload | DataFinished>(item_i)
+    let response = await get_i_item<DataPayload | DataFinished | DataWelcome>(item_i)
     has_unsaved_work = false
 
     if (response == null) {
@@ -565,6 +567,8 @@ async function navigate_to_item(item_i: number) {
 
     if (response.status == "completed") {
         displayCompletionScreen(response as DataFinished, navigate_to_item)
+    } else if (response.status == "welcome") {
+        displayWelcomeScreen(response as DataWelcome, navigate_to_item, display_next_item)
     } else if (response.status == "ok") {
         payload = response as DataPayload
         display_next_payload(response as DataPayload)
@@ -574,7 +578,7 @@ async function navigate_to_item(item_i: number) {
 }
 
 async function display_next_item() {
-    let response = await get_next_item<DataPayload | DataFinished>()
+    let response = await get_next_item<DataPayload | DataFinished | DataWelcome>()
     has_unsaved_work = false
 
     if (response == null) {
@@ -584,6 +588,8 @@ async function display_next_item() {
 
     if (response.status == "completed") {
         displayCompletionScreen(response as DataFinished, navigate_to_item)
+    } else if (response.status == "welcome") {
+        displayWelcomeScreen(response as DataWelcome, navigate_to_item, display_next_item)
     } else if (response.status == "ok") {
         payload = response as DataPayload
         display_next_payload(response as DataPayload)

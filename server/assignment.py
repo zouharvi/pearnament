@@ -176,6 +176,18 @@ def get_next_item_taskbased(
     if all(user_progress["progress"]):
         return _completed_response(data_all, progress_data, campaign_id, user_id)
 
+    # Check if user has no activity and instructions_welcome is defined
+    if not any(user_progress["progress"]) and "instructions_welcome" in data_all[campaign_id]["info"] and data_all[campaign_id]["info"]["instructions_welcome"] is not None:
+        return JSONResponse(
+            content={
+                "status": "welcome",
+                "progress": user_progress["progress"],
+                "time": user_progress["time"],
+                "message": data_all[campaign_id]["info"]["instructions_welcome"],
+            },
+            status_code=200
+        )
+
     # find first incomplete item
     item_i = min([i for i, v in enumerate(user_progress["progress"]) if not v])
 
@@ -226,6 +238,18 @@ def get_next_item_singlestream(
 
     if all(progress):
         return _completed_response(data_all, progress_data, campaign_id, user_id)
+
+    # Check if user has no activity and instructions_welcome is defined
+    if not any(progress) and "instructions_welcome" in data_all[campaign_id]["info"] and data_all[campaign_id]["info"]["instructions_welcome"] is not None:
+        return JSONResponse(
+            content={
+                "status": "welcome",
+                "progress": progress,
+                "time": user_progress["time"],
+                "message": data_all[campaign_id]["info"]["instructions_welcome"],
+            },
+            status_code=200
+        )
 
     # find a random incomplete item
     incomplete_indices = [i for i, v in enumerate(progress) if not v]

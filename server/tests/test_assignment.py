@@ -703,3 +703,181 @@ class TestValidationThreshold:
         # Add another failure to exceed threshold
         progress_data["campaign1"]["user1"]["validations"][2] = [False]
         assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+
+
+class TestInstructionsWelcome:
+    """Tests for instructions_welcome feature."""
+
+    def test_welcome_screen_shown_for_new_user_taskbased(self):
+        """Test that welcome screen is shown for user with no progress in task-based."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "instructions_welcome": "Welcome! Please read the instructions carefully."
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": {"model1": "b"}}],
+                        [{"src": "c", "tgt": {"model1": "d"}}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False, False],
+                    "time": 0,
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"welcome"' in content
+        assert "Welcome! Please read the instructions carefully." in content
+
+    def test_welcome_screen_not_shown_with_partial_progress_taskbased(self):
+        """Test that welcome screen is not shown when user has some progress in task-based."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "instructions_welcome": "Welcome! Please read the instructions carefully."
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": {"model1": "b"}}],
+                        [{"src": "c", "tgt": {"model1": "d"}}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True, False],
+                    "time": 0,
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"ok"' in content
+        assert '"item_i":1' in content
+
+    def test_welcome_screen_not_shown_without_instructions_taskbased(self):
+        """Test that welcome screen is not shown when instructions_welcome is not set."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": {"model1": "b"}}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False],
+                    "time": 0,
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"ok"' in content
+        assert '"item_i":0' in content
+
+    def test_welcome_screen_not_shown_with_null_instructions_taskbased(self):
+        """Test that welcome screen is not shown when instructions_welcome is null."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "instructions_welcome": None
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": {"model1": "b"}}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False],
+                    "time": 0,
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"ok"' in content
+        assert '"item_i":0' in content
+
+    def test_welcome_screen_shown_for_new_user_singlestream(self):
+        """Test that welcome screen is shown for user with no progress in single-stream."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "single-stream",
+                    "instructions_welcome": "Welcome to single-stream!"
+                },
+                "data": [
+                    [{"src": "a", "tgt": {"model1": "b"}}],
+                    [{"src": "c", "tgt": {"model1": "d"}}],
+                ]
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [False, False],
+                    "time": 0,
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"welcome"' in content
+        assert "Welcome to single-stream!" in content
+
+    def test_welcome_screen_not_shown_with_partial_progress_singlestream(self):
+        """Test that welcome screen is not shown when user has some progress in single-stream."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "single-stream",
+                    "instructions_welcome": "Welcome to single-stream!"
+                },
+                "data": [
+                    [{"src": "a", "tgt": {"model1": "b"}}],
+                    [{"src": "c", "tgt": {"model1": "d"}}],
+                ]
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True, False],
+                    "time": 0,
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1", tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"ok"' in content
+        # Should return one of the incomplete items
+        assert '"item_i"' in content

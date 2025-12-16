@@ -496,6 +496,14 @@ export type DataFinished = {
     token: string,
 }
 
+// Shared type for welcome screen response
+export type DataWelcome = {
+    status: string,
+    progress: Array<boolean>,
+    time: number,
+    message: string,
+}
+
 // Shared protocol info type
 export type ProtocolInfo = {
     protocol: "DA" | "ESA" | "MQM",
@@ -520,6 +528,26 @@ export function displayCompletionScreen(response: DataFinished, navigate_to_item
     $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
     $("#button_next").prop("disabled", true)
     $("#button_next").val("Next 💯")
+}
+
+/**
+ * Display welcome screen with instructions before starting annotations
+ */
+export function displayWelcomeScreen(response: DataWelcome, navigate_to_item: (i: number) => void, proceed_callback: () => void): void {
+    $("#output_div").html(`
+    <div class='white-box' style='width: max-content; max-width: 800px;'>
+    <div>${response.message}</div>
+    <br>
+    <button id="button_start" class="button">Start Annotations</button>
+    </div>
+    `)
+    redrawProgress(null, response.progress, navigate_to_item)
+    $("#time").text(`Time: ${Math.round(response.time / 60)}m`)
+    $("#button_next").prop("disabled", true)
+    $("#button_next").val("Next ▶️")
+    
+    // When user clicks "Start Annotations", proceed to the first item
+    $("#button_start").on("click", proceed_callback)
 }
 
 /**
