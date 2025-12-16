@@ -20,6 +20,7 @@
   - [Basic Structure](#basic-structure)
   - [Assignment Types](#assignment-types)
 - [Advanced Features](#advanced-features)
+  - [Welcome Screen Instructions](#welcome-screen-instructions)
   - [Pre-filled Error Spans (ESA<sup>AI</sup>)](#pre-filled-error-spans-esaai)
   - [Tutorial and Attention Checks](#tutorial-and-attention-checks)
   - [Pre-defined User IDs and Tokens](#pre-defined-user-ids-and-tokens)
@@ -56,7 +57,8 @@ Campaigns are defined in JSON files (see [examples/](examples/)). The simplest c
     # DA: scores
     # ESA: error spans and scores
     # MQM: error spans, categories, and scores
-    "protocol": "ESA", 
+    "protocol": "ESA",
+    "instructions_welcome": "<h2>Welcome!</h2><p>Optional HTML content shown before the first item.</p>",  # Optional: displays a welcome screen
   },
   "campaign_id": "wmt25_#_en-cs_CZ",
   "data": [
@@ -130,6 +132,27 @@ The `shuffle` parameter in campaign `info` controls this behavior:
   "data": [...]
 }
 ```
+
+### Welcome Screen Instructions
+
+Display a custom welcome screen before the first annotation item using the `instructions_welcome` field in campaign info:
+
+```python
+{
+  "info": {
+    "assignment": "task-based",
+    "protocol": "ESA",
+    "instructions_welcome": "<h2>Welcome to Our Evaluation Campaign</h2><p>Thank you for participating! In this task, you will evaluate translations.</p><ul><li>Read carefully</li><li>Mark errors</li><li>Provide scores</li></ul>"
+  },
+  "campaign_id": "my_campaign",
+  "data": [...]
+}
+```
+
+- The field accepts HTML content for rich formatting (headings, lists, bold text, links, etc.)
+- If `null` or omitted, no welcome screen is shown (default behavior)
+- The welcome screen appears once before the first item with a "Start" button to proceed
+- Useful for providing campaign-specific instructions, consent forms, or orientation
 
 ### Pre-filled Error Spans (ESA<sup>AI</sup>)
 
