@@ -311,6 +311,42 @@ class TestTaskBased:
         assert 'FAIL_TOKEN' in content
         assert 'PASS_TOKEN' not in content
 
+    def test_instructions_goodbye_html_escaping(self):
+        """Test that user_id and token are HTML-escaped in instructions_goodbye to prevent injection."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "instructions_goodbye": "User: ${USER_ID}, Token: ${TOKEN}"
+                },
+                "data": {
+                    "<script>alert('xss')</script>": [
+                        [{"src": "a", "tgt": "b"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "<script>alert('xss')</script>": {
+                    "progress": [True],
+                    "time": 100,
+                    "token_correct": "<img src=x onerror=alert('token')>",
+                    "token_incorrect": "BAD_TOKEN",
+                }
+            }
+        }
+        response = get_next_item("campaign1", "<script>alert('xss')</script>",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"completed"' in content
+        # Check that HTML is properly escaped in instructions_goodbye
+        assert '"instructions_goodbye":"User: &lt;script&gt;' in content
+        assert '&lt;img src=x onerror=alert' in content
+        # The token field itself is not escaped (that's fine, it's used elsewhere)
+        # but in instructions_goodbye it should be escaped
+
 
 class TestSingleStream:
     """Tests for single-stream assignment."""

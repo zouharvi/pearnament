@@ -1,3 +1,4 @@
+import html
 import random
 from typing import Any
 
@@ -29,8 +30,9 @@ def _completed_response(
     )
     
     # Replace variables ${TOKEN} and ${USER_ID}
-    instructions_goodbye = instructions_goodbye.replace("${TOKEN}", token)
-    instructions_goodbye = instructions_goodbye.replace("${USER_ID}", user_id)
+    # HTML-escape user_id to prevent injection attacks
+    instructions_goodbye = instructions_goodbye.replace("${TOKEN}", html.escape(token))
+    instructions_goodbye = instructions_goodbye.replace("${USER_ID}", html.escape(user_id))
     
     return JSONResponse(
         content={

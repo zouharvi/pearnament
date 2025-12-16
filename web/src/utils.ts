@@ -510,7 +510,7 @@ export function displayCompletionScreen(response: DataFinished, navigate_to_item
     // Use instructions_goodbye if provided, otherwise use default message
     const goodbyeMessage = response.instructions_goodbye || 
         `If someone asks you for a token of completion, show them
-    <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response.token}</span>`
+        <span style="font-family: monospace; font-size: 11pt; padding: 5px;">${response.token}</span>`
     
     $("#output_div").html(`
     <div class='white-box' style='width: max-content'>
