@@ -568,7 +568,8 @@ async function navigate_to_item(item_i: number) {
     if (response.status == "completed") {
         displayCompletionScreen(response as DataFinished, navigate_to_item)
     } else if (response.status == "welcome") {
-        displayWelcomeScreen(response as DataWelcome, navigate_to_item, display_next_item)
+        // For welcome screen, navigate to first item (index 0) after user clicks Start
+        displayWelcomeScreen(response as DataWelcome, navigate_to_item, () => navigate_to_item(0))
     } else if (response.status == "ok") {
         payload = response as DataPayload
         display_next_payload(response as DataPayload)
@@ -589,7 +590,8 @@ async function display_next_item() {
     if (response.status == "completed") {
         displayCompletionScreen(response as DataFinished, navigate_to_item)
     } else if (response.status == "welcome") {
-        displayWelcomeScreen(response as DataWelcome, navigate_to_item, display_next_item)
+        // For welcome screen, navigate to first item (index 0) after user clicks Start
+        displayWelcomeScreen(response as DataWelcome, navigate_to_item, () => navigate_to_item(0))
     } else if (response.status == "ok") {
         payload = response as DataPayload
         display_next_payload(response as DataPayload)
