@@ -62,13 +62,15 @@ LANG2_TO_LANG3 = {
     "cs": "ces",
     "hi": "hin",
     "ko": "kor",
-    "pl": "pol",
+    "pl": "plk",
     "es": "spa",
     "en": "eng",
     "de": "deu",
     "sk": "slk",
     "it": "ita",
     "fa": "fas",
+    # Finnish = Czech just so each langauge is its own user
+    "fi": "fin",
 }
 
 
@@ -165,6 +167,10 @@ python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_
     --batches-json ~/pearmut/scripts/abc_data/appraise/enit.json \
     --csv-output ~/pearmut/scripts/abc_data/appraise/accounts_it.csv
 
+python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_fi.json \
+    --batches-json ~/pearmut/scripts/abc_data/appraise/enfi.json \
+    --csv-output ~/pearmut/scripts/abc_data/appraise/accounts_fi.csv
+
 APPRAISE_ALLOWED_HOSTS=alani-unpleadable-vindicatedly.ngrok-free.dev,localhost APPRAISE_CSRF_TRUSTED_ORIGINS=https://alani-unpleadable-vindicatedly.ngrok-free.dev python3 manage.py runserver 
 
 ngrok http 8000 --url https://alani-unpleadable-vindicatedly.ngrok-free.dev
@@ -182,6 +188,7 @@ ngrok http --url=pearmut.ngrok.io 8001
 """
 python3 manage.py ExportSystemScoresToCSV abc24 > ~/pearmut/scripts/abc_data/results/appraise_raw.csv
 python3 manage.py ExportSystemScoresToCSV abc26 > ~/pearmut/scripts/abc_data/results/appraise_raw_enit.csv
+python3 manage.py ExportSystemScoresToCSV abc27 > ~/pearmut/scripts/abc_data/results/appraise_raw_enfi.csv
 
 mv ~/Downloads/annotations.json ./scripts/abc_data/results/pearmut_raw.json
 """
@@ -192,21 +199,6 @@ import json
 import statistics
 import glob
 import copy
-import itertools
-
-
-LANG2_TO_LANG3 = {
-    "cs": "ces",
-    "hi": "hin",
-    "ko": "kor",
-    "pl": "plk",
-    "es": "spa",
-    "en": "eng",
-    "de": "deu",
-    "sk": "slk",
-    "it": "ita",
-}
-
 
 data_pearmut = {}
 for fname in glob.glob("abc_data/pearmut/*.json"):
@@ -239,6 +231,8 @@ text_raw = []
 with open("abc_data/results/appraise_raw_enhi.csv", "r") as f1:
     text_raw.extend(f1.readlines())
 with open("abc_data/results/appraise_raw_enit.csv", "r") as f1:
+    text_raw.extend(f1.readlines())
+with open("abc_data/results/appraise_raw_enfi.csv", "r") as f1:
     text_raw.extend(f1.readlines())
 with open("abc_data/results/appraise_raw.csv", "r") as f1:
     text_raw.extend(f1.readlines())
@@ -274,9 +268,7 @@ for item in data:
                 and item["model"] in doc_item["tgt"]
             ):
                 doc_item["score"][item["model"]] = float(item["score"])
-                doc_item["error_spans"][item["model"]] = json.loads(
-                    item["error_spans"]
-                )
+                doc_item["error_spans"][item["model"]] = json.loads(item["error_spans"])
                 found_doc = True
                 break
         if found_doc:
@@ -288,18 +280,24 @@ for item in data:
 # load pearmut, so easy!
 with open("abc_data/results/pearmut_raw.json", "r") as f:
     data = json.load(f)
+
+tmp_counter = collections.Counter()
 for campaign_id, data in data.items():
-    if  not campaign_id.startswith("abc_"):
+    if not campaign_id.startswith("abc_"):
         continue
     langs = campaign_id.removeprefix("abc_")
     for line in data:
-        found_doc = False
+        if "item" not in line or line["user_id"].endswith("2"):
+            continue
+
         for item, annotation in zip(line["item"], line["annotation"]):
+            found_doc = False
             # try to find the document in data_pearmut
             for doc in data_pearmut[langs]:
                 for doc_item in doc:
                     if doc_item["doc_id"] == item["doc_id"]:
                         for model, annotation in annotation.items():
+                            tmp_counter[line["user_id"], model] += 1
                             doc_item["score"][model] = annotation["score"]
                             doc_item["error_spans"][model] = annotation["error_spans"]
                         found_doc = True
@@ -326,7 +324,10 @@ def str_to_seconds(s):
 
 
 times_by_user = {
-    user: {tool: [str_to_seconds(t) for t in times.split(",")] for tool, times in times.items()}
+    user: {
+        tool: [str_to_seconds(t) for t in times.split(",")]
+        for tool, times in times.items()
+    }
     for user, times in responses_data["times"].items()
 }
 
@@ -334,6 +335,7 @@ annotations_tool = {
     "pearmut": data_pearmut,
     "appraise": data_appraise,
 }
+
 
 results = collections.defaultdict(lambda: collections.defaultdict(list))
 for user in responses_data["times"].keys():
@@ -407,7 +409,11 @@ for quantity in results:
         if "errors" in quantity:
             print(f"[{avg:>10.1f}]", end=", ")
         elif "0 to 10" in quantity:
-            print(f"point11({avg:.1f})", end=", ")
+            avg_count = collections.Counter([x // 2 for x in results[quantity][tool]])
+            print(
+                f"point11({avg:.1f}) + bar5(({",".join(str(avg_count[i]) for i in range(6))}))",
+                end=", ",
+            )
         else:
             print(f"[{avg:>10.2f}]", end=", ")
     print()
@@ -417,6 +423,67 @@ for quantity in results:
         "Time/error (s)",
     }:
         print(r"v(-1mm), v(-5mm), v(-10mm),")
+
+
+# %%
+import scipy.stats
+# inter-annotator agreement for Czech
+
+for tool in ["pearmut", "appraise"]:
+    user1_scores = [
+        item["score"][model]
+        for doc in annotations_tool[tool]["encs"]
+        for item in doc
+        for model in "ABC"
+        if model in item["score"]
+    ]
+    user2_scores = [
+        item["score"][model]
+        for doc in annotations_tool[tool]["enfi"]
+        for item in doc
+        for model in "ABC"
+        if model in item["score"]
+    ]
+    print(f"{tool} global {scipy.stats.kendalltau(user1_scores[:len(user2_scores)], user2_scores[:len(user1_scores)]).correlation:.3f}")
+
+    corrs = []
+    for model in "ABC":
+        user1_scores = [
+            item["score"][model]
+            for doc in annotations_tool[tool]["encs"]
+            for item in doc
+            if model in item["score"]
+        ]
+        user2_scores = [
+            item["score"][model]
+            for doc in annotations_tool[tool]["enfi"]
+            for item in doc
+            if model in item["score"]
+        ]
+        corrs.append(scipy.stats.kendalltau(user1_scores[:len(user2_scores)], user2_scores[:len(user1_scores)]).correlation)
+    print(f"{tool} group by model {statistics.mean(corrs):.3f}")
+
+    corrs = []
+    user1_items = collections.defaultdict(list)
+    user2_items = collections.defaultdict(list)
+    for doc in annotations_tool[tool]["encs"]:
+        for item in doc:
+            for model in "ABC":
+                if model in item["score"]:
+                    user1_items[item["doc_id"]].append(item["score"][model])
+    for doc in annotations_tool[tool]["enfi"]:
+        for item in doc:
+            for model in "ABC":
+                if model in item["score"]:
+                    user2_items[item["doc_id"]].append(item["score"][model])
+    common_items = set(user1_items.keys()) & set(user2_items.keys())
+    for doc_id in common_items:
+        user1_scores = user1_items[doc_id]
+        user2_scores = user2_items[doc_id]
+        corrs.append(scipy.stats.kendalltau(user1_scores[:len(user2_scores)], user2_scores[:len(user1_scores)]).correlation)
+    print(f"{tool} group by item {statistics.mean(corrs):.3f}")
+
+    
 
 
 # %%
