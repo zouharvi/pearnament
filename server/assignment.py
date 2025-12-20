@@ -19,10 +19,7 @@ def _should_show_welcome(
     Check if welcome screen should be shown.
     Returns True if user has no progress and instructions_welcome is defined.
     """
-    has_instructions = (
-        "instructions_welcome" in campaign_info and
-        campaign_info["instructions_welcome"] is not None
-    )
+    has_instructions = campaign_info.get("instructions_welcome", None) is not None
     has_no_progress = not any(progress)
     return has_instructions and has_no_progress
 
