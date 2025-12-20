@@ -246,7 +246,7 @@ async def _export_results(
             media_type="text/plain",
         )
     elif format == "pdf":
-        pdf_bytes = generate_pdf(results)
+        pdf_bytes = generate_pdf(results, campaign_id)
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",

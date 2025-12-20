@@ -2,9 +2,6 @@ import collections
 import json
 import os
 import statistics
-import tempfile
-
-import typst
 
 from .utils import get_db_log
 
@@ -41,6 +38,17 @@ def compute_model_scores(campaign_id):
     results.sort(key=lambda x: x["score"], reverse=True)
     return results
 
+def escape_typst(s: str):
+    return (
+        s.replace("\\", "\\\\")
+        .replace("#", "\\#")
+        .replace("*", "\\*")
+        .replace("_", "\\_")
+        .replace("`", "\\`")
+        .replace("[", "\\[")
+        .replace("]", "\\]")
+    )
+
 
 def generate_typst_table(results):
     """
@@ -66,15 +74,7 @@ def generate_typst_table(results):
     
     for result in results:
         # Escape Typst special characters
-        model = result["model"]
-        model = model.replace("\\", "\\\\")
-        model = model.replace("#", "\\#")
-        model = model.replace("*", "\\*")
-        model = model.replace("_", "\\_")
-        model = model.replace("`", "\\`")
-        model = model.replace("[", "\\[")
-        model = model.replace("]", "\\]")
-        
+        model = escape_typst(result["model"])
         score = f"{result['score']:.1f}"
         typst_code += f"  [{model}], [{score}],\n"
     
@@ -130,7 +130,7 @@ def generate_latex_table(results):
     return latex_code
 
 
-def generate_pdf(results):
+def generate_pdf(results, campaign_id):
     """
     Generate PDF from Typst code using typst-py.
     
@@ -140,11 +140,18 @@ def generate_pdf(results):
     Returns:
         bytes containing the PDF
     """
+
+    import tempfile
+    import typst
+
     if not results:
         # Return empty PDF with message
         typst_code = "[No results available]"
     else:
-        typst_code = generate_typst_table(results)
+        typst_code = f"""
+        #set page(width: auto, height: auto, margin: 1.5pt)
+        == {escape_typst(campaign_id)}
+        """ + generate_typst_table(results)
     
     # Create a temporary file for the typst source
     with tempfile.NamedTemporaryFile(mode='w', suffix='.typ', delete=False) as f:
