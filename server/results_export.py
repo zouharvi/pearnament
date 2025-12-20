@@ -58,7 +58,16 @@ def generate_typst_table(results):
 """
     
     for result in results:
-        model = result["model"].replace("[", "\\[").replace("]", "\\]")
+        # Escape Typst special characters
+        model = result["model"]
+        model = model.replace("\\", "\\\\")
+        model = model.replace("#", "\\#")
+        model = model.replace("*", "\\*")
+        model = model.replace("_", "\\_")
+        model = model.replace("`", "\\`")
+        model = model.replace("[", "\\[")
+        model = model.replace("]", "\\]")
+        
         score = f"{result['score']:.1f}"
         count = str(result["count"])
         typst_code += f"  [{model}], [{score}], [{count}],\n"

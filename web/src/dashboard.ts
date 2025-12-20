@@ -196,7 +196,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     });
 
     // Add event listeners for export buttons
-    el.find("input[data-format]").on("click", async function () {
+    el.find(".ranking-content .abutton[data-format]").on("click", async function () {
         const format = $(this).data("format");
         
         // Skip PDF for now as per requirements
