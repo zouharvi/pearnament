@@ -14,12 +14,35 @@ def load_progress_data(warn: str | None = None):
         with open(f"{ROOT}/data/progress.json", "w") as f:
             f.write(json.dumps({}))
     with open(f"{ROOT}/data/progress.json", "r") as f:
-        return json.load(f)
+        data = json.load(f)
+    
+    # Convert progress lists to sets for dynamic campaigns
+    # This is needed because JSON doesn't support sets
+    for campaign_id in data:
+        for user_id in data[campaign_id]:
+            progress = data[campaign_id][user_id].get("progress", [])
+            if progress and isinstance(progress[0], list):
+                # Convert lists back to sets for dynamic assignment
+                data[campaign_id][user_id]["progress"] = [set(item) for item in progress]
+    
+    return data
 
 
 def save_progress_data(data):
+    # Convert sets to lists for JSON serialization
+    def convert_sets(obj):
+        if isinstance(obj, dict):
+            return {k: convert_sets(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_sets(item) for item in obj]
+        elif isinstance(obj, set):
+            return list(obj)
+        else:
+            return obj
+    
+    serializable_data = convert_sets(data)
     with open(f"{ROOT}/data/progress.json", "w") as f:
-        json.dump(data, f, indent=2)
+        json.dump(serializable_data, f, indent=2)
 
 
 _logs = {}

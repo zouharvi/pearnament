@@ -366,7 +366,8 @@ def _add_single_campaign(data_file, overwrite, server):
             # TODO: progress tracking could be based on the assignment type
             "progress": (
                 [False]*len(campaign_data["data"][user_id]) if assignment == "task-based"
-                else [False]*len(campaign_data["data"]) if assignment in ["single-stream", "dynamic"]
+                else [False]*len(campaign_data["data"]) if assignment == "single-stream"
+                else [set() for _ in range(len(campaign_data["data"]))] if assignment == "dynamic"
                 else []
             ),
             "time_start": None,
@@ -450,9 +451,7 @@ def _add_single_campaign(data_file, overwrite, server):
         json.dump(campaign_data, f, indent=2, ensure_ascii=False)
 
     progress_data[campaign_data['campaign_id']] = user_progress
-
-    with open(f"{ROOT}/data/progress.json", "w") as f:
-        json.dump(progress_data, f, indent=2, ensure_ascii=False)
+    save_progress_data(progress_data)
 
 
     print(

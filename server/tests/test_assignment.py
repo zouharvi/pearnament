@@ -729,7 +729,7 @@ class TestDynamic:
         progress_data = {
             "campaign1": {
                 "user1": {
-                    "progress": [False, False, False],
+                    "progress": [set(), set(), set()],
                     "time": 0,
                     "token_correct": "abc",
                     "token_incorrect": "xyz",
@@ -761,7 +761,7 @@ class TestDynamic:
         progress_data = {
             "campaign1": {
                 "user1": {
-                    "progress": [True],
+                    "progress": [{"model1"}],
                     "time": 100,
                     "token_correct": "correct_token",
                     "token_incorrect": "wrong_token",
@@ -787,19 +787,21 @@ class TestDynamic:
         progress_data = {
             "campaign1": {
                 "user1": {
-                    "progress": [False, False, False],
+                    "progress": [set(), set(), set()],
                 },
                 "user2": {
-                    "progress": [False, False, False],
+                    "progress": [set(), set(), set()],
                 }
             }
         }
-        update_progress("campaign1", "user1", tasks_data, progress_data, 1, {})
-        # Both users should have item 1 marked as complete
-        assert progress_data["campaign1"]["user1"]["progress"] == [
-            False, True, False]
-        assert progress_data["campaign1"]["user2"]["progress"] == [
-            False, True, False]
+        # Simulate an annotation with model1
+        payload = {"annotation": [{"model1": {"score": 5}}]}
+        update_progress("campaign1", "user1", tasks_data, progress_data, 1, payload)
+        # Both users should have model1 tracked for item 1
+        assert "model1" in progress_data["campaign1"]["user1"]["progress"][1]
+        assert "model1" in progress_data["campaign1"]["user2"]["progress"][1]
+        assert progress_data["campaign1"]["user1"]["progress"][0] == set()
+        assert progress_data["campaign1"]["user2"]["progress"][0] == set()
 
     def test_reset_task_resets_all_users(self):
         """Test that dynamic reset_task resets progress for all users."""
@@ -818,13 +820,13 @@ class TestDynamic:
         progress_data = {
             "campaign1": {
                 "user1": {
-                    "progress": [True, True, False],
+                    "progress": [{"model1"}, {"model1"}, set()],
                     "time": 50.0,
                     "time_start": 1000,
                     "time_end": 2000,
                 },
                 "user2": {
-                    "progress": [True, True, False],
+                    "progress": [{"model1"}, {"model1"}, set()],
                     "time": 75.0,
                     "time_start": 1100,
                     "time_end": 2100,
@@ -832,11 +834,11 @@ class TestDynamic:
             }
         }
         reset_task("campaign1", "user1", tasks_data, progress_data)
-        # Both users' progress should be reset
+        # Both users' progress should be reset to empty sets
         assert progress_data["campaign1"]["user1"]["progress"] == [
-            False, False, False]
+            set(), set(), set()]
         assert progress_data["campaign1"]["user2"]["progress"] == [
-            False, False, False]
+            set(), set(), set()]
         # Only user1's time should be reset
         assert progress_data["campaign1"]["user1"]["time"] == 0.0
         assert progress_data["campaign1"]["user1"]["time_start"] is None
