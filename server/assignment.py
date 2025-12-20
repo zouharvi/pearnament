@@ -276,7 +276,7 @@ def get_next_item_dynamic(
     NOTE: All items must contain all model outputs for this assignment type to work.
     
     In this mode, items are selected based on the current performance of models:
-    1. K-way comparison: `dynamic_kway` models are randomly selected and shown per item
+    1. Contrastive comparison: `dynamic_contrastive_models` models are randomly selected and shown per item
     2. First phase: Each model gets `dynamic_first` annotations with fully random selection
     3. After first phase: Top `dynamic_top` models are identified, K randomly selected from them
     4. Items with least annotations for the selected models are prioritized
@@ -294,7 +294,7 @@ def get_next_item_dynamic(
     # Get configuration parameters
     dynamic_top = campaign_data["info"].get("dynamic_top", 1)
     dynamic_first = campaign_data["info"].get("dynamic_first", 5)
-    dynamic_kway = campaign_data["info"].get("dynamic_kway", 1)
+    dynamic_contrastive_models = campaign_data["info"].get("dynamic_contrastive_models", 1)
     dynamic_backoff = campaign_data["info"].get("dynamic_backoff", 0)
     
     # Get all unique models in the campaign (all items must have all models)
@@ -325,7 +325,7 @@ def get_next_item_dynamic(
     # Select which models to show
     if in_first_phase or random.random() < dynamic_backoff:
         # First phase or backoff: select K models randomly from all models
-        selected_models = random.sample(all_models, min(dynamic_kway, len(all_models)))
+        selected_models = random.sample(all_models, min(dynamic_contrastive_models, len(all_models)))
     else:
         # Calculate model scores from annotations
         model_scores = collections.defaultdict(list)
@@ -346,7 +346,7 @@ def get_next_item_dynamic(
         top_models = [model for model, score in sorted_models[:dynamic_top]]
         
         # From top N, randomly select K models
-        selected_models = random.sample(top_models, min(dynamic_kway, len(top_models)))
+        selected_models = random.sample(top_models, min(dynamic_contrastive_models, len(top_models)))
     
     # Find incomplete items, prioritizing those with least annotations for selected models
     incomplete_indices = [i for i, v in enumerate(user_progress["progress"]) if not v]

@@ -227,9 +227,8 @@ All annotators draw from a shared pool with random assignment:
 
 ### Dynamic Assignment
 
-The `dynamic` assignment type intelligently selects items based on current model performance to focus annotation effort on top-performing models using k-way comparisons:
-
-**NOTE:** All items must contain outputs from all models for this assignment type to work properly.
+The `dynamic` assignment type intelligently selects items based on current model performance to focus annotation effort on top-performing models using contrastive comparisons.
+All items must contain outputs from all models for this assignment type to work properly.
 
 ```python
 {
@@ -239,7 +238,7 @@ The `dynamic` assignment type intelligently selects items based on current model
         "protocol": "ESA",
         "users": 10,                           # number of annotators
         "dynamic_top": 3,                      # how many top models to consider (required)
-        "dynamic_kway": 2,                     # how many models to compare per item (optional, default: 1)
+        "dynamic_contrastive_models": 2,                     # how many models to compare per item (optional, default: 1)
         "dynamic_first": 5,                    # annotations per model before dynamic kicks in (optional, default: 5)
         "dynamic_backoff": 0.1,                # probability of uniform sampling (optional, default: 0)
     },
@@ -248,13 +247,13 @@ The `dynamic` assignment type intelligently selects items based on current model
 ```
 
 **How it works:**
-1. Initial phase: Each model gets `dynamic_first` annotations with fully random K-way selection
+1. Initial phase: Each model gets `dynamic_first` annotations with fully random contrastive evaluation
 2. Dynamic phase: After the initial phase, top `dynamic_top` models (by average score) are identified
-3. K-way comparison: From the top N models, `dynamic_kway` models are randomly selected for each item
+3. Contrastive evaluatoin: From the top N models, `dynamic_contrastive_models` models are randomly selected for each item
 4. Item prioritization: Items with the least annotations for the selected models are prioritized
 5. Backoff: With probability `dynamic_backoff`, uniform random selection is used instead to maintain exploration
 
-This approach efficiently focuses annotation resources on distinguishing between the best-performing models while ensuring all models get adequate baseline coverage. The k-way comparison allows for direct comparison of multiple models simultaneously.
+This approach efficiently focuses annotation resources on distinguishing between the best-performing models while ensuring all models get adequate baseline coverage. The contrastive evaluation allows for direct comparison of multiple models simultaneously.
 
 ### Pre-defined User IDs and Tokens
 
