@@ -218,18 +218,12 @@ async def _dashboard_results(request: DashboardResultsRequest):
     return JSONResponse(content=results, status_code=200)
 
 
-class ExportResultsRequest(BaseModel):
-    campaign_id: str
-    token: str
-    format: str
-
-
-@app.post("/export-results")
-async def _export_results(request: ExportResultsRequest):
-    campaign_id = request.campaign_id
-    token = request.token
-    export_format = request.format
-
+@app.get("/export-results")
+async def _export_results(
+    campaign_id: str = Query(),
+    token: str = Query(),
+    format: str = Query(),
+):
     if campaign_id not in progress_data:
         return JSONResponse(content="Unknown campaign ID", status_code=400)
 
@@ -239,26 +233,23 @@ async def _export_results(request: ExportResultsRequest):
 
     results = compute_model_scores(campaign_id)
 
-    if export_format == "typst":
+    if format == "typst":
         content = generate_typst_table(results)
-        return JSONResponse(
-            content={"content": content, "filename": f"{campaign_id}.typ"},
-            status_code=200,
+        return Response(
+            content=content,
+            media_type="text/plain",
         )
-    elif export_format == "latex":
+    elif format == "latex":
         content = generate_latex_table(results)
-        return JSONResponse(
-            content={"content": content, "filename": f"{campaign_id}.tex"},
-            status_code=200,
+        return Response(
+            content=content,
+            media_type="text/plain",
         )
-    elif export_format == "pdf":
+    elif format == "pdf":
         pdf_bytes = generate_pdf(results)
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
-            headers={
-                "Content-Disposition": f'attachment; filename="{campaign_id}.pdf"'
-            },
         )
     else:
         return JSONResponse(content="Invalid export format", status_code=400)

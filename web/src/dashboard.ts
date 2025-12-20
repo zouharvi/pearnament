@@ -181,15 +181,18 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
 
                 $content.append(tableHtml);
                 
-                // Add export links using <a> tags with href to backend
-                const exportLinksHtml = `
-                    <div style="margin-top: 10px;">
-                        <a href="#" class="abutton export-link" data-format="pdf">Export PDF</a>
-                        <a href="#" class="abutton export-link" data-format="typst">Export Typst</a>
-                        <a href="#" class="abutton export-link" data-format="latex">Export LaTeX</a>
-                    </div>
-                `;
-                $content.append(exportLinksHtml);
+                // Add export links with direct hrefs - no click handlers needed
+                // Only show if token is available
+                if (token) {
+                    const exportLinksHtml = `
+                        <div style="margin-top: 10px;">
+                            <a href="/export-results?campaign_id=${encodeURIComponent(campaign_id)}&token=${encodeURIComponent(token)}&format=pdf" class="abutton">Export PDF</a>
+                            <a href="/export-results?campaign_id=${encodeURIComponent(campaign_id)}&token=${encodeURIComponent(token)}&format=typst" class="abutton">Export Typst</a>
+                            <a href="/export-results?campaign_id=${encodeURIComponent(campaign_id)}&token=${encodeURIComponent(token)}&format=latex" class="abutton">Export LaTeX</a>
+                        </div>
+                    `;
+                    $content.append(exportLinksHtml);
+                }
             } else {
                 $content.html("<p>No ranking data available yet.</p>");
             }
@@ -200,74 +203,6 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
 
 
         $content.show();
-    });
-
-    // Add event listeners for export links
-    el.on("click", ".export-link", async function (e) {
-        e.preventDefault();
-        const format = $(this).data("format");
-        
-        try {
-            if (format === "pdf") {
-                // PDF returns binary, handle it differently
-                const response = await fetch(`/export-results`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ 
-                        "campaign_id": campaign_id, 
-                        "token": token,
-                        "format": format
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${campaign_id}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                
-                notify(`Exported to PDF successfully.`);
-            } else {
-                // Typst and LaTeX return JSON with text content
-                const response = await $.ajax({
-                    url: `/export-results`,
-                    method: "POST",
-                    data: JSON.stringify({ 
-                        "campaign_id": campaign_id, 
-                        "token": token,
-                        "format": format
-                    }),
-                    contentType: "application/json",
-                    dataType: "json",
-                });
-                
-                // Create a download link
-                const blob = new Blob([response.content], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = response.filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                
-                notify(`Exported to ${format.toUpperCase()} successfully.`);
-            }
-        } catch (error) {
-            console.error("Error exporting results:", error);
-            notify(`Error exporting to ${format.toUpperCase()}.`);
-        }
     });
 
     if (token != null) {
