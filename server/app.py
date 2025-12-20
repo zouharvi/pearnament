@@ -159,7 +159,7 @@ async def _dashboard_data(request: DashboardDataRequest):
 
     progress_new = {}
     assignment = tasks_data[campaign_id]["info"]["assignment"]
-    if assignment not in ["task-based", "single-stream"]:
+    if assignment not in ["task-based", "single-stream", "dynamic"]:
         return JSONResponse(
             content="Unsupported campaign assignment type", status_code=400
         )

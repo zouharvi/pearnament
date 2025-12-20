@@ -24,21 +24,23 @@ def _completed_response(
     user_progress = progress_data[campaign_id][user_id]
     is_ok = check_validation_threshold(tasks_data, progress_data, campaign_id, user_id)
     token = user_progress["token_correct" if is_ok else "token_incorrect"]
-    
+
     # Get instructions_goodbye from campaign info, with default value
     instructions_goodbye = tasks_data[campaign_id]["info"].get(
         "instructions_goodbye",
-        "If someone asks you for a token of completion, show them: ${TOKEN}"
+        "If someone asks you for a token of completion, show them: ${TOKEN}",
     )
-    
+
     # Replace variables ${TOKEN} and ${USER_ID}
-    instructions_goodbye = instructions_goodbye.replace("${TOKEN}", token).replace("${USER_ID}", user_id)
-    
+    instructions_goodbye = instructions_goodbye.replace("${TOKEN}", token).replace(
+        "${USER_ID}", user_id
+    )
+
     # Convert sets to lists for JSON serialization (for dynamic assignment)
     progress = user_progress["progress"]
     if progress and isinstance(progress[0], set):
         progress = [list(s) for s in progress]
-    
+
     return JSONResponse(
         content={
             "status": "goodbye",
@@ -314,11 +316,7 @@ def get_next_item_dynamic(
     campaign_data = tasks_data[campaign_id]
 
     # Get all unique models in the campaign (all items must have all models)
-    all_models = set()
-    for item in campaign_data["data"]:
-        if item and len(item) > 0:
-            all_models.update(item[0]["tgt"].keys())
-    all_models = list(all_models)
+    all_models = list(set(campaign_data["data"][0][0]["tgt"].keys()))
 
     # Check if completed (all models completed for all items)
     if all(len(v) == len(all_models) for v in user_progress["progress"]):
@@ -350,27 +348,33 @@ def get_next_item_dynamic(
         model_total_counts.get(model, 0) < dynamic_first for model in all_models
     )
 
+    print("model total counts", model_total_counts)
+
     # Select which models to show
     if in_first_phase:
         # First phase or backoff: select models that don't have enough annotations yet
-        selected_models = [
-            model
-            for model in all_models
-            if model_total_counts.get(model, 0) < dynamic_first
-        ]
+        selected_models = random.sample(
+            [
+                model
+                for model in all_models
+                if model_total_counts.get(model, 0) < dynamic_first
+            ],
+            k=min(dynamic_contrastive_models, len(all_models)),
+        )
     elif random.random() < dynamic_backoff:
         # Backoff: select K models randomly from all models
         selected_models = random.sample(
-            all_models, min(dynamic_contrastive_models, len(all_models))
+            all_models, k=min(dynamic_contrastive_models, len(all_models))
         )
     else:
         # Calculate model scores from annotations
         model_scores = collections.defaultdict(list)
-        for annotation in annotations:
-            ann_data = annotation.get("annotation", {})
-            for model_name in all_models:
-                if model_name in ann_data and "score" in ann_data[model_name]:
-                    model_scores[model_name].append(ann_data[model_name]["score"])
+        for annotation_line in annotations:
+            for annotation_item in annotation_line.get("annotation", {}):
+                for model in annotation_item:
+                    if "score" in annotation_item[model]:
+                        model_scores[model].append(annotation_item[model]["score"])
+        print("model_scores", model_scores)
 
         # Calculate average scores
         model_avg_scores = {
@@ -385,7 +389,7 @@ def get_next_item_dynamic(
 
         # From top N, randomly select K models
         selected_models = random.sample(
-            top_models, min(dynamic_contrastive_models, len(top_models))
+            top_models, k=min(dynamic_contrastive_models, len(top_models))
         )
 
     # Find incomplete items for the selected models (items where not all selected models are done)
@@ -393,6 +397,9 @@ def get_next_item_dynamic(
         i: sum(model in completed_models for model in selected_models)
         for i, completed_models in enumerate(user_progress["progress"])
     }
+
+    print("item annotation_counts", item_annotation_counts)
+    print("selected models", selected_models)
 
     # Select item with minimum annotations (with random tiebreaking)
     min_annotations = min(item_annotation_counts.values())
@@ -517,7 +524,7 @@ def reset_task(
             )
         # for dynamic reset all progress (use sets to track models)
         for uid in progress_data[campaign_id]:
-            progress_data[campaign_id][uid]["progress"] = [set() for _ in range(num_items)]
+            progress_data[campaign_id][uid]["progress"] = [[] for _ in range(num_items)]
         _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content="ok", status_code=200)
     else:
@@ -550,19 +557,16 @@ def update_progress(
     elif assignment == "dynamic":
         # For dynamic, track which models were annotated
         # Extract models from the payload annotation
-        annotated_models = set()
+        annotated_models = []
         if "annotation" in payload:
             for annotation_item in payload.get("annotation", []):
                 if isinstance(annotation_item, dict):
-                    annotated_models.update(annotation_item.keys())
-        
+                    annotated_models.extend(annotation_item.keys())
+
         # Update progress for all users (shared pool)
         for uid in progress_data[campaign_id]:
-            # Ensure progress[item_i] is a set
-            if not isinstance(progress_data[campaign_id][uid]["progress"][item_i], set):
-                progress_data[campaign_id][uid]["progress"][item_i] = set()
             # Add the newly annotated models
-            progress_data[campaign_id][uid]["progress"][item_i].update(annotated_models)
+            progress_data[campaign_id][uid]["progress"][item_i].extend(annotated_models)
         return JSONResponse(content="ok", status_code=200)
     else:
         return JSONResponse(content="Unknown campaign assignment type", status_code=400)
