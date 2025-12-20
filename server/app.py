@@ -1,7 +1,5 @@
-import collections
 import json
 import os
-import statistics
 from typing import Any
 
 from fastapi import FastAPI, Query
@@ -11,6 +9,11 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .assignment import get_i_item, get_next_item, reset_task, update_progress
+from .results_export import (
+    compute_model_scores,
+    generate_latex_table,
+    generate_typst_table,
+)
 from .utils import (
     ROOT,
     check_validation_threshold,
@@ -211,29 +214,47 @@ async def _dashboard_results(request: DashboardResultsRequest):
     if token != tasks_data[campaign_id]["token"]:
         return JSONResponse(content="Invalid token", status_code=400)
 
-    # Compute model scores from annotations
-    model_scores = collections.defaultdict(dict)
-
-    # Iterate through all tasks to find items with 'models' field (basic template)
-    log = get_db_log(campaign_id)
-    for entry in log:
-        if "item" not in entry or "annotation" not in entry:
-            continue
-        for item, annotation in zip(entry["item"], entry["annotation"]):
-            for model, annotation in annotation.items():
-                if "score" in annotation and annotation["score"] is not None:
-                    model_scores[model][json.dumps(item)] = annotation["score"]
-
-    results = [
-        {
-            "model": model,
-            "score": statistics.mean(scores.values()),
-            "count": len(scores),
-        }
-        for model, scores in model_scores.items()
-    ]
-    results.sort(key=lambda x: x["score"], reverse=True)
+    results = compute_model_scores(campaign_id)
     return JSONResponse(content=results, status_code=200)
+
+
+class ExportResultsRequest(BaseModel):
+    campaign_id: str
+    token: str
+    format: str
+
+
+@app.post("/export-results")
+async def _export_results(request: ExportResultsRequest):
+    campaign_id = request.campaign_id
+    token = request.token
+    export_format = request.format
+
+    if campaign_id not in progress_data:
+        return JSONResponse(content="Unknown campaign ID", status_code=400)
+
+    # Check if token is valid
+    if token != tasks_data[campaign_id]["token"]:
+        return JSONResponse(content="Invalid token", status_code=400)
+
+    results = compute_model_scores(campaign_id)
+
+    if export_format == "typst":
+        content = generate_typst_table(results)
+        media_type = "text/plain"
+        filename = f"{campaign_id}_results.typ"
+    elif export_format == "latex":
+        content = generate_latex_table(results)
+        media_type = "text/plain"
+        filename = f"{campaign_id}_results.tex"
+    else:
+        return JSONResponse(content="Invalid export format", status_code=400)
+
+    return JSONResponse(
+        content={"content": content, "filename": filename},
+        status_code=200,
+        media_type=media_type,
+    )
 
 
 class ResetTaskRequest(BaseModel):

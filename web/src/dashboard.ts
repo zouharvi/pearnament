@@ -195,10 +195,45 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         $content.show();
     });
 
-    // Add event listeners for export buttons (placeholder functionality)
-    el.find(".export-btn").on("click", function () {
+    // Add event listeners for export buttons
+    el.find("input[data-format]").on("click", async function () {
         const format = $(this).data("format");
-        notify(`Export to ${format.toUpperCase()} is not yet implemented.`);
+        
+        // Skip PDF for now as per requirements
+        if (format === "pdf") {
+            notify(`Export to PDF is not yet implemented.`);
+            return;
+        }
+        
+        try {
+            const response = await $.ajax({
+                url: `/export-results`,
+                method: "POST",
+                data: JSON.stringify({ 
+                    "campaign_id": campaign_id, 
+                    "token": token,
+                    "format": format
+                }),
+                contentType: "application/json",
+                dataType: "json",
+            });
+            
+            // Create a download link
+            const blob = new Blob([response.content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = response.filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            notify(`Exported to ${format.toUpperCase()} successfully.`);
+        } catch (error) {
+            console.error("Error exporting results:", error);
+            notify(`Error exporting to ${format.toUpperCase()}.`);
+        }
     });
 
     if (token != null) {
