@@ -82,6 +82,39 @@
             text-align: right;
         }
 
+        .show-ranking-btn,
+        .export-btn {
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .show-ranking-btn:hover,
+        .export-btn:hover {
+            background-color: #ffd;
+            border-color: #999;
+        }
+
+        .show-ranking-btn {
+            display: block;
+            width: 100%;
+            font-weight: 500;
+        }
+
+        .export-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn {
+            flex: 0 0 auto;
+        }
+
         @media (max-width: 1400px) {
             .white-box {
                 overflow-x: auto;

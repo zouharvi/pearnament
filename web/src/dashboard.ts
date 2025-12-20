@@ -128,14 +128,16 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     if (resultsData && resultsData.length > 0) {
         resultsHtml = `
         <div class="results-section">
-            <h4 style="margin-top: -2.5em;">Intermediate results</h4>
-            <table class="results-table">
-                <thead><tr>
-                    <th>Model</th>
-                    <th>Score</th>
-                    <th>Count</th>
-                </tr></thead>
-                <tbody>`;
+            <h4 style="margin-top: -2.5em;">Model Ranking</h4>
+            <button class="show-ranking-btn" style="margin-bottom: 10px;">Show model ranking</button>
+            <div class="ranking-content" style="display: none;">
+                <table class="results-table">
+                    <thead><tr>
+                        <th>Model</th>
+                        <th>Score</th>
+                        <th>Count</th>
+                    </tr></thead>
+                    <tbody>`;
         
         for (let result of resultsData) {
             resultsHtml += `
@@ -147,8 +149,15 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         }
         
         resultsHtml += `
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+                <div class="export-section" style="margin-top: 15px;">
+                    <span style="font-weight: 500; margin-right: 10px;">Export model ranking:</span>
+                    <button class="export-btn" data-format="pdf">PDF</button>
+                    <button class="export-btn" data-format="typst">Typst</button>
+                    <button class="export-btn" data-format="latex">LaTeX</button>
+                </div>
+            </div>
         </div>`;
     }
 
@@ -164,6 +173,27 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
         </div>`)
 
     $("#dashboard_div").append(el)
+    
+    // Add event listener for show/hide ranking button
+    el.find(".show-ranking-btn").on("click", function () {
+        const $button = $(this);
+        const $content = el.find(".ranking-content");
+        
+        if ($content.is(":visible")) {
+            $content.hide();
+            $button.text("Show model ranking");
+        } else {
+            $content.show();
+            $button.text("Hide model ranking");
+        }
+    });
+    
+    // Add event listeners for export buttons (placeholder functionality)
+    el.find(".export-btn").on("click", function () {
+        const format = $(this).data("format");
+        notify(`Export to ${format.toUpperCase()} is not yet implemented.`);
+    });
+    
     if (token != null) {
         el.find(".reset-task").on("click", function () {
             let user_id = $(this).attr("user_id")
