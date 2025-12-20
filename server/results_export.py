@@ -179,6 +179,7 @@ def generate_pdf(results, campaign_id):
     """
 
     import tempfile
+
     import typst
 
     if not results:
