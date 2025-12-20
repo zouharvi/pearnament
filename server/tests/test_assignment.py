@@ -869,7 +869,7 @@ class TestDynamic:
         progress_data = {
             "campaign1": {
                 "user1": {
-                    "progress": [set(), set(), set()],
+                    "progress": [list(), list(), list()],
                     "time": 0,
                     "token_correct": "abc",
                     "token_incorrect": "xyz",
@@ -927,10 +927,10 @@ class TestDynamic:
         progress_data = {
             "campaign1": {
                 "user1": {
-                    "progress": [set(), set(), set()],
+                    "progress": [list(), list(), list()],
                 },
                 "user2": {
-                    "progress": [set(), set(), set()],
+                    "progress": [list(), list(), list()],
                 }
             }
         }
@@ -940,8 +940,8 @@ class TestDynamic:
         # Both users should have model1 tracked for item 1
         assert "model1" in progress_data["campaign1"]["user1"]["progress"][1]
         assert "model1" in progress_data["campaign1"]["user2"]["progress"][1]
-        assert progress_data["campaign1"]["user1"]["progress"][0] == set()
-        assert progress_data["campaign1"]["user2"]["progress"][0] == set()
+        assert progress_data["campaign1"]["user1"]["progress"][0] == list()
+        assert progress_data["campaign1"]["user2"]["progress"][0] == list()
 
     def test_reset_task_resets_all_users(self):
         """Test that dynamic reset_task resets progress for all users."""
@@ -960,13 +960,13 @@ class TestDynamic:
         progress_data = {
             "campaign1": {
                 "user1": {
-                    "progress": [{"model1"}, {"model1"}, set()],
+                    "progress": [{"model1"}, {"model1"}, list()],
                     "time": 50.0,
                     "time_start": 1000,
                     "time_end": 2000,
                 },
                 "user2": {
-                    "progress": [{"model1"}, {"model1"}, set()],
+                    "progress": [{"model1"}, {"model1"}, list()],
                     "time": 75.0,
                     "time_start": 1100,
                     "time_end": 2100,
@@ -974,11 +974,11 @@ class TestDynamic:
             }
         }
         reset_task("campaign1", "user1", tasks_data, progress_data)
-        # Both users' progress should be reset to empty sets
+        # Both users' progress should be reset to empty lists
         assert progress_data["campaign1"]["user1"]["progress"] == [
-            set(), set(), set()]
+            list(), list(), list()]
         assert progress_data["campaign1"]["user2"]["progress"] == [
-            set(), set(), set()]
+            list(), list(), list()]
         # Only user1's time should be reset
         assert progress_data["campaign1"]["user1"]["time"] == 0.0
         assert progress_data["campaign1"]["user1"]["time_start"] is None

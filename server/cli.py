@@ -376,7 +376,7 @@ def _add_single_campaign(data_file, overwrite, server):
             "progress": (
                 [False]*len(campaign_data["data"][user_id]) if assignment == "task-based"
                 else [False]*len(campaign_data["data"]) if assignment == "single-stream"
-                else [set() for _ in range(len(campaign_data["data"]))] if assignment == "dynamic"
+                else [list() for _ in range(len(campaign_data["data"]))] if assignment == "dynamic"
                 else []
             ),
             "time_start": None,
