@@ -20,12 +20,25 @@ def _completed_response(
     """Build a completed response with progress, time, and token."""
     user_progress = progress_data[campaign_id][user_id]
     is_ok = check_validation_threshold(tasks_data, progress_data, campaign_id, user_id)
+    token = user_progress["token_correct" if is_ok else "token_incorrect"]
+    
+    # Get instructions_goodbye from campaign info, with default value
+    instructions_goodbye = tasks_data[campaign_id]["info"].get(
+        "instructions_goodbye",
+        "If someone asks you for a token of completion, show them: ${TOKEN}"
+    )
+    
+    # Replace variables ${TOKEN} and ${USER_ID}
+    instructions_goodbye = instructions_goodbye.replace("${TOKEN}", token)
+    instructions_goodbye = instructions_goodbye.replace("${USER_ID}", user_id)
+    
     return JSONResponse(
         content={
-            "status": "completed",
+            "status": "goodbye",
             "progress": user_progress["progress"],
             "time": user_progress["time"],
-            "token": user_progress["token_correct" if is_ok else "token_incorrect"],
+            "token": token,
+            "instructions_goodbye": instructions_goodbye,
         },
         status_code=200
     )

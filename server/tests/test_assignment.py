@@ -85,7 +85,7 @@ class TestTaskBased:
                                  tasks_data, progress_data)
         assert response.status_code == 200
         content = response.body.decode()
-        assert '"status":"completed"' in content
+        assert '"status":"goodbye"' in content
         assert 'correct_token' in content
 
     def test_update_progress_marks_item_complete(self):
@@ -205,6 +205,146 @@ class TestTaskBased:
         content = response.body.decode()
         assert 'out of range' in content
 
+    def test_instructions_goodbye_default(self):
+        """Test that default instructions_goodbye message is used when not specified."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": "b"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True],
+                    "time": 100,
+                    "token_correct": "CORRECT_TOKEN",
+                    "token_incorrect": "WRONG_TOKEN",
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"goodbye"' in content
+        # Check default message with token replacement
+        assert 'If someone asks you for a token of completion' in content
+        assert 'CORRECT_TOKEN' in content
+
+    def test_instructions_goodbye_custom(self):
+        """Test that custom instructions_goodbye message with variables is used."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "instructions_goodbye": "Thank you ${USER_ID}! Your completion code is: <b>${TOKEN}</b>"
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": "b"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True],
+                    "time": 100,
+                    "token_correct": "MY_TOKEN",
+                    "token_incorrect": "BAD_TOKEN",
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"goodbye"' in content
+        # Check custom message with variable replacement
+        assert 'Thank you user1!' in content
+        assert '<b>MY_TOKEN</b>' in content
+        assert 'BAD_TOKEN' not in content
+
+    def test_instructions_goodbye_incorrect_token(self):
+        """Test that instructions_goodbye uses incorrect token when validation fails."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "validation_threshold": 0,  # Fail on any validation failure
+                    "instructions_goodbye": "Code: ${TOKEN}"
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": "b"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True],
+                    "time": 100,
+                    "token_correct": "PASS_TOKEN",
+                    "token_incorrect": "FAIL_TOKEN",
+                    "validations": {
+                        0: [False]  # Failed validation
+                    }
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"goodbye"' in content
+        # Should use incorrect token
+        assert 'FAIL_TOKEN' in content
+        assert 'PASS_TOKEN' not in content
+
+    def test_instructions_goodbye_html_injection(self):
+        """Test that HTML can be injected in instructions_goodbye via variables."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "task-based",
+                    "instructions_goodbye": "User: ${USER_ID}, Token: ${TOKEN}"
+                },
+                "data": {
+                    "user1": [
+                        [{"src": "a", "tgt": "b"}],
+                    ]
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [True],
+                    "time": 100,
+                    "token_correct": "<b>MY_TOKEN</b>",
+                    "token_incorrect": "BAD_TOKEN",
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"goodbye"' in content
+        # Check that HTML is NOT escaped - raw HTML should appear in instructions_goodbye
+        assert '<b>MY_TOKEN</b>' in content
+        assert 'User: user1, Token: <b>MY_TOKEN</b>' in content
+
 
 class TestSingleStream:
     """Tests for single-stream assignment."""
@@ -267,7 +407,7 @@ class TestSingleStream:
                                  tasks_data, progress_data)
         assert response.status_code == 200
         content = response.body.decode()
-        assert '"status":"completed"' in content
+        assert '"status":"goodbye"' in content
         assert 'correct_token' in content
 
     def test_reset_task_resets_all_users(self):
