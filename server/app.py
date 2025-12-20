@@ -17,7 +17,6 @@ from .results_export import (
 from .utils import (
     ROOT,
     check_validation_threshold,
-    get_db_log,
     load_progress_data,
     save_db_payload,
     save_progress_data,
