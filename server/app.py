@@ -241,11 +241,11 @@ async def _export_results(request: ExportResultsRequest):
     if export_format == "typst":
         content = generate_typst_table(results)
         media_type = "text/plain"
-        filename = f"{campaign_id}_results.typ"
+        filename = f"{campaign_id}.typ"
     elif export_format == "latex":
         content = generate_latex_table(results)
         media_type = "text/plain"
-        filename = f"{campaign_id}_results.tex"
+        filename = f"{campaign_id}.tex"
     else:
         return JSONResponse(content="Invalid export format", status_code=400)
 

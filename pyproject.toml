@@ -17,6 +17,7 @@ dependencies = [
     "uvicorn >= 0.29.0",
     "wonderwords >= 3.0.0",
     "psutil >= 7.1.0",
+    "typst >= 0.14.4",
 ]
 
 [project.optional-dependencies]

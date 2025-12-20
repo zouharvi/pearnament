@@ -52,9 +52,12 @@ def generate_typst_table(results):
         return "// No results available"
     
     typst_code = """#table(
-  columns: (auto, auto, auto),
-  align: (left, right, right),
-  [*Model*], [*Score*], [*Count*],
+  columns: (auto, auto),
+  align: (left, right),
+  stroke: none,
+  table.hline(),
+  [*Model*], [*Score*],
+  table.hline(),
 """
     
     for result in results:
@@ -69,9 +72,9 @@ def generate_typst_table(results):
         model = model.replace("]", "\\]")
         
         score = f"{result['score']:.1f}"
-        count = str(result["count"])
-        typst_code += f"  [{model}], [{score}], [{count}],\n"
+        typst_code += f"  [{model}], [{score}],\n"
     
+    typst_code += "  table.hline(),\n"
     typst_code += ")\n"
     return typst_code
 
@@ -91,9 +94,9 @@ def generate_latex_table(results):
     
     latex_code = """\\begin{table}[h]
 \\centering
-\\begin{tabular}{lrr}
+\\begin{tabular}{lr}
 \\toprule
-\\textbf{Model} & \\textbf{Score} & \\textbf{Count} \\\\
+\\textbf{Model} & \\textbf{Score} \\\\
 \\midrule
 """
     
@@ -112,8 +115,7 @@ def generate_latex_table(results):
         model = model.replace("^", "\\textasciicircum ")
         
         score = f"{result['score']:.1f}"
-        count = str(result["count"])
-        latex_code += f"{model} & {score} & {count} \\\\\n"
+        latex_code += f"{model} & {score} \\\\\n"
     
     latex_code += """\\bottomrule
 \\end{tabular}
