@@ -1,7 +1,8 @@
 {
   "info": {
     "assignment": "task-based",
-    "protocol": "ESA"
+    "protocol": "ESA",
+    "instructions_goodbye": "Dear ${USER_ID} you did so well and deserve this token ${TOKEN}."
   },
   "campaign_id": "example_multimodal",
   "data": [
