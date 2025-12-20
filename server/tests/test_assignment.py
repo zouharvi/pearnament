@@ -311,8 +311,8 @@ class TestTaskBased:
         assert 'FAIL_TOKEN' in content
         assert 'PASS_TOKEN' not in content
 
-    def test_instructions_goodbye_html_escaping(self):
-        """Test that user_id and token are HTML-escaped in instructions_goodbye to prevent injection."""
+    def test_instructions_goodbye_html_injection(self):
+        """Test that HTML can be injected in instructions_goodbye via variables."""
         tasks_data = {
             "campaign1": {
                 "info": {
@@ -320,7 +320,7 @@ class TestTaskBased:
                     "instructions_goodbye": "User: ${USER_ID}, Token: ${TOKEN}"
                 },
                 "data": {
-                    "<script>alert('xss')</script>": [
+                    "user1": [
                         [{"src": "a", "tgt": "b"}],
                     ]
                 }
@@ -328,24 +328,22 @@ class TestTaskBased:
         }
         progress_data = {
             "campaign1": {
-                "<script>alert('xss')</script>": {
+                "user1": {
                     "progress": [True],
                     "time": 100,
-                    "token_correct": "<img src=x onerror=alert('token')>",
+                    "token_correct": "<b>MY_TOKEN</b>",
                     "token_incorrect": "BAD_TOKEN",
                 }
             }
         }
-        response = get_next_item("campaign1", "<script>alert('xss')</script>",
+        response = get_next_item("campaign1", "user1",
                                  tasks_data, progress_data)
         assert response.status_code == 200
         content = response.body.decode()
         assert '"status":"completed"' in content
-        # Check that HTML is properly escaped in instructions_goodbye
-        assert '"instructions_goodbye":"User: &lt;script&gt;' in content
-        assert '&lt;img src=x onerror=alert' in content
-        # The token field itself is not escaped (that's fine, it's used elsewhere)
-        # but in instructions_goodbye it should be escaped
+        # Check that HTML is NOT escaped - raw HTML should appear in instructions_goodbye
+        assert '<b>MY_TOKEN</b>' in content
+        assert 'User: user1, Token: <b>MY_TOKEN</b>' in content
 
 
 class TestSingleStream:
