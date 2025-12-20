@@ -1,6 +1,10 @@
 import collections
 import json
+import os
 import statistics
+import tempfile
+
+import typst
 
 from .utils import get_db_log
 
@@ -124,3 +128,33 @@ def generate_latex_table(results):
 \\end{table}
 """
     return latex_code
+
+
+def generate_pdf(results):
+    """
+    Generate PDF from Typst code using typst-py.
+    
+    Args:
+        results: List of dicts with keys: model, score, count
+        
+    Returns:
+        bytes containing the PDF
+    """
+    if not results:
+        # Return empty PDF with message
+        typst_code = "[No results available]"
+    else:
+        typst_code = generate_typst_table(results)
+    
+    # Create a temporary file for the typst source
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.typ', delete=False) as f:
+        f.write(typst_code)
+        typst_file = f.name
+    
+    try:
+        # Compile to PDF
+        pdf_bytes = typst.compile(typst_file)
+        return pdf_bytes
+    finally:
+        # Clean up
+        os.unlink(typst_file)

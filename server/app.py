@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -12,6 +12,7 @@ from .assignment import get_i_item, get_next_item, reset_task, update_progress
 from .results_export import (
     compute_model_scores,
     generate_latex_table,
+    generate_pdf,
     generate_typst_table,
 )
 from .utils import (
@@ -240,20 +241,27 @@ async def _export_results(request: ExportResultsRequest):
 
     if export_format == "typst":
         content = generate_typst_table(results)
-        media_type = "text/plain"
-        filename = f"{campaign_id}.typ"
+        return JSONResponse(
+            content={"content": content, "filename": f"{campaign_id}.typ"},
+            status_code=200,
+        )
     elif export_format == "latex":
         content = generate_latex_table(results)
-        media_type = "text/plain"
-        filename = f"{campaign_id}.tex"
+        return JSONResponse(
+            content={"content": content, "filename": f"{campaign_id}.tex"},
+            status_code=200,
+        )
+    elif export_format == "pdf":
+        pdf_bytes = generate_pdf(results)
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{campaign_id}.pdf"'
+            },
+        )
     else:
         return JSONResponse(content="Invalid export format", status_code=400)
-
-    return JSONResponse(
-        content={"content": content, "filename": filename},
-        status_code=200,
-        media_type=media_type,
-    )
 
 
 class ResetTaskRequest(BaseModel):
