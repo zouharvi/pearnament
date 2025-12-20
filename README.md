@@ -301,34 +301,7 @@ When tokens are supplied, the dashboard will try to show model rankings based on
 
 ### Custom Completion Messages
 
-You can customize the goodbye message shown to users when they complete all annotations using the `instructions_goodbye` field in campaign info:
-
-```python
-{
-    "info": {
-        "instructions_goodbye": "Thank you ${USER_ID}! Your completion code is: <b>${TOKEN}</b>"
-    },
-    ...
-}
-```
-
-**Features:**
-- Supports arbitrary HTML for styling and formatting
-- Variable replacement:
-  - `${TOKEN}`: Replaced with the user's completion token (correct or incorrect based on validation)
-  - `${USER_ID}`: Replaced with the user's ID
-- Default message if not specified: `"If someone asks you for a token of completion, show them: ${TOKEN}"`
-- Can include automatic redirects using HTML (e.g., `<meta http-equiv="refresh" ...>`)
-
-**Example with redirect:**
-```python
-{
-    "info": {
-        "instructions_goodbye": 'Thank you! Your token is: <strong>${TOKEN}</strong><br><meta http-equiv="refresh" content="5;url=https://example.com/survey?token=${TOKEN}">'
-    },
-    ...
-}
-```
+Customize the goodbye message shown to users when they complete all annotations using the `instructions_goodbye` field in campaign info. Supports arbitrary HTML for styling and formatting with variable replacement: `${TOKEN}` (completion token) and `${USER_ID}` (user ID). Default: `"If someone asks you for a token of completion, show them: ${TOKEN}"`.
 
 ## Terminology
 

@@ -34,7 +34,7 @@ def _completed_response(
     
     return JSONResponse(
         content={
-            "status": "completed",
+            "status": "goodbye",
             "progress": user_progress["progress"],
             "time": user_progress["time"],
             "token": token,

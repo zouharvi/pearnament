@@ -488,8 +488,8 @@ export function hasAllowSkip(validations: (Validation | Record<string, Validatio
     return false;
 }
 
-// Shared type for finished/completed response
-export type DataFinished = {
+// Shared type for goodbye response
+export type DataGoodbye = {
     status: string,
     progress: Array<boolean>,
     time: number,
@@ -504,9 +504,9 @@ export type ProtocolInfo = {
 }
 
 /**
- * Display completion screen when all annotations are done
+ * Display goodbye screen when all annotations are done
  */
-export function displayCompletionScreen(response: DataFinished, navigate_to_item: (i: number) => void): void {
+export function displayGoodbyeScreen(response: DataGoodbye, navigate_to_item: (i: number) => void): void {
     // Use instructions_goodbye if provided, otherwise use default message
     // Note: instructions_goodbye may contain arbitrary HTML including variables that are replaced server-side
     const goodbyeMessage = response.instructions_goodbye || 
