@@ -912,7 +912,7 @@ class TestDynamic:
                                  tasks_data, progress_data)
         assert response.status_code == 200
         content = response.body.decode()
-        assert '"status":"completed"' in content
+        assert '"status":"goodbye"' in content
         assert 'correct_token' in content
 
     def test_update_progress_updates_all_users(self):

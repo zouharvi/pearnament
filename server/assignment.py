@@ -34,10 +34,15 @@ def _completed_response(
     # Replace variables ${TOKEN} and ${USER_ID}
     instructions_goodbye = instructions_goodbye.replace("${TOKEN}", token).replace("${USER_ID}", user_id)
     
+    # Convert sets to lists for JSON serialization (for dynamic assignment)
+    progress = user_progress["progress"]
+    if progress and isinstance(progress[0], set):
+        progress = [list(s) for s in progress]
+    
     return JSONResponse(
         content={
             "status": "goodbye",
-            "progress": user_progress["progress"],
+            "progress": progress,
             "time": user_progress["time"],
             "token": token,
             "instructions_goodbye": instructions_goodbye,
@@ -314,13 +319,6 @@ def get_next_item_dynamic(
         if item and len(item) > 0:
             all_models.update(item[0]["tgt"].keys())
     all_models = list(all_models)
-    
-    # Validate that all items have the same models
-    all_models_set = set(all_models)
-    for item in campaign_data["data"]:
-        if item and len(item) > 0:
-            item_models = set(item[0]["tgt"].keys())
-            assert item_models == all_models_set, "All items must have the same model outputs"
 
     # Check if completed (all models completed for all items)
     if all(len(v) == len(all_models) for v in user_progress["progress"]):
@@ -392,7 +390,7 @@ def get_next_item_dynamic(
 
     # Find incomplete items for the selected models (items where not all selected models are done)
     item_annotation_counts = {
-        i: len(model in completed_models for model in selected_models)         
+        i: sum(model in completed_models for model in selected_models)
         for i, completed_models in enumerate(user_progress["progress"])
     }
 
@@ -519,7 +517,7 @@ def reset_task(
             )
         # for dynamic reset all progress (use sets to track models)
         for uid in progress_data[campaign_id]:
-            progress_data[campaign_id][uid]["progress"] = [[] for _ in range(num_items)]
+            progress_data[campaign_id][uid]["progress"] = [set() for _ in range(num_items)]
         _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content="ok", status_code=200)
     else:
@@ -552,7 +550,7 @@ def update_progress(
     elif assignment == "dynamic":
         # For dynamic, track which models were annotated
         # Extract models from the payload annotation
-        annotated_models = []
+        annotated_models = set()
         if "annotation" in payload:
             for annotation_item in payload.get("annotation", []):
                 if isinstance(annotation_item, dict):
@@ -560,8 +558,11 @@ def update_progress(
         
         # Update progress for all users (shared pool)
         for uid in progress_data[campaign_id]:
+            # Ensure progress[item_i] is a set
+            if not isinstance(progress_data[campaign_id][uid]["progress"][item_i], set):
+                progress_data[campaign_id][uid]["progress"][item_i] = set()
             # Add the newly annotated models
-            progress_data[campaign_id][uid]["progress"][item_i] += annotated_models
+            progress_data[campaign_id][uid]["progress"][item_i].update(annotated_models)
         return JSONResponse(content="ok", status_code=200)
     else:
         return JSONResponse(content="Unknown campaign assignment type", status_code=400)

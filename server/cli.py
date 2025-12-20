@@ -290,6 +290,15 @@ def _add_single_campaign(data_file, overwrite, server):
         # Validate that dynamic_contrastive_models is at most dynamic_top
         assert campaign_data["info"]["dynamic_contrastive_models"] <= campaign_data["info"]["dynamic_top"], \
             "dynamic_contrastive_models must be at most dynamic_top"
+        # Validate that all items have the same models
+        all_models = set()
+        for item in campaign_data["data"]:
+            if item and len(item) > 0:
+                all_models.update(item[0]["tgt"].keys())
+        for item in campaign_data["data"]:
+            if item and len(item) > 0:
+                item_models = set(item[0]["tgt"].keys())
+                assert item_models == all_models, "All items must have the same model outputs"
     else:
         raise ValueError(f"Unknown campaign assignment type: {assignment}")
 

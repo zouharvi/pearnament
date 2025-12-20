@@ -21,7 +21,8 @@ def load_progress_data(warn: str | None = None):
     for campaign_id in data:
         for user_id in data[campaign_id]:
             progress = data[campaign_id][user_id].get("progress", [])
-            if progress and isinstance(progress[0], list):
+            # Check if this looks like dynamic progress (list of lists)
+            if progress and len(progress) > 0 and isinstance(progress[0], list):
                 # Convert lists back to sets for dynamic assignment
                 data[campaign_id][user_id]["progress"] = [set(item) for item in progress]
     
