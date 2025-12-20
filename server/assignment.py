@@ -30,7 +30,7 @@ def _completed_response(
             "time": user_progress["time"],
             "token": user_progress["token_correct" if is_ok else "token_incorrect"],
         },
-        status_code=200
+        status_code=200,
     )
 
 
@@ -47,7 +47,9 @@ def get_next_item(
     if assignment == "task-based":
         return get_next_item_taskbased(campaign_id, user_id, tasks_data, progress_data)
     elif assignment == "single-stream":
-        return get_next_item_singlestream(campaign_id, user_id, tasks_data, progress_data)
+        return get_next_item_singlestream(
+            campaign_id, user_id, tasks_data, progress_data
+        )
     elif assignment == "dynamic":
         return get_next_item_dynamic(campaign_id, user_id, tasks_data, progress_data)
     else:
@@ -66,11 +68,17 @@ def get_i_item(
     """
     assignment = tasks_data[campaign_id]["info"]["assignment"]
     if assignment == "task-based":
-        return get_i_item_taskbased(campaign_id, user_id, tasks_data, progress_data, item_i)
-    elif assignment in ["single-stream", "dynamic"]:
-        return get_i_item_singlestream(campaign_id, user_id, tasks_data, progress_data, item_i)
+        return get_i_item_taskbased(
+            campaign_id, user_id, tasks_data, progress_data, item_i
+        )
+    elif assignment == "single-stream":
+        return get_i_item_singlestream(
+            campaign_id, user_id, tasks_data, progress_data, item_i
+        )
     else:
-        return JSONResponse(content="Get item not supported for this assignment type", status_code=400)
+        return JSONResponse(
+            content="Get item not supported for this assignment type", status_code=400
+        )
 
 
 def get_i_item_taskbased(
@@ -96,10 +104,7 @@ def get_i_item_taskbased(
             payload_existing["comment"] = latest_item["comment"]
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"][user_id]):
-        return JSONResponse(
-            content="Item index out of range",
-            status_code=400
-        )
+        return JSONResponse(content="Item index out of range", status_code=400)
 
     return JSONResponse(
         content={
@@ -108,14 +113,16 @@ def get_i_item_taskbased(
             "time": user_progress["time"],
             "info": {
                 "item_i": item_i,
-            } | {
+            }
+            | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": data_all[campaign_id]["data"][user_id][item_i]
-        } | ({"payload_existing": payload_existing} if payload_existing else {}),
-        status_code=200
+            "payload": data_all[campaign_id]["data"][user_id][item_i],
+        }
+        | ({"payload_existing": payload_existing} if payload_existing else {}),
+        status_code=200,
     )
 
 
@@ -143,10 +150,7 @@ def get_i_item_singlestream(
             payload_existing["comment"] = latest_item["comment"]
 
     if item_i < 0 or item_i >= len(data_all[campaign_id]["data"]):
-        return JSONResponse(
-            content="Item index out of range",
-            status_code=400
-        )
+        return JSONResponse(content="Item index out of range", status_code=400)
 
     return JSONResponse(
         content={
@@ -155,14 +159,16 @@ def get_i_item_singlestream(
             "time": user_progress["time"],
             "info": {
                 "item_i": item_i,
-            } | {
+            }
+            | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": data_all[campaign_id]["data"][item_i]
-        } | ({"payload_existing": payload_existing} if payload_existing else {}),
-        status_code=200
+            "payload": data_all[campaign_id]["data"][item_i],
+        }
+        | ({"payload_existing": payload_existing} if payload_existing else {}),
+        status_code=200,
     )
 
 
@@ -199,14 +205,16 @@ def get_next_item_taskbased(
             "time": user_progress["time"],
             "info": {
                 "item_i": item_i,
-            } | {
+            }
+            | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": data_all[campaign_id]["data"][user_id][item_i]
-        } | ({"payload_existing": payload_existing} if payload_existing else {}),
-        status_code=200
+            "payload": data_all[campaign_id]["data"][user_id][item_i],
+        }
+        | ({"payload_existing": payload_existing} if payload_existing else {}),
+        status_code=200,
     )
 
 
@@ -252,16 +260,17 @@ def get_next_item_singlestream(
             "progress": progress,
             "info": {
                 "item_i": item_i,
-            } | {
+            }
+            | {
                 k: v
                 for k, v in data_all[campaign_id]["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": data_all[campaign_id]["data"][item_i]
-        } | ({"payload_existing": payload_existing} if payload_existing else {}),
-        status_code=200
+            "payload": data_all[campaign_id]["data"][item_i],
+        }
+        | ({"payload_existing": payload_existing} if payload_existing else {}),
+        status_code=200,
     )
-
 
 
 def get_next_item_dynamic(
@@ -272,9 +281,9 @@ def get_next_item_dynamic(
 ) -> JSONResponse:
     """
     Get the next item for dynamic assignment based on model performance.
-    
+
     NOTE: All items must contain all model outputs for this assignment type to work.
-    
+
     In this mode, items are selected based on the current performance of models:
     1. Contrastive comparison: `dynamic_contrastive_models` models are randomly selected and shown per item
     2. First phase: Each model gets `dynamic_first` annotations with fully random selection
@@ -283,49 +292,60 @@ def get_next_item_dynamic(
     5. With probability `dynamic_backoff`, uniformly random selection is used instead
     """
     import random
-    
+
     user_progress = progress_data[campaign_id][user_id]
     campaign_data = tasks_data[campaign_id]
-    
+
     # Check if completed
     if all(user_progress["progress"]):
         return _completed_response(tasks_data, progress_data, campaign_id, user_id)
-    
+
     # Get configuration parameters
-    dynamic_top = campaign_data["info"].get("dynamic_top", 1)
+    dynamic_top = campaign_data["info"].get("dynamic_top", 2)
     dynamic_first = campaign_data["info"].get("dynamic_first", 5)
-    dynamic_contrastive_models = campaign_data["info"].get("dynamic_contrastive_models", 1)
+    dynamic_contrastive_models = campaign_data["info"].get(
+        "dynamic_contrastive_models", 1
+    )
     dynamic_backoff = campaign_data["info"].get("dynamic_backoff", 0)
-    
+
     # Get all unique models in the campaign (all items must have all models)
     all_models = set()
     for item in campaign_data["data"]:
         if item and len(item) > 0:
             all_models.update(item[0]["tgt"].keys())
     all_models = list(all_models)
-    
+
     # Count annotations per (model, item) pair to track coverage
     annotations = get_db_log(campaign_id)
     model_item_counts = collections.defaultdict(int)  # (model, item_i) -> count
     model_total_counts = collections.defaultdict(int)  # model -> total count
-    
-    for annotation in annotations:
-        ann_data = annotation.get("annotation", {})
-        item_i = annotation.get("item_i")
-        if item_i is not None and item_i < len(campaign_data["data"]):
+
+    for annotation_line in annotations:
+        if (item_i := annotation_line.get("item_i")) is not None:
             # Count which models were annotated in this annotation
-            for model_name in all_models:
-                if model_name in ann_data:
-                    model_item_counts[(model_name, item_i)] += 1
-                    model_total_counts[model_name] += 1
-    
+            for annotation_item in annotation_line.get("annotation", []):
+                for model in annotation_item:
+                    model_item_counts[(model, item_i)] += 1
+                    model_total_counts[model] += 1
+
     # Check if we're still in the first phase (collecting initial data)
-    in_first_phase = any(model_total_counts.get(model, 0) < dynamic_first for model in all_models)
-    
+    in_first_phase = any(
+        model_total_counts.get(model, 0) < dynamic_first for model in all_models
+    )
+
     # Select which models to show
-    if in_first_phase or random.random() < dynamic_backoff:
-        # First phase or backoff: select K models randomly from all models
-        selected_models = random.sample(all_models, min(dynamic_contrastive_models, len(all_models)))
+    if in_first_phase:
+        # First phase or backoff: select models that don't have enough annotations yet
+        selected_models = [
+            model
+            for model in all_models
+            if model_total_counts.get(model, 0) < dynamic_first
+        ]
+    elif random.random() < dynamic_backoff:
+        # Backoff: select K models randomly from all models
+        selected_models = random.sample(
+            all_models, min(dynamic_contrastive_models, len(all_models))
+        )
     else:
         # Calculate model scores from annotations
         model_scores = collections.defaultdict(list)
@@ -334,35 +354,43 @@ def get_next_item_dynamic(
             for model_name in all_models:
                 if model_name in ann_data and "score" in ann_data[model_name]:
                     model_scores[model_name].append(ann_data[model_name]["score"])
-        
+
         # Calculate average scores
         model_avg_scores = {
-            model: statistics.mean(scores)
-            for model, scores in model_scores.items()
+            model: statistics.mean(scores) for model, scores in model_scores.items()
         }
-        
+
         # Get top N models
-        sorted_models = sorted(model_avg_scores.items(), key=lambda x: x[1], reverse=True)
+        sorted_models = sorted(
+            model_avg_scores.items(), key=lambda x: x[1], reverse=True
+        )
         top_models = [model for model, score in sorted_models[:dynamic_top]]
-        
+
         # From top N, randomly select K models
-        selected_models = random.sample(top_models, min(dynamic_contrastive_models, len(top_models)))
-    
+        selected_models = random.sample(
+            top_models, min(dynamic_contrastive_models, len(top_models))
+        )
+
     # Find incomplete items, prioritizing those with least annotations for selected models
+    # TODO: keep track not per user but per model!
     incomplete_indices = [i for i, v in enumerate(user_progress["progress"]) if not v]
-    
+
     # Calculate total annotations for selected models on each incomplete item
     item_annotation_counts = {}
     for item_i in incomplete_indices:
-        total_annotations = sum(model_item_counts[(model, item_i)] for model in selected_models)
-        item_annotation_counts[item_i] = total_annotations
-    
+        item_annotation_counts[item_i] = sum(
+            model_item_counts[(model, item_i)] for model in selected_models
+        )
+
     # Select item with minimum annotations (with random tiebreaking)
     min_annotations = min(item_annotation_counts.values())
-    items_with_min = [item_i for item_i, count in item_annotation_counts.items() 
-                      if count == min_annotations]
+    items_with_min = [
+        item_i
+        for item_i, count in item_annotation_counts.items()
+        if count == min_annotations
+    ]
     item_i = random.choice(items_with_min)
-    
+
     # Prune the payload to only include selected models
     original_item = campaign_data["data"][item_i]
     pruned_item = []
@@ -389,7 +417,7 @@ def get_next_item_dynamic(
                 if model in doc_segment.get("validation", {})
             }
         pruned_item.append(pruned_segment)
-    
+
     # Try to get existing annotations if any
     # note the None user_id since items are shared in the pool
     items_existing = get_db_log_item(campaign_id, None, item_i)
@@ -399,7 +427,7 @@ def get_next_item_dynamic(
         payload_existing = {"annotation": latest_item["annotation"]}
         if "comment" in latest_item:
             payload_existing["comment"] = latest_item["comment"]
-    
+
     return JSONResponse(
         content={
             "status": "ok",
@@ -407,16 +435,17 @@ def get_next_item_dynamic(
             "progress": user_progress["progress"],
             "info": {
                 "item_i": item_i,
-            } | {
+            }
+            | {
                 k: v
                 for k, v in campaign_data["info"].items()
                 if k.startswith("protocol")
             },
-            "payload": pruned_item
-        } | ({"payload_existing": payload_existing} if payload_existing else {}),
-        status_code=200
+            "payload": pruned_item,
+        }
+        | ({"payload_existing": payload_existing} if payload_existing else {}),
+        status_code=200,
     )
-
 
 
 def _reset_user_time(progress_data: dict, campaign_id: str, user_id: str) -> None:
@@ -442,11 +471,10 @@ def reset_task(
         # Save reset marker for this user to mask existing annotations
         num_items = len(tasks_data[campaign_id]["data"][user_id])
         for item_i in range(num_items):
-            save_db_payload(campaign_id, {
-                "user_id": user_id,
-                "item_i": item_i,
-                "annotation": RESET_MARKER
-            })
+            save_db_payload(
+                campaign_id,
+                {"user_id": user_id, "item_i": item_i, "annotation": RESET_MARKER},
+            )
         progress_data[campaign_id][user_id]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content="ok", status_code=200)
@@ -454,11 +482,10 @@ def reset_task(
         # Save reset markers for all items (shared pool)
         num_items = len(tasks_data[campaign_id]["data"])
         for item_i in range(num_items):
-            save_db_payload(campaign_id, {
-                "user_id": None,
-                "item_i": item_i,
-                "annotation": RESET_MARKER
-            })
+            save_db_payload(
+                campaign_id,
+                {"user_id": None, "item_i": item_i, "annotation": RESET_MARKER},
+            )
         # for single-stream reset all progress
         for uid in progress_data[campaign_id]:
             progress_data[campaign_id][uid]["progress"] = [False] * num_items
@@ -468,18 +495,19 @@ def reset_task(
         # Save reset markers for all items (shared pool like single-stream)
         num_items = len(tasks_data[campaign_id]["data"])
         for item_i in range(num_items):
-            save_db_payload(campaign_id, {
-                "user_id": None,
-                "item_i": item_i,
-                "annotation": RESET_MARKER
-            })
+            save_db_payload(
+                campaign_id,
+                {"user_id": None, "item_i": item_i, "annotation": RESET_MARKER},
+            )
         # for dynamic reset all progress
         for uid in progress_data[campaign_id]:
             progress_data[campaign_id][uid]["progress"] = [False] * num_items
         _reset_user_time(progress_data, campaign_id, user_id)
         return JSONResponse(content="ok", status_code=200)
     else:
-        return JSONResponse(content="Reset not supported for this assignment type", status_code=400)
+        return JSONResponse(
+            content="Reset not supported for this assignment type", status_code=400
+        )
 
 
 def update_progress(

@@ -232,13 +232,13 @@ All items must contain outputs from all models for this assignment type to work 
 
 ```python
 {
-    "campaign_id": "my campaign dynamic",
+    "campaign_id": "my dynamic campaign",
     "info": {
         "assignment": "dynamic",
         "protocol": "ESA",
         "users": 10,                           # number of annotators
         "dynamic_top": 3,                      # how many top models to consider (required)
-        "dynamic_contrastive_models": 2,                     # how many models to compare per item (optional, default: 1)
+        "dynamic_contrastive_models": 2,       # how many models to compare per item (optional, default: 1)
         "dynamic_first": 5,                    # annotations per model before dynamic kicks in (optional, default: 5)
         "dynamic_backoff": 0.1,                # probability of uniform sampling (optional, default: 0)
     },
@@ -254,6 +254,7 @@ All items must contain outputs from all models for this assignment type to work 
 5. Backoff: With probability `dynamic_backoff`, uniform random selection is used instead to maintain exploration
 
 This approach efficiently focuses annotation resources on distinguishing between the best-performing models while ensuring all models get adequate baseline coverage. The contrastive evaluation allows for direct comparison of multiple models simultaneously.
+For an example, see [examples/dynamic.json](examples/dynamic.json).
 
 ### Pre-defined User IDs and Tokens
 
