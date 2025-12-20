@@ -26,6 +26,7 @@
   - [Multimodal Annotations](#multimodal-annotations)
   - [Hosting Assets](#hosting-assets)
 - [Campaign Management](#campaign-management)
+  - [Custom Completion Messages](#custom-completion-messages)
 - [CLI Commands](#cli-commands)
 - [Terminology](#terminology)
 - [Development](#development)
@@ -327,6 +328,10 @@ Completion tokens are shown at annotation end for verification (download correct
 <img width="500" alt="Token on completion" src="https://github.com/user-attachments/assets/40eb904c-f47a-4011-aa63-9a4f1c501549" />
 
 When tokens are supplied, the dashboard will try to show model rankings based on the names in the dictionaries.
+
+### Custom Completion Messages
+
+Customize the goodbye message shown to users when they complete all annotations using the `instructions_goodbye` field in campaign info. Supports arbitrary HTML for styling and formatting with variable replacement: `${TOKEN}` (completion token) and `${USER_ID}` (user ID). Default: `"If someone asks you for a token of completion, show them: ${TOKEN}"`.
 
 ## Terminology
 

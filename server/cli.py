@@ -280,7 +280,7 @@ def _add_single_campaign(data_file, overwrite, server):
             raise ValueError("'users' must be an integer or a list.")
         # Validate dynamic-specific parameters
         if "dynamic_top" not in campaign_data["info"]:
-            raise ValueError("Dynamic campaigns must specify 'dynamic_top' in info.")
+            campaign_data["info"]["dynamic_top"] = 2
         if "dynamic_first" not in campaign_data["info"]:
             campaign_data["info"]["dynamic_first"] = 5
         if "dynamic_contrastive_models" not in campaign_data["info"]:
