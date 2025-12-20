@@ -132,9 +132,6 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
             <div class="dashboard-content">
                 ${html}
             </div><div class="ranking-content" style="display: none; margin-top: -30px;">
-                <input type="button" class="abutton" data-format="pdf" value="Export PDF">
-                <input type="button" class="abutton" data-format="typst" value="Export Typst">
-                <input type="button" class="abutton" data-format="latex" value="Export LaTeX">
             </div>
         </div>
         <br>
@@ -172,7 +169,7 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
                 for (let result of resultsData) {
                     tableHtml += `
                         <tr>
-                            <td>${result.model}</td>
+                            <td style="${result.sig_better_than_next ? "border-bottom: 1pt solid black;" : ""}">${result.model}</td>
                             <td>${result.score.toFixed(1)}</td>
                             <td>${result.count}</td>
                         </tr>`;
@@ -183,6 +180,19 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
                     </table>`;
 
                 $content.append(tableHtml);
+                
+                // Add export links with direct hrefs - no click handlers needed
+                // Only show if token is available
+                if (token) {
+                    const exportLinksHtml = `
+                        <div style="margin-top: 10px;">
+                            <a href="/export-results?campaign_id=${encodeURIComponent(campaign_id)}&token=${encodeURIComponent(token)}&format=pdf" class="abutton">Export PDF</a>
+                            <a href="/export-results?campaign_id=${encodeURIComponent(campaign_id)}&token=${encodeURIComponent(token)}&format=typst" class="abutton">Export Typst</a>
+                            <a href="/export-results?campaign_id=${encodeURIComponent(campaign_id)}&token=${encodeURIComponent(token)}&format=latex" class="abutton">Export LaTeX</a>
+                        </div>
+                    `;
+                    $content.append(exportLinksHtml);
+                }
             } else {
                 $content.html("<p>No ranking data available yet.</p>");
             }
@@ -193,12 +203,6 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
 
 
         $content.show();
-    });
-
-    // Add event listeners for export buttons (placeholder functionality)
-    el.find(".export-btn").on("click", function () {
-        const format = $(this).data("format");
-        notify(`Export to ${format.toUpperCase()} is not yet implemented.`);
     });
 
     if (token != null) {
