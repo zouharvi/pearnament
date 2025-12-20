@@ -40,22 +40,6 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     });
     let data = x.data;
 
-    // Fetch results if requested and token is available
-    let resultsData = null;
-    if (token !== null && token !== undefined) {
-        try {
-            resultsData = await $.ajax({
-                url: `/dashboard-results`,
-                method: "POST",
-                data: JSON.stringify({ "campaign_id": campaign_id, "token": token }),
-                contentType: "application/json",
-                dataType: "json",
-            });
-        } catch (error) {
-            console.error("Error fetching results:", error);
-        }
-    }
-
     let html = ""
     html += `
     <table class="dashboard-table">
@@ -123,47 +107,100 @@ async function fetchAndRenderCampaign(campaign_id: string, token: string | null)
     }
     html += '</tbody></table>'
 
-    // Add results section if available
-    let resultsHtml = '';
-    if (resultsData && resultsData.length > 0) {
-        resultsHtml = `
-        <div class="results-section">
-            <h4 style="margin-top: -2.5em;">Intermediate results</h4>
-            <table class="results-table">
-                <thead><tr>
-                    <th>Model</th>
-                    <th>Score</th>
-                    <th>Count</th>
-                </tr></thead>
-                <tbody>`;
-        
-        for (let result of resultsData) {
-            resultsHtml += `
-                <tr>
-                    <td>${result.model}</td>
-                    <td>${result.score.toFixed(1)}</td>
-                    <td>${result.count}</td>
-                </tr>`;
-        }
-        
-        resultsHtml += `
-                </tbody>
-            </table>
-        </div>`;
-    }
-
     // link to campaign-specific dashboard
     let dashboard_url = `${window.location.origin}/dashboard.html?campaign_id=${encodeURIComponent(campaign_id)}${token != null ? `&token=${encodeURIComponent(token)}` : ''}`
+
+    // Create buttons HTML for the header (only if token is available)
+    let buttonsHtml = '';
+    if (token !== null && token !== undefined) {
+        buttonsHtml = `
+            <div style="display: inline-block; vertical-align: top; gap: 10px; width: 150px;">
+                
+            </div>
+        `;
+    }
+
     let el = $(`
         <div class="white-box">
-        <h3>${campaign_id} <a href="${dashboard_url}">🔗</a></h3>
-        <div class="dashboard-content">
-            ${html}
-            ${resultsHtml}
+            <div style="">
+                <h3 style="margin: 0;">
+                ${campaign_id} 
+                <a href="${dashboard_url}">🔗</a>
+                <a class="show-ranking-btn">⚖️</a>
+                </h3>
+            </div>
+            <div class="dashboard-content">
+                ${html}
+            </div><div class="ranking-content" style="display: none; margin-top: -30px;">
+                <input type="button" class="abutton" data-format="pdf" value="Export PDF">
+                <input type="button" class="abutton" data-format="typst" value="Export Typst">
+                <input type="button" class="abutton" data-format="latex" value="Export LaTeX">
+            </div>
         </div>
-        </div>`)
+        <br>
+        `)
 
     $("#dashboard_div").append(el)
+
+    // Add event listener for show/hide ranking button
+    el.find(".show-ranking-btn").on("click", async function () {
+        const $content = el.find(".ranking-content");
+
+        $(this).remove()
+
+        // Check if data is already loaded
+        // Fetch results data
+        try {
+            const resultsData = await $.ajax({
+                url: `/dashboard-results`,
+                method: "POST",
+                data: JSON.stringify({ "campaign_id": campaign_id, "token": token }),
+                contentType: "application/json",
+                dataType: "json",
+            });
+
+            if (resultsData && resultsData.length > 0) {
+                let tableHtml = `
+                    <table class="results-table">
+                        <thead><tr>
+                            <th>Model</th>
+                            <th>Score</th>
+                            <th>Count</th>
+                        </tr></thead>
+                        <tbody>`;
+
+                for (let result of resultsData) {
+                    tableHtml += `
+                        <tr>
+                            <td>${result.model}</td>
+                            <td>${result.score.toFixed(1)}</td>
+                            <td>${result.count}</td>
+                        </tr>`;
+                }
+
+                tableHtml += `
+                        </tbody>
+                    </table>`;
+
+                $content.append(tableHtml);
+            } else {
+                $content.html("<p>No ranking data available yet.</p>");
+            }
+        } catch (error) {
+            console.error("Error fetching results:", error);
+            $content.html("<p>Error loading ranking data.</p>");
+        }
+
+
+        $content.show();
+    });
+
+    // Add event listeners for export buttons (placeholder functionality)
+    el.find(".export-btn").on("click", function () {
+        const format = $(this).data("format");
+        notify(`Export to ${format.toUpperCase()} is not yet implemented.`);
+    });
+
     if (token != null) {
         el.find(".reset-task").on("click", function () {
             let user_id = $(this).attr("user_id")
