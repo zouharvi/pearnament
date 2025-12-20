@@ -384,7 +384,7 @@ function spanMatches(userSpan: ErrorSpan, validationSpan: ValidationErrorSpan): 
 /**
  * Validate user responses against validation rules
  * Returns validation result with failed items
- * TODO: merge with validteKwayResponse since everything is Kway
+ * TODO: merge with validateContrastiveResponse since everything is Contrastive
  */
 export function validateResponse(
     response: Response,
@@ -423,7 +423,7 @@ export function validateResponse(
  * @param model - Model name being validated
  * @returns true if validation passes, false otherwise
  */
-export function validateKwayResponse(
+export function validateContrastiveResponse(
     responses: Record<string, Response>,
     validations: Record<string, Validation>,
     model: string

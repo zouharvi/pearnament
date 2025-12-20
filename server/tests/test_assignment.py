@@ -843,3 +843,143 @@ class TestValidationThreshold:
         # Add another failure to exceed threshold
         progress_data["campaign1"]["user1"]["validations"][2] = [False]
         assert check_validation_threshold(tasks_data, progress_data, "campaign1", "user1") is False
+
+
+class TestDynamic:
+    """Tests for dynamic assignment."""
+
+    def test_get_next_item_returns_item_from_pool(self):
+        """Test that dynamic returns an item from the shared pool."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "dynamic",
+                    "shuffle": False,
+                    "dynamic_top": 1,
+                    "dynamic_first": 2,
+                    "dynamic_backoff": 0,
+                },
+                "data": [
+                    [{"src": "a", "tgt": {"model1": "b", "model2": "c"}}],
+                    [{"src": "d", "tgt": {"model1": "e", "model2": "f"}}],
+                    [{"src": "g", "tgt": {"model1": "h", "model2": "i"}}],
+                ]
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [list(), list(), list()],
+                    "time": 0,
+                    "token_correct": "abc",
+                    "token_incorrect": "xyz",
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        # Should return one of the incomplete items
+        assert '"item_i":0' in content or '"item_i":1' in content or '"item_i":2' in content
+
+    def test_dynamic_completed_returns_token(self):
+        """Test that dynamic returns completion token when all items done."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "dynamic",
+                    "shuffle": False,
+                    "dynamic_top": 1,
+                    "dynamic_first": 2,
+                },
+                "data": [
+                    [{"src": "a", "tgt": {"model1": "b"}}],
+                ]
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [{"model1"}],
+                    "time": 100,
+                    "token_correct": "correct_token",
+                    "token_incorrect": "wrong_token",
+                }
+            }
+        }
+        response = get_next_item("campaign1", "user1",
+                                 tasks_data, progress_data)
+        assert response.status_code == 200
+        content = response.body.decode()
+        assert '"status":"goodbye"' in content
+        assert 'correct_token' in content
+
+    def test_update_progress_updates_all_users(self):
+        """Test that dynamic update_progress updates all users."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "dynamic",
+                }
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [list(), list(), list()],
+                },
+                "user2": {
+                    "progress": [list(), list(), list()],
+                }
+            }
+        }
+        # Simulate an annotation with model1
+        payload = {"annotation": [{"model1": {"score": 5}}]}
+        update_progress("campaign1", "user1", tasks_data, progress_data, 1, payload)
+        # Both users should have model1 tracked for item 1
+        assert "model1" in progress_data["campaign1"]["user1"]["progress"][1]
+        assert "model1" in progress_data["campaign1"]["user2"]["progress"][1]
+        assert progress_data["campaign1"]["user1"]["progress"][0] == list()
+        assert progress_data["campaign1"]["user2"]["progress"][0] == list()
+
+    def test_reset_task_resets_all_users(self):
+        """Test that dynamic reset_task resets progress for all users."""
+        tasks_data = {
+            "campaign1": {
+                "info": {
+                    "assignment": "dynamic",
+                },
+                "data": [
+                    [{"src": "a", "tgt": {"model1": "b"}}],
+                    [{"src": "c", "tgt": {"model1": "d"}}],
+                    [{"src": "e", "tgt": {"model1": "f"}}],
+                ]
+            }
+        }
+        progress_data = {
+            "campaign1": {
+                "user1": {
+                    "progress": [{"model1"}, {"model1"}, list()],
+                    "time": 50.0,
+                    "time_start": 1000,
+                    "time_end": 2000,
+                },
+                "user2": {
+                    "progress": [{"model1"}, {"model1"}, list()],
+                    "time": 75.0,
+                    "time_start": 1100,
+                    "time_end": 2100,
+                }
+            }
+        }
+        reset_task("campaign1", "user1", tasks_data, progress_data)
+        # Both users' progress should be reset to empty lists
+        assert progress_data["campaign1"]["user1"]["progress"] == [
+            list(), list(), list()]
+        assert progress_data["campaign1"]["user2"]["progress"] == [
+            list(), list(), list()]
+        # Only user1's time should be reset
+        assert progress_data["campaign1"]["user1"]["time"] == 0.0
+        assert progress_data["campaign1"]["user1"]["time_start"] is None
+        assert progress_data["campaign1"]["user2"]["time"] == 75.0

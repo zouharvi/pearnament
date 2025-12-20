@@ -179,7 +179,7 @@ def _shuffle_campaign_data(campaign_data, rng):
         for user_id, task in campaign_data["data"].items():
             for doc in task:
                 shuffle_document(doc)
-    elif assignment == "single-stream":
+    elif assignment in ["single-stream", "dynamic"]:
         # Shuffle each document in the shared pool
         for doc in campaign_data["data"]:
             shuffle_document(doc)
@@ -259,8 +259,46 @@ def _add_single_campaign(data_file, overwrite, server):
         else:
             raise ValueError("'users' must be an integer or a list.")
     elif assignment == "dynamic":
-        raise NotImplementedError(
-            "Dynamic campaign assignment is not yet implemented.")
+        tasks = campaign_data["data"]
+        if users_spec is None:
+            raise ValueError(
+                "Dynamic campaigns must specify 'users' in info.")
+        if not isinstance(campaign_data["data"], list):
+            raise ValueError(
+                "Dynamic campaign 'data' must be a list of items.")
+        # Validate item structure for dynamic
+        for doc_i, doc in enumerate(tasks):
+            try:
+                _validate_item_structure(doc)
+            except ValueError as e:
+                raise ValueError(f"Document {doc_i}: {e}")
+        if isinstance(users_spec, int):
+            num_users = users_spec
+        elif isinstance(users_spec, list):
+            num_users = len(users_spec)
+        else:
+            raise ValueError("'users' must be an integer or a list.")
+        # Validate dynamic-specific parameters
+        if "dynamic_top" not in campaign_data["info"]:
+            campaign_data["info"]["dynamic_top"] = 2
+        if "dynamic_first" not in campaign_data["info"]:
+            campaign_data["info"]["dynamic_first"] = 5
+        if "dynamic_contrastive_models" not in campaign_data["info"]:
+            campaign_data["info"]["dynamic_contrastive_models"] = 1
+        # Validate that dynamic_first is at least 1
+        assert campaign_data["info"]["dynamic_first"] >= 1, "dynamic_first must be at least 1"
+        # Validate that dynamic_contrastive_models is at most dynamic_top
+        assert campaign_data["info"]["dynamic_contrastive_models"] <= campaign_data["info"]["dynamic_top"], \
+            "dynamic_contrastive_models must be at most dynamic_top"
+        # Validate that all items have the same models
+        all_models = set()
+        for item in campaign_data["data"]:
+            if item and len(item) > 0:
+                all_models.update(item[0]["tgt"].keys())
+        for item in campaign_data["data"]:
+            if item and len(item) > 0:
+                item_models = set(item[0]["tgt"].keys())
+                assert item_models == all_models, "All items must have the same model outputs"
     else:
         raise ValueError(f"Unknown campaign assignment type: {assignment}")
 
@@ -310,13 +348,13 @@ def _add_single_campaign(data_file, overwrite, server):
             os.remove(output_file)
 
     # For task-based, data is a dict mapping user_id -> tasks
-    # For single-stream, data is a flat list (shared among all users)
+    # For single-stream and dynamic, data is a flat list (shared among all users)
     if assignment == "task-based":
         campaign_data["data"] = {
             user_id: task
             for user_id, task in zip(user_ids, tasks)
         }
-    elif assignment == "single-stream":
+    elif assignment in ["single-stream", "dynamic"]:
         campaign_data["data"] = tasks
 
     # generate a token for dashboard access if not present
@@ -338,6 +376,7 @@ def _add_single_campaign(data_file, overwrite, server):
             "progress": (
                 [False]*len(campaign_data["data"][user_id]) if assignment == "task-based"
                 else [False]*len(campaign_data["data"]) if assignment == "single-stream"
+                else [list() for _ in range(len(campaign_data["data"]))] if assignment == "dynamic"
                 else []
             ),
             "time_start": None,
@@ -421,9 +460,7 @@ def _add_single_campaign(data_file, overwrite, server):
         json.dump(campaign_data, f, indent=2, ensure_ascii=False)
 
     progress_data[campaign_data['campaign_id']] = user_progress
-
-    with open(f"{ROOT}/data/progress.json", "w") as f:
-        json.dump(progress_data, f, indent=2, ensure_ascii=False)
+    save_progress_data(progress_data)
 
 
     print(

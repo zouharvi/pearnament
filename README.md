@@ -112,7 +112,7 @@ pearmut run
 
 - **`task-based`**: Each user has predefined items
 - **`single-stream`**: All users draw from a shared pool (random assignment)
-- **`dynamic`**: work in progress ⚠️
+- **`dynamic`**: Items are dynamically assigned based on current model performance (see [Dynamic Assignment](#dynamic-assignment))
 
 ## Advanced Features
 
@@ -226,6 +226,36 @@ All annotators draw from a shared pool with random assignment:
 }
 ```
 
+### Dynamic Assignment
+
+The `dynamic` assignment type intelligently selects items based on current model performance to focus annotation effort on top-performing models using contrastive comparisons.
+All items must contain outputs from all models for this assignment type to work properly.
+
+```python
+{
+    "campaign_id": "my dynamic campaign",
+    "info": {
+        "assignment": "dynamic",
+        "protocol": "ESA",
+        "users": 10,                           # number of annotators
+        "dynamic_top": 3,                      # how many top models to consider (required)
+        "dynamic_contrastive_models": 2,       # how many models to compare per item (optional, default: 1)
+        "dynamic_first": 5,                    # annotations per model before dynamic kicks in (optional, default: 5)
+        "dynamic_backoff": 0.1,                # probability of uniform sampling (optional, default: 0)
+    },
+    "data": [...], # list of all items (shared among all annotators)
+}
+```
+
+**How it works:**
+1. Initial phase: Each model gets `dynamic_first` annotations with fully random contrastive evaluation
+2. Dynamic phase: After the initial phase, top `dynamic_top` models (by average score) are identified
+3. Contrastive evaluatoin: From the top N models, `dynamic_contrastive_models` models are randomly selected for each item
+4. Item prioritization: Items with the least annotations for the selected models are prioritized
+5. Backoff: With probability `dynamic_backoff`, uniform random selection is used instead to maintain exploration
+
+This approach efficiently focuses annotation resources on distinguishing between the best-performing models while ensuring all models get adequate baseline coverage. The contrastive evaluation allows for direct comparison of multiple models simultaneously.
+For an example, see [examples/dynamic.json](examples/dynamic.json).
 
 ### Pre-defined User IDs and Tokens
 
@@ -330,7 +360,7 @@ Customize the goodbye message shown to users when they complete all annotations 
 - **Assignment**: The method for distributing items to users:
   - **Task-based**: Each user has predefined items
   - **Single-stream**: Users draw from a shared pool with random assignment
-  - **Dynamic**: Work in progress
+  - **Dynamic**: Items are intelligently assigned based on model performance to focus on top models
 
 ## Development
 
