@@ -319,6 +319,7 @@ def get_next_item_dynamic(
     all_models = list(set(campaign_data["data"][0][0]["tgt"].keys()))
 
     # Check if completed (all models completed for all items)
+    # NOTE: this will rarely trigger but we don't have a good way to know when to end anyway for now
     if all(len(v) == len(all_models) for v in user_progress["progress"]):
         return _completed_response(tasks_data, progress_data, campaign_id, user_id)
 
@@ -348,8 +349,6 @@ def get_next_item_dynamic(
         model_total_counts.get(model, 0) < dynamic_first for model in all_models
     )
 
-    print("model total counts", model_total_counts)
-
     # Select which models to show
     if in_first_phase:
         # First phase or backoff: select models that don't have enough annotations yet
@@ -374,7 +373,6 @@ def get_next_item_dynamic(
                 for model in annotation_item:
                     if "score" in annotation_item[model]:
                         model_scores[model].append(annotation_item[model]["score"])
-        print("model_scores", model_scores)
 
         # Calculate average scores
         model_avg_scores = {
@@ -397,9 +395,6 @@ def get_next_item_dynamic(
         i: sum(model in completed_models for model in selected_models)
         for i, completed_models in enumerate(user_progress["progress"])
     }
-
-    print("item annotation_counts", item_annotation_counts)
-    print("selected models", selected_models)
 
     # Select item with minimum annotations (with random tiebreaking)
     min_annotations = min(item_annotation_counts.values())
@@ -437,25 +432,11 @@ def get_next_item_dynamic(
             }
         pruned_item.append(pruned_segment)
 
-    # Try to get existing annotations if any
-    # note the None user_id since items are shared in the pool
-    items_existing = get_db_log_item(campaign_id, None, item_i)
-    payload_existing = None
-    if items_existing:
-        latest_item = items_existing[-1]
-        payload_existing = {"annotation": latest_item["annotation"]}
-        if "comment" in latest_item:
-            payload_existing["comment"] = latest_item["comment"]
-
-    # Convert progress sets to lists for JSON serialization
-    progress = user_progress["progress"]
-    progress_serializable = [list(s) if isinstance(s, set) else s for s in progress]
-
     return JSONResponse(
         content={
             "status": "ok",
             "time": user_progress["time"],
-            "progress": progress_serializable,
+            "progress": user_progress["progress"],
             "info": {
                 "item_i": item_i,
             }
@@ -465,8 +446,7 @@ def get_next_item_dynamic(
                 if k.startswith("protocol")
             },
             "payload": pruned_item,
-        }
-        | ({"payload_existing": payload_existing} if payload_existing else {}),
+        },
         status_code=200,
     )
 
