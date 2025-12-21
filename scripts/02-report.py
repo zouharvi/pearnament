@@ -81,7 +81,19 @@ def shuffled(lst, rng=random.Random()):
     return lst
 
 
-for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende", "enit", "enfa", "enfi", "enno"]:
+for langs in [
+    "encs",
+    "enhi",
+    "enko",
+    "enpl",
+    "enes",
+    "ensk",
+    "ende",
+    "enit",
+    "enfa",
+    "enfi",
+    "enno",
+]:
     lang1, lang2 = langs[:2], langs[2:]
     with open(f"abc_data/raw_src/{langs}.json", "r") as f:
         data = json.load(f)
@@ -435,63 +447,72 @@ for quantity in results:
 
 # %%
 import scipy.stats
+import itertools
+import numpy as np
+
 # inter-annotator agreement for Czech
+users = ["encs", "enfi", "enno"]
 
 for tool in ["pearmut", "appraise"]:
-    user1_scores = [
-        item["score"][model]
-        for doc in annotations_tool[tool]["encs"]
-        for item in doc
-        for model in "ABC"
-        if model in item["score"]
+    user_scores = [
+        [
+            item["score"][model]
+            for doc in annotations_tool[tool][user]
+            for item in doc
+            for model in "ABC"
+            if model in item["score"]
+        ]
+        for user in users
     ]
-    user2_scores = [
-        item["score"][model]
-        for doc in annotations_tool[tool]["enfi"]
-        for item in doc
-        for model in "ABC"
-        if model in item["score"]
-    ]
-    print(f"{tool} global {scipy.stats.kendalltau(user1_scores[:len(user2_scores)], user2_scores[:len(user1_scores)]).correlation:.3f}")
+    cap = min([len(user_scores[i]) for i in range(len(users))])
+    corr = statistics.mean(
+        [
+            scipy.stats.pearsonr(user_scores[a][:cap], user_scores[b][:cap]).correlation
+            for a, b in itertools.combinations(range(len(users)), 2)
+        ]
+    )
+
+    print(f"{tool} global {corr:.3f}")
 
     corrs = []
     for model in "ABC":
-        user1_scores = [
-            item["score"][model]
-            for doc in annotations_tool[tool]["encs"]
-            for item in doc
-            if model in item["score"]
+        user_scores = [
+            [
+                item["score"][model]
+                for doc in annotations_tool[tool][user]
+                for item in doc
+                if model in item["score"]
+            ]
+            for user in users
         ]
-        user2_scores = [
-            item["score"][model]
-            for doc in annotations_tool[tool]["enfi"]
-            for item in doc
-            if model in item["score"]
-        ]
-        corrs.append(scipy.stats.kendalltau(user1_scores[:len(user2_scores)], user2_scores[:len(user1_scores)]).correlation)
+        cap = min([len(user_scores[i]) for i in range(len(users))])
+        corr = statistics.mean([
+            scipy.stats.pearsonr(user_scores[a][:cap], user_scores[b][:cap]).correlation
+            for a, b in itertools.combinations(range(len(users)), 2)
+        ])
+        corrs.append(corr)
     print(f"{tool} group by model {statistics.mean(corrs):.3f}")
 
     corrs = []
-    user1_items = collections.defaultdict(list)
+    user_items = collections.defaultdict(lambda: collections.defaultdict(list))
     user2_items = collections.defaultdict(list)
-    for doc in annotations_tool[tool]["encs"]:
-        for item in doc:
-            for model in "ABC":
-                if model in item["score"]:
-                    user1_items[item["doc_id"]].append(item["score"][model])
-    for doc in annotations_tool[tool]["enfi"]:
-        for item in doc:
-            for model in "ABC":
-                if model in item["score"]:
-                    user2_items[item["doc_id"]].append(item["score"][model])
-    common_items = set(user1_items.keys()) & set(user2_items.keys())
-    for doc_id in common_items:
-        user1_scores = user1_items[doc_id]
-        user2_scores = user2_items[doc_id]
-        corrs.append(scipy.stats.kendalltau(user1_scores[:len(user2_scores)], user2_scores[:len(user1_scores)]).correlation)
+    for user in users:
+        for doc in annotations_tool[tool][user]:
+            for item in doc:
+                for model in "ABC":
+                    if model in item["score"]:
+                        user_items[user][item["doc_id"]].append(item["score"][model])
+    for user1, user2 in itertools.combinations(users, 2):
+        common_items = set(user_items[user1].keys()) & set(user_items[user2].keys())
+        for doc_id in common_items:
+            user_scores = [
+                user_items[user][doc_id] for user in [user1, user2]
+            ]
+            corr = scipy.stats.kendalltau(user_scores[0], user_scores[1]).correlation
+            if np.isnan(corr):
+                corr = 1
+            corrs.append(corr)
     print(f"{tool} group by item {statistics.mean(corrs):.3f}")
-
-    
 
 
 # %%
@@ -742,7 +763,7 @@ for _ in range(100):
         shell=True,
         check=True,
     )
-    times.append((time.perf_counter() - start_time)*1000)
+    times.append((time.perf_counter() - start_time) * 1000)
 
 # compute 95% confidence interval
 total_avg_time = statistics.mean(times)
@@ -777,7 +798,7 @@ for _ in range(100):
         shell=True,
         check=True,
     )
-    times.append((time.perf_counter() - start_time)*1000)
+    times.append((time.perf_counter() - start_time) * 1000)
 
 # compute 95% confidence interval
 total_avg_time = statistics.mean(times)
