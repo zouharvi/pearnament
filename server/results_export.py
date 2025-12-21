@@ -44,6 +44,7 @@ def compute_model_scores(campaign_id):
         for item, annotation in zip(entry["item"], entry["annotation"]):
             for model, annotation in annotation.items():
                 if "score" in annotation and annotation["score"] is not None:
+                    # TODO: when #111 is done use the unique item_id
                     # item_id = item.get("doc_id", json.dumps(item | {"tgt": None}))
                     model_scores[model][json.dumps(item | {"tgt": None})] = annotation["score"]
 
