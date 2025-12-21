@@ -397,11 +397,10 @@ Run on public server or tunnel local port to public IP/domain and run locally.
 
 If you use this work in your paper, please cite as following.
 ```bibtex
-@misc{zouhar2025pearmut,
-    author={Vilém Zouhar},
-    title={Pearmut: Platform for Evaluating and Reviewing of Multilingual Tasks},
-    url={https://github.com/zouharvi/pearmut/},
-    year={2026},
+@misc{zouhar2026pearmut,
+  author = {Zouhar, Vilém},
+  title = {Pearmut: Making Human Evaluation Impossible to Avoid},
+  year = {2026}
 }
 ```
 

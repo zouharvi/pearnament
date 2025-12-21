@@ -69,8 +69,9 @@ LANG2_TO_LANG3 = {
     "sk": "slk",
     "it": "ita",
     "fa": "fas",
-    # Finnish = Czech just so each langauge is its own user
+    # Finnish & Norwegian = Czech just so each langauge is its own user
     "fi": "fin",
+    "no": "nob",
 }
 
 
@@ -80,7 +81,7 @@ def shuffled(lst, rng=random.Random()):
     return lst
 
 
-for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende", "enit", "enfa"]:
+for langs in ["encs", "enhi", "enko", "enpl", "enes", "ensk", "ende", "enit", "enfa", "enfi", "enno"]:
     lang1, lang2 = langs[:2], langs[2:]
     with open(f"abc_data/raw_src/{langs}.json", "r") as f:
         data = json.load(f)
@@ -171,6 +172,10 @@ python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_
     --batches-json ~/pearmut/scripts/abc_data/appraise/enfi.json \
     --csv-output ~/pearmut/scripts/abc_data/appraise/accounts_fi.csv
 
+python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_no.json \
+    --batches-json ~/pearmut/scripts/abc_data/appraise/enno.json \
+    --csv-output ~/pearmut/scripts/abc_data/appraise/accounts_no.csv
+
 APPRAISE_ALLOWED_HOSTS=alani-unpleadable-vindicatedly.ngrok-free.dev,localhost APPRAISE_CSRF_TRUSTED_ORIGINS=https://alani-unpleadable-vindicatedly.ngrok-free.dev python3 manage.py runserver 
 
 ngrok http 8000 --url https://alani-unpleadable-vindicatedly.ngrok-free.dev
@@ -189,6 +194,7 @@ ngrok http --url=pearmut.ngrok.io 8001
 python3 manage.py ExportSystemScoresToCSV abc24 > ~/pearmut/scripts/abc_data/results/appraise_raw.csv
 python3 manage.py ExportSystemScoresToCSV abc26 > ~/pearmut/scripts/abc_data/results/appraise_raw_enit.csv
 python3 manage.py ExportSystemScoresToCSV abc27 > ~/pearmut/scripts/abc_data/results/appraise_raw_enfi.csv
+python3 manage.py ExportSystemScoresToCSV abc28 > ~/pearmut/scripts/abc_data/results/appraise_raw_enno.csv
 
 mv ~/Downloads/annotations.json ./scripts/abc_data/results/pearmut_raw.json
 """
@@ -233,6 +239,8 @@ with open("abc_data/results/appraise_raw_enhi.csv", "r") as f1:
 with open("abc_data/results/appraise_raw_enit.csv", "r") as f1:
     text_raw.extend(f1.readlines())
 with open("abc_data/results/appraise_raw_enfi.csv", "r") as f1:
+    text_raw.extend(f1.readlines())
+with open("abc_data/results/appraise_raw_enno.csv", "r") as f1:
     text_raw.extend(f1.readlines())
 with open("abc_data/results/appraise_raw.csv", "r") as f1:
     text_raw.extend(f1.readlines())
@@ -715,6 +723,76 @@ print(
     "Appraise export",
     f"{(time.perf_counter() - start_time)/100*1000:.1f}ms",
     "",
+    sep="\n",
+)
+
+# %%
+# run bash command 100 times
+
+import subprocess
+import time
+import scipy.stats
+import statistics
+
+times = []
+for _ in range(100):
+    start_time = time.perf_counter()
+    subprocess.run(
+        "cd ~/Appraise; python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_speedtest.json --batches-json ~/pearmut/scripts/abc_data/appraise/enno.json --csv-output /tmp/tmp.csv > /dev/null",
+        shell=True,
+        check=True,
+    )
+    times.append((time.perf_counter() - start_time)*1000)
+
+# compute 95% confidence interval
+total_avg_time = statistics.mean(times)
+ci = scipy.stats.t.interval(
+    0.99,
+    len(times) - 1,
+    loc=total_avg_time,
+    scale=scipy.stats.sem(times),
+)
+
+
+print(
+    "Appraise import",
+    f"{total_avg_time:.1f}ms",
+    f"  ±{(ci[1] - ci[0]) / 2:.1f}ms (99% CI)",
+    sep="\n",
+)
+
+# %%
+# run bash command 100 times
+
+import subprocess
+import time
+import scipy.stats
+import statistics
+
+times = []
+for _ in range(100):
+    start_time = time.perf_counter()
+    subprocess.run(
+        "cd ~/pearmut; pearmut add scripts/abc_data/pearmut/speedtest.json -o > /dev/null",
+        shell=True,
+        check=True,
+    )
+    times.append((time.perf_counter() - start_time)*1000)
+
+# compute 95% confidence interval
+total_avg_time = statistics.mean(times)
+ci = scipy.stats.t.interval(
+    0.99,
+    len(times) - 1,
+    loc=total_avg_time,
+    scale=scipy.stats.sem(times),
+)
+
+
+print(
+    "Pearmut import",
+    f"{total_avg_time:.1f}ms",
+    f"  ±{(ci[1] - ci[0]) / 2:.1f}ms (99% CI)",
     sep="\n",
 )
 
