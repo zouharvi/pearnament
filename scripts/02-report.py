@@ -307,7 +307,7 @@ for campaign_id, data in data.items():
         continue
     langs = campaign_id.removeprefix("abc_")
     for line in data:
-        if "item" not in line or line["user_id"].endswith("2"):
+        if "item" not in line or line["user_id"].endswith("2") or line["user_id"].startswith("enko"):
             continue
 
         for item, annotation in zip(line["item"], line["annotation"]):
@@ -519,7 +519,96 @@ for tool in ["pearmut", "appraise"]:
 
 """
 ###################
-2. Researcher study
+4. Annotator activity plot
+###################
+"""
+
+import json
+import matplotlib.pyplot as plt
+import numpy as np
+
+# load pearmut, so easy!
+with open("abc_data/results/pearmut_raw.json", "r") as f:
+    data = json.load(f)
+
+data = [
+    x | {"user_id": k.removeprefix("abc_")}
+    for k, l in data.items()
+    if k.startswith("abc_") and k != "abc_enko"
+    for x in l
+    if "actions" in x
+]
+
+fig, axs = plt.subplots(len(data), 1, figsize=(9.2, 0.15 * len(data)))
+XLIM = 420
+
+prev_user_id = None
+for i, (ax, line) in enumerate(zip(axs, data)):
+    trace = []
+    assert line["actions"][0]["action"] == "load"
+    assert line["actions"][-1]["action"] == "submit"
+    time_start = line["actions"][0]["time"]
+    last = time_start
+    time_end = line["actions"][-1]["time"]
+    line["actions"] = line["actions"][1:-1]
+    time_total = 2
+
+    # userid on the right side
+    if line["user_id"] != prev_user_id:
+        ax.text(
+            XLIM+1, 1,
+            line["user_id"].replace("enfi", "encs").replace("enno", "encs"),
+            verticalalignment="center",
+            fontsize=8,
+        )
+        prev_user_id = line["user_id"]
+    ax.text(
+        XLIM-5, 1,
+        line["actions"][0]["model"],
+        verticalalignment="center",
+        fontsize=8,
+    )
+
+    for action in line["actions"]:
+        if action["time"] - last <= 60:
+            time_total += action["time"] - last
+        style = {
+            "create_span": {"color": "#208f20"},
+            "delete_span": {"color": "#d34434"},
+            "score": {"color": "#2d64c6"},
+        }[action["action"]]
+
+        ax.scatter(
+            [time_total],
+            [2-action["index"]],
+            **style,
+            marker=".",
+            s=70,
+        )
+        last = action["time"]
+
+    ax.set_xlim(0, XLIM)
+    ax.set_ylim(-0.8, 2.8)
+    # turn off axes
+    # ax.axis("off")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.spines[["top", "right", "left", "bottom"]].set_visible(False)
+
+    if i %2 == 0:
+        ax.set_facecolor("#ccc")
+
+plt.tight_layout(pad=0)
+# plt.subplots_adjust(hspace=0.2)
+plt.savefig("../Downloads/annotator_actions.svg")
+plt.show()
+
+
+# %%
+
+"""
+###################
+3. Researcher study
 ###################
 """
 
@@ -545,7 +634,7 @@ XXX
 
 """
 #############
-3. Speed test
+4. Speed test
 #############
 
 This tests Pearmut and Appraise speeds, used in the Pearmut report.
@@ -603,7 +692,6 @@ def measure_average_response(
     print(f"  ±{(ci[1]-ci[0])/2*1000:.1f}ms (99% CI)")
 
 
-# %%
 
 appraise_csrf_cookie = input()
 pearmut_token_ensk = input()
@@ -734,7 +822,7 @@ measure_average_response_chill(
 
 import subprocess
 
-start_time = time.perf_counter()
+time_start = time.perf_counter()
 subprocess.run(
     "cd ~/Appraise; for _ in {1..100}; do python3 manage.py ExportSystemScoresToCSV abc24 > /dev/null; done",
     shell=True,
@@ -742,7 +830,7 @@ subprocess.run(
 )
 print(
     "Appraise export",
-    f"{(time.perf_counter() - start_time)/100*1000:.1f}ms",
+    f"{(time.perf_counter() - time_start)/100*1000:.1f}ms",
     "",
     sep="\n",
 )
@@ -757,13 +845,13 @@ import statistics
 
 times = []
 for _ in range(100):
-    start_time = time.perf_counter()
+    time_start = time.perf_counter()
     subprocess.run(
         "cd ~/Appraise; python3 manage.py StartNewCampaign ~/pearmut/scripts/abc_data/appraise/manifest_speedtest.json --batches-json ~/pearmut/scripts/abc_data/appraise/enno.json --csv-output /tmp/tmp.csv > /dev/null",
         shell=True,
         check=True,
     )
-    times.append((time.perf_counter() - start_time) * 1000)
+    times.append((time.perf_counter() - time_start) * 1000)
 
 # compute 95% confidence interval
 total_avg_time = statistics.mean(times)
@@ -792,13 +880,13 @@ import statistics
 
 times = []
 for _ in range(100):
-    start_time = time.perf_counter()
+    time_start = time.perf_counter()
     subprocess.run(
         "cd ~/pearmut; pearmut add scripts/abc_data/pearmut/speedtest.json -o > /dev/null",
         shell=True,
         check=True,
     )
-    times.append((time.perf_counter() - start_time) * 1000)
+    times.append((time.perf_counter() - time_start) * 1000)
 
 # compute 95% confidence interval
 total_avg_time = statistics.mean(times)
@@ -822,7 +910,7 @@ print(
 
 """
 ######################
-4. Bibiliography study
+5. Bibiliography study
 ######################
 
 Download bibliographies from https://aclanthology.org/
@@ -832,7 +920,7 @@ Download bibliographies from https://aclanthology.org/
 
 import bibtexparser
 
-library = bibtexparser.parse_file("/home/vilda/Downloads/all.bib")
+library = bibtexparser.parse_file("../Downloads/all.bib")
 
 papers = []
 for entry in library.entries:
