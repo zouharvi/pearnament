@@ -3,7 +3,7 @@ message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Zouhar"
   given-names: "Vilém"
-title: "Pearmut: Making Human Evaluation Impossible to Avoid"
+title: "Pearmut: Human Evaluation of Translation Made Trivial"
 url: "https://github.com/zouharvi/pearmut"
 
 preferred-citation:
@@ -11,5 +11,5 @@ preferred-citation:
   authors:
   - family-names: "Zouhar"
     given-names: "Vilém"
-  title: "Pearmut: Making Human Evaluation Impossible to Avoid"
+  title: "Pearmut: Human Evaluation of Translation Made Trivial"
   year: 2026

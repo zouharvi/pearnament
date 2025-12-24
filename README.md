@@ -399,7 +399,7 @@ If you use this work in your paper, please cite as following.
 ```bibtex
 @misc{zouhar2026pearmut,
   author = {Zouhar, Vilém},
-  title = {Pearmut: Making Human Evaluation Impossible to Avoid},
+  title = {Pearmut: Human Evaluation of Translation Made Trivial},
   year = {2026}
 }
 ```
